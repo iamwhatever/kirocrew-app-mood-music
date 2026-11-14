@@ -191,6 +191,23 @@ describe('MoodMusicPage', () => {
     expect(screen.queryByTestId('mood-approval')).toBeNull()
   })
 
+  it('says why when every pick is dropped, and asks again on the button', async () => {
+    renderWithProviders(<MoodMusicPage />)
+    await flush()
+    fireEvent.click(screen.getByRole('button', { name: t('mood_calm') }))
+    await flush()
+    const first = api.ask.mock.calls[0][0]
+    api.getSlot.mockResolvedValue(reply({ picks: [{ title: 'A', source: 'youtube', url: 'https://example.com/x' }, { title: 'B', source: 'tiktok' }] }))
+    await flush(POLL_MS)
+    expect(screen.getByText(t('error_all_dropped', { count: 2 }))).toBeInTheDocument()
+    expect(api.setQueue).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole('button', { name: t('retry') }))
+    await flush()
+    expect(api.ask).toHaveBeenCalledTimes(2)
+    expect(api.ask.mock.calls[1][0]).toBe(first)
+  })
+
   it('skips to the next pick and records it', async () => {
     const picks = [queued({ id: 'a'.repeat(32), title: 'One' }), queued({ id: 'b'.repeat(32), title: 'Two' })]
     api.state.mockResolvedValue({ ...EMPTY, queue: picks })

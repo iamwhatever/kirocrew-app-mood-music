@@ -49,6 +49,8 @@
     "moments_empty_body": "공유한 기분이 그때 들은 노래와 함께 여기에 남습니다.",
     "error_generic": "문제가 발생했습니다({{code}})",
     "error_unreadable": "DJ의 답을 읽을 수 없습니다. 다시 시도하세요.",
+    "error_all_dropped": "DJ가 노래 {{count}}곡을 찾았지만, 페이지에서 재생할 수 있는 형태로 온 곡이 없어요.",
+    "retry": "다시 물어보기",
     "error_timeout": "DJ 응답이 너무 오래 걸렸습니다. 다시 시도하세요.",
     "approval_title": "DJ가 웹 검색 허락을 기다리고 있어요",
     "approval_step_open": "아래 버튼으로 DJ 채팅을 여세요.",

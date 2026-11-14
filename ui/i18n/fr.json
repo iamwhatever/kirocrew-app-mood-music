@@ -49,6 +49,8 @@
     "moments_empty_body": "Chaque humeur que tu partages est gardée ici, avec les chansons qu’elle a apportées.",
     "error_generic": "Un problème est survenu ({{code}})",
     "error_unreadable": "Impossible de lire la réponse du DJ. Réessaie.",
+    "error_all_dropped": "Le DJ a trouvé {{count}} chansons, mais aucune n'est revenue sous une forme que la page peut lire.",
+    "retry": "Redemander",
     "error_timeout": "Le DJ a mis trop de temps. Réessaie.",
     "approval_title": "Le DJ attend ton accord pour chercher sur le web",
     "approval_step_open": "Ouvre le chat du DJ avec le bouton ci-dessous.",

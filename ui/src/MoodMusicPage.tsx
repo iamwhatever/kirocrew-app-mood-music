@@ -67,9 +67,12 @@ export default function MoodMusicPage() {
   const { openChat } = useChatLauncher()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [droppedAll, setDroppedAll] = useState(0)
   const [notice, setNotice] = useState<string | null>(null)
   const slotRef = useRef<string | null>(null)
   const momentRef = useRef<string>('')
+  // The last request sent, so a reply the page could not use can be asked again.
+  const lastAskRef = useRef<string>('')
   // Read by the poll without restarting it when a chip changes mid-turn.
   const chipRef = useRef<MoodKey | null>(null)
   chipRef.current = chip
@@ -88,6 +91,7 @@ export default function MoodMusicPage() {
     const known = slotRef.current ?? (await moodApi.openSlot()).key
     // The reply already in the slot, so the poll waits for a NEW one.
     const before = await moodApi.getSlot(known).catch(() => undefined)
+    lastAskRef.current = message
     slotRef.current = await moodApi.ask(message)
     setPending({ momentId: momentRef.current, baseline: replySource(latestReply(before)), startedAt: Date.now() })
   }, [moodApi])
@@ -192,6 +196,7 @@ export default function MoodMusicPage() {
       if (!chipRef.current && tagLook !== 'neutral') setLook(tagLook)
       if (parsed.picks.length === 0) {
         if (parsed.question) setQuestion(parsed.question)
+        else if (parsed.dropped > 0) { setDroppedAll(parsed.dropped); setError('all_dropped') }
         else setError('unreadable')
         return
       }
@@ -229,6 +234,7 @@ export default function MoodMusicPage() {
 
   const errorText = error === null ? null
     : error === 'unreadable' ? t('page.error_unreadable')
+      : error === 'all_dropped' ? t('page.error_all_dropped', { count: droppedAll })
       : error === 'timeout' ? t('page.error_timeout')
         : t('page.error_generic', { code: error })
   const working = busy || !!pending
@@ -304,6 +310,11 @@ export default function MoodMusicPage() {
                   <p role="status" className="mt-3 text-xs text-[var(--muted)]">{t('page.finding')}</p>
                 )}
                 <ErrorNotice className="mt-2" message={errorText} />
+                {(error === 'unreadable' || error === 'all_dropped' || error === 'timeout') && lastAskRef.current && !working && (
+                  <Btn type="button" className="mt-2" onClick={() => { const again = lastAskRef.current; void run(() => ask(again)) }}>
+                    {t('page.retry')}
+                  </Btn>
+                )}
                 {notice && <p className="mt-2 text-xs text-[var(--muted)]">{notice}</p>}
               </form>
 

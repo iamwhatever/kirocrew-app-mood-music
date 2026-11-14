@@ -49,6 +49,8 @@
     "moments_empty_body": "共有した気持ちが、届いた曲と一緒にここに残ります。",
     "error_generic": "問題が発生しました（{{code}}）",
     "error_unreadable": "DJ の返答を読み取れませんでした。もう一度お試しください。",
+    "error_all_dropped": "DJ は {{count}} 曲見つけましたが、ページで再生できる形で返ってきた曲はありませんでした。",
+    "retry": "もう一度聞く",
     "error_timeout": "DJ の応答に時間がかかりすぎました。もう一度お試しください。",
     "approval_title": "DJ がウェブ検索の許可を待っています",
     "approval_step_open": "下のボタンで DJ のチャットを開きます。",

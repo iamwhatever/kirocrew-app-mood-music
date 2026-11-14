@@ -49,6 +49,8 @@
     "moments_empty_body": "你分享的每份心情都会留在这里，连同它带来的歌。",
     "error_generic": "出了点问题（{{code}}）",
     "error_unreadable": "读不懂 DJ 的回答，请再试一次。",
+    "error_all_dropped": "DJ 找到了 {{count}} 首歌，但回的格式不对或链接不能播，一首也没放进来。",
+    "retry": "再问一次",
     "error_timeout": "DJ 太久没回应，请再试一次。",
     "approval_title": "DJ 在等你允许它上网搜索",
     "approval_step_open": "点下面的按钮，打开 DJ 的对话。",

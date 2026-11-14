@@ -49,6 +49,8 @@
     "moments_empty_body": "Cada humor que você compartilha fica aqui, com as músicas que trouxe.",
     "error_generic": "Algo deu errado ({{code}})",
     "error_unreadable": "Não foi possível ler a resposta do DJ. Tente de novo.",
+    "error_all_dropped": "O DJ achou {{count}} músicas, mas nenhuma voltou num formato que a página consiga tocar.",
+    "retry": "Perguntar de novo",
     "error_timeout": "O DJ demorou demais. Tente de novo.",
     "approval_title": "O DJ está esperando seu ok para pesquisar na web",
     "approval_step_open": "Abra o chat do DJ no botão abaixo.",

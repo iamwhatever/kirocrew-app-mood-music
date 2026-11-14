@@ -49,6 +49,8 @@
     "moments_empty_body": "Ogni umore che condividi resta qui, con le canzoni che ha portato.",
     "error_generic": "Qualcosa è andato storto ({{code}})",
     "error_unreadable": "Impossibile leggere la risposta del DJ. Riprova.",
+    "error_all_dropped": "Il DJ ha trovato {{count}} canzoni, ma nessuna è tornata in una forma che la pagina può riprodurre.",
+    "retry": "Chiedi di nuovo",
     "error_timeout": "Il DJ ci ha messo troppo. Riprova.",
     "approval_title": "Il DJ aspetta il tuo ok per cercare sul web",
     "approval_step_open": "Apri la chat del DJ con il pulsante qui sotto.",

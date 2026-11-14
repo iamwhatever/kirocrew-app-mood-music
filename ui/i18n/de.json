@@ -49,6 +49,8 @@
     "moments_empty_body": "Jede Stimmung, die du teilst, bleibt hier – mit den Songs, die sie gebracht hat.",
     "error_generic": "Etwas ist schiefgelaufen ({{code}})",
     "error_unreadable": "Die Antwort des DJs ließ sich nicht lesen. Versuch es noch einmal.",
+    "error_all_dropped": "Der DJ hat {{count}} Songs gefunden, aber keiner kam in einer Form zurück, die die Seite abspielen kann.",
+    "retry": "Noch einmal fragen",
     "error_timeout": "Der DJ hat zu lange gebraucht. Versuch es noch einmal.",
     "approval_title": "Der DJ wartet auf dein OK für die Websuche",
     "approval_step_open": "Öffne den DJ-Chat mit dem Knopf unten.",
