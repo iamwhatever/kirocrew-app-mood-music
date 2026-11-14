@@ -11,6 +11,11 @@ the access its manifest grant gives it.
   POST /queue               -> replace the queue with new picks
   PUT  /queue/{id}/feedback -> like / skip / clear a pick
   POST /verify-picks        -> look each pick up on YouTube / bilibili (``verify.py``)
+  POST /memory              -> remember a note, a song or a mood
+  PUT  /memory/{id}         -> edit a note's text, or pin / unpin an item
+  DELETE /memory/{id}       -> forget one item
+  POST /memory/clear-stale  -> forget every "maybe stale" item
+  POST /memory/used         -> mark items as used (keeps them fresh)
 
 A pick's link is checked in ``links.py``: a YouTube pick is stored as its video
 id alone, a bilibili pick as an https URL on an exact bilibili host. A request
@@ -29,7 +34,7 @@ from typing import Any
 from aiohttp import web
 
 from . import _host, links, verify
-from .store import MAX_QUEUE, VERDICTS, MoodStore
+from .store import MAX_QUEUE, MEMORY_KINDS, ORIGINS, SONG_KINDS, VERDICTS, MemoryFull, MoodStore
 
 _MAX_MOOD = 200
 _MAX_NOTE = 1000
@@ -39,6 +44,8 @@ _MAX_TAGS = 8
 _MAX_TAG = 40
 _MAX_SOURCE = 128
 _ID_RE = re.compile(r"[0-9a-f]{32}")
+_MAX_NOTE_TEXT = 60
+_MAX_IDS = 100
 _TIERS = ("anchor", "explore", "deep")
 _ARCS = ("stay", "turn", "lift")
 
@@ -284,6 +291,90 @@ async def _handle_verify(request: web.Request, ctx: Any) -> web.Response:
     return web.json_response({"picks": kept, "dropped": dropped})
 
 
+def _not_found() -> web.Response:
+    return web.json_response({"error": "no such item", "code": "not_found"}, status=404)
+
+
+async def _handle_add_memory(request: web.Request, ctx: Any) -> web.Response:
+    body, err = await _json_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    kind, origin = body.get("kind"), body.get("origin", "user")
+    if kind not in MEMORY_KINDS or origin not in ORIGINS:
+        return _bad_request("kind or origin is not one this app knows", "invalid_field_type")
+    fields: dict[str, str] = {}
+    if kind in SONG_KINDS:
+        for key, required in (("title", True), ("artist", False)):
+            fields[key], err = _text(body, key, _MAX_TEXT, required=required)
+            if err is not None:
+                return err
+    else:
+        fields["text"], err = _text(body, "text", _MAX_NOTE_TEXT, required=True)
+        if err is not None:
+            return err
+    try:
+        item = await asyncio.to_thread(
+            lambda: _store(ctx).add_memory(kind, origin=origin, **fields)
+        )
+    except MemoryFull:
+        return web.json_response(
+            {"error": "memory is full of your own items", "code": "memory_full"}, status=409
+        )
+    return web.json_response(item, status=201)
+
+
+async def _handle_update_memory(request: web.Request, ctx: Any) -> web.Response:
+    item_id = request.match_info["id"]
+    if not _ID_RE.fullmatch(item_id):
+        return _bad_request("not an item id", "invalid_field_type")
+    body, err = await _json_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    text = None
+    if "text" in body:
+        text, err = _text(body, "text", _MAX_NOTE_TEXT, required=True)
+        if err is not None:
+            return err
+    pinned = body.get("pinned")
+    if pinned is not None and not isinstance(pinned, bool):
+        return _bad_request("pinned must be true or false", "invalid_field_type")
+    item = await asyncio.to_thread(
+        lambda: _store(ctx).update_memory(item_id, text=text, pinned=pinned)
+    )
+    return web.json_response(item) if item is not None else _not_found()
+
+
+async def _handle_delete_memory(request: web.Request, ctx: Any) -> web.Response:
+    item_id = request.match_info["id"]
+    if not _ID_RE.fullmatch(item_id):
+        return _bad_request("not an item id", "invalid_field_type")
+    gone = await asyncio.to_thread(lambda: _store(ctx).delete_memory(item_id))
+    return web.json_response({"deleted": item_id}) if gone else _not_found()
+
+
+async def _handle_clear_stale(request: web.Request, ctx: Any) -> web.Response:
+    removed = await asyncio.to_thread(lambda: _store(ctx).clear_stale())
+    return web.json_response({"removed": removed})
+
+
+async def _handle_memory_used(request: web.Request, ctx: Any) -> web.Response:
+    body, err = await _json_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    ids = body.get("ids")
+    if (
+        not isinstance(ids, list)
+        or len(ids) > _MAX_IDS
+        or not all(isinstance(i, str) and _ID_RE.fullmatch(i) for i in ids)
+    ):
+        return _bad_request("ids must be a short list of item ids", "invalid_field_type")
+    marked = await asyncio.to_thread(lambda: _store(ctx).mark_used(ids))
+    return web.json_response({"marked": marked})
+
+
 def register_routes(ctx: Any) -> list[_host.Route]:
     """The manifest's ``backend.hooks.routes``: this app's routes, unprefixed.
 
@@ -306,4 +397,9 @@ def register_routes(ctx: Any) -> list[_host.Route]:
         route("POST", "/queue", _owner_only("set_queue", _handle_set_queue)),
         route("PUT", "/queue/{id}/feedback", _owner_only("feedback", _handle_feedback)),
         route("POST", "/verify-picks", _owner_only("verify_picks", _handle_verify)),
+        route("POST", "/memory", _owner_only("add_memory", _handle_add_memory)),
+        route("PUT", "/memory/{id}", _owner_only("update_memory", _handle_update_memory)),
+        route("DELETE", "/memory/{id}", _owner_only("delete_memory", _handle_delete_memory)),
+        route("POST", "/memory/clear-stale", _owner_only("clear_stale", _handle_clear_stale)),
+        route("POST", "/memory/used", _owner_only("memory_used", _handle_memory_used)),
     ]

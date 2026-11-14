@@ -180,12 +180,73 @@ def test_feedback_checks_the_id_and_the_verdict(ctx) -> None:
     assert _call(ctx, "PUT", f"/queue/{'0' * 32}/feedback", {"verdict": "liked"})[0] == 404
 
 
+def test_memory_add_edit_pin_delete_and_clear(ctx) -> None:
+    status, note = _call(ctx, "POST", "/memory", {"kind": "note", "text": " 不要太吵 "})
+    assert status == 201 and (note["text"], note["origin"], note["stale"]) == ("不要太吵", "user", False)
+    status, song = _call(ctx, "POST", "/memory", {"kind": "known", "title": "苏州河", "artist": "薛凯琪", "origin": "app"})
+    assert status == 201 and song["origin"] == "app"
+    status, edited = _call(ctx, "PUT", f"/memory/{note['id']}", {"text": "晚上别推摇滚", "pinned": True})
+    assert status == 200 and (edited["text"], edited["pinned"]) == ("晚上别推摇滚", True)
+    assert _call(ctx, "POST", "/memory/used", {"ids": [song["id"]]})[1] == {"marked": 1}
+    assert _call(ctx, "POST", "/memory/clear-stale")[1] == {"removed": 0}
+    assert _call(ctx, "DELETE", f"/memory/{song['id']}")[0] == 200
+    assert _call(ctx, "DELETE", f"/memory/{song['id']}")[0] == 404
+    state = _call(ctx, "GET", "/state")[1]
+    assert [m["text"] for m in state["memory"]] == ["晚上别推摇滚"]
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        {"kind": "secret", "text": "x"},
+        {"kind": "note", "text": "x", "origin": "agent"},
+        {"kind": "note", "text": ""},
+        {"kind": "note", "text": "x" * 61},
+        {"kind": "known", "artist": "no title"},
+        {"kind": "note", "text": ["x"]},
+    ],
+)
+def test_a_malformed_memory_item_is_refused(ctx, body) -> None:
+    status, payload = _call(ctx, "POST", "/memory", body)
+    assert status == 400 and payload["code"]
+    assert not _state_file(ctx).exists()
+
+
+@pytest.mark.parametrize(
+    ("method", "path", "body"),
+    [
+        ("PUT", "/memory/not-an-id", {"pinned": True}),
+        ("PUT", f"/memory/{'0' * 32}", {"pinned": "yes"}),
+        ("PUT", f"/memory/{'0' * 32}", {"text": ""}),
+        ("DELETE", "/memory/not-an-id", None),
+        ("POST", "/memory/used", {"ids": ["../x"]}),
+        ("POST", "/memory/used", {"ids": ["0" * 32] * 101}),
+    ],
+)
+def test_memory_edits_check_their_input(ctx, method, path, body) -> None:
+    assert _call(ctx, method, path, body)[0] in (400, 404)
+
+
+def test_a_memory_full_of_the_persons_own_notes_answers_409(ctx, monkeypatch) -> None:
+    from backend import store as store_mod
+
+    monkeypatch.setitem(store_mod.MEMORY_CAPS, "note", 1)
+    assert _call(ctx, "POST", "/memory", {"kind": "note", "text": "a"})[0] == 201
+    status, payload = _call(ctx, "POST", "/memory", {"kind": "note", "text": "b"})
+    assert (status, payload["code"]) == (409, "memory_full")
+
+
 ROUTES = [
     ("GET", "/state", None, "read_state"),
     ("POST", "/moments", {"mood": "calm"}, "add_moment"),
     ("POST", "/queue", {"source": "r1", "picks": [_yt()]}, "set_queue"),
     ("PUT", f"/queue/{'0' * 32}/feedback", {"verdict": "liked"}, "feedback"),
     ("POST", "/verify-picks", {"picks": "not a list"}, "verify_picks"),
+    ("POST", "/memory", {"kind": "note", "text": "quiet"}, "add_memory"),
+    ("PUT", f"/memory/{'0' * 32}", {"pinned": True}, "update_memory"),
+    ("DELETE", f"/memory/{'0' * 32}", None, "delete_memory"),
+    ("POST", "/memory/clear-stale", None, "clear_stale"),
+    ("POST", "/memory/used", {"ids": []}, "memory_used"),
 ]
 
 
