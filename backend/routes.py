@@ -38,6 +38,8 @@ _MAX_TAGS = 8
 _MAX_TAG = 40
 _MAX_SOURCE = 128
 _ID_RE = re.compile(r"[0-9a-f]{32}")
+_TIERS = ("anchor", "explore", "deep")
+_ARCS = ("stay", "turn", "lift")
 
 
 def _store(ctx: Any) -> MoodStore:
@@ -115,6 +117,27 @@ def _pick(raw: Any) -> tuple[dict[str, Any] | None, str]:
     if tags is None:
         return None, "invalid_pick"
     out["tags"] = tags
+    # Design §0: optional fields an older page never sends.
+    for key, allowed in (("tier", _TIERS), ("arc", _ARCS)):
+        value = raw.get(key)
+        if value is not None:
+            if value not in allowed:
+                return None, "invalid_pick"
+            out[key] = value
+    listen_for, err = _text(raw, "listen_for", _MAX_WHY)
+    if err is not None:
+        return None, "invalid_pick"
+    if listen_for:
+        out["listen_for"] = listen_for
+    evidence = raw.get("evidence")
+    if evidence is not None:
+        if not isinstance(evidence, dict):
+            return None, "invalid_pick"
+        url = links.evidence_url(evidence.get("url"))
+        label, err = _text(evidence, "label", _MAX_TEXT)
+        if url is None or err is not None:
+            return None, "invalid_pick"
+        out["evidence"] = {"url": url, "label": label}
     source = raw.get("source")
     if source == "youtube":
         video_id = raw.get("video_id")

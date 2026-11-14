@@ -9,7 +9,7 @@
  * send, because a send to a missing slot would recreate it as a plain chat.
  */
 import type { AppApi } from '@kirocrew/app-sdk'
-import type { NewPick, PickSource } from './replyParse'
+import type { Evidence, NewPick, PickArc, PickSource, PickTier } from './replyParse'
 
 const BASE = '/api/apps/mood-music'
 export const DJ_AGENT = 'mood-music-dj'
@@ -36,6 +36,10 @@ export interface QueuedPick {
   source: PickSource
   video_id?: string
   url?: string
+  tier?: PickTier
+  arc?: PickArc
+  listen_for?: string
+  evidence?: Evidence
   feedback: Verdict
 }
 

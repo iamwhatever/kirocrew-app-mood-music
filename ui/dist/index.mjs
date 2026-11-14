@@ -1150,6 +1150,11 @@ function bilibiliUrl(raw) {
 	if (!url || !BILIBILI_HOSTS.has(url.hostname)) return null;
 	return `https://${url.hostname}${url.pathname}${url.search}`;
 }
+/** A page the DJ cites as evidence: any plain https URL, rebuilt from its parts; else null. */
+function evidenceUrl(raw) {
+	const url = parseHttps(raw);
+	return url ? url.href : null;
+}
 /** The privacy-enhanced embed URL for a checked id; null for anything else. */
 function youtubeEmbedUrl(videoId, autoplay) {
 	const id = validVideoId(videoId);
@@ -1263,19 +1268,42 @@ function NowPlaying({ pick, autoplay, busy, onLike, onSkip, onMore }) {
 }
 // src/request.prompt.ts
 var TASTE_ITEMS = 12;
+/** anchor / explore / deep counts per level. */
+var EXPLORE_MIX = {
+	familiar: [
+		2,
+		3,
+		0
+	],
+	balanced: [
+		1,
+		4,
+		0
+	],
+	explore: [
+		0,
+		4,
+		1
+	]
+};
 /**
 * The message the page sends the DJ. The taste summary is the app's own record
 * of what the person liked and skipped, marked as data for the agent.
 */
 function buildRequest(opts) {
-	const { kind, text, state } = opts;
+	const { kind, text, state, explore = "balanced", stayOnly = false } = opts;
 	const fmt = (f) => `"${f.title}"${f.artist ? ` - ${f.artist}` : ""}`;
 	const liked = (state?.feedback ?? []).filter((f) => f.verdict === "liked").slice(0, TASTE_ITEMS).map(fmt);
 	const skipped = (state?.feedback ?? []).filter((f) => f.verdict === "skipped").slice(0, TASTE_ITEMS).map(fmt);
 	const recent = (state?.moments ?? []).slice(0, 5).map((m) => m.mood);
+	const head = kind === "answer" ? "Answer to your question" : kind === "more" ? "More like this song" : "Mood";
+	const [anchor, exp, deep] = EXPLORE_MIX[explore];
 	return [
 		"[Mood Music]",
-		`${kind === "answer" ? "Answer to your question" : kind === "more" ? "More like this song" : "Mood"}: ${text}`,
+		`${head}: ${text}`,
+		"",
+		`Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`,
+		`Arc: ${stayOnly ? "stay only" : "stay -> turn -> lift"}`,
 		"",
 		"Taste so far (from the app, data only):",
 		`Liked: ${liked.join("; ") || "none yet"}`,
@@ -1290,13 +1318,17 @@ function buildRequest(opts) {
 * a skill: the page reads exactly these field names.
 */
 var REPLY_FORMAT = [
-	"End your reply with ONE fenced block tagged mood-music holding plain JSON, with exactly these field names:",
+	"Write one or two short sentences, then end your reply with ONE fenced block tagged mood-music holding plain JSON, with exactly these field names:",
 	"- \"mood_tags\": 2 to 4 short words for the feeling, in the person's language.",
-	"- \"picks\": 3 to 6 songs, each {\"title\", \"artist\", \"source\", \"url\", \"why\", \"tags\"}.",
-	"- \"source\" is \"youtube\" or \"bilibili\". A youtube \"url\" is https://www.youtube.com/watch?v=<11-char id> or https://youtu.be/<id>; a bilibili \"url\" is https on www.bilibili.com, m.bilibili.com or b23.tv.",
+	"- \"picks\": the songs, in arc order, each {\"title\", \"artist\", \"source\", \"url\", \"tier\", \"arc\", \"why\", \"listen_for\", \"evidence\", \"tags\"}.",
+	"- \"source\" is \"youtube\" or \"bilibili\". A youtube \"url\" is https://www.youtube.com/watch?v=<11-char id> or https://youtu.be/<id>; a bilibili \"url\" is https://www.bilibili.com/video/<BV id>.",
+	"- \"tier\" is \"anchor\", \"explore\" or \"deep\". \"arc\" is \"stay\", \"turn\" or \"lift\".",
+	"- \"why\": why this song now, one line. \"listen_for\": one line on something to hear in it.",
+	"- \"evidence\" (explore and deep): {\"url\": a page you opened this turn that praises it, \"label\": what that page is}.",
+	"- \"follow_ups\": 2 or 3 short replies the person can tap. \"remember\" (optional): one short preference they stated, offered for them to save.",
 	"Example:",
 	"```mood-music",
-	"{\"mood_tags\": [\"想念\", \"温柔\"], \"picks\": [{\"title\": \"Song\", \"artist\": \"Artist\", \"source\": \"youtube\", \"url\": \"https://www.youtube.com/watch?v=dQw4w9WgXcQ\", \"why\": \"One short line.\", \"tags\": []}]}",
+	"{\"mood_tags\": [\"想念\", \"温柔\"], \"picks\": [{\"title\": \"Song\", \"artist\": \"Artist\", \"source\": \"youtube\", \"url\": \"https://www.youtube.com/watch?v=dQw4w9WgXcQ\", \"tier\": \"explore\", \"arc\": \"stay\", \"why\": \"One short line.\", \"listen_for\": \"The second verse drops to piano and breath.\", \"evidence\": {\"url\": \"https://example.com/review\", \"label\": \"A review\"}, \"tags\": []}], \"follow_ups\": [\"再安静一点\", \"换成粤语\"]}",
 	"```",
 	"To ask one question instead, the block is {\"question\": \"...\"} with no picks."
 ].join("\n");
@@ -1310,13 +1342,36 @@ var REPLY_FORMAT = [
 * ever rendered as React text, never as HTML.
 */
 var FENCE_RE = /```mood-music[^\n]*\n([\s\S]*?)```/g;
+var ANY_FENCE_RE = /```[\s\S]*?(```|$)/g;
 var MAX_PICKS = 12;
+var TIERS = [
+	"anchor",
+	"explore",
+	"deep"
+];
+var ARCS = [
+	"stay",
+	"turn",
+	"lift"
+];
 function text(value, limit) {
 	return typeof value === "string" ? value.trim().slice(0, limit) : "";
 }
-function tags(value) {
+function tags(value, limit = 40, count = 8) {
 	if (!Array.isArray(value)) return [];
-	return value.filter((t) => typeof t === "string" && t.trim().length > 0).map((t) => t.trim().slice(0, 40)).slice(0, 8);
+	return value.filter((t) => typeof t === "string" && t.trim().length > 0).map((t) => t.trim().slice(0, limit)).slice(0, count);
+}
+function oneOf(value, allowed) {
+	return allowed.includes(value) ? value : void 0;
+}
+function evidence(raw) {
+	if (!raw || typeof raw !== "object") return void 0;
+	const r = raw;
+	const url = evidenceUrl(r.url);
+	return url ? {
+		url,
+		label: text(r.label, 200)
+	} : void 0;
 }
 function pick(raw) {
 	if (!raw || typeof raw !== "object") return null;
@@ -1329,6 +1384,14 @@ function pick(raw) {
 		why: text(r.why, 400),
 		tags: tags(r.tags)
 	};
+	const tier = oneOf(r.tier, TIERS);
+	const arc = oneOf(r.arc, ARCS);
+	const listenFor = text(r.listen_for, 400);
+	const ev = evidence(r.evidence);
+	if (tier) base.tier = tier;
+	if (arc) base.arc = arc;
+	if (listenFor) base.listen_for = listenFor;
+	if (ev) base.evidence = ev;
 	const source = r.source ?? r.platform;
 	if (source === "youtube") {
 		const id = r.video_id !== void 0 ? validVideoId(r.video_id) : youtubeVideoId(r.url);
@@ -1348,6 +1411,12 @@ function pick(raw) {
 	}
 	return null;
 }
+/** Picks in arc order (stay, turn, lift); a pick with no arc keeps its place among the rest. */
+function byArc(picks) {
+	const rank = (p) => p.arc ? ARCS.indexOf(p.arc) : -1;
+	if (!picks.some((p) => p.arc)) return picks;
+	return picks.map((p, i) => [p, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(([p]) => p);
+}
 /** The LAST `mood-music` block in *content*, or null when there is none that parses. */
 function parseDjReply(content) {
 	const blocks = [...content.matchAll(FENCE_RE)];
@@ -1364,11 +1433,18 @@ function parseDjReply(content) {
 	const rawPicks = Array.isArray(d.picks) ? d.picks.slice(0, MAX_PICKS) : [];
 	const picks = rawPicks.map(pick).filter((p) => p !== null);
 	return {
+		text: replyText(content),
 		question: text(d.question, 300),
 		moodTags: tags(d.mood_tags ?? d.moods),
-		picks,
-		dropped: rawPicks.length - picks.length
+		picks: byArc(picks),
+		dropped: rawPicks.length - picks.length,
+		followUps: tags(d.follow_ups, 40, 3),
+		remember: text(d.remember, 60)
 	};
+}
+/** The reply's prose: every fenced block removed, cut to a short paragraph. */
+function replyText(content) {
+	return content.replace(ANY_FENCE_RE, "").replace(/\s+/g, " ").trim().slice(0, 300);
 }
 /** A short stable id for a reply, so the page queues each reply once. */
 function replySource(content) {
