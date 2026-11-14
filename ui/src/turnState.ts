@@ -37,9 +37,13 @@ function currentTurn(slot: SlotData | undefined): SlotMessage[] {
   return all
 }
 
+/** 'web_search', 'web_fetch' or ''. A live row may carry only its title ("🔧 Fetch URL"). */
 const toolOf = (m: SlotMessage) => {
   const name = (m.meta as { tool_name?: unknown } | undefined)?.tool_name
-  return typeof name === 'string' ? name : ''
+  const text = `${typeof name === 'string' ? name : ''} ${m.content ?? ''}`.toLowerCase()
+  if (/web_fetch|fetch/.test(text)) return 'web_fetch'
+  if (/web_search|search/.test(text)) return 'web_search'
+  return text.trim() ? 'other' : ''
 }
 
 /** The person's own words in a request the page sent; other text is shown as typed. */
@@ -53,14 +57,26 @@ export function personText(content: string): string {
   return second.trim()
 }
 
-/** The conversation as the page draws it: the person's words and the buddy's prose. */
+/**
+ * The conversation as the page draws it: the person's words and, per turn, the
+ * buddy's LAST reply. The notes a model writes between tool calls ("I'll search
+ * first") are working steps, not the answer: they stay in the full record. A
+ * turn still running shows no buddy line yet; the status line speaks for it.
+ */
 export function conversation(slot: SlotData | undefined): Line[] {
   const out: Line[] = []
-  for (const m of msgs(slot)) {
-    if (typeof m.content !== 'string' || !m.content.trim()) continue
-    if (m.role === 'user') out.push({ who: 'you', text: personText(m.content) })
-    else if (m.role === 'assistant') out.push({ who: 'buddy', text: replyText(m.content), reply: m.content })
+  const all = msgs(slot)
+  let last: SlotMessage | null = null
+  const flush = () => {
+    if (last?.content) out.push({ who: 'buddy', text: replyText(last.content), reply: last.content })
+    last = null
   }
+  for (const m of all) {
+    if (typeof m.content !== 'string' || !m.content.trim()) continue
+    if (m.role === 'user') { flush(); out.push({ who: 'you', text: personText(m.content) }) }
+    else if (m.role === 'assistant') last = m
+  }
+  if (!slot?.running) flush()
   return out
 }
 
@@ -73,10 +89,10 @@ export function buddyStatus(slot: SlotData | undefined, checking: boolean): Budd
   if (checking) return { phase: 'checking', searches, pages }
   if (!slot?.running) return null
   const last = [...turn].reverse().find(m => m.role === 'tool' || m.role === 'streaming' || m.role === 'assistant')
-  if (last && last.role !== 'tool' && last.content?.trim()) return { phase: 'writing', searches, pages }
+  if (last?.role === 'streaming' && last.content?.trim()) return { phase: 'writing', searches, pages }
   const tool = last?.role === 'tool' ? toolOf(last) : ''
   if (tool === 'web_fetch') return { phase: 'reading', searches, pages }
-  if (tool === 'web_search' || tool) return { phase: 'searching', searches, pages }
+  if (tool) return { phase: 'searching', searches, pages }
   return { phase: 'thinking', searches, pages }
 }
 

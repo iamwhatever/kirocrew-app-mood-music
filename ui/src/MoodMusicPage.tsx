@@ -301,7 +301,9 @@ export default function MoodMusicPage() {
       const tagLook = moodLookFor(parsed.moodTags)
       if (!chipRef.current && tagLook !== 'neutral') setLook(tagLook)
       if (parsed.picks.length === 0) {
-        if (!parsed.question) {
+        // A question, or the buddy saying it found nothing good enough (with
+        // follow-ups), is an answer the conversation already shows.
+        if (!parsed.question && !parsed.followUps.length) {
           if (parsed.dropped > 0) { setDroppedAll(parsed.dropped); setError('all_dropped') }
           else setError('unreadable')
         }

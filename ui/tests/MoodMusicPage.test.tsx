@@ -267,6 +267,15 @@ describe('MoodMusicPage', () => {
     expect(api.ask.mock.calls[1][0]).toBe(first)
   })
 
+  it('shows an honest "nothing good enough" reply with its follow-ups, not an error', async () => {
+    await start()
+    api.getSlot.mockResolvedValue(reply({ picks: [], follow_ups: ['换成国语歌'] }))
+    await flush(POLL_MS)
+    expect(screen.queryByText(t('error_unreadable'))).toBeNull()
+    expect(screen.getByText('听起来是安静地想。')).toBeInTheDocument()
+    expect(within(screen.getByTestId('mood-follow-ups')).getByRole('button', { name: '换成国语歌' })).toBeInTheDocument()
+  })
+
   it('says so when the reply has no readable block', async () => {
     await start()
     api.getSlot.mockResolvedValue({ running: false, messages: [USER, { role: 'assistant', content: 'no block' }] })

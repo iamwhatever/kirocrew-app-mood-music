@@ -17,6 +17,12 @@ describe('conversation', () => {
     const lines = conversation({ messages: [user(), tool('web_search'), { role: 'assistant', content: 'Quiet missing.\n```mood-music\n{}\n```' }] })
     expect(lines.map(l => [l.who, l.text])).toEqual([['you', '想念'], ['buddy', 'Quiet missing.']])
   })
+
+  it('keeps only the last reply of a turn, and none while it runs', () => {
+    const rows = [user(), { role: 'assistant', content: "I'll search first." }, tool('web_search'), { role: 'assistant', content: 'Here.\n```mood-music\n{}\n```' }]
+    expect(conversation({ running: false, messages: rows }).map(l => l.text)).toEqual(['想念', 'Here.'])
+    expect(conversation({ running: true, messages: rows }).map(l => l.text)).toEqual(['想念'])
+  })
 })
 
 describe('buddyStatus', () => {
@@ -24,6 +30,12 @@ describe('buddyStatus', () => {
     const slot = { running: true, messages: [user(), tool('web_search'), user(), tool('web_search'), tool('web_fetch'), tool('web_fetch')] }
     expect(buddyStatus(slot, false)).toEqual({ phase: 'reading', searches: 1, pages: 2 })
   })
+  it('reads a live row that names its tool only in its title', () => {
+    const slot = { running: true, messages: [user(), { role: 'tool', content: '🔧 web_search' }, { role: 'tool', content: '🔧 Fetch URL' }] }
+    expect(buddyStatus(slot, false)).toEqual({ phase: 'reading', searches: 1, pages: 1 })
+    expect(buddyStatus({ running: true, messages: [user(), { role: 'assistant', content: 'note' }] }, false)?.phase).toBe('thinking')
+  })
+
   it('is null when nothing runs, and checking while the page verifies', () => {
     expect(buddyStatus({ running: false, messages: [user()] }, false)).toBeNull()
     expect(buddyStatus({ running: false, messages: [user()] }, true)?.phase).toBe('checking')

@@ -103,7 +103,8 @@ A question instead, when the mood is too vague to pick for:
 - `source` is `youtube` or `bilibili`, nothing else.
 - A YouTube `url` is `https://www.youtube.com/watch?v=<11-char id>` or
   `https://youtu.be/<id>`. A bilibili `url` is `https://www.bilibili.com/video/<BV id>`.
-- Only links you found and opened this turn. Never build an id from memory. The app
+- Only links from search results or pages you got this turn (search the title,
+  artist and "youtube" to find a watch URL). Never build an id from memory. The app
   checks each link with YouTube and bilibili and drops one that does not open or
   whose title does not match.
 - `follow_ups`: two or three short replies. `remember` is optional: a lasting

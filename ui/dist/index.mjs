@@ -327,7 +327,7 @@ var CATALOGS = {
 			"mood_happy": "Happy",
 			"mood_missing": "Missing someone",
 			"mood_fired": "Fired up",
-			"question_label": "The DJ asks",
+			"question_label": "Your buddy asks",
 			"answer_placeholder": "Your answer",
 			"send_answer": "Answer",
 			"empty_title": "Nothing playing yet",
@@ -348,7 +348,7 @@ var CATALOGS = {
 			"moments_empty_title": "No moments yet",
 			"moments_empty_body": "Each mood you share is kept here, with the songs it brought.",
 			"error_generic": "Something went wrong ({{code}})",
-			"error_unreadable": "The DJ's answer could not be read. Try again.",
+			"error_unreadable": "Couldn't read your buddy's answer. Try again.",
 			"retry": "Ask again",
 			"dropped": "Songs left out because their link cannot play: {{count}}",
 			"source_youtube": "YouTube",
@@ -1596,7 +1596,7 @@ var CATALOGS = {
 			"mood_happy": "开心",
 			"mood_missing": "想念",
 			"mood_fired": "燃",
-			"question_label": "DJ 想问",
+			"question_label": "搭子想问",
 			"answer_placeholder": "你的回答",
 			"send_answer": "回答",
 			"empty_title": "还没有在播放",
@@ -1617,7 +1617,7 @@ var CATALOGS = {
 			"moments_empty_title": "还没有时刻",
 			"moments_empty_body": "你分享的每份心情都会留在这里，连同它带来的歌。",
 			"error_generic": "出了点问题（{{code}}）",
-			"error_unreadable": "读不懂 DJ 的回答，请再试一次。",
+			"error_unreadable": "读不懂搭子的回答，请再试一次。",
 			"retry": "再问一次",
 			"dropped": "有 {{count}} 首歌的链接无法播放，已略过。",
 			"source_youtube": "YouTube",
@@ -3013,9 +3013,13 @@ function currentTurn(slot) {
 	for (let i = all.length - 1; i >= 0; i--) if (all[i].role === "user") return all.slice(i + 1);
 	return all;
 }
+/** 'web_search', 'web_fetch' or ''. A live row may carry only its title ("🔧 Fetch URL"). */
 var toolOf = (m) => {
 	const name = m.meta?.tool_name;
-	return typeof name === "string" ? name : "";
+	const text = `${typeof name === "string" ? name : ""} ${m.content ?? ""}`.toLowerCase();
+	if (/web_fetch|fetch/.test(text)) return "web_fetch";
+	if (/web_search|search/.test(text)) return "web_search";
+	return text.trim() ? "other" : "";
 };
 /** The person's own words in a request the page sent; other text is shown as typed. */
 function personText(content) {
@@ -3025,21 +3029,35 @@ function personText(content) {
 	for (const head of HEADS) if (second.startsWith(`${head}: `)) return second.slice(head.length + 2).trim();
 	return second.trim();
 }
-/** The conversation as the page draws it: the person's words and the buddy's prose. */
+/**
+* The conversation as the page draws it: the person's words and, per turn, the
+* buddy's LAST reply. The notes a model writes between tool calls ("I'll search
+* first") are working steps, not the answer: they stay in the full record. A
+* turn still running shows no buddy line yet; the status line speaks for it.
+*/
 function conversation(slot) {
 	const out = [];
-	for (const m of msgs(slot)) {
-		if (typeof m.content !== "string" || !m.content.trim()) continue;
-		if (m.role === "user") out.push({
-			who: "you",
-			text: personText(m.content)
-		});
-		else if (m.role === "assistant") out.push({
+	const all = msgs(slot);
+	let last = null;
+	const flush = () => {
+		if (last?.content) out.push({
 			who: "buddy",
-			text: replyText(m.content),
-			reply: m.content
+			text: replyText(last.content),
+			reply: last.content
 		});
+		last = null;
+	};
+	for (const m of all) {
+		if (typeof m.content !== "string" || !m.content.trim()) continue;
+		if (m.role === "user") {
+			flush();
+			out.push({
+				who: "you",
+				text: personText(m.content)
+			});
+		} else if (m.role === "assistant") last = m;
 	}
+	if (!slot?.running) flush();
 	return out;
 }
 /** What the buddy is doing in the running turn, or null when nothing is running. */
@@ -3055,7 +3073,7 @@ function buddyStatus(slot, checking) {
 	};
 	if (!slot?.running) return null;
 	const last = [...turn].reverse().find((m) => m.role === "tool" || m.role === "streaming" || m.role === "assistant");
-	if (last && last.role !== "tool" && last.content?.trim()) return {
+	if (last?.role === "streaming" && last.content?.trim()) return {
 		phase: "writing",
 		searches,
 		pages
@@ -3066,7 +3084,7 @@ function buddyStatus(slot, checking) {
 		searches,
 		pages
 	};
-	if (tool === "web_search" || tool) return {
+	if (tool) return {
 		phase: "searching",
 		searches,
 		pages
@@ -3380,7 +3398,7 @@ function MoodMusicPage() {
 			const tagLook = moodLookFor(parsed.moodTags);
 			if (!chipRef.current && tagLook !== "neutral") setLook(tagLook);
 			if (parsed.picks.length === 0) {
-				if (!parsed.question) {
+				if (!parsed.question && !parsed.followUps.length) {
 					if (parsed.dropped > 0) {
 						setDroppedAll(parsed.dropped);
 						setError("all_dropped");
