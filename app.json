@@ -1,0 +1,222 @@
+{
+  "name": "mood-music",
+  "version": "0.1.0",
+  "displayName": "Mood Music",
+  "description": "Tell it how you feel, or name a song that moved you. A DJ agent finds songs with the same feeling and plays them: YouTube inside the page, bilibili in a new browser tab. Like or skip, and the next picks follow.",
+  "author": "iamwhatever",
+  "license": "Apache-2.0",
+  "minKiroCrewVersion": "0.12.0",
+  "tags": [
+    "music",
+    "mood",
+    "personal",
+    "recommendations",
+    "lifestyle"
+  ],
+  "highlights": [
+    "Say how you feel, or name a song that moved you — it finds more with the same feeling",
+    "Every pick says why it fits the mood",
+    "YouTube plays inside the page through the privacy-enhanced embed",
+    "bilibili songs open in a new tab of your own browser; the agent never touches your account",
+    "Like or skip a song, and the next picks use it",
+    "The background and motion follow the mood, in light and dark"
+  ],
+  "defaultEnabled": false,
+  "platform": {
+    "os": [
+      "macos",
+      "linux",
+      "windows"
+    ]
+  },
+  "iconPath": "assets/icon.png",
+  "heroImage": "assets/hero-light.png",
+  "heroImageDark": "assets/hero-dark.png",
+  "permissions": {
+    "api": [
+      "/api/apps/mood-music",
+      "/api/apps/mood-music/*",
+      "/api/chat",
+      "/api/chat/*"
+    ],
+    "storage": true,
+    "network": true
+  },
+  "agents": [
+    "agents/dj.json"
+  ],
+  "skills": [
+    "skills/mood-music"
+  ],
+  "backend": {
+    "hooks": {
+      "routes": "backend.routes:register_routes"
+    }
+  },
+  "ui": {
+    "entry": "dist/index.mjs",
+    "pages": [
+      {
+        "route": "/apps/mood-music",
+        "label": "Mood Music"
+      }
+    ],
+    "frameSources": [
+      "https://www.youtube-nocookie.com"
+    ]
+  },
+  "useCases": [
+    "Find and play songs that match how you feel right now, and keep a history of the moments that moved you."
+  ],
+  "configuration": [
+    "No account is needed. YouTube plays in the page; bilibili opens in your own browser, signed in or not, as you choose."
+  ],
+  "screenshots": [
+    "assets/screenshot-main.png"
+  ],
+  "l10n": {
+    "bn": {
+      "displayName": "মুড মিউজিক",
+      "description": "বলুন আপনি কেমন বোধ করছেন, বা এমন একটি গান যা আপনাকে ছুঁয়ে গেছে। DJ এজেন্ট একই অনুভূতির গান খুঁজে বাজায়: YouTube পেজের ভেতরে, bilibili ব্রাউজারের নতুন ট্যাবে। পছন্দ বা বাদ দিন, পরের বাছাই সেই অনুযায়ী বদলাবে।",
+      "pageLabel": "মুড মিউজিক",
+      "highlights": [
+        "আপনার মুড বা মন ছুঁয়ে যাওয়া গানটি বলুন — একই অনুভূতির আরও গান খুঁজে দেয়",
+        "প্রতিটি গানের সঙ্গে বলা থাকে কেন এটি এই মুডে মানায়",
+        "YouTube গোপনীয়তা-উন্নত এম্বেডে পেজের ভেতরে বাজে",
+        "bilibili-র গান আপনার নিজের ব্রাউজারের নতুন ট্যাবে খোলে; এজেন্ট কখনো আপনার অ্যাকাউন্ট ছোঁয় না",
+        "পছন্দ বা বাদ দেওয়া পরের বাছাইয়ে কাজে লাগে",
+        "পটভূমি আর নড়াচড়া মুডের সঙ্গে বদলায়, লাইট ও ডার্ক দুটোতেই"
+      ]
+    },
+    "de": {
+      "displayName": "Mood Music",
+      "description": "Sag, wie du dich fühlst, oder nenne einen Song, der dich berührt hat. Ein DJ-Agent findet Songs mit demselben Gefühl und spielt sie ab: YouTube direkt auf der Seite, bilibili in einem neuen Browser-Tab. Mit Gefällt mir oder Überspringen richten sich die nächsten Vorschläge danach.",
+      "pageLabel": "Mood Music",
+      "highlights": [
+        "Sag, wie du dich fühlst, oder nenne einen Song, der dich berührt hat – er findet mehr mit demselben Gefühl",
+        "Jeder Vorschlag sagt, warum er zur Stimmung passt",
+        "YouTube läuft auf der Seite über die datenschutzfreundliche Einbettung",
+        "bilibili-Songs öffnen sich in einem neuen Tab deines eigenen Browsers; der Agent rührt dein Konto nie an",
+        "Gefällt mir oder Überspringen fließt in die nächsten Vorschläge ein",
+        "Hintergrund und Bewegung folgen der Stimmung, hell wie dunkel"
+      ]
+    },
+    "es": {
+      "displayName": "Mood Music",
+      "description": "Dile cómo te sientes o nombra una canción que te emocionó. Un agente DJ busca canciones con el mismo sentimiento y las reproduce: YouTube dentro de la página y bilibili en una pestaña nueva del navegador. Con Me gusta u Omitir, las siguientes elecciones se ajustan.",
+      "pageLabel": "Mood Music",
+      "highlights": [
+        "Di cómo te sientes o nombra una canción que te emocionó: encuentra más con el mismo sentimiento",
+        "Cada elección explica por qué encaja con tu estado de ánimo",
+        "YouTube se reproduce en la página con la inserción de privacidad mejorada",
+        "Las canciones de bilibili se abren en una pestaña nueva de tu propio navegador; el agente nunca toca tu cuenta",
+        "Me gusta u Omitir se usan en las siguientes elecciones",
+        "El fondo y el movimiento siguen tu estado de ánimo, en claro y en oscuro"
+      ]
+    },
+    "fr": {
+      "displayName": "Mood Music",
+      "description": "Dis-lui ce que tu ressens, ou cite une chanson qui t’a ému. Un agent DJ trouve des chansons qui portent la même émotion et les joue : YouTube dans la page, bilibili dans un nouvel onglet du navigateur. J’aime ou Passer, et les choix suivants s’adaptent.",
+      "pageLabel": "Mood Music",
+      "highlights": [
+        "Dis ce que tu ressens, ou cite une chanson qui t’a ému : il en trouve d’autres avec la même émotion",
+        "Chaque choix dit pourquoi il correspond à ton humeur",
+        "YouTube se lit dans la page via l’intégration à confidentialité renforcée",
+        "Les chansons bilibili s’ouvrent dans un nouvel onglet de ton propre navigateur ; l’agent ne touche jamais ton compte",
+        "J’aime ou Passer sert aux choix suivants",
+        "Le fond et le mouvement suivent l’humeur, en clair comme en sombre"
+      ]
+    },
+    "hi": {
+      "displayName": "मूड म्यूज़िक",
+      "description": "बताइए आप कैसा महसूस कर रहे हैं, या कोई गाना जिसने आपको छू लिया। DJ एजेंट उसी एहसास वाले गाने ढूँढकर चलाता है: YouTube पेज के अंदर, bilibili ब्राउज़र के नए टैब में। पसंद या छोड़ें दबाएँ, अगली पसंद उसी हिसाब से बदलेगी।",
+      "pageLabel": "मूड म्यूज़िक",
+      "highlights": [
+        "अपना मूड बताइए या कोई गाना जिसने आपको छुआ — यह उसी एहसास वाले और गाने ढूँढता है",
+        "हर गाने के साथ बताया जाता है कि यह इस मूड में क्यों जमता है",
+        "YouTube निजता-बढ़ाए गए एम्बेड से पेज के अंदर चलता है",
+        "bilibili के गाने आपके अपने ब्राउज़र के नए टैब में खुलते हैं; एजेंट कभी आपका खाता नहीं छूता",
+        "पसंद या छोड़ें अगली पसंद में काम आता है",
+        "पृष्ठभूमि और हलचल मूड के साथ बदलती है, लाइट और डार्क दोनों में"
+      ]
+    },
+    "it": {
+      "displayName": "Mood Music",
+      "description": "Digli come ti senti o nomina una canzone che ti ha emozionato. Un agente DJ trova canzoni con la stessa emozione e le riproduce: YouTube nella pagina, bilibili in una nuova scheda del browser. Con Mi piace o Salta le scelte successive si adattano.",
+      "pageLabel": "Mood Music",
+      "highlights": [
+        "Di’ come ti senti o nomina una canzone che ti ha emozionato: ne trova altre con la stessa emozione",
+        "Ogni scelta spiega perché si adatta al tuo umore",
+        "YouTube si riproduce nella pagina con l’incorporamento a privacy avanzata",
+        "Le canzoni di bilibili si aprono in una nuova scheda del tuo browser; l’agente non tocca mai il tuo account",
+        "Mi piace o Salta vengono usati per le scelte successive",
+        "Lo sfondo e il movimento seguono l’umore, in chiaro e in scuro"
+      ]
+    },
+    "ja": {
+      "displayName": "ムードミュージック",
+      "description": "今の気持ちや、心を動かされた曲を伝えてください。DJ エージェントが同じ気分の曲を探して再生します。YouTube はページ内で、bilibili はブラウザの新しいタブで開きます。いいね・スキップすると次の選曲に反映されます。",
+      "pageLabel": "ムードミュージック",
+      "highlights": [
+        "気持ちや心に響いた曲を伝えると、同じ気分の曲をもっと探します",
+        "どの曲にも、その気分に合う理由が添えられます",
+        "YouTube はプライバシー強化モードの埋め込みでページ内再生",
+        "bilibili の曲はご自身のブラウザの新しいタブで開き、エージェントがアカウントに触れることはありません",
+        "いいね・スキップが次の選曲に使われます",
+        "背景と動きが気分に合わせて変わります（ライト・ダーク対応）"
+      ]
+    },
+    "ko": {
+      "displayName": "무드 뮤직",
+      "description": "지금 기분이나 마음을 울린 노래를 알려 주세요. DJ 에이전트가 같은 느낌의 노래를 찾아 재생합니다. YouTube는 페이지 안에서, bilibili는 브라우저 새 탭에서 열립니다. 좋아요나 건너뛰기를 누르면 다음 추천에 반영됩니다.",
+      "pageLabel": "무드 뮤직",
+      "highlights": [
+        "기분이나 마음을 울린 노래를 말하면 같은 느낌의 노래를 더 찾아 줍니다",
+        "추천곡마다 이 기분에 맞는 이유를 알려 줍니다",
+        "YouTube는 개인정보 보호 강화 임베드로 페이지 안에서 재생됩니다",
+        "bilibili 노래는 내 브라우저의 새 탭에서 열리며, 에이전트는 계정에 손대지 않습니다",
+        "좋아요나 건너뛰기가 다음 추천에 쓰입니다",
+        "배경과 움직임이 기분에 따라 바뀌며 라이트·다크 모두 지원합니다"
+      ]
+    },
+    "pt": {
+      "displayName": "Mood Music",
+      "description": "Diga como você se sente ou cite uma música que te emocionou. Um agente DJ encontra músicas com o mesmo sentimento e as toca: YouTube dentro da página e bilibili em uma nova aba do navegador. Curtir ou Pular ajusta as próximas escolhas.",
+      "pageLabel": "Mood Music",
+      "highlights": [
+        "Diga como você se sente ou cite uma música que te emocionou — ele encontra mais com o mesmo sentimento",
+        "Cada escolha diz por que combina com o seu humor",
+        "O YouTube toca na página pela incorporação com privacidade aprimorada",
+        "As músicas do bilibili abrem em uma nova aba do seu próprio navegador; o agente nunca mexe na sua conta",
+        "Curtir ou Pular é usado nas próximas escolhas",
+        "O fundo e o movimento acompanham o humor, no claro e no escuro"
+      ]
+    },
+    "ru": {
+      "displayName": "Музыка настроения",
+      "description": "Расскажите, что вы чувствуете, или назовите песню, которая вас тронула. DJ-агент найдёт песни с тем же настроением и включит их: YouTube прямо на странице, bilibili в новой вкладке браузера. Отмечайте «Нравится» или «Пропустить» — следующие подборки это учтут.",
+      "pageLabel": "Музыка настроения",
+      "highlights": [
+        "Расскажите о настроении или назовите песню, которая тронула, — он найдёт ещё с тем же чувством",
+        "К каждой песне — пояснение, почему она подходит настроению",
+        "YouTube играет на странице через встраивание с усиленной конфиденциальностью",
+        "Песни bilibili открываются в новой вкладке вашего браузера; агент никогда не трогает ваш аккаунт",
+        "«Нравится» и «Пропустить» учитываются в следующих подборках",
+        "Фон и движение меняются с настроением, в светлой и тёмной теме"
+      ]
+    },
+    "zh-CN": {
+      "displayName": "情绪音乐",
+      "description": "说说你的心情，或说出一首打动你的歌。DJ 助手会找来感觉相同的歌并播放：YouTube 在页面里播放，bilibili 在浏览器新标签页打开。点喜欢或跳过，下次推荐会跟着变。",
+      "pageLabel": "情绪音乐",
+      "highlights": [
+        "说出心情，或说出一首打动你的歌，它会找来更多感觉相同的歌",
+        "每首歌都会说明为什么适合这份心情",
+        "YouTube 通过隐私增强的嵌入方式在页面里播放",
+        "bilibili 的歌在你自己浏览器的新标签页打开，助手从不碰你的账号",
+        "喜欢或跳过一首歌，下次推荐会用上",
+        "背景和动效随心情变化，亮色暗色都适用"
+      ]
+    }
+  }
+}
