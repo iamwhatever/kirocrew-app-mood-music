@@ -136,6 +136,8 @@
     "praised_by": "Lodata da: ",
     "play": "Riproduci",
     "known": "La conosco",
-    "known_done": "Annotato"
+    "known_done": "Annotato",
+    "unverified": "Non verificata",
+    "unverified_hint": "Non è stato possibile chiedere a YouTube o bilibili se questo video esiste, quindi potrebbe non partire."
   }
 }

@@ -304,6 +304,19 @@ describe('MoodMusicPage', () => {
     expect(api.addMemory).toHaveBeenCalledWith({ kind: 'note', text: '喜欢粤语', origin: 'user' })
   })
 
+  it('labels a song the link check could not confirm', async () => {
+    const picks = [queued({ id: 'a'.repeat(32), title: 'Checked' }), queued({ id: 'b'.repeat(32), title: 'Unchecked', source: 'bilibili', video_id: undefined, url: 'https://www.bilibili.com/video/BV1xx411c7mD', unverified: true })]
+    const slot = reply({ picks: [] })
+    api.state.mockResolvedValue({ ...EMPTY, queue: picks, last_source: replySource(slot.messages![1].content!) })
+    api.getSlot.mockResolvedValue(slot)
+    render(<MoodMusicPage />)
+    await flush()
+    const [checked, unchecked] = screen.getAllByTestId('mood-song-card')
+    expect(within(checked).queryByTestId('mood-unverified')).toBeNull()
+    expect(within(unchecked).getByTestId('mood-unverified')).toHaveTextContent(t('card.unverified'))
+    expect(within(unchecked).getByTestId('mood-unverified').getAttribute('title')).toBe(t('card.unverified_hint'))
+  })
+
   it('records "I know it" as the person’s, and 30 s of play as the app’s', async () => {
     const picks = [queued({ id: 'a'.repeat(32), title: 'One' }), queued({ id: 'b'.repeat(32), title: 'Two' })]
     const slot = reply({ picks: [] })

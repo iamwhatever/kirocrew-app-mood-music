@@ -136,6 +136,8 @@
     "praised_by": "谁夸过：",
     "play": "播放",
     "known": "听过了",
-    "known_done": "记下了"
+    "known_done": "记下了",
+    "unverified": "未验证",
+    "unverified_hint": "这次没能向 YouTube 或 bilibili 确认这个视频，可能放不了。"
   }
 }

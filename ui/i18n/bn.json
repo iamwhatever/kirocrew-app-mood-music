@@ -136,6 +136,8 @@
     "praised_by": "প্রশংসা করেছে: ",
     "play": "চালান",
     "known": "শুনেছি",
-    "known_done": "নোট করা হলো"
+    "known_done": "নোট করা হলো",
+    "unverified": "যাচাই হয়নি",
+    "unverified_hint": "এই ভিডিওটি আছে কি না YouTube বা bilibili-কে জিজ্ঞেস করা যায়নি, তাই হয়তো চলবে না।"
   }
 }

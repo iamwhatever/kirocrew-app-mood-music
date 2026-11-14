@@ -136,6 +136,8 @@
     "praised_by": "推薦：",
     "play": "再生",
     "known": "知ってる",
-    "known_done": "記録済み"
+    "known_done": "記録済み",
+    "unverified": "未確認",
+    "unverified_hint": "YouTube または bilibili にこの動画があるか確認できなかったため、再生できないかもしれません。"
   }
 }

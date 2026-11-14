@@ -41,6 +41,7 @@ export interface QueuedPick {
   arc?: PickArc
   listen_for?: string
   evidence?: Evidence
+  unverified?: boolean
   feedback: Verdict
 }
 

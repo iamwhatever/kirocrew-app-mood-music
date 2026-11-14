@@ -30,6 +30,8 @@ export interface NewPick {
   arc?: PickArc
   listen_for?: string
   evidence?: Evidence
+  /** Set by the backend link check when YouTube / bilibili could not be asked. */
+  unverified?: boolean
 }
 
 export interface DjReply {

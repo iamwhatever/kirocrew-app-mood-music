@@ -1,19 +1,26 @@
 """Check the DJ's picks against YouTube and bilibili before the page shows them.
 
 The agent is told to use only links it found, but that is a request, not a
-guarantee (design §0.5). So every pick is looked up again here, and a pick is
-kept only when the lookup answers and its title matches:
+guarantee (design §0.5). So every pick is looked up again here:
 
-* YouTube: ``https://www.youtube.com/oembed?url=<watch URL>&format=json``. A 401
-  (embedding off) or 404 (gone) drops the pick.
-* bilibili: ``https://api.bilibili.com/x/web-interface/view?bvid=<BV id>``. A
-  ``code`` other than 0 drops the pick. A link with no BV id (a ``b23.tv`` short
-  link) cannot be looked up without following it, so it is dropped.
+* YouTube: ``https://www.youtube.com/oembed?url=<watch URL>&format=json``.
+* bilibili: ``https://api.bilibili.com/x/web-interface/view?bvid=<BV id>``.
+
+Three outcomes:
+
+* **Gone**: the host says the video does not exist or cannot be played (oEmbed
+  400 / 401 / 404; bilibili HTTP 404 or a ``code`` in :data:`BILIBILI_GONE`), or
+  it answers with a title that does not match. The pick is dropped.
+* **Confirmed**: the host answers and the title matches. The pick is kept.
+* **Unchecked**: the lookup could not say either way (rate limit, HTTP 412,
+  another status, a timeout, a network error, a body that is not the answer,
+  a ``b23.tv`` short link with no BV id to look up). The pick is kept and
+  marked ``unverified``, so the page labels it. Its link already passed the
+  exact-host checks in ``links.py``; those still apply to every pick.
 
 Only those two fixed URLs are ever requested, built here from an id that was
 already checked (``links.py``). No redirect is followed, no cookie is sent or
-kept, the body read is capped, and every lookup has a deadline. A lookup that
-fails or runs out of time drops the pick: nothing unverified gets through.
+kept, the body read is capped, and every lookup has a deadline.
 
 A pick whose song the person already knows or skipped is dropped too (design
 §0.6): a skipped song never comes back, and a known song is never an
@@ -52,8 +59,13 @@ _USER_AGENT = "Mozilla/5.0 (compatible; MoodMusic link check)"
 #: How much of the agent's title must appear in the found title (see :func:`title_matches`).
 MATCH_SHARE = 0.5
 
-#: ``fetch(url)`` -> the parsed JSON object, or ``None`` when the host said no.
-Fetch = Callable[[str], Awaitable[Any]]
+#: oEmbed statuses that say the video does not exist or may not be embedded.
+YOUTUBE_GONE = frozenset({400, 401, 404})
+#: bilibili view ``code`` values that say the video does not exist or is not visible.
+BILIBILI_GONE = frozenset({-400, -404, 62002, 62004, 62012})
+
+#: ``fetch(url)`` -> ``(HTTP status, parsed JSON or None)``.
+Fetch = Callable[[str], Awaitable[tuple[int, Any]]]
 
 
 # ── matching ──
@@ -119,39 +131,48 @@ def lookup_url(pick: dict[str, Any]) -> str | None:
     return None
 
 
-def _found(pick: dict[str, Any], answer: Any) -> tuple[str, str] | None:
-    """The (title, author) the host returned for *pick*, or ``None`` for a refusal."""
-    if not isinstance(answer, dict):
-        return None
+def _verdict(pick: dict[str, Any], status: int, answer: Any) -> str:
+    """``"ok"``, ``"gone"``, ``"title_mismatch"`` or ``"unchecked"`` for one lookup's answer."""
+    found: tuple[str, str] | None = None
     if pick["source"] == "youtube":
-        title = answer.get("title")
-        return (title, str(answer.get("author_name") or "")) if isinstance(title, str) else None
-    if answer.get("code") != 0 or not isinstance(answer.get("data"), dict):
-        return None
-    data = answer["data"]
-    owner = data.get("owner") if isinstance(data.get("owner"), dict) else {}
-    title = data.get("title")
-    return (title, str(owner.get("name") or "")) if isinstance(title, str) else None
+        if status in YOUTUBE_GONE:
+            return "gone"
+        if status == 200 and isinstance(answer, dict) and isinstance(answer.get("title"), str):
+            found = (answer["title"], str(answer.get("author_name") or ""))
+    else:
+        if status == 404:
+            return "gone"
+        if status == 200 and isinstance(answer, dict):
+            code = answer.get("code")
+            if code in BILIBILI_GONE:
+                return "gone"
+            data = answer.get("data")
+            if code == 0 and isinstance(data, dict) and isinstance(data.get("title"), str):
+                owner = data.get("owner") if isinstance(data.get("owner"), dict) else {}
+                found = (data["title"], str(owner.get("name") or ""))
+    if found is None:
+        return "unchecked"
+    return "ok" if title_matches(pick.get("title", ""), *found) else "title_mismatch"
 
 
 async def _check(pick: dict[str, Any], fetch: Fetch, gate: asyncio.Semaphore) -> str:
-    """``""`` when *pick* is real and its title matches, else why it was dropped."""
+    """``"ok"``, a drop reason (``"not_found"``, ``"title_mismatch"``), or ``"unchecked:<why>"``."""
     url = lookup_url(pick)
     if url is None:
-        return "unverifiable"
+        return "unchecked:no_lookup"
     async with gate:
         try:
-            answer = await asyncio.wait_for(fetch(url), TIMEOUT)
+            status, answer = await asyncio.wait_for(fetch(url), TIMEOUT)
         except asyncio.TimeoutError:
-            return "timeout"
-        except Exception:  # a network error is "not found", never a pass
-            return "lookup_failed"
-    found = _found(pick, answer)
-    if found is None:
+            return "unchecked:timeout"
+        except Exception:  # a network error says nothing about the video
+            return "unchecked:lookup_failed"
+    verdict = _verdict(pick, status, answer)
+    if verdict == "gone":
         return "not_found"
-    if not title_matches(pick.get("title", ""), *found):
-        return "title_mismatch"
-    return ""
+    if verdict == "unchecked":
+        return f"unchecked:http_{status}"
+    return verdict
 
 
 async def verify_picks(
@@ -162,7 +183,9 @@ async def verify_picks(
     skipped: Iterable[tuple[str, str]] = (),
     recent_anchors: Iterable[tuple[str, str]] = (),
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
-    """The picks that passed, in order, and a count of the others by reason.
+    """The picks kept, in order, and a count of the dropped ones by reason.
+
+    A kept pick the host could not confirm carries ``unverified: True``.
 
     *known* songs may not be ``explore`` / ``deep``; *skipped* songs may not come
     back at all; *recent_anchors* were an anchor in the last 30 days and may not
@@ -181,19 +204,29 @@ async def verify_picks(
         elif tier == "anchor" and any(same_song(key, k) for k in recent_anchors):
             reasons.append("recent_anchor")
         else:
-            reasons.append("")
+            reasons.append("ok")
             to_check.append(i)
     gate = asyncio.Semaphore(CONCURRENCY)
     results = await asyncio.gather(*(_check(picks[i], fetch, gate) for i in to_check))
+    kept: list[dict[str, Any]] = []
+    dropped: dict[str, int] = {}
+    unchecked: dict[str, int] = {}
     for i, reason in zip(to_check, results):
         reasons[i] = reason
-    kept = [p for p, r in zip(picks, reasons) if not r]
-    dropped: dict[str, int] = {}
-    for reason in reasons:
-        if reason:
+    for pick, reason in zip(picks, reasons):
+        if reason == "ok":
+            kept.append(pick)
+        elif reason.startswith("unchecked:"):
+            kept.append({**pick, "unverified": True})
+            why = reason.split(":", 1)[1]
+            unchecked[why] = unchecked.get(why, 0) + 1
+        else:
             dropped[reason] = dropped.get(reason, 0) + 1
     # One line per check, so the made-up-link rate can be read back later.
-    logger.info("mood music verify: kept %d of %d, dropped %s", len(kept), len(picks), dropped)
+    logger.info(
+        "mood music verify: kept %d of %d, dropped %s, unverified %s",
+        len(kept), len(picks), dropped, unchecked,
+    )
     return kept, dropped
 
 
@@ -208,19 +241,20 @@ async def http_fetch() -> AsyncIterator[Fetch]:
         headers={"User-Agent": _USER_AGENT, "Accept": "application/json"},
     )
 
-    async def fetch(url: str) -> Any:
+    async def fetch(url: str) -> tuple[int, Any]:
         if not url.startswith(ALLOWED_PREFIXES):
             raise ValueError("not a lookup URL")
         async with session.get(url, allow_redirects=False) as resp:
-            if resp.status != 200:
-                return None
+            status = resp.status
+            if status != 200:
+                return status, None
             body = await resp.content.read(MAX_BODY + 1)
         if len(body) > MAX_BODY:
-            return None
+            return status, None
         try:
-            return json.loads(body)
+            return status, json.loads(body)
         except ValueError:
-            return None
+            return status, None
 
     try:
         yield fetch

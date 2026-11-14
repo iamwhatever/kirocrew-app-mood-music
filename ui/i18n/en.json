@@ -136,6 +136,8 @@
     "praised_by": "Praised by: ",
     "play": "Play",
     "known": "I know it",
-    "known_done": "Noted"
+    "known_done": "Noted",
+    "unverified": "Not verified",
+    "unverified_hint": "YouTube or bilibili could not be asked whether this video exists, so it may not play."
   }
 }

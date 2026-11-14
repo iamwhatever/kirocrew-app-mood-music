@@ -31,9 +31,10 @@ def _bili(url: str = f"https://www.bilibili.com/video/{BV}", **over: Any) -> dic
 
 
 def _fetch(answers: dict[str, Any]):
+    """Each answer is a JSON body (status 200), an int (that status, no body), an exception, or "slow"."""
     calls: list[str] = []
 
-    async def fetch(url: str) -> Any:
+    async def fetch(url: str) -> tuple[int, Any]:
         calls.append(url)
         for prefix, answer in answers.items():
             if url.startswith(prefix):
@@ -41,8 +42,10 @@ def _fetch(answers: dict[str, Any]):
                     raise answer
                 if answer == "slow":
                     await asyncio.sleep(5)
-                return answer
-        return None
+                if isinstance(answer, int):
+                    return answer, None
+                return 200, answer
+        return 404, None
 
     return fetch, calls
 
@@ -91,32 +94,53 @@ class TestVerifyPicks:
         )
         assert calls[1] == f"https://api.bilibili.com/x/web-interface/view?bvid={BV}"
 
-    def test_a_missing_or_unembeddable_video_is_dropped(self) -> None:
-        fetch, _ = _fetch({verify.YOUTUBE_OEMBED: None})
+    @pytest.mark.parametrize("status", [400, 401, 404])
+    def test_a_youtube_video_that_is_gone_or_unembeddable_is_dropped(self, status) -> None:
+        fetch, _ = _fetch({verify.YOUTUBE_OEMBED: status})
         assert _run([_yt()], fetch) == ([], {"not_found": 1})
 
     def test_a_title_that_does_not_match_the_video_is_dropped(self) -> None:
         fetch, _ = _fetch({verify.YOUTUBE_OEMBED: {"title": "Never Gonna Give You Up", "author_name": "Rick"}})
         assert _run([_yt()], fetch) == ([], {"title_mismatch": 1})
+        fetch, _ = _fetch({verify.BILIBILI_VIEW: {"code": 0, "data": {"title": "别的视频", "owner": {"name": "x"}}}})
+        assert _run([_bili(title="Holocene")], fetch) == ([], {"title_mismatch": 1})
 
-    def test_a_bilibili_video_that_404s_is_dropped(self) -> None:
-        fetch, _ = _fetch({verify.BILIBILI_VIEW: {"code": -404, "message": "啥都木有"}})
+    @pytest.mark.parametrize(
+        "answer",
+        [{"code": -404, "message": "啥都木有"}, {"code": 62002, "message": "稿件不可见"}, 404],
+    )
+    def test_a_bilibili_video_that_does_not_exist_is_dropped(self, answer) -> None:
+        fetch, _ = _fetch({verify.BILIBILI_VIEW: answer})
         assert _run([_bili()], fetch) == ([], {"not_found": 1})
 
-    def test_a_short_link_cannot_be_checked_so_it_is_dropped(self) -> None:
+    @pytest.mark.parametrize(
+        "answer",
+        [412, 429, 500, 302, {"code": -412, "message": "请求被拦截"}, {"code": -352}, {"weird": True}],
+    )
+    def test_a_bilibili_lookup_that_cannot_answer_keeps_the_pick_unverified(self, answer) -> None:
+        fetch, _ = _fetch({verify.BILIBILI_VIEW: answer})
+        assert _run([_bili()], fetch) == ([{**_bili(), "unverified": True}], {})
+
+    @pytest.mark.parametrize("answer", [403, 429, 500, 302, {"no": "title"}])
+    def test_a_youtube_lookup_that_cannot_answer_keeps_the_pick_unverified(self, answer) -> None:
+        fetch, _ = _fetch({verify.YOUTUBE_OEMBED: answer})
+        assert _run([_yt()], fetch) == ([{**_yt(), "unverified": True}], {})
+
+    def test_a_short_link_cannot_be_checked_so_it_is_kept_unverified(self) -> None:
         fetch, calls = _fetch({})
-        assert _run([_bili("https://b23.tv/abc123")], fetch) == ([], {"unverifiable": 1})
+        short = _bili("https://b23.tv/abc123")
+        assert _run([short], fetch) == ([{**short, "unverified": True}], {})
         assert calls == []
 
-    def test_a_timeout_drops_the_pick_and_never_lets_it_through(self, monkeypatch) -> None:
+    def test_a_timeout_keeps_the_pick_unverified(self, monkeypatch) -> None:
         monkeypatch.setattr(verify, "TIMEOUT", 0.05)
         fetch, _ = _fetch({verify.YOUTUBE_OEMBED: "slow", verify.BILIBILI_VIEW: BILI_OK})
         kept, dropped = _run([_yt(), _bili()], fetch)
-        assert kept == [_bili()] and dropped == {"timeout": 1}
+        assert kept == [{**_yt(), "unverified": True}, _bili()] and dropped == {}
 
-    def test_a_network_error_drops_the_pick(self) -> None:
+    def test_a_network_error_keeps_the_pick_unverified(self) -> None:
         fetch, _ = _fetch({verify.YOUTUBE_OEMBED: aiohttp.ClientConnectionError("down")})
-        assert _run([_yt()], fetch) == ([], {"lookup_failed": 1})
+        assert _run([_yt()], fetch) == ([{**_yt(), "unverified": True}], {})
 
     def test_known_songs_are_never_explore_and_skipped_songs_never_return(self) -> None:
         fetch, calls = _fetch({verify.YOUTUBE_OEMBED: OEMBED_OK})
@@ -182,7 +206,7 @@ class TestTheRealFetcher:
 
     def test_it_follows_no_redirect_keeps_no_cookie_and_has_a_deadline(self) -> None:
         url = verify.lookup_url(_yt())
-        assert self._get(url) == {"title": "x"}
+        assert self._get(url) == (200, {"title": "x"})
         (made,) = _FakeSession.made
         assert isinstance(made["cookie_jar"], aiohttp.DummyCookieJar)
         assert made["timeout"].total == verify.TIMEOUT
@@ -205,9 +229,9 @@ class TestTheRealFetcher:
     @pytest.mark.parametrize(
         "reply", [(302, b"{}"), (401, b"{}"), (200, b"not json"), (200, b"{" + b" " * verify.MAX_BODY + b"}")]
     )
-    def test_a_redirect_a_refusal_junk_or_a_huge_body_reads_as_not_found(self, reply) -> None:
+    def test_a_redirect_a_refusal_junk_or_a_huge_body_gives_its_status_and_no_body(self, reply) -> None:
         _FakeSession.reply = reply
-        assert self._get(verify.lookup_url(_yt())) is None
+        assert self._get(verify.lookup_url(_yt())) == (reply[0], None)
 
 
 def test_the_store_names_liked_songs_known_and_skipped_ones_skipped(tmp_path: Path) -> None:
@@ -225,8 +249,10 @@ def test_the_store_names_liked_songs_known_and_skipped_ones_skipped(tmp_path: Pa
 
 @asynccontextmanager
 async def _fake_http_fetch():
-    async def fetch(url: str) -> Any:
-        return OEMBED_OK if url.startswith(verify.YOUTUBE_OEMBED) else None
+    async def fetch(url: str) -> tuple[int, Any]:
+        if url.startswith(verify.YOUTUBE_OEMBED):
+            return 200, OEMBED_OK if "AAAAAAAAAAA" not in url else {"title": "Something else", "author_name": "x"}
+        return 412, None  # bilibili refusing the lookup, as it does from some networks
 
     yield fetch
 
@@ -242,13 +268,16 @@ def test_the_route_returns_the_kept_picks_and_the_drop_counts(tmp_path: Path, mo
     async def go():
         app = build_app(ctx, middlewares=[identity("owner-1", "")], owner_id="owner-1")
         async with TestClient(TestServer(app)) as client:
-            body = {"picks": [{**_yt(), "url": f"https://youtu.be/{ID}"}, _bili()]}
+            fake = {"title": "Fake", "source": "youtube", "url": "https://youtu.be/AAAAAAAAAAA"}
+            body = {"picks": [{**_yt(), "url": f"https://youtu.be/{ID}", "unverified": True}, _bili(), fake]}
             resp = await client.post(PREFIX + "/verify-picks", json=body)
             return resp.status, await resp.json()
 
     status, body = asyncio.run(go())
     assert status == 200
-    assert [p["title"] for p in body["picks"]] == ["苏州河"]
-    assert body["picks"][0]["video_id"] == ID
-    assert body["dropped"] == {"not_found": 1}
+    yt, bili = body["picks"]
+    # Confirmed: no flag, whatever the caller sent. Unchecked (bilibili said 412): kept and marked.
+    assert yt["video_id"] == ID and "unverified" not in yt
+    assert bili["unverified"] is True and bili["url"] == f"https://www.bilibili.com/video/{BV}"
+    assert body["dropped"] == {"title_mismatch": 1}
     assert ctx.owner_checks == ["verify_picks"]

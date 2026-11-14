@@ -138,6 +138,12 @@ def _pick(raw: Any) -> tuple[dict[str, Any] | None, str]:
         return None, "invalid_pick"
     if listen_for:
         out["listen_for"] = listen_for
+    unverified = raw.get("unverified")
+    if unverified is not None and not isinstance(unverified, bool):
+        return None, "invalid_pick"
+    if unverified:
+        # The link check could not reach YouTube / bilibili for it (verify.py).
+        out["unverified"] = True
     evidence = raw.get("evidence")
     if evidence is not None:
         if not isinstance(evidence, dict):
@@ -286,6 +292,8 @@ async def _handle_verify(request: web.Request, ctx: Any) -> web.Response:
     picks, err = await _checked_picks(body)
     if err is not None:
         return err
+    # Whether a pick is confirmed is this route's answer, never the caller's.
+    picks = [{k: v for k, v in p.items() if k != "unverified"} for p in picks]
     avoid = await asyncio.to_thread(lambda: _store(ctx).avoid_lists())
     async with verify.http_fetch() as fetch:
         kept, dropped = await verify.verify_picks(picks, fetch, **avoid)

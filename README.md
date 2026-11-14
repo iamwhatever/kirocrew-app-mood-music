@@ -153,9 +153,10 @@ Nothing moved for two minutes. Choose **Wait a bit more**, or **Stop and start
 over**. Check that an ordinary chat in Kiro Crew still answers.
 
 **A message says some songs were left out, or none of them could play.**
-The app checks every song with YouTube or bilibili before showing it and drops one
-that does not open or whose title does not match. bilibili may refuse these checks
-from some networks; those songs are then left out too. Try another direction.
+The app asks YouTube or bilibili about every song before showing it, and drops one
+that they say does not exist or whose title does not match. When they cannot be
+asked (for example, bilibili refuses the check from some networks, or the check
+times out), the song stays and its card says **Not verified**. Try another direction.
 
 **The player area is blank.**
 Your Kiro Crew does not yet let apps show the YouTube player. Update Kiro Crew. The

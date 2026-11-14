@@ -136,6 +136,8 @@
     "praised_by": "Saluée par : ",
     "play": "Lire",
     "known": "Je connais",
-    "known_done": "Noté"
+    "known_done": "Noté",
+    "unverified": "Non vérifiée",
+    "unverified_hint": "Impossible de vérifier auprès de YouTube ou bilibili que cette vidéo existe : elle risque de ne pas se lire."
   }
 }

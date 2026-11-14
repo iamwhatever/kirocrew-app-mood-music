@@ -96,14 +96,16 @@ def test_a_pick_keeps_its_tier_arc_listen_for_and_evidence(ctx) -> None:
         "arc": "turn",
         "listen_for": "  the second verse drops to piano  ",
         "evidence": {"url": "https://Example.com/review?x=1#top", "label": "A review"},
+        "unverified": True,
     }
-    status, body = _call(ctx, "POST", "/queue", {"source": "r1", "picks": [_yt(**extra), _yt()]})
+    status, body = _call(ctx, "POST", "/queue", {"source": "r1", "picks": [_yt(**extra), _yt(unverified=False)]})
     assert status == 200
     first, plain = body["queue"]
+    assert first["unverified"] is True
     assert first["tier"] == "explore" and first["arc"] == "turn"
     assert first["listen_for"] == "the second verse drops to piano"
     assert first["evidence"] == {"url": "https://example.com/review?x=1", "label": "A review"}
-    assert not {"tier", "arc", "listen_for", "evidence"} & plain.keys()
+    assert not {"tier", "arc", "listen_for", "evidence", "unverified"} & plain.keys()
 
 
 @pytest.mark.parametrize(
@@ -127,6 +129,7 @@ def test_a_pick_keeps_its_tier_arc_listen_for_and_evidence(ctx) -> None:
         (_yt(evidence={"url": "javascript:alert(1)", "label": "x"}), "invalid_pick"),
         (_yt(evidence={"url": "http://example.com/r"}), "invalid_pick"),
         (_yt(evidence="https://example.com/r"), "invalid_pick"),
+        (_yt(unverified="yes"), "invalid_pick"),
         ("not an object", "invalid_pick"),
     ],
 )

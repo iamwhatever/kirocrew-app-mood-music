@@ -136,6 +136,8 @@
     "praised_by": "Elogiada por: ",
     "play": "Reproducir",
     "known": "Ya la conozco",
-    "known_done": "Anotado"
+    "known_done": "Anotado",
+    "unverified": "Sin verificar",
+    "unverified_hint": "No se pudo confirmar con YouTube o bilibili que este vídeo exista, así que quizá no se reproduzca."
   }
 }

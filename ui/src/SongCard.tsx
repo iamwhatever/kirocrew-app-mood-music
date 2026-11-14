@@ -33,8 +33,17 @@ export default function SongCard({ pick, playing, known, busy, onPlay, onLike, o
     >
       <div className="flex items-baseline justify-between gap-2">
         {pick.arc && <span className="text-[11px] font-semibold text-[var(--accent)]">{t(ARC_LABEL[pick.arc])}</span>}
+        {pick.unverified && (
+          <span
+            className="ml-auto shrink-0 rounded-full border border-dashed border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]"
+            title={t('card.unverified_hint')}
+            data-testid="mood-unverified"
+          >
+            {t('card.unverified')}
+          </span>
+        )}
         {pick.tier && (
-          <span className="ml-auto shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
+          <span className={`${pick.unverified ? '' : 'ml-auto '}shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]`}>
             {t(TIER_LABEL[pick.tier])}
           </span>
         )}

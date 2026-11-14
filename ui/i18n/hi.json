@@ -136,6 +136,8 @@
     "praised_by": "किसने सराहा: ",
     "play": "चलाएँ",
     "known": "सुना है",
-    "known_done": "नोट किया"
+    "known_done": "नोट किया",
+    "unverified": "जाँचा नहीं गया",
+    "unverified_hint": "YouTube या bilibili से पूछा नहीं जा सका कि यह वीडियो है या नहीं, इसलिए शायद न चले।"
   }
 }

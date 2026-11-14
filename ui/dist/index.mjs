@@ -158,7 +158,9 @@ var CATALOGS = {
 			"praised_by": "প্রশংসা করেছে: ",
 			"play": "চালান",
 			"known": "শুনেছি",
-			"known_done": "নোট করা হলো"
+			"known_done": "নোট করা হলো",
+			"unverified": "যাচাই হয়নি",
+			"unverified_hint": "এই ভিডিওটি আছে কি না YouTube বা bilibili-কে জিজ্ঞেস করা যায়নি, তাই হয়তো চলবে না।"
 		}
 	},
 	de: {
@@ -299,7 +301,9 @@ var CATALOGS = {
 			"praised_by": "Gelobt von: ",
 			"play": "Abspielen",
 			"known": "Kenn ich",
-			"known_done": "Notiert"
+			"known_done": "Notiert",
+			"unverified": "Nicht geprüft",
+			"unverified_hint": "YouTube oder bilibili konnte nicht gefragt werden, ob es dieses Video gibt; es spielt vielleicht nicht."
 		}
 	},
 	en: {
@@ -440,7 +444,9 @@ var CATALOGS = {
 			"praised_by": "Praised by: ",
 			"play": "Play",
 			"known": "I know it",
-			"known_done": "Noted"
+			"known_done": "Noted",
+			"unverified": "Not verified",
+			"unverified_hint": "YouTube or bilibili could not be asked whether this video exists, so it may not play."
 		}
 	},
 	es: {
@@ -581,7 +587,9 @@ var CATALOGS = {
 			"praised_by": "Elogiada por: ",
 			"play": "Reproducir",
 			"known": "Ya la conozco",
-			"known_done": "Anotado"
+			"known_done": "Anotado",
+			"unverified": "Sin verificar",
+			"unverified_hint": "No se pudo confirmar con YouTube o bilibili que este vídeo exista, así que quizá no se reproduzca."
 		}
 	},
 	fr: {
@@ -722,7 +730,9 @@ var CATALOGS = {
 			"praised_by": "Saluée par : ",
 			"play": "Lire",
 			"known": "Je connais",
-			"known_done": "Noté"
+			"known_done": "Noté",
+			"unverified": "Non vérifiée",
+			"unverified_hint": "Impossible de vérifier auprès de YouTube ou bilibili que cette vidéo existe : elle risque de ne pas se lire."
 		}
 	},
 	hi: {
@@ -863,7 +873,9 @@ var CATALOGS = {
 			"praised_by": "किसने सराहा: ",
 			"play": "चलाएँ",
 			"known": "सुना है",
-			"known_done": "नोट किया"
+			"known_done": "नोट किया",
+			"unverified": "जाँचा नहीं गया",
+			"unverified_hint": "YouTube या bilibili से पूछा नहीं जा सका कि यह वीडियो है या नहीं, इसलिए शायद न चले।"
 		}
 	},
 	it: {
@@ -1004,7 +1016,9 @@ var CATALOGS = {
 			"praised_by": "Lodata da: ",
 			"play": "Riproduci",
 			"known": "La conosco",
-			"known_done": "Annotato"
+			"known_done": "Annotato",
+			"unverified": "Non verificata",
+			"unverified_hint": "Non è stato possibile chiedere a YouTube o bilibili se questo video esiste, quindi potrebbe non partire."
 		}
 	},
 	ja: {
@@ -1145,7 +1159,9 @@ var CATALOGS = {
 			"praised_by": "推薦：",
 			"play": "再生",
 			"known": "知ってる",
-			"known_done": "記録済み"
+			"known_done": "記録済み",
+			"unverified": "未確認",
+			"unverified_hint": "YouTube または bilibili にこの動画があるか確認できなかったため、再生できないかもしれません。"
 		}
 	},
 	ko: {
@@ -1286,7 +1302,9 @@ var CATALOGS = {
 			"praised_by": "추천한 곳: ",
 			"play": "재생",
 			"known": "들어 봤어",
-			"known_done": "기록함"
+			"known_done": "기록함",
+			"unverified": "확인 안 됨",
+			"unverified_hint": "YouTube나 bilibili에 이 영상이 있는지 확인하지 못해서 재생되지 않을 수 있어요."
 		}
 	},
 	pt: {
@@ -1427,7 +1445,9 @@ var CATALOGS = {
 			"praised_by": "Elogiada por: ",
 			"play": "Tocar",
 			"known": "Já conheço",
-			"known_done": "Anotado"
+			"known_done": "Anotado",
+			"unverified": "Não verificada",
+			"unverified_hint": "Não foi possível confirmar com o YouTube ou o bilibili que este vídeo existe, então talvez não toque."
 		}
 	},
 	ru: {
@@ -1568,7 +1588,9 @@ var CATALOGS = {
 			"praised_by": "Хвалили: ",
 			"play": "Играть",
 			"known": "Знаю",
-			"known_done": "Отмечено"
+			"known_done": "Отмечено",
+			"unverified": "Не проверено",
+			"unverified_hint": "Не удалось спросить YouTube или bilibili, есть ли это видео, поэтому оно может не воспроизвестись."
 		}
 	},
 	"zh-CN": {
@@ -1709,7 +1731,9 @@ var CATALOGS = {
 			"praised_by": "谁夸过：",
 			"play": "播放",
 			"known": "听过了",
-			"known_done": "记下了"
+			"known_done": "记下了",
+			"unverified": "未验证",
+			"unverified_hint": "这次没能向 YouTube 或 bilibili 确认这个视频，可能放不了。"
 		}
 	}
 };
@@ -2535,6 +2559,11 @@ function NowPlaying({ pick, autoplay, busy, onLike, onSkip, onMore }) {
 				className: "mt-3 text-lg font-semibold leading-snug text-[var(--text)]",
 				children: pick.title
 			}),
+			pick.unverified && /* @__PURE__ */ jsx("p", {
+				className: "text-xs text-[var(--muted)]",
+				title: t("card.unverified_hint"),
+				children: t("card.unverified")
+			}),
 			pick.artist && /* @__PURE__ */ jsx("p", {
 				className: "text-sm text-[var(--muted)]",
 				children: pick.artist
@@ -2909,13 +2938,22 @@ function SongCard({ pick, playing, known, busy, onPlay, onLike, onSkip, onKnown 
 		children: [
 			/* @__PURE__ */ jsxs("div", {
 				className: "flex items-baseline justify-between gap-2",
-				children: [pick.arc && /* @__PURE__ */ jsx("span", {
-					className: "text-[11px] font-semibold text-[var(--accent)]",
-					children: t(ARC_LABEL[pick.arc])
-				}), pick.tier && /* @__PURE__ */ jsx("span", {
-					className: "ml-auto shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
-					children: t(TIER_LABEL[pick.tier])
-				})]
+				children: [
+					pick.arc && /* @__PURE__ */ jsx("span", {
+						className: "text-[11px] font-semibold text-[var(--accent)]",
+						children: t(ARC_LABEL[pick.arc])
+					}),
+					pick.unverified && /* @__PURE__ */ jsx("span", {
+						className: "ml-auto shrink-0 rounded-full border border-dashed border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
+						title: t("card.unverified_hint"),
+						"data-testid": "mood-unverified",
+						children: t("card.unverified")
+					}),
+					pick.tier && /* @__PURE__ */ jsx("span", {
+						className: `${pick.unverified ? "" : "ml-auto "}shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]`,
+						children: t(TIER_LABEL[pick.tier])
+					})
+				]
 			}),
 			/* @__PURE__ */ jsxs("p", {
 				className: "mt-1 text-sm font-semibold text-[var(--text)]",

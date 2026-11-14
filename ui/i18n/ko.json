@@ -136,6 +136,8 @@
     "praised_by": "추천한 곳: ",
     "play": "재생",
     "known": "들어 봤어",
-    "known_done": "기록함"
+    "known_done": "기록함",
+    "unverified": "확인 안 됨",
+    "unverified_hint": "YouTube나 bilibili에 이 영상이 있는지 확인하지 못해서 재생되지 않을 수 있어요."
   }
 }
