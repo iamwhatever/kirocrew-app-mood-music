@@ -22,7 +22,8 @@ vi.mock('../src/api', async orig => {
   return { ...real, createMoodApi: () => mock.api }
 })
 
-import MoodMusicPage, { POLL_MS } from '../src/MoodMusicPage'
+import MoodMusicPage, { GIVE_UP_MS, POLL_MS } from '../src/MoodMusicPage'
+import { resetStubSdk, stubOpenChat } from './stubs/app-sdk'
 
 const api = mock.api
 const ID = 'dQw4w9WgXcQ'
@@ -44,6 +45,7 @@ async function flush(ms = 0) {
 beforeEach(() => {
   vi.useFakeTimers()
   motion.reduced = false
+  resetStubSdk()
   vi.clearAllMocks()
   api.state.mockResolvedValue({ ...EMPTY, feedback: [{ pick_id: 'q'.repeat(32), title: 'Old Love', artist: 'B', tags: [], verdict: 'liked', at: 1 }] })
   api.addMoment.mockResolvedValue({ id: 'm'.repeat(32), mood: 'x', note: '', tags: [], songs: [], at: 1 })
@@ -147,6 +149,63 @@ describe('MoodMusicPage', () => {
     api.getSlot.mockResolvedValue({ running: false, messages: [{ role: 'assistant', content: 'no block' }] })
     await flush(POLL_MS)
     expect(screen.getByText(t('error_unreadable'))).toBeInTheDocument()
+  })
+
+  it('shows the steps and opens the DJ chat while a search waits for approval, without timing out', async () => {
+    renderWithProviders(<MoodMusicPage />)
+    await flush()
+    fireEvent.click(screen.getByRole('button', { name: t('mood_calm') }))
+    await flush()
+    const parked = { running: true, messages: [{ role: 'user', content: 'x' }, { role: 'permission', content: 'web_search', meta: { approval_id: 'r1' } }] }
+    api.getSlot.mockResolvedValue(parked)
+    await flush(POLL_MS)
+
+    const card = screen.getByTestId('mood-approval')
+    expect(card).toHaveTextContent(t('approval_title'))
+    expect(card.querySelectorAll('ol > li')).toHaveLength(3)
+    fireEvent.click(screen.getByRole('button', { name: t('approval_open') }))
+    expect(stubOpenChat).toHaveBeenCalledWith({ slotKey: 'mood-music' })
+
+    // Waiting on the person is not the DJ being slow.
+    await flush(GIVE_UP_MS + POLL_MS)
+    expect(screen.queryByText(t('error_timeout'))).toBeNull()
+    expect(screen.getByTestId('mood-approval')).toBeInTheDocument()
+
+    // Answered: the card goes and the reply lands as usual.
+    api.getSlot.mockResolvedValue({ running: true, messages: [parked.messages[0], { role: 'permission', content: 'web_search', meta: { approval_id: 'r1', resolved: 'trust' } }] })
+    await flush(POLL_MS)
+    expect(screen.queryByTestId('mood-approval')).toBeNull()
+    api.getSlot.mockResolvedValue({ running: false, messages: [{ role: 'assistant', content: 'no block' }] })
+    await flush(POLL_MS)
+    expect(screen.getByText(t('error_unreadable'))).toBeInTheDocument()
+  })
+
+  it('still gives up on a turn that makes no progress', async () => {
+    renderWithProviders(<MoodMusicPage />)
+    await flush()
+    fireEvent.click(screen.getByRole('button', { name: t('mood_calm') }))
+    await flush()
+    api.getSlot.mockResolvedValue({ running: true, messages: [{ role: 'user', content: 'x' }] })
+    await flush(GIVE_UP_MS + POLL_MS)
+    expect(screen.getByText(t('error_timeout'))).toBeInTheDocument()
+    expect(screen.queryByTestId('mood-approval')).toBeNull()
+  })
+
+  it('says why when every pick is dropped, and asks again on the button', async () => {
+    renderWithProviders(<MoodMusicPage />)
+    await flush()
+    fireEvent.click(screen.getByRole('button', { name: t('mood_calm') }))
+    await flush()
+    const first = api.ask.mock.calls[0][0]
+    api.getSlot.mockResolvedValue(reply({ picks: [{ title: 'A', source: 'youtube', url: 'https://example.com/x' }, { title: 'B', source: 'tiktok' }] }))
+    await flush(POLL_MS)
+    expect(screen.getByText(t('error_all_dropped', { count: 2 }))).toBeInTheDocument()
+    expect(api.setQueue).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole('button', { name: t('retry') }))
+    await flush()
+    expect(api.ask).toHaveBeenCalledTimes(2)
+    expect(api.ask.mock.calls[1][0]).toBe(first)
   })
 
   it('skips to the next pick and records it', async () => {

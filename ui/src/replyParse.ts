@@ -50,11 +50,13 @@ function pick(raw: unknown): NewPick | null {
   const title = text(r.title, 200)
   if (!title) return null
   const base = { title, artist: text(r.artist, 200), why: text(r.why, 400), tags: tags(r.tags) }
-  if (r.source === 'youtube') {
+  // `platform` is a spelling the model has used for `source`; the checks are the same.
+  const source = r.source ?? r.platform
+  if (source === 'youtube') {
     const id = r.video_id !== undefined ? validVideoId(r.video_id) : youtubeVideoId(r.url)
     return id ? { ...base, source: 'youtube', video_id: id } : null
   }
-  if (r.source === 'bilibili') {
+  if (source === 'bilibili') {
     const url = bilibiliUrl(r.url)
     return url ? { ...base, source: 'bilibili', url } : null
   }
@@ -78,7 +80,7 @@ export function parseDjReply(content: string): DjReply | null {
   const picks = rawPicks.map(pick).filter((p): p is NewPick => p !== null)
   return {
     question: text(d.question, 300),
-    moodTags: tags(d.mood_tags),
+    moodTags: tags(d.mood_tags ?? d.moods),
     picks,
     dropped: rawPicks.length - picks.length,
   }

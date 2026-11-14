@@ -152,7 +152,7 @@ No. It plays YouTube songs on the page and opens bilibili songs in your browser.
 | Path | What it is |
 |---|---|
 | `app.json` | The manifest: page, agent, skill, backend hook, `ui.frameSources` |
-| `agents/dj.json`, `skills/mood-music/` | The DJ agent (`web_search` and `web_fetch` only) and its reply contract |
+| `agents/dj.json`, `skills/mood-music/` | The DJ agent (`web_search` and `web_fetch` only, both run without asking) and its reply contract; the page also sends the contract with every request (`ui/src/request.prompt.ts`) |
 | `backend/` | Routes (`hooks.routes`), the JSON store and the link checks |
 | `ui/src/`, `ui/dist/index.mjs` | The page, and its committed ESM bundle |
 | `ui/i18n/` | The app's strings in 12 languages |

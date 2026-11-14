@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parseDjReply, replySource } from '../src/replyParse'
+import realReply from './fixtures/reply-platform-moods.json'
 
 const ID = 'dQw4w9WgXcQ'
 const block = (data: unknown) => 'Here you go.\n```mood-music\n' + JSON.stringify(data) + '\n```\n'
@@ -23,6 +24,30 @@ describe('parseDjReply', () => {
       { title: 'B', artist: '', why: '', tags: [], source: 'bilibili', url: 'https://www.bilibili.com/video/BV1xx411c7mD' },
     ])
     expect(r?.dropped).toBe(4)
+  })
+
+  it('reads a real reply that said platform and moods', () => {
+    const r = parseDjReply(realReply.content)
+    expect(r?.moodTags).toEqual(['怀念恋人', '温暖', '淡淡遗憾', '温柔回忆'])
+    expect(r?.picks.map(p => [p.title, p.source, p.video_id])).toEqual([
+      ['好久不见', 'youtube', 'UsFQ9kbpQhw'],
+      ['红豆', 'youtube', '5wmfXve11rM'],
+      ['后来', 'youtube', 't0igPuDjYUE'],
+      ['小幸运', 'youtube', 'Kg-mW8SyNVg'],
+    ])
+    expect(r?.dropped).toBe(0)
+  })
+
+  it('checks a platform pick like a source pick', () => {
+    const r = parseDjReply(block({
+      picks: [
+        { title: 'A', platform: 'youtube', url: `https://www.youtube.com/watch?v=${ID}Q` },
+        { title: 'B', platform: 'bilibili', url: 'https://bilibili.com.evil.com/x' },
+        { title: 'C', platform: 'spotify', url: 'https://open.spotify.com/track/x' },
+      ],
+    }))
+    expect(r?.picks).toEqual([])
+    expect(r?.dropped).toBe(3)
   })
 
   it('reads a question with no picks', () => {
