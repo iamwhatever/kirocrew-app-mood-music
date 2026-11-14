@@ -47,7 +47,7 @@ beforeEach(() => {
   motion.reduced = false
   resetStubSdk()
   vi.clearAllMocks()
-  api.state.mockResolvedValue({ ...EMPTY, feedback: [{ pick_id: 'q'.repeat(32), title: 'Old Love', artist: 'B', tags: [], verdict: 'liked', at: 1 }] })
+  api.state.mockResolvedValue({ ...EMPTY, memory: [{ id: 'q'.repeat(32), kind: 'liked', origin: 'app', pinned: false, stale: false, created_at: 1, last_used_at: 1, title: 'Old Love', artist: 'B' }] })
   api.addMoment.mockResolvedValue({ id: 'm'.repeat(32), mood: 'x', note: '', tags: [], songs: [], at: 1 })
   api.openSlot.mockResolvedValue({ key: 'mood-music' })
   api.getSlot.mockResolvedValue({ running: false, messages: [] })
