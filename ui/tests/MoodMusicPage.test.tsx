@@ -1,12 +1,12 @@
 // The Mood Music page end to end against a mocked `../src/api`: a mood goes out
-// with the taste summary, the DJ's reply is read off the slot, its picks are
-// queued and played. The poll sleeps on setInterval(POLL_MS), so the file runs on
-// fake timers driven inside `act`, and interactions use `fireEvent` to keep each
-// step on that one clock.
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+// with the memory summary, the buddy's turn is read off the slot (status line,
+// approvals, errors), its picks are verified, queued, drawn as cards and played.
+// The poll sleeps on setInterval(POLL_MS), so the file runs on fake timers driven
+// inside `act`, and interactions use `fireEvent` to keep each step on that clock.
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { t as tr } from '../src/i18n'
-import type { MoodState, QueuedPick } from '../src/api'
+import type { MemoryItem, MoodState, QueuedPick, SlotData } from '../src/api'
 
 const motion = vi.hoisted(() => ({ reduced: false }))
 vi.mock('../src/reducedMotion', () => ({ usePrefersReducedMotion: () => motion.reduced }))
@@ -14,7 +14,8 @@ vi.mock('../src/reducedMotion', () => ({ usePrefersReducedMotion: () => motion.r
 const mock = vi.hoisted(() => ({
   api: {
     state: vi.fn(), addMoment: vi.fn(), setQueue: vi.fn(), feedback: vi.fn(), verifyPicks: vi.fn(),
-    openSlot: vi.fn(), getSlot: vi.fn(), ask: vi.fn(),
+    addMemory: vi.fn(), updateMemory: vi.fn(), deleteMemory: vi.fn(), clearStale: vi.fn(), markUsed: vi.fn(),
+    openSlot: vi.fn(), getSlot: vi.fn(), ask: vi.fn(), approve: vi.fn(), stop: vi.fn(),
   },
 }))
 vi.mock('../src/api', async orig => {
@@ -22,24 +23,35 @@ vi.mock('../src/api', async orig => {
   return { ...real, createMoodApi: () => mock.api }
 })
 
-import MoodMusicPage, { GIVE_UP_MS, POLL_MS } from '../src/MoodMusicPage'
+import MoodMusicPage, { KNOWN_AFTER_MS, OFFLINE_MS, POLL_MS, STUCK_MS } from '../src/MoodMusicPage'
+import { replySource } from '../src/replyParse'
 import { resetStubSdk, stubOpenChat } from './stubs/app-sdk'
 
 const api = mock.api
 const ID = 'dQw4w9WgXcQ'
-const t = (k: string, o?: Record<string, string | number>) => tr(`page.${k}`, o)
-const renderWithProviders = (ui: React.ReactElement) => render(ui)
+const t = (k: string, o?: Record<string, string | number>) => tr(k.includes('.') ? k : `page.${k}`, o)
 
 const EMPTY: MoodState = { moments: [], queue: [], feedback: [], last_source: '', memory: [] }
+const LIKED: MemoryItem = { id: 'q'.repeat(32), kind: 'liked', origin: 'app', pinned: false, stale: false, created_at: 1, last_used_at: 1, title: 'Old Love', artist: 'B' }
 
 function queued(over: Partial<QueuedPick>): QueuedPick {
   return { id: 'p'.repeat(32), title: 'Song', artist: 'A', why: 'it is soft', tags: [], source: 'youtube', video_id: ID, feedback: '', ...over }
 }
 
-const reply = (data: unknown) => ({ running: false, messages: [{ role: 'user', content: 'x' }, { role: 'assistant', content: '```mood-music\n' + JSON.stringify(data) + '\n```' }] })
+const USER = { role: 'user', content: '[Mood Music]\nMood: x\n' }
+const block = (data: unknown) => '听起来是安静地想。\n```mood-music\n' + JSON.stringify(data) + '\n```'
+const reply = (data: unknown): SlotData => ({ running: false, messages: [USER, { role: 'assistant', content: block(data) }] })
+const running = (...rows: object[]): SlotData => ({ running: true, messages: [USER, ...rows] })
 
 async function flush(ms = 0) {
   await act(async () => { await vi.advanceTimersByTimeAsync(ms) })
+}
+
+async function start(mood = 'mood_calm') {
+  render(<MoodMusicPage />)
+  await flush()
+  fireEvent.click(screen.getByRole('button', { name: t(mood) }))
+  await flush()
 }
 
 beforeEach(() => {
@@ -47,12 +59,16 @@ beforeEach(() => {
   motion.reduced = false
   resetStubSdk()
   vi.clearAllMocks()
-  api.state.mockResolvedValue({ ...EMPTY, memory: [{ id: 'q'.repeat(32), kind: 'liked', origin: 'app', pinned: false, stale: false, created_at: 1, last_used_at: 1, title: 'Old Love', artist: 'B' }] })
+  api.state.mockResolvedValue({ ...EMPTY, memory: [LIKED] })
   api.addMoment.mockResolvedValue({ id: 'm'.repeat(32), mood: 'x', note: '', tags: [], songs: [], at: 1 })
   api.openSlot.mockResolvedValue({ key: 'mood-music' })
   api.getSlot.mockResolvedValue({ running: false, messages: [] })
   api.ask.mockResolvedValue('mood-music')
   api.verifyPicks.mockImplementation(async (picks: unknown[]) => ({ picks, dropped: {} }))
+  api.approve.mockResolvedValue({})
+  api.stop.mockResolvedValue({})
+  api.addMemory.mockResolvedValue({})
+  api.markUsed.mockResolvedValue({ marked: 1 })
 })
 
 afterEach(() => {
@@ -62,162 +78,250 @@ afterEach(() => {
 
 describe('MoodMusicPage', () => {
   it('cannot send an empty mood', async () => {
-    renderWithProviders(<MoodMusicPage />)
+    render(<MoodMusicPage />)
     await flush()
-    const find = screen.getByRole('button', { name: t('find') })
-    expect(find).toBeDisabled()
+    const send = screen.getByRole('button', { name: t('chat.send') })
+    expect(send).toBeDisabled()
     fireEvent.change(screen.getByLabelText(t('mood_label')), { target: { value: '   ' } })
-    expect(find).toBeDisabled()
+    expect(send).toBeDisabled()
   })
 
-  it('sends a chip mood with the taste summary, then queues and embeds the picks', async () => {
-    renderWithProviders(<MoodMusicPage />)
-    await flush()
-    // A chip is a search on its own: no second click on Find.
-    fireEvent.click(screen.getByRole('button', { name: t('mood_missing') }))
+  it('sends a mood with the memory summary, verifies the picks, then shows them as cards and plays', async () => {
+    await start('mood_missing')
     expect(screen.getByTestId('mood-backdrop').dataset.look).toBe('missing')
-    expect(screen.getAllByTestId('mood-glow')[0].dataset.hue).toBe('280')
-    await flush()
-
     expect(api.addMoment).toHaveBeenCalledWith(t('mood_missing'))
     const sent = api.ask.mock.calls[0][0]
     expect(sent).toContain(`Mood: ${t('mood_missing')}`)
     expect(sent).toContain('Liked: "Old Love" - B')
+    expect(sent).toContain('Explore level: balanced (1 anchor, 4 explore, 0 deep)')
 
-    const picks = [queued({ id: 'a'.repeat(32), title: 'First' }), queued({ id: 'b'.repeat(32), title: 'Bili', source: 'bilibili', video_id: undefined, url: 'https://www.bilibili.com/video/BV1xx411c7mD' })]
-    api.getSlot.mockResolvedValue(reply({
+    const data = {
       mood_tags: ['想念'],
       picks: [
-        { title: 'First', source: 'youtube', url: `https://www.youtube.com/watch?v=${ID}` },
-        { title: 'Bili', source: 'bilibili', url: 'https://www.bilibili.com/video/BV1xx411c7mD' },
+        { title: 'First', source: 'youtube', url: `https://www.youtube.com/watch?v=${ID}`, tier: 'explore', arc: 'stay', why: 'quiet missing', listen_for: 'the breath in verse two', evidence: { url: 'https://example.com/r', label: 'A review' } },
+        { title: 'Fake', source: 'youtube', url: 'https://www.youtube.com/watch?v=AAAAAAAAAAA' },
         { title: 'Bad', source: 'bilibili', url: 'https://bilibili.com.evil.com/x' },
       ],
-    }))
+      follow_ups: ['再安静一点'],
+    }
+    const slot = reply(data)
+    // The backend drops the made-up one (its title does not match the video).
+    api.verifyPicks.mockImplementation(async (picks: { title: string }[]) => ({ picks: picks.filter(p => p.title !== 'Fake'), dropped: { title_mismatch: 1 } }))
+    const picks = [queued({ id: 'a'.repeat(32), title: 'First', tier: 'explore', arc: 'stay', why: 'quiet missing', listen_for: 'the breath in verse two', evidence: { url: 'https://example.com/r', label: 'A review' } })]
     api.setQueue.mockResolvedValue({ queue: picks })
-    api.state.mockResolvedValue({ ...EMPTY, queue: picks })
+    api.state.mockResolvedValue({ ...EMPTY, queue: picks, last_source: replySource(slot.messages![1].content!) })
+    api.getSlot.mockResolvedValue(slot)
     await flush(POLL_MS)
 
-    expect(api.setQueue).toHaveBeenCalledTimes(1)
-    const body = api.setQueue.mock.calls[0][0]
-    expect(body.picks.map((p: { title: string }) => p.title)).toEqual(['First', 'Bili'])
-    expect(body.moment_id).toBe('m'.repeat(32))
-    expect(screen.getByText(t('dropped', { count: 1 }))).toBeInTheDocument()
+    expect(api.verifyPicks.mock.calls[0][0].map((p: { title: string }) => p.title)).toEqual(['First', 'Fake'])
+    expect(api.setQueue.mock.calls[0][0].picks.map((p: { title: string }) => p.title)).toEqual(['First'])
+    expect(screen.getByText(t('dropped', { count: 2 }))).toBeInTheDocument()
+
+    const card = screen.getByTestId('mood-song-card')
+    expect(card).toHaveTextContent(t('card.arc_stay'))
+    expect(card).toHaveTextContent(t('card.tier_explore'))
+    expect(card).toHaveTextContent('the breath in verse two')
+    const praise = within(card).getByRole('link')
+    expect(praise.getAttribute('href')).toBe('https://example.com/r')
+    expect(praise.getAttribute('rel')).toBe('noopener noreferrer')
+    expect(screen.getByText('听起来是安静地想。')).toBeInTheDocument()
+    expect(screen.queryByText(/mood-music/)).toBeNull()
 
     const frame = screen.getByTestId('mood-youtube-frame')
     expect(frame.getAttribute('src')).toBe(`https://www.youtube-nocookie.com/embed/${ID}?rel=0`)
-    expect(frame.getAttribute('sandbox')).toBe('allow-scripts allow-same-origin allow-presentation allow-popups')
-    expect(screen.getByText('it is soft')).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: t('play', { title: 'Bili' }) }))
-    const link = screen.getByTestId('mood-bilibili-link')
-    expect(link.getAttribute('href')).toBe('https://www.bilibili.com/video/BV1xx411c7mD')
-    expect(link.getAttribute('target')).toBe('_blank')
-    expect(link.getAttribute('rel')).toBe('noopener noreferrer')
-    expect(screen.queryByTestId('mood-youtube-frame')).toBeNull()
+    fireEvent.click(within(screen.getByTestId('mood-follow-ups')).getByRole('button', { name: '再安静一点' }))
+    await flush()
+    expect(api.ask.mock.calls[1][0]).toContain('Follow-up: 再安静一点')
+    expect(api.addMoment).toHaveBeenCalledTimes(1)
   })
 
-  it('shows the DJ question and sends the answer', async () => {
-    renderWithProviders(<MoodMusicPage />)
+  it('says what the buddy is doing without naming a tool', async () => {
+    await start()
+    const status = () => screen.getByTestId('mood-status').textContent
+    api.getSlot.mockResolvedValue(running())
+    await flush(POLL_MS)
+    expect(status()).toBe(t('chat.status_thinking'))
+    api.getSlot.mockResolvedValue(running({ role: 'tool', content: 'web_search "苏州河 被低估"', meta: { tool_name: 'web_search' } }))
+    await flush(POLL_MS)
+    expect(status()).toBe(t('chat.status_searching', { count: 1 }))
+    api.getSlot.mockResolvedValue(running(
+      { role: 'tool', content: 'web_search', meta: { tool_name: 'web_search' } },
+      { role: 'tool', content: 'web_fetch https://example.com/review', meta: { tool_name: 'web_fetch' } },
+    ))
+    await flush(POLL_MS)
+    expect(status()).toBe(t('chat.status_reading', { count: 1 }))
+    api.getSlot.mockResolvedValue(running({ role: 'tool', content: 'web_fetch', meta: { tool_name: 'web_fetch' } }, { role: 'streaming', content: '听起来' }))
+    await flush(POLL_MS)
+    expect(status()).toBe(t('chat.status_writing'))
+    const page = screen.getByTestId('mood-music-page').textContent ?? ''
+    expect(page).not.toMatch(/web_search|web_fetch|example\.com|被低估/)
+  })
+
+  it('asks for one approval on the page: allow once or not, never Trust', async () => {
+    await start()
+    const parked = running({ role: 'permission', content: 'web_fetch', meta: { approval_id: 'r1', tool_input: { url: 'https://music.example.org/list' } } })
+    api.getSlot.mockResolvedValue(parked)
+    await flush(POLL_MS)
+    const card = screen.getByTestId('mood-approval')
+    expect(card).toHaveTextContent(t('chat.approval_host', { host: 'music.example.org' }))
+    expect(within(card).queryByText(/trust/i)).toBeNull()
+    fireEvent.click(within(card).getByRole('button', { name: t('chat.allow_once') }))
     await flush()
-    fireEvent.change(screen.getByLabelText(t('mood_label')), { target: { value: 'meh' } })
-    fireEvent.click(screen.getByRole('button', { name: t('find') }))
+    expect(api.approve).toHaveBeenCalledWith('mood-music', 'r1', 'approved')
+    fireEvent.click(within(card).getByRole('button', { name: t('chat.deny') }))
     await flush()
+    expect(api.approve).toHaveBeenLastCalledWith('mood-music', 'r1', 'rejected')
+
+    // Waiting on the person is not the buddy being stuck.
+    await flush(STUCK_MS + POLL_MS)
+    expect(screen.queryByTestId('mood-stuck')).toBeNull()
+  })
+
+  it('shows the steps when the app may not ask for approvals yet', async () => {
+    await start()
+    api.getSlot.mockResolvedValue(running({ role: 'permission', content: 'web_fetch', meta: { approval_id: 'r1' } }))
+    await flush(POLL_MS)
+    api.approve.mockRejectedValue(Object.assign(new Error('403'), { status: 403, body: JSON.stringify({ code: 'session_approval_not_granted', cause: 'consent_pending' }) }))
+    fireEvent.click(screen.getByRole('button', { name: t('chat.allow_once') }))
+    await flush()
+    const grant = screen.getByTestId('mood-grant')
+    expect(grant).toHaveTextContent(t('chat.grant_consent'))
+    fireEvent.click(within(grant).getByRole('button', { name: t('chat.open_full') }))
+    expect(stubOpenChat).toHaveBeenCalledWith({ slotKey: 'mood-music' })
+  })
+
+  it('shows a failed turn with a retry that asks again', async () => {
+    await start()
+    const first = api.ask.mock.calls[0][0]
+    api.getSlot.mockResolvedValue({ running: false, messages: [USER, { role: 'error', content: 'model overloaded' }] })
+    await flush(POLL_MS)
+    const banner = screen.getByTestId('mood-turn-error')
+    expect(banner).toHaveTextContent('model overloaded')
+    fireEvent.click(within(banner).getByRole('button', { name: t('retry') }))
+    await flush()
+    expect(api.ask.mock.calls[1][0]).toBe(first)
+  })
+
+  it('does not treat an auto-retry notice as a failure', async () => {
+    await start()
+    api.getSlot.mockResolvedValue(running({ role: 'error', content: 'retrying', kind: 'transient_retry' }))
+    await flush(POLL_MS)
+    expect(screen.queryByTestId('mood-turn-error')).toBeNull()
+    expect(screen.getByTestId('mood-status')).toBeInTheDocument()
+  })
+
+  it('says the buddy seems stuck after two quiet minutes, and can wait or start over', async () => {
+    await start()
+    api.getSlot.mockResolvedValue(running())
+    await flush(STUCK_MS + 2 * POLL_MS)
+    const stuck = screen.getByTestId('mood-stuck')
+    fireEvent.click(within(stuck).getByRole('button', { name: t('chat.wait') }))
+    expect(screen.queryByTestId('mood-stuck')).toBeNull()
+    await flush(STUCK_MS + 2 * POLL_MS)
+    fireEvent.click(within(screen.getByTestId('mood-stuck')).getByRole('button', { name: t('chat.stop_restart') }))
+    await flush()
+    expect(api.stop).toHaveBeenCalledWith('mood-music')
+    expect(api.ask).toHaveBeenCalledTimes(2)
+  })
+
+  it('says it cannot reach Kiro Crew when reads keep failing, and reconnects on the button', async () => {
+    await start()
+    api.getSlot.mockRejectedValue(new Error('down'))
+    await flush(OFFLINE_MS + 2 * POLL_MS)
+    const banner = screen.getByTestId('mood-offline')
+    api.getSlot.mockResolvedValue(running())
+    fireEvent.click(within(banner).getByRole('button', { name: t('chat.reconnect') }))
+    await flush()
+    expect(screen.queryByTestId('mood-offline')).toBeNull()
+  })
+
+  it('stops a turn the person cancels, with no error', async () => {
+    await start()
+    api.getSlot.mockResolvedValue(running({ role: 'tool', content: 'x', meta: { tool_name: 'web_search' } }))
+    await flush(POLL_MS)
+    fireEvent.click(screen.getByRole('button', { name: t('chat.stop') }))
+    await flush()
+    expect(api.stop).toHaveBeenCalledWith('mood-music')
+    api.getSlot.mockResolvedValue({ running: false, messages: [USER, { role: 'assistant', content: 'half a repl' }] })
+    await flush(POLL_MS)
+    expect(screen.getByText(t('chat.stopped'))).toBeInTheDocument()
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(api.verifyPicks).not.toHaveBeenCalled()
+  })
+
+  it('says when nothing playable is left, and asks again on the button', async () => {
+    await start()
+    const first = api.ask.mock.calls[0][0]
+    api.verifyPicks.mockResolvedValue({ picks: [], dropped: { not_found: 1, timeout: 1 } })
+    api.getSlot.mockResolvedValue(reply({ picks: [
+      { title: 'A', source: 'youtube', url: `https://youtu.be/${ID}` },
+      { title: 'B', source: 'bilibili', url: 'https://www.bilibili.com/video/BV1xx411c7mD' },
+    ] }))
+    await flush(POLL_MS)
+    expect(screen.getByText(t('chat.all_dropped', { count: 2 }))).toBeInTheDocument()
+    expect(api.setQueue).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: t('retry') }))
+    await flush()
+    expect(api.ask.mock.calls[1][0]).toBe(first)
+  })
+
+  it('says so when the reply has no readable block', async () => {
+    await start()
+    api.getSlot.mockResolvedValue({ running: false, messages: [USER, { role: 'assistant', content: 'no block' }] })
+    await flush(POLL_MS)
+    expect(screen.getByText(t('error_unreadable'))).toBeInTheDocument()
+  })
+
+  it('shows the buddy question and sends the answer', async () => {
+    await start()
     api.getSlot.mockResolvedValue(reply({ question: 'Quiet or loud?' }))
     await flush(POLL_MS)
-    expect(screen.getByText('Quiet or loud?')).toBeInTheDocument()
-    expect(api.setQueue).not.toHaveBeenCalled()
+    expect(screen.getAllByText('Quiet or loud?').length).toBeGreaterThan(0)
     fireEvent.change(screen.getByLabelText(t('answer_placeholder')), { target: { value: 'quiet' } })
     fireEvent.click(screen.getByRole('button', { name: t('send_answer') }))
     await flush()
     expect(api.ask.mock.calls[1][0]).toContain('Answer to your question: quiet')
   })
 
-  it('adds a chip to the typed text when both are given', async () => {
-    renderWithProviders(<MoodMusicPage />)
+  it('saves a preference only when the person taps it', async () => {
+    await start()
+    api.getSlot.mockResolvedValue(reply({ question: 'x', remember: '喜欢粤语' }))
+    await flush(POLL_MS)
+    expect(api.addMemory).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: t('chat.remember', { note: '喜欢粤语' }) }))
     await flush()
-    fireEvent.change(screen.getByLabelText(t('mood_label')), { target: { value: 'rainy evening' } })
-    fireEvent.click(screen.getByRole('button', { name: t('mood_sad') }))
-    await flush()
-    expect(api.addMoment).toHaveBeenCalledWith(`${t('mood_sad')}: rainy evening`)
-    expect(screen.getByRole('button', { name: t('mood_calm') })).toBeDisabled()
+    expect(api.addMemory).toHaveBeenCalledWith({ kind: 'note', text: '喜欢粤语', origin: 'user' })
   })
 
-  it('says so when the reply has no readable block', async () => {
-    renderWithProviders(<MoodMusicPage />)
+  it('records "I know it" as the person’s, and 30 s of play as the app’s', async () => {
+    const picks = [queued({ id: 'a'.repeat(32), title: 'One' }), queued({ id: 'b'.repeat(32), title: 'Two' })]
+    const slot = reply({ picks: [] })
+    api.state.mockResolvedValue({ ...EMPTY, queue: picks, last_source: replySource(slot.messages![1].content!) })
+    api.getSlot.mockResolvedValue(slot)
+    render(<MoodMusicPage />)
     await flush()
-    fireEvent.click(screen.getByRole('button', { name: t('mood_calm') }))
+    const [one, two] = screen.getAllByTestId('mood-song-card')
+    fireEvent.click(within(one).getByRole('button', { name: t('card.known') }))
     await flush()
-    api.getSlot.mockResolvedValue({ running: false, messages: [{ role: 'assistant', content: 'no block' }] })
-    await flush(POLL_MS)
-    expect(screen.getByText(t('error_unreadable'))).toBeInTheDocument()
-  })
+    expect(api.addMemory).toHaveBeenCalledWith({ kind: 'known', title: 'One', artist: 'A', origin: 'user' })
 
-  it('shows the steps and opens the DJ chat while a search waits for approval, without timing out', async () => {
-    renderWithProviders(<MoodMusicPage />)
-    await flush()
-    fireEvent.click(screen.getByRole('button', { name: t('mood_calm') }))
-    await flush()
-    const parked = { running: true, messages: [{ role: 'user', content: 'x' }, { role: 'permission', content: 'web_search', meta: { approval_id: 'r1' } }] }
-    api.getSlot.mockResolvedValue(parked)
-    await flush(POLL_MS)
-
-    const card = screen.getByTestId('mood-approval')
-    expect(card).toHaveTextContent(t('approval_title'))
-    expect(card.querySelectorAll('ol > li')).toHaveLength(3)
-    fireEvent.click(screen.getByRole('button', { name: t('approval_open') }))
-    expect(stubOpenChat).toHaveBeenCalledWith({ slotKey: 'mood-music' })
-
-    // Waiting on the person is not the DJ being slow.
-    await flush(GIVE_UP_MS + POLL_MS)
-    expect(screen.queryByText(t('error_timeout'))).toBeNull()
-    expect(screen.getByTestId('mood-approval')).toBeInTheDocument()
-
-    // Answered: the card goes and the reply lands as usual.
-    api.getSlot.mockResolvedValue({ running: true, messages: [parked.messages[0], { role: 'permission', content: 'web_search', meta: { approval_id: 'r1', resolved: 'trust' } }] })
-    await flush(POLL_MS)
-    expect(screen.queryByTestId('mood-approval')).toBeNull()
-    api.getSlot.mockResolvedValue({ running: false, messages: [{ role: 'assistant', content: 'no block' }] })
-    await flush(POLL_MS)
-    expect(screen.getByText(t('error_unreadable'))).toBeInTheDocument()
-  })
-
-  it('still gives up on a turn that makes no progress', async () => {
-    renderWithProviders(<MoodMusicPage />)
-    await flush()
-    fireEvent.click(screen.getByRole('button', { name: t('mood_calm') }))
-    await flush()
-    api.getSlot.mockResolvedValue({ running: true, messages: [{ role: 'user', content: 'x' }] })
-    await flush(GIVE_UP_MS + POLL_MS)
-    expect(screen.getByText(t('error_timeout'))).toBeInTheDocument()
-    expect(screen.queryByTestId('mood-approval')).toBeNull()
-  })
-
-  it('says why when every pick is dropped, and asks again on the button', async () => {
-    renderWithProviders(<MoodMusicPage />)
-    await flush()
-    fireEvent.click(screen.getByRole('button', { name: t('mood_calm') }))
-    await flush()
-    const first = api.ask.mock.calls[0][0]
-    api.getSlot.mockResolvedValue(reply({ picks: [{ title: 'A', source: 'youtube', url: 'https://example.com/x' }, { title: 'B', source: 'tiktok' }] }))
-    await flush(POLL_MS)
-    expect(screen.getByText(t('error_all_dropped', { count: 2 }))).toBeInTheDocument()
-    expect(api.setQueue).not.toHaveBeenCalled()
-
-    fireEvent.click(screen.getByRole('button', { name: t('retry') }))
-    await flush()
-    expect(api.ask).toHaveBeenCalledTimes(2)
-    expect(api.ask.mock.calls[1][0]).toBe(first)
+    fireEvent.click(within(two).getByRole('button', { name: t('play', { title: 'Two' }) }))
+    await flush(KNOWN_AFTER_MS - 1000)
+    expect(api.addMemory).toHaveBeenCalledTimes(1)
+    await flush(1000)
+    expect(api.addMemory).toHaveBeenLastCalledWith({ kind: 'known', title: 'Two', artist: 'A', origin: 'app' })
   })
 
   it('skips to the next pick and records it', async () => {
     const picks = [queued({ id: 'a'.repeat(32), title: 'One' }), queued({ id: 'b'.repeat(32), title: 'Two' })]
     api.state.mockResolvedValue({ ...EMPTY, queue: picks })
     api.feedback.mockResolvedValue({ ...picks[0], feedback: 'skipped' })
-    renderWithProviders(<MoodMusicPage />)
+    render(<MoodMusicPage />)
     await flush()
     expect(screen.getByRole('heading', { name: 'One' })).toBeInTheDocument()
     api.state.mockResolvedValue({ ...EMPTY, queue: [{ ...picks[0], feedback: 'skipped' }, picks[1]] })
-    fireEvent.click(screen.getByRole('button', { name: t('skip') }))
+    fireEvent.click(within(screen.getByTestId('mood-now-playing')).getByRole('button', { name: t('skip') }))
     await flush()
     expect(api.feedback).toHaveBeenCalledWith('a'.repeat(32), 'skipped')
     expect(screen.getByRole('heading', { name: 'Two' })).toBeInTheDocument()
@@ -226,36 +330,43 @@ describe('MoodMusicPage', () => {
 
   it('lists the moments with their songs on the second tab', async () => {
     api.state.mockResolvedValue({ ...EMPTY, moments: [{ id: 'm'.repeat(32), mood: '下雨的傍晚', note: '', tags: ['想念'], songs: [{ title: '晴天', artist: '周杰伦' }], at: 1 }] })
-    renderWithProviders(<MoodMusicPage />)
+    render(<MoodMusicPage />)
     await flush()
     fireEvent.click(screen.getByRole('tab', { name: t('tab_moments') }))
     expect(screen.getByText('下雨的傍晚')).toBeInTheDocument()
     expect(screen.getByText('晴天 — 周杰伦')).toBeInTheDocument()
   })
 
+  it('shows the memory on its tab', async () => {
+    render(<MoodMusicPage />)
+    await flush()
+    fireEvent.click(screen.getByRole('tab', { name: t('tab_memory') }))
+    expect(screen.getByText(/Old Love — B/)).toBeInTheDocument()
+  })
+
   it('pauses the backdrop drift with its control', async () => {
-    renderWithProviders(<MoodMusicPage />)
+    render(<MoodMusicPage />)
     await flush()
     expect(screen.getByTestId('mood-backdrop').dataset.moving).toBe('true')
-    // The control names what it moves, so it never reads as the music's pause.
     expect(screen.getByTestId('mood-motion-toggle')).toHaveTextContent(t('pause_motion'))
     fireEvent.click(screen.getByTestId('mood-motion-toggle'))
     expect(screen.getByTestId('mood-backdrop').dataset.moving).toBe('false')
-    expect(screen.getByTestId('mood-motion-toggle')).toHaveTextContent(t('play_motion'))
   })
 
-  it('holds the backdrop still under reduced motion, with no loop to pause', async () => {
+  it('holds the backdrop and the status still under reduced motion', async () => {
     motion.reduced = true
-    renderWithProviders(<MoodMusicPage />)
-    await flush()
+    await start()
+    api.getSlot.mockResolvedValue(running())
+    await flush(POLL_MS)
     expect(screen.getByTestId('mood-backdrop').dataset.moving).toBe('false')
     expect(screen.queryByTestId('mood-motion-toggle')).toBeNull()
+    expect(screen.getByTestId('mood-status').querySelector('.animate-pulse')).toBeNull()
   })
 
   it('paints only through theme variables, so a dark theme carries through', async () => {
     document.documentElement.classList.add('dark')
     try {
-      const { container } = renderWithProviders(<MoodMusicPage />)
+      const { container } = render(<MoodMusicPage />)
       await flush()
       const styles = [...container.querySelectorAll<HTMLElement>('[style]')].map(el => el.getAttribute('style') ?? '')
       expect(styles.join(' ')).not.toMatch(/#[0-9a-f]{3,8}\b|rgb\(/i)

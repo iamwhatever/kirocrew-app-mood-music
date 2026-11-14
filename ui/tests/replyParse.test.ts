@@ -68,8 +68,8 @@ describe('parseDjReply', () => {
       follow_ups: ['quieter', 'in Cantonese', 'stay here', 'a fourth is cut'],
       remember: 'likes Cantonese',
     }))
-    expect(r?.picks.map(p => p.title)).toEqual(['Odd', 'Here', 'Open', 'Up'])
-    const [odd, here, open] = r!.picks
+    expect(r?.picks.map(p => p.title)).toEqual(['Here', 'Open', 'Up', 'Odd'])
+    const [here, open, , odd] = r!.picks
     expect(odd).not.toHaveProperty('arc')
     expect(odd).not.toHaveProperty('tier')
     expect(odd).not.toHaveProperty('evidence')

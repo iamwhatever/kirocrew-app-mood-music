@@ -1,6 +1,6 @@
 import { activeLocale, fmtDateTime, useAppApi, useChatLauncher, useLanguageGeneration } from "@kirocrew/app-sdk";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Brain, ExternalLink, Heart, MessageCircleQuestion, Music, Pin, PinOff, Play, Search, ShieldCheck, SkipForward, Sparkles, Trash2, Waves } from "lucide-react";
+import { Brain, Check, ExternalLink, Headphones, Heart, MessageCircleQuestion, Music, Pin, PinOff, Play, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Waves, WifiOff } from "lucide-react";
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from "@kirocrew/app-sdk/ui";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 // src/i18n.ts
@@ -35,13 +35,9 @@ var CATALOGS = {
 		},
 		page: {
 			"title": "মুড মিউজিক",
-			"subtitle": "এখনকার মুডের গান",
 			"tab_listen": "শুনুন",
 			"tab_moments": "মুহূর্ত",
 			"mood_label": "আপনি কেমন বোধ করছেন, বা কোন গান আপনাকে ছুঁয়ে গেছে?",
-			"mood_placeholder": "বৃষ্টির সন্ধ্যা, বাড়ির কথা মনে পড়ছে — বা কোনো গানের নাম",
-			"find": "গান খুঁজুন",
-			"finding": "মানানসই গান খুঁজছি…",
 			"mood_chips": "মুড",
 			"mood_calm": "শান্ত",
 			"mood_sad": "দুঃখী",
@@ -70,14 +66,7 @@ var CATALOGS = {
 			"moments_empty_body": "আপনি যে মুড শেয়ার করেন, তা তার গানগুলোর সঙ্গে এখানে থাকে।",
 			"error_generic": "কিছু ভুল হয়েছে ({{code}})",
 			"error_unreadable": "DJ-এর উত্তর পড়া যায়নি। আবার চেষ্টা করুন।",
-			"error_all_dropped": "DJ {{count}}টি গান পেয়েছে, কিন্তু কোনোটিই এমনভাবে আসেনি যা পেজ চালাতে পারে।",
 			"retry": "আবার জিজ্ঞেস করুন",
-			"error_timeout": "DJ অনেক দেরি করেছে। আবার চেষ্টা করুন।",
-			"approval_title": "DJ ওয়েবে খোঁজার জন্য আপনার অনুমতির অপেক্ষায় আছে",
-			"approval_step_open": "নিচের বোতাম দিয়ে DJ-এর চ্যাট খুলুন।",
-			"approval_step_trust": "সেখানে ওয়েব খোঁজার অনুমতি দিন। বিশ্বাস বেছে নিলে আর জিজ্ঞেস করবে না।",
-			"approval_step_back": "এখানে ফিরে আসুন। গানগুলো নিজে থেকেই দেখা যাবে।",
-			"approval_open": "DJ-এর চ্যাট খুলুন",
 			"dropped": "যে গানের লিংক বাজানো যায় না, সেগুলো বাদ: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
@@ -112,6 +101,58 @@ var CATALOGS = {
 			"clear_yes": "মুছুন",
 			"error": "সংরক্ষণ করা গেল না ({{code}})।",
 			"error_full": "স্মৃতি আপনার নিজের জিনিসে ভরা। আগে একটি মুছুন।"
+		},
+		chat: {
+			"subtitle": "আপনার গানের বন্ধু: মনের কথা বলুন, না-শোনা ভালো গান শুনুন",
+			"conversation": "গানের বন্ধুর সঙ্গে কথা",
+			"hello": "হাই, আমি আপনার গানের বন্ধু। বলুন কেমন লাগছে, বা কোন গান মন ছুঁয়েছে।",
+			"you": "আপনি",
+			"buddy": "বন্ধু",
+			"placeholder": "কেমন লাগছে, বা কোন গান মন ছুঁয়েছে…",
+			"send": "পাঠান",
+			"stop": "থামান",
+			"stopped": "থামানো হয়েছে।",
+			"status_thinking": "বন্ধু ভাবছে…",
+			"status_searching": "বন্ধু খুঁজছে… (এ পর্যন্ত {{count}} বার)",
+			"status_reading": "বন্ধু রিভিউ আর তালিকা পড়ছে… ({{count}} পাতা)",
+			"status_writing": "বন্ধু লিখছে…",
+			"status_checking": "বন্ধু দেখছে প্রতিটি গান চলে কি না…",
+			"approval_host": "বন্ধু একটি ওয়েব পেজ খুলতে চায়: {{host}}",
+			"approval_tool": "একটি টুল ব্যবহারে বন্ধুর আপনার অনুমতি দরকার",
+			"allow_once": "এবার অনুমতি দিন",
+			"deny": "অনুমতি দেবেন না",
+			"grant_title": "আগে বন্ধুকে এখানে অনুমতি চাইতে দিন",
+			"grant_not_declared": "অ্যাপের এই সংস্করণ এখানে চাইতে পারে না। আপাতত পুরো চ্যাটে অনুমতি দিন, বা অ্যাপ আপডেট করুন।",
+			"grant_consent": "অ্যাপের পাতায় \"Enable and allow chat control\" চাপুন, তারপর ফিরে আসুন।",
+			"grant_disabled": "অ্যাপটি বন্ধ আছে। এর পাতায় \"Enable\" চাপুন।",
+			"grant_unavailable": "এখন যাচাই করা যাচ্ছে না। একটু পরে আবার চেষ্টা করুন।",
+			"open_full": "পুরো চ্যাটে খুলুন",
+			"dismiss": "বুঝেছি",
+			"error_title": "এবার কিছু ভুল হয়েছে",
+			"show_record": "পুরো রেকর্ড দেখুন",
+			"stuck_title": "বন্ধু মনে হয় আটকে গেছে",
+			"stop_restart": "থামিয়ে আবার শুরু",
+			"wait": "আরেকটু অপেক্ষা",
+			"offline_title": "Kiro Crew-এ পৌঁছানো যাচ্ছে না",
+			"reconnect": "আবার সংযোগ",
+			"all_dropped": "এবার পাওয়া {{count}}টি গানের কোনোটিই চলেনি। অন্য দিকে চেষ্টা করবেন?",
+			"follow_ups": "উত্তর দিন",
+			"remember": "মনে রাখুন: {{note}}",
+			"remembered": "মনে রাখা হলো: {{note}}"
+		},
+		card: {
+			"arc_stay": "পাশে থাকা",
+			"arc_turn": "একটু ঘোরা",
+			"arc_lift": "ওপরে ওঠা",
+			"tier_anchor": "চেনা",
+			"tier_explore": "অন্বেষণ",
+			"tier_deep": "গভীরে",
+			"why": "কেন: ",
+			"listen_for": "যা শুনবেন: ",
+			"praised_by": "প্রশংসা করেছে: ",
+			"play": "চালান",
+			"known": "শুনেছি",
+			"known_done": "নোট করা হলো"
 		}
 	},
 	de: {
@@ -130,13 +171,9 @@ var CATALOGS = {
 		},
 		page: {
 			"title": "Mood Music",
-			"subtitle": "Songs, die zu deiner Stimmung passen",
 			"tab_listen": "Hören",
 			"tab_moments": "Momente",
 			"mood_label": "Wie fühlst du dich, oder welcher Song hat dich berührt?",
-			"mood_placeholder": "Ein verregneter Abend, Heimweh – oder ein Songtitel",
-			"find": "Songs finden",
-			"finding": "Passende Songs werden gesucht…",
 			"mood_chips": "Stimmungen",
 			"mood_calm": "Ruhig",
 			"mood_sad": "Traurig",
@@ -165,14 +202,7 @@ var CATALOGS = {
 			"moments_empty_body": "Jede Stimmung, die du teilst, bleibt hier – mit den Songs, die sie gebracht hat.",
 			"error_generic": "Etwas ist schiefgelaufen ({{code}})",
 			"error_unreadable": "Die Antwort des DJs ließ sich nicht lesen. Versuch es noch einmal.",
-			"error_all_dropped": "Der DJ hat {{count}} Songs gefunden, aber keiner kam in einer Form zurück, die die Seite abspielen kann.",
 			"retry": "Noch einmal fragen",
-			"error_timeout": "Der DJ hat zu lange gebraucht. Versuch es noch einmal.",
-			"approval_title": "Der DJ wartet auf dein OK für die Websuche",
-			"approval_step_open": "Öffne den DJ-Chat mit dem Knopf unten.",
-			"approval_step_trust": "Erlaube dort die Websuche. Wähle Vertrauen, dann fragt er nicht mehr.",
-			"approval_step_back": "Komm hierher zurück. Deine Songs erscheinen von selbst.",
-			"approval_open": "DJ-Chat öffnen",
 			"dropped": "Ausgelassene Songs mit nicht abspielbarem Link: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
@@ -207,6 +237,58 @@ var CATALOGS = {
 			"clear_yes": "Entfernen",
 			"error": "Konnte nicht gespeichert werden ({{code}}).",
 			"error_full": "Die Erinnerung ist voll mit deinen Einträgen. Lösche zuerst einen."
+		},
+		chat: {
+			"subtitle": "Dein Musik-Buddy: sag, wie du dich fühlst, und hör gute Songs, die du noch nicht kennst",
+			"conversation": "Gespräch mit deinem Musik-Buddy",
+			"hello": "Hi, ich bin dein Musik-Buddy. Sag mir, wie du dich fühlst, oder einen Song, der dich berührt hat.",
+			"you": "Du",
+			"buddy": "Buddy",
+			"placeholder": "Wie fühlst du dich, oder ein Song, der dich berührt hat…",
+			"send": "Senden",
+			"stop": "Stopp",
+			"stopped": "Gestoppt.",
+			"status_thinking": "Dein Buddy denkt nach…",
+			"status_searching": "Dein Buddy sucht… (bisher {{count}})",
+			"status_reading": "Dein Buddy liest Kritiken und Listen… ({{count}} Seiten)",
+			"status_writing": "Dein Buddy schreibt…",
+			"status_checking": "Dein Buddy prüft, ob jeder Song abspielbar ist…",
+			"approval_host": "Dein Buddy möchte eine Webseite öffnen: {{host}}",
+			"approval_tool": "Dein Buddy braucht dein OK für ein Werkzeug",
+			"allow_once": "Dieses Mal erlauben",
+			"deny": "Nicht erlauben",
+			"grant_title": "Erlaube deinem Buddy zuerst, hier nachzufragen",
+			"grant_not_declared": "Diese App-Version kann hier nicht fragen. Erlaube es vorerst im vollen Chat oder aktualisiere die App.",
+			"grant_consent": "Klicke auf der Seite der App auf „Aktivieren und Chat-Steuerung erlauben“ und komm zurück.",
+			"grant_disabled": "Die App ist ausgeschaltet. Klicke auf ihrer Seite auf „Aktivieren“.",
+			"grant_unavailable": "Das lässt sich gerade nicht prüfen. Versuch es gleich noch einmal.",
+			"open_full": "Im vollen Chat öffnen",
+			"dismiss": "Verstanden",
+			"error_title": "Diesmal ist etwas schiefgegangen",
+			"show_record": "Ganzen Verlauf zeigen",
+			"stuck_title": "Dein Buddy scheint festzuhängen",
+			"stop_restart": "Stoppen und neu starten",
+			"wait": "Noch etwas warten",
+			"offline_title": "Kiro Crew ist nicht erreichbar",
+			"reconnect": "Neu verbinden",
+			"all_dropped": "Keiner der {{count}} gefundenen Songs ließ sich abspielen. Eine andere Richtung?",
+			"follow_ups": "Antworten mit",
+			"remember": "Merken: {{note}}",
+			"remembered": "Gemerkt: {{note}}"
+		},
+		card: {
+			"arc_stay": "Dabeibleiben",
+			"arc_turn": "Ein wenig wenden",
+			"arc_lift": "Nach oben",
+			"tier_anchor": "Vertraut",
+			"tier_explore": "Entdecken",
+			"tier_deep": "Geheimtipp",
+			"why": "Warum: ",
+			"listen_for": "Achte auf: ",
+			"praised_by": "Gelobt von: ",
+			"play": "Abspielen",
+			"known": "Kenn ich",
+			"known_done": "Notiert"
 		}
 	},
 	en: {
@@ -225,13 +307,9 @@ var CATALOGS = {
 		},
 		page: {
 			"title": "Mood Music",
-			"subtitle": "Songs that fit how you feel right now",
 			"tab_listen": "Listen",
 			"tab_moments": "Moments",
 			"mood_label": "How do you feel, or which song moved you?",
-			"mood_placeholder": "A rainy evening, missing home — or a song title",
-			"find": "Find songs",
-			"finding": "Finding songs that fit…",
 			"mood_chips": "Moods",
 			"mood_calm": "Calm",
 			"mood_sad": "Sad",
@@ -260,14 +338,7 @@ var CATALOGS = {
 			"moments_empty_body": "Each mood you share is kept here, with the songs it brought.",
 			"error_generic": "Something went wrong ({{code}})",
 			"error_unreadable": "The DJ's answer could not be read. Try again.",
-			"error_all_dropped": "The DJ found {{count}} songs, but none came back in a form the page can play.",
 			"retry": "Ask again",
-			"error_timeout": "The DJ took too long. Try again.",
-			"approval_title": "The DJ is waiting for your OK to search the web",
-			"approval_step_open": "Open the DJ chat with the button below.",
-			"approval_step_trust": "Allow the web search there. Choose Trust so it stops asking.",
-			"approval_step_back": "Come back here. Your songs show up on their own.",
-			"approval_open": "Open the DJ chat",
 			"dropped": "Songs left out because their link cannot play: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
@@ -302,6 +373,58 @@ var CATALOGS = {
 			"clear_yes": "Clear",
 			"error": "Could not save that ({{code}}).",
 			"error_full": "Memory is full of your own items. Delete one first."
+		},
+		chat: {
+			"subtitle": "Your music buddy: say how you feel, hear good songs you have not heard yet",
+			"conversation": "Conversation with your music buddy",
+			"hello": "Hi, I'm your music buddy. Tell me how you feel, or a song that moved you.",
+			"you": "You",
+			"buddy": "Buddy",
+			"placeholder": "How do you feel, or a song that moved you…",
+			"send": "Send",
+			"stop": "Stop",
+			"stopped": "Stopped.",
+			"status_thinking": "Your buddy is thinking…",
+			"status_searching": "Your buddy is searching… ({{count}} so far)",
+			"status_reading": "Your buddy is reading reviews and lists… ({{count}} pages)",
+			"status_writing": "Your buddy is writing…",
+			"status_checking": "Your buddy is checking each song plays…",
+			"approval_host": "Your buddy wants to open a web page: {{host}}",
+			"approval_tool": "Your buddy needs your OK to use a tool",
+			"allow_once": "Allow this once",
+			"deny": "Don't allow",
+			"grant_title": "First let your buddy ask for your OK here",
+			"grant_not_declared": "This version of the app cannot ask here. Allow it in the full chat for now, or update the app.",
+			"grant_consent": "On the app's page, click \"Enable and allow chat control\", then come back.",
+			"grant_disabled": "The app is turned off. On its page, click \"Enable\".",
+			"grant_unavailable": "This cannot be checked right now. Try again in a moment.",
+			"open_full": "Open in full chat",
+			"dismiss": "Got it",
+			"error_title": "Something went wrong this time",
+			"show_record": "Show the full record",
+			"stuck_title": "Your buddy seems stuck",
+			"stop_restart": "Stop and start over",
+			"wait": "Wait a bit more",
+			"offline_title": "Can't reach Kiro Crew",
+			"reconnect": "Reconnect",
+			"all_dropped": "None of the {{count}} songs found this time could play. Try another direction?",
+			"follow_ups": "Reply with",
+			"remember": "Remember: {{note}}",
+			"remembered": "Remembered: {{note}}"
+		},
+		card: {
+			"arc_stay": "Stay with it",
+			"arc_turn": "Turn a little",
+			"arc_lift": "Lift up",
+			"tier_anchor": "Familiar",
+			"tier_explore": "Explore",
+			"tier_deep": "Deep cut",
+			"why": "Why: ",
+			"listen_for": "Listen for: ",
+			"praised_by": "Praised by: ",
+			"play": "Play",
+			"known": "I know it",
+			"known_done": "Noted"
 		}
 	},
 	es: {
@@ -320,13 +443,9 @@ var CATALOGS = {
 		},
 		page: {
 			"title": "Mood Music",
-			"subtitle": "Canciones para cómo te sientes ahora",
 			"tab_listen": "Escuchar",
 			"tab_moments": "Momentos",
 			"mood_label": "¿Cómo te sientes, o qué canción te emocionó?",
-			"mood_placeholder": "Una tarde de lluvia, echo de menos mi casa — o el título de una canción",
-			"find": "Buscar canciones",
-			"finding": "Buscando canciones que encajen…",
 			"mood_chips": "Estados de ánimo",
 			"mood_calm": "Tranquilo",
 			"mood_sad": "Triste",
@@ -355,14 +474,7 @@ var CATALOGS = {
 			"moments_empty_body": "Cada estado de ánimo que compartes queda aquí, con las canciones que trajo.",
 			"error_generic": "Algo salió mal ({{code}})",
 			"error_unreadable": "No se pudo leer la respuesta del DJ. Inténtalo de nuevo.",
-			"error_all_dropped": "El DJ encontró {{count}} canciones, pero ninguna llegó en un formato que la página pueda reproducir.",
 			"retry": "Preguntar otra vez",
-			"error_timeout": "El DJ tardó demasiado. Inténtalo de nuevo.",
-			"approval_title": "El DJ espera tu permiso para buscar en la web",
-			"approval_step_open": "Abre el chat del DJ con el botón de abajo.",
-			"approval_step_trust": "Permite allí la búsqueda web. Elige Confiar para que no vuelva a preguntar.",
-			"approval_step_back": "Vuelve aquí. Tus canciones aparecerán solas.",
-			"approval_open": "Abrir el chat del DJ",
 			"dropped": "Canciones omitidas por un enlace que no se puede reproducir: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
@@ -397,6 +509,58 @@ var CATALOGS = {
 			"clear_yes": "Borrar",
 			"error": "No se pudo guardar ({{code}}).",
 			"error_full": "La memoria está llena de tus propios elementos. Elimina uno primero."
+		},
+		chat: {
+			"subtitle": "Tu compañero musical: di cómo te sientes y escucha buenas canciones que aún no conoces",
+			"conversation": "Conversación con tu compañero musical",
+			"hello": "Hola, soy tu compañero musical. Cuéntame cómo te sientes o una canción que te emocionó.",
+			"you": "Tú",
+			"buddy": "Compañero",
+			"placeholder": "Cómo te sientes, o una canción que te emocionó…",
+			"send": "Enviar",
+			"stop": "Parar",
+			"stopped": "Detenido.",
+			"status_thinking": "Tu compañero está pensando…",
+			"status_searching": "Tu compañero está buscando… ({{count}} hasta ahora)",
+			"status_reading": "Tu compañero lee reseñas y listas… ({{count}} páginas)",
+			"status_writing": "Tu compañero está escribiendo…",
+			"status_checking": "Tu compañero comprueba que cada canción se pueda reproducir…",
+			"approval_host": "Tu compañero quiere abrir una página: {{host}}",
+			"approval_tool": "Tu compañero necesita tu permiso para usar una herramienta",
+			"allow_once": "Permitir esta vez",
+			"deny": "No permitir",
+			"grant_title": "Primero deja que tu compañero pida permiso aquí",
+			"grant_not_declared": "Esta versión de la app no puede pedirlo aquí. Permítelo en el chat completo o actualiza la app.",
+			"grant_consent": "En la página de la app, pulsa «Activar y permitir el control del chat» y vuelve.",
+			"grant_disabled": "La app está desactivada. En su página, pulsa «Activar».",
+			"grant_unavailable": "Ahora no se puede comprobar. Inténtalo en un momento.",
+			"open_full": "Abrir en el chat completo",
+			"dismiss": "Entendido",
+			"error_title": "Esta vez algo salió mal",
+			"show_record": "Ver el registro completo",
+			"stuck_title": "Tu compañero parece atascado",
+			"stop_restart": "Parar y empezar de nuevo",
+			"wait": "Esperar un poco más",
+			"offline_title": "No se puede conectar con Kiro Crew",
+			"reconnect": "Reconectar",
+			"all_dropped": "Ninguna de las {{count}} canciones encontradas se pudo reproducir. ¿Otra dirección?",
+			"follow_ups": "Responder con",
+			"remember": "Recordar: {{note}}",
+			"remembered": "Recordado: {{note}}"
+		},
+		card: {
+			"arc_stay": "Acompañar",
+			"arc_turn": "Girar un poco",
+			"arc_lift": "Subir",
+			"tier_anchor": "Conocida",
+			"tier_explore": "Explorar",
+			"tier_deep": "Joya oculta",
+			"why": "Por qué: ",
+			"listen_for": "Escucha: ",
+			"praised_by": "Elogiada por: ",
+			"play": "Reproducir",
+			"known": "Ya la conozco",
+			"known_done": "Anotado"
 		}
 	},
 	fr: {
@@ -415,13 +579,9 @@ var CATALOGS = {
 		},
 		page: {
 			"title": "Mood Music",
-			"subtitle": "Des chansons pour ce que tu ressens maintenant",
 			"tab_listen": "Écouter",
 			"tab_moments": "Moments",
 			"mood_label": "Que ressens-tu, ou quelle chanson t’a ému ?",
-			"mood_placeholder": "Un soir de pluie, le mal du pays — ou un titre de chanson",
-			"find": "Trouver des chansons",
-			"finding": "Recherche de chansons qui conviennent…",
 			"mood_chips": "Humeurs",
 			"mood_calm": "Calme",
 			"mood_sad": "Triste",
@@ -450,14 +610,7 @@ var CATALOGS = {
 			"moments_empty_body": "Chaque humeur que tu partages est gardée ici, avec les chansons qu’elle a apportées.",
 			"error_generic": "Un problème est survenu ({{code}})",
 			"error_unreadable": "Impossible de lire la réponse du DJ. Réessaie.",
-			"error_all_dropped": "Le DJ a trouvé {{count}} chansons, mais aucune n'est revenue sous une forme que la page peut lire.",
 			"retry": "Redemander",
-			"error_timeout": "Le DJ a mis trop de temps. Réessaie.",
-			"approval_title": "Le DJ attend ton accord pour chercher sur le web",
-			"approval_step_open": "Ouvre le chat du DJ avec le bouton ci-dessous.",
-			"approval_step_trust": "Autorise la recherche web. Choisis Faire confiance pour qu'il ne redemande plus.",
-			"approval_step_back": "Reviens ici. Tes chansons apparaîtront toutes seules.",
-			"approval_open": "Ouvrir le chat du DJ",
 			"dropped": "Chansons écartées car leur lien est illisible : {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
@@ -492,6 +645,58 @@ var CATALOGS = {
 			"clear_yes": "Effacer",
 			"error": "Impossible d’enregistrer ({{code}}).",
 			"error_full": "La mémoire est pleine de tes propres éléments. Supprimes-en un d’abord."
+		},
+		chat: {
+			"subtitle": "Ton acolyte musical : dis ce que tu ressens, écoute de bonnes chansons encore inconnues",
+			"conversation": "Conversation avec ton acolyte musical",
+			"hello": "Salut, je suis ton acolyte musical. Dis-moi ce que tu ressens, ou une chanson qui t’a ému.",
+			"you": "Toi",
+			"buddy": "Acolyte",
+			"placeholder": "Ce que tu ressens, ou une chanson qui t’a ému…",
+			"send": "Envoyer",
+			"stop": "Arrêter",
+			"stopped": "Arrêté.",
+			"status_thinking": "Ton acolyte réfléchit…",
+			"status_searching": "Ton acolyte cherche… ({{count}} jusqu’ici)",
+			"status_reading": "Ton acolyte lit des critiques et des listes… ({{count}} pages)",
+			"status_writing": "Ton acolyte écrit…",
+			"status_checking": "Ton acolyte vérifie que chaque chanson se lit…",
+			"approval_host": "Ton acolyte veut ouvrir une page : {{host}}",
+			"approval_tool": "Ton acolyte a besoin de ton accord pour un outil",
+			"allow_once": "Autoriser cette fois",
+			"deny": "Ne pas autoriser",
+			"grant_title": "Autorise d’abord ton acolyte à demander ton accord ici",
+			"grant_not_declared": "Cette version de l’app ne peut pas demander ici. Autorise-le dans le chat complet ou mets l’app à jour.",
+			"grant_consent": "Sur la page de l’app, clique sur « Activer et autoriser le contrôle du chat », puis reviens.",
+			"grant_disabled": "L’app est désactivée. Sur sa page, clique sur « Activer ».",
+			"grant_unavailable": "Impossible de vérifier pour l’instant. Réessaie dans un instant.",
+			"open_full": "Ouvrir dans le chat complet",
+			"dismiss": "Compris",
+			"error_title": "Quelque chose s’est mal passé cette fois",
+			"show_record": "Voir l’historique complet",
+			"stuck_title": "Ton acolyte semble bloqué",
+			"stop_restart": "Arrêter et recommencer",
+			"wait": "Attendre encore un peu",
+			"offline_title": "Impossible de joindre Kiro Crew",
+			"reconnect": "Se reconnecter",
+			"all_dropped": "Aucune des {{count}} chansons trouvées ne se lit. Une autre direction ?",
+			"follow_ups": "Répondre par",
+			"remember": "Retenir : {{note}}",
+			"remembered": "Retenu : {{note}}"
+		},
+		card: {
+			"arc_stay": "Rester avec",
+			"arc_turn": "Tourner un peu",
+			"arc_lift": "S’élever",
+			"tier_anchor": "Familière",
+			"tier_explore": "Découverte",
+			"tier_deep": "Pépite",
+			"why": "Pourquoi : ",
+			"listen_for": "À écouter : ",
+			"praised_by": "Saluée par : ",
+			"play": "Lire",
+			"known": "Je connais",
+			"known_done": "Noté"
 		}
 	},
 	hi: {
@@ -510,13 +715,9 @@ var CATALOGS = {
 		},
 		page: {
 			"title": "मूड म्यूज़िक",
-			"subtitle": "अभी के मूड के गाने",
 			"tab_listen": "सुनें",
 			"tab_moments": "पल",
 			"mood_label": "आप कैसा महसूस कर रहे हैं, या किस गाने ने आपको छुआ?",
-			"mood_placeholder": "बारिश की शाम, घर की याद — या किसी गाने का नाम",
-			"find": "गाने ढूँढें",
-			"finding": "मेल खाते गाने ढूँढ रहे हैं…",
 			"mood_chips": "मूड",
 			"mood_calm": "शांत",
 			"mood_sad": "उदास",
@@ -545,14 +746,7 @@ var CATALOGS = {
 			"moments_empty_body": "आप जो भी मूड साझा करते हैं, वह यहाँ उसके गानों के साथ रहता है।",
 			"error_generic": "कुछ गड़बड़ हो गई ({{code}})",
 			"error_unreadable": "DJ का जवाब पढ़ा नहीं जा सका। फिर कोशिश करें।",
-			"error_all_dropped": "DJ को {{count}} गाने मिले, पर कोई भी ऐसे रूप में नहीं आया जिसे पेज चला सके।",
 			"retry": "फिर से पूछें",
-			"error_timeout": "DJ ने बहुत देर लगाई। फिर कोशिश करें।",
-			"approval_title": "DJ वेब खोज के लिए आपकी अनुमति का इंतज़ार कर रहा है",
-			"approval_step_open": "नीचे दिए बटन से DJ की चैट खोलें।",
-			"approval_step_trust": "वहाँ वेब खोज की अनुमति दें। भरोसा चुनें ताकि वह फिर न पूछे।",
-			"approval_step_back": "यहाँ लौट आएँ। आपके गाने अपने-आप दिखेंगे।",
-			"approval_open": "DJ की चैट खोलें",
 			"dropped": "जिन गानों का लिंक नहीं चल सकता, वे छोड़े गए: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
@@ -587,6 +781,58 @@ var CATALOGS = {
 			"clear_yes": "हटाएँ",
 			"error": "सहेजा नहीं जा सका ({{code}})।",
 			"error_full": "याद आपकी अपनी चीज़ों से भरी है। पहले एक हटाएँ।"
+		},
+		chat: {
+			"subtitle": "आपका संगीत साथी: मन की बात कहें, अनसुने अच्छे गाने सुनें",
+			"conversation": "संगीत साथी से बातचीत",
+			"hello": "नमस्ते, मैं आपका संगीत साथी हूँ। बताइए आप कैसा महसूस कर रहे हैं, या कोई गाना जिसने आपको छुआ।",
+			"you": "आप",
+			"buddy": "साथी",
+			"placeholder": "आप कैसा महसूस कर रहे हैं, या कोई गाना जिसने छुआ…",
+			"send": "भेजें",
+			"stop": "रोकें",
+			"stopped": "रोक दिया।",
+			"status_thinking": "साथी सोच रहा है…",
+			"status_searching": "साथी खोज रहा है… (अब तक {{count}} बार)",
+			"status_reading": "साथी समीक्षाएँ और सूचियाँ पढ़ रहा है… ({{count}} पन्ने)",
+			"status_writing": "साथी लिख रहा है…",
+			"status_checking": "साथी जाँच रहा है कि हर गाना चलता है…",
+			"approval_host": "साथी एक वेब पेज खोलना चाहता है: {{host}}",
+			"approval_tool": "साथी को एक टूल के लिए आपकी अनुमति चाहिए",
+			"allow_once": "इस बार अनुमति दें",
+			"deny": "अनुमति न दें",
+			"grant_title": "पहले साथी को यहाँ अनुमति माँगने दें",
+			"grant_not_declared": "ऐप का यह संस्करण यहाँ नहीं पूछ सकता। अभी पूरी चैट में अनुमति दें, या ऐप अपडेट करें।",
+			"grant_consent": "ऐप के पेज पर \"Enable and allow chat control\" दबाएँ, फिर लौटें।",
+			"grant_disabled": "ऐप बंद है। उसके पेज पर \"Enable\" दबाएँ।",
+			"grant_unavailable": "अभी जाँच नहीं हो सकती। थोड़ी देर में फिर कोशिश करें।",
+			"open_full": "पूरी चैट में खोलें",
+			"dismiss": "समझ गया",
+			"error_title": "इस बार कुछ गड़बड़ हुई",
+			"show_record": "पूरा रिकॉर्ड देखें",
+			"stuck_title": "साथी अटका हुआ लगता है",
+			"stop_restart": "रोककर फिर शुरू करें",
+			"wait": "थोड़ा और रुकें",
+			"offline_title": "Kiro Crew से जुड़ नहीं पा रहे",
+			"reconnect": "फिर से जोड़ें",
+			"all_dropped": "इस बार मिले {{count}} गानों में से कोई नहीं चला। कोई और दिशा?",
+			"follow_ups": "जवाब दें",
+			"remember": "याद रखें: {{note}}",
+			"remembered": "याद रखा: {{note}}"
+		},
+		card: {
+			"arc_stay": "साथ रहना",
+			"arc_turn": "थोड़ा मुड़ना",
+			"arc_lift": "ऊपर उठना",
+			"tier_anchor": "जाना-पहचाना",
+			"tier_explore": "खोज",
+			"tier_deep": "गहरी खोज",
+			"why": "क्यों: ",
+			"listen_for": "क्या सुनें: ",
+			"praised_by": "किसने सराहा: ",
+			"play": "चलाएँ",
+			"known": "सुना है",
+			"known_done": "नोट किया"
 		}
 	},
 	it: {
@@ -605,13 +851,9 @@ var CATALOGS = {
 		},
 		page: {
 			"title": "Mood Music",
-			"subtitle": "Canzoni per come ti senti ora",
 			"tab_listen": "Ascolta",
 			"tab_moments": "Momenti",
 			"mood_label": "Come ti senti, o quale canzone ti ha emozionato?",
-			"mood_placeholder": "Una sera di pioggia, nostalgia di casa — o il titolo di una canzone",
-			"find": "Trova canzoni",
-			"finding": "Cerco canzoni adatte…",
 			"mood_chips": "Umori",
 			"mood_calm": "Calmo",
 			"mood_sad": "Triste",
@@ -640,14 +882,7 @@ var CATALOGS = {
 			"moments_empty_body": "Ogni umore che condividi resta qui, con le canzoni che ha portato.",
 			"error_generic": "Qualcosa è andato storto ({{code}})",
 			"error_unreadable": "Impossibile leggere la risposta del DJ. Riprova.",
-			"error_all_dropped": "Il DJ ha trovato {{count}} canzoni, ma nessuna è tornata in una forma che la pagina può riprodurre.",
 			"retry": "Chiedi di nuovo",
-			"error_timeout": "Il DJ ci ha messo troppo. Riprova.",
-			"approval_title": "Il DJ aspetta il tuo ok per cercare sul web",
-			"approval_step_open": "Apri la chat del DJ con il pulsante qui sotto.",
-			"approval_step_trust": "Consenti lì la ricerca web. Scegli Fidati così non chiede più.",
-			"approval_step_back": "Torna qui. Le canzoni compariranno da sole.",
-			"approval_open": "Apri la chat del DJ",
 			"dropped": "Canzoni escluse per un link non riproducibile: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
@@ -682,6 +917,58 @@ var CATALOGS = {
 			"clear_yes": "Cancella",
 			"error": "Impossibile salvare ({{code}}).",
 			"error_full": "La memoria è piena dei tuoi elementi. Eliminane uno prima."
+		},
+		chat: {
+			"subtitle": "Il tuo compagno musicale: di' come ti senti e ascolta belle canzoni che non conosci ancora",
+			"conversation": "Conversazione con il tuo compagno musicale",
+			"hello": "Ciao, sono il tuo compagno musicale. Dimmi come ti senti o una canzone che ti ha emozionato.",
+			"you": "Tu",
+			"buddy": "Compagno",
+			"placeholder": "Come ti senti, o una canzone che ti ha emozionato…",
+			"send": "Invia",
+			"stop": "Ferma",
+			"stopped": "Fermato.",
+			"status_thinking": "Il tuo compagno sta pensando…",
+			"status_searching": "Il tuo compagno sta cercando… ({{count}} finora)",
+			"status_reading": "Il tuo compagno legge recensioni e liste… ({{count}} pagine)",
+			"status_writing": "Il tuo compagno sta scrivendo…",
+			"status_checking": "Il tuo compagno controlla che ogni canzone si possa ascoltare…",
+			"approval_host": "Il tuo compagno vuole aprire una pagina: {{host}}",
+			"approval_tool": "Il tuo compagno ha bisogno del tuo ok per uno strumento",
+			"allow_once": "Consenti questa volta",
+			"deny": "Non consentire",
+			"grant_title": "Prima lascia che il tuo compagno chieda il permesso qui",
+			"grant_not_declared": "Questa versione dell’app non può chiederlo qui. Consentilo nella chat completa o aggiorna l’app.",
+			"grant_consent": "Nella pagina dell’app, fai clic su «Attiva e consenti il controllo della chat», poi torna qui.",
+			"grant_disabled": "L’app è disattivata. Nella sua pagina, fai clic su «Attiva».",
+			"grant_unavailable": "Ora non si può verificare. Riprova tra poco.",
+			"open_full": "Apri nella chat completa",
+			"dismiss": "Ho capito",
+			"error_title": "Questa volta qualcosa è andato storto",
+			"show_record": "Mostra la cronologia completa",
+			"stuck_title": "Il tuo compagno sembra bloccato",
+			"stop_restart": "Ferma e ricomincia",
+			"wait": "Aspetta ancora un po’",
+			"offline_title": "Impossibile raggiungere Kiro Crew",
+			"reconnect": "Riconnetti",
+			"all_dropped": "Nessuna delle {{count}} canzoni trovate si poteva ascoltare. Un’altra direzione?",
+			"follow_ups": "Rispondi con",
+			"remember": "Ricorda: {{note}}",
+			"remembered": "Ricordato: {{note}}"
+		},
+		card: {
+			"arc_stay": "Restare",
+			"arc_turn": "Girare un po’",
+			"arc_lift": "Salire",
+			"tier_anchor": "Familiare",
+			"tier_explore": "Esplora",
+			"tier_deep": "Chicca",
+			"why": "Perché: ",
+			"listen_for": "Ascolta: ",
+			"praised_by": "Lodata da: ",
+			"play": "Riproduci",
+			"known": "La conosco",
+			"known_done": "Annotato"
 		}
 	},
 	ja: {
@@ -700,13 +987,9 @@ var CATALOGS = {
 		},
 		page: {
 			"title": "ムードミュージック",
-			"subtitle": "今の気持ちに合う曲",
 			"tab_listen": "聴く",
 			"tab_moments": "モーメント",
 			"mood_label": "今どんな気持ち？心に響いた曲は？",
-			"mood_placeholder": "雨の夕方、家が恋しい——または曲名",
-			"find": "曲を探す",
-			"finding": "合う曲を探しています…",
 			"mood_chips": "気分",
 			"mood_calm": "穏やか",
 			"mood_sad": "悲しい",
@@ -735,14 +1018,7 @@ var CATALOGS = {
 			"moments_empty_body": "共有した気持ちが、届いた曲と一緒にここに残ります。",
 			"error_generic": "問題が発生しました（{{code}}）",
 			"error_unreadable": "DJ の返答を読み取れませんでした。もう一度お試しください。",
-			"error_all_dropped": "DJ は {{count}} 曲見つけましたが、ページで再生できる形で返ってきた曲はありませんでした。",
 			"retry": "もう一度聞く",
-			"error_timeout": "DJ の応答に時間がかかりすぎました。もう一度お試しください。",
-			"approval_title": "DJ がウェブ検索の許可を待っています",
-			"approval_step_open": "下のボタンで DJ のチャットを開きます。",
-			"approval_step_trust": "そこでウェブ検索を許可します。「信頼」を選ぶと次から聞かれません。",
-			"approval_step_back": "ここに戻ると、曲が自動で表示されます。",
-			"approval_open": "DJ のチャットを開く",
 			"dropped": "再生できないリンクのため除外した曲：{{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
@@ -777,6 +1053,58 @@ var CATALOGS = {
 			"clear_yes": "消す",
 			"error": "保存できませんでした（{{code}}）。",
 			"error_full": "メモリーが自分で追加した項目でいっぱいです。先に1つ削除してください。"
+		},
+		chat: {
+			"subtitle": "あなたの音楽の相棒：気持ちを話して、まだ知らない良い曲を聴こう",
+			"conversation": "相棒との会話",
+			"hello": "こんにちは、音楽の相棒です。今の気持ちや、心に響いた曲を教えてください。",
+			"you": "あなた",
+			"buddy": "相棒",
+			"placeholder": "今の気持ち、または心に響いた曲…",
+			"send": "送信",
+			"stop": "停止",
+			"stopped": "停止しました。",
+			"status_thinking": "相棒が考え中…",
+			"status_searching": "相棒が探し中…（{{count}} 回目）",
+			"status_reading": "相棒がレビューやリストを読み中…（{{count}} ページ）",
+			"status_writing": "相棒が書き中…",
+			"status_checking": "相棒が再生できるか確かめ中…",
+			"approval_host": "相棒がウェブページを開こうとしています：{{host}}",
+			"approval_tool": "相棒がツールを使うにはあなたの許可が必要です",
+			"allow_once": "今回だけ許可",
+			"deny": "許可しない",
+			"grant_title": "まず相棒がここで確認を求められるようにしてください",
+			"grant_not_declared": "このバージョンのアプリはここで確認できません。いったん完全なチャットで許可するか、アプリを更新してください。",
+			"grant_consent": "アプリのページで「有効にしてチャット操作を許可」を押してから戻ってください。",
+			"grant_disabled": "アプリがオフです。アプリのページで「有効にする」を押してください。",
+			"grant_unavailable": "今は確認できません。少ししてからもう一度試してください。",
+			"open_full": "完全なチャットで開く",
+			"dismiss": "わかった",
+			"error_title": "今回はうまくいきませんでした",
+			"show_record": "完全な記録を見る",
+			"stuck_title": "相棒が止まっているようです",
+			"stop_restart": "止めてやり直す",
+			"wait": "もう少し待つ",
+			"offline_title": "Kiro Crew に接続できません",
+			"reconnect": "再接続",
+			"all_dropped": "今回見つけた {{count}} 曲はどれも再生できませんでした。別の方向にしてみる？",
+			"follow_ups": "返事する",
+			"remember": "覚えておく：{{note}}",
+			"remembered": "覚えました：{{note}}"
+		},
+		card: {
+			"arc_stay": "寄り添う",
+			"arc_turn": "少し変える",
+			"arc_lift": "上を向く",
+			"tier_anchor": "なじみ",
+			"tier_explore": "発見",
+			"tier_deep": "掘り出し物",
+			"why": "なぜ：",
+			"listen_for": "聴きどころ：",
+			"praised_by": "推薦：",
+			"play": "再生",
+			"known": "知ってる",
+			"known_done": "記録済み"
 		}
 	},
 	ko: {
@@ -795,13 +1123,9 @@ var CATALOGS = {
 		},
 		page: {
 			"title": "무드 뮤직",
-			"subtitle": "지금 기분에 맞는 노래",
 			"tab_listen": "듣기",
 			"tab_moments": "순간",
 			"mood_label": "지금 기분은 어때요? 어떤 노래가 마음을 울렸나요?",
-			"mood_placeholder": "비 오는 저녁, 집이 그리워요 — 또는 노래 제목",
-			"find": "노래 찾기",
-			"finding": "어울리는 노래를 찾는 중…",
 			"mood_chips": "기분",
 			"mood_calm": "평온",
 			"mood_sad": "슬픔",
@@ -830,14 +1154,7 @@ var CATALOGS = {
 			"moments_empty_body": "공유한 기분이 그때 들은 노래와 함께 여기에 남습니다.",
 			"error_generic": "문제가 발생했습니다({{code}})",
 			"error_unreadable": "DJ의 답을 읽을 수 없습니다. 다시 시도하세요.",
-			"error_all_dropped": "DJ가 노래 {{count}}곡을 찾았지만, 페이지에서 재생할 수 있는 형태로 온 곡이 없어요.",
 			"retry": "다시 물어보기",
-			"error_timeout": "DJ 응답이 너무 오래 걸렸습니다. 다시 시도하세요.",
-			"approval_title": "DJ가 웹 검색 허락을 기다리고 있어요",
-			"approval_step_open": "아래 버튼으로 DJ 채팅을 여세요.",
-			"approval_step_trust": "거기서 웹 검색을 허용하세요. '신뢰'를 고르면 다시 묻지 않아요.",
-			"approval_step_back": "여기로 돌아오면 노래가 저절로 나타나요.",
-			"approval_open": "DJ 채팅 열기",
 			"dropped": "재생할 수 없는 링크라 제외한 곡: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
@@ -872,6 +1189,58 @@ var CATALOGS = {
 			"clear_yes": "지우기",
 			"error": "저장하지 못했어요 ({{code}}).",
 			"error_full": "기억이 직접 추가한 항목으로 가득 찼어요. 먼저 하나를 지우세요."
+		},
+		chat: {
+			"subtitle": "나의 음악 단짝: 기분을 말하면 아직 몰랐던 좋은 노래를 들려줘요",
+			"conversation": "단짝과의 대화",
+			"hello": "안녕, 나는 너의 음악 단짝이야. 지금 기분이나 마음을 울린 노래를 알려 줘.",
+			"you": "나",
+			"buddy": "단짝",
+			"placeholder": "지금 기분이나 마음을 울린 노래…",
+			"send": "보내기",
+			"stop": "멈춤",
+			"stopped": "멈췄어요.",
+			"status_thinking": "단짝이 생각 중…",
+			"status_searching": "단짝이 찾는 중… (지금까지 {{count}}번)",
+			"status_reading": "단짝이 리뷰와 목록을 읽는 중… ({{count}}페이지)",
+			"status_writing": "단짝이 쓰는 중…",
+			"status_checking": "단짝이 재생되는지 확인하는 중…",
+			"approval_host": "단짝이 웹 페이지를 열려고 해요: {{host}}",
+			"approval_tool": "단짝이 도구를 쓰려면 허락이 필요해요",
+			"allow_once": "이번만 허용",
+			"deny": "허용 안 함",
+			"grant_title": "먼저 단짝이 여기서 허락을 구할 수 있게 해 주세요",
+			"grant_not_declared": "이 버전의 앱은 여기서 물어볼 수 없어요. 지금은 전체 채팅에서 허용하거나 앱을 업데이트하세요.",
+			"grant_consent": "앱 페이지에서 \"사용 설정 및 채팅 제어 허용\"을 누르고 돌아오세요.",
+			"grant_disabled": "앱이 꺼져 있어요. 앱 페이지에서 \"사용 설정\"을 누르세요.",
+			"grant_unavailable": "지금은 확인할 수 없어요. 잠시 후 다시 시도하세요.",
+			"open_full": "전체 채팅에서 열기",
+			"dismiss": "알겠어요",
+			"error_title": "이번엔 문제가 생겼어요",
+			"show_record": "전체 기록 보기",
+			"stuck_title": "단짝이 멈춘 것 같아요",
+			"stop_restart": "멈추고 다시 시작",
+			"wait": "조금 더 기다리기",
+			"offline_title": "Kiro Crew에 연결할 수 없어요",
+			"reconnect": "다시 연결",
+			"all_dropped": "이번에 찾은 {{count}}곡 모두 재생할 수 없었어요. 다른 방향으로 가 볼까요?",
+			"follow_ups": "이어서 말하기",
+			"remember": "기억하기: {{note}}",
+			"remembered": "기억했어요: {{note}}"
+		},
+		card: {
+			"arc_stay": "곁에 머물기",
+			"arc_turn": "조금 돌아서기",
+			"arc_lift": "올라가기",
+			"tier_anchor": "익숙한",
+			"tier_explore": "탐색",
+			"tier_deep": "숨은 명곡",
+			"why": "왜: ",
+			"listen_for": "들어 볼 점: ",
+			"praised_by": "추천한 곳: ",
+			"play": "재생",
+			"known": "들어 봤어",
+			"known_done": "기록함"
 		}
 	},
 	pt: {
@@ -890,13 +1259,9 @@ var CATALOGS = {
 		},
 		page: {
 			"title": "Mood Music",
-			"subtitle": "Músicas para como você se sente agora",
 			"tab_listen": "Ouvir",
 			"tab_moments": "Momentos",
 			"mood_label": "Como você se sente, ou qual música te emocionou?",
-			"mood_placeholder": "Uma noite de chuva, saudade de casa — ou o nome de uma música",
-			"find": "Encontrar músicas",
-			"finding": "Procurando músicas que combinem…",
 			"mood_chips": "Humores",
 			"mood_calm": "Calmo",
 			"mood_sad": "Triste",
@@ -925,14 +1290,7 @@ var CATALOGS = {
 			"moments_empty_body": "Cada humor que você compartilha fica aqui, com as músicas que trouxe.",
 			"error_generic": "Algo deu errado ({{code}})",
 			"error_unreadable": "Não foi possível ler a resposta do DJ. Tente de novo.",
-			"error_all_dropped": "O DJ achou {{count}} músicas, mas nenhuma voltou num formato que a página consiga tocar.",
 			"retry": "Perguntar de novo",
-			"error_timeout": "O DJ demorou demais. Tente de novo.",
-			"approval_title": "O DJ está esperando seu ok para pesquisar na web",
-			"approval_step_open": "Abra o chat do DJ no botão abaixo.",
-			"approval_step_trust": "Permita a pesquisa na web lá. Escolha Confiar para ele não perguntar de novo.",
-			"approval_step_back": "Volte aqui. Suas músicas aparecem sozinhas.",
-			"approval_open": "Abrir o chat do DJ",
 			"dropped": "Músicas deixadas de fora por link que não toca: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
@@ -967,6 +1325,58 @@ var CATALOGS = {
 			"clear_yes": "Limpar",
 			"error": "Não foi possível salvar ({{code}}).",
 			"error_full": "A memória está cheia dos seus itens. Exclua um primeiro."
+		},
+		chat: {
+			"subtitle": "Seu parceiro musical: diga como se sente e ouça boas músicas que você ainda não conhece",
+			"conversation": "Conversa com seu parceiro musical",
+			"hello": "Oi, sou seu parceiro musical. Conte como você se sente ou uma música que te emocionou.",
+			"you": "Você",
+			"buddy": "Parceiro",
+			"placeholder": "Como você se sente, ou uma música que te emocionou…",
+			"send": "Enviar",
+			"stop": "Parar",
+			"stopped": "Parado.",
+			"status_thinking": "Seu parceiro está pensando…",
+			"status_searching": "Seu parceiro está procurando… ({{count}} até agora)",
+			"status_reading": "Seu parceiro está lendo críticas e listas… ({{count}} páginas)",
+			"status_writing": "Seu parceiro está escrevendo…",
+			"status_checking": "Seu parceiro está conferindo se cada música toca…",
+			"approval_host": "Seu parceiro quer abrir uma página: {{host}}",
+			"approval_tool": "Seu parceiro precisa do seu ok para usar uma ferramenta",
+			"allow_once": "Permitir desta vez",
+			"deny": "Não permitir",
+			"grant_title": "Primeiro deixe seu parceiro pedir permissão aqui",
+			"grant_not_declared": "Esta versão do app não pode pedir aqui. Permita no chat completo por enquanto ou atualize o app.",
+			"grant_consent": "Na página do app, clique em “Ativar e permitir controle do chat” e volte.",
+			"grant_disabled": "O app está desativado. Na página dele, clique em “Ativar”.",
+			"grant_unavailable": "Não dá para verificar agora. Tente de novo em instantes.",
+			"open_full": "Abrir no chat completo",
+			"dismiss": "Entendi",
+			"error_title": "Algo deu errado desta vez",
+			"show_record": "Ver o registro completo",
+			"stuck_title": "Seu parceiro parece travado",
+			"stop_restart": "Parar e recomeçar",
+			"wait": "Esperar mais um pouco",
+			"offline_title": "Não foi possível conectar ao Kiro Crew",
+			"reconnect": "Reconectar",
+			"all_dropped": "Nenhuma das {{count}} músicas encontradas pôde tocar. Outra direção?",
+			"follow_ups": "Responder com",
+			"remember": "Lembrar: {{note}}",
+			"remembered": "Lembrado: {{note}}"
+		},
+		card: {
+			"arc_stay": "Ficar junto",
+			"arc_turn": "Virar um pouco",
+			"arc_lift": "Subir",
+			"tier_anchor": "Conhecida",
+			"tier_explore": "Explorar",
+			"tier_deep": "Pérola",
+			"why": "Por quê: ",
+			"listen_for": "Repare em: ",
+			"praised_by": "Elogiada por: ",
+			"play": "Tocar",
+			"known": "Já conheço",
+			"known_done": "Anotado"
 		}
 	},
 	ru: {
@@ -985,13 +1395,9 @@ var CATALOGS = {
 		},
 		page: {
 			"title": "Музыка настроения",
-			"subtitle": "Песни под ваше настроение",
 			"tab_listen": "Слушать",
 			"tab_moments": "Моменты",
 			"mood_label": "Что вы чувствуете, или какая песня вас тронула?",
-			"mood_placeholder": "Дождливый вечер, скучаю по дому — или название песни",
-			"find": "Найти песни",
-			"finding": "Ищу подходящие песни…",
 			"mood_chips": "Настроения",
 			"mood_calm": "Спокойно",
 			"mood_sad": "Грустно",
@@ -1020,14 +1426,7 @@ var CATALOGS = {
 			"moments_empty_body": "Каждое настроение, которым вы делитесь, остаётся здесь вместе с песнями.",
 			"error_generic": "Что-то пошло не так ({{code}})",
 			"error_unreadable": "Не удалось прочитать ответ DJ. Попробуйте ещё раз.",
-			"error_all_dropped": "DJ нашёл песен: {{count}}, но ни одна не пришла в виде, который страница может воспроизвести.",
 			"retry": "Спросить ещё раз",
-			"error_timeout": "DJ отвечал слишком долго. Попробуйте ещё раз.",
-			"approval_title": "DJ ждёт вашего разрешения на поиск в интернете",
-			"approval_step_open": "Откройте чат DJ кнопкой ниже.",
-			"approval_step_trust": "Разрешите там веб-поиск. Выберите «Доверять», чтобы он больше не спрашивал.",
-			"approval_step_back": "Вернитесь сюда. Песни появятся сами.",
-			"approval_open": "Открыть чат DJ",
 			"dropped": "Пропущено песен со ссылкой, которую нельзя воспроизвести: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
@@ -1062,6 +1461,58 @@ var CATALOGS = {
 			"clear_yes": "Убрать",
 			"error": "Не удалось сохранить ({{code}}).",
 			"error_full": "Память заполнена вашими записями. Сначала удалите одну."
+		},
+		chat: {
+			"subtitle": "Ваш музыкальный друг: расскажите о настроении и услышьте хорошие песни, которых вы ещё не знаете",
+			"conversation": "Разговор с музыкальным другом",
+			"hello": "Привет, я ваш музыкальный друг. Расскажите, что вы чувствуете, или назовите песню, которая тронула.",
+			"you": "Вы",
+			"buddy": "Друг",
+			"placeholder": "Что вы чувствуете, или песня, которая тронула…",
+			"send": "Отправить",
+			"stop": "Стоп",
+			"stopped": "Остановлено.",
+			"status_thinking": "Друг думает…",
+			"status_searching": "Друг ищет… (пока {{count}})",
+			"status_reading": "Друг читает рецензии и списки… ({{count}} стр.)",
+			"status_writing": "Друг пишет…",
+			"status_checking": "Друг проверяет, играет ли каждая песня…",
+			"approval_host": "Друг хочет открыть страницу: {{host}}",
+			"approval_tool": "Другу нужно ваше разрешение на инструмент",
+			"allow_once": "Разрешить один раз",
+			"deny": "Не разрешать",
+			"grant_title": "Сначала разрешите другу спрашивать здесь",
+			"grant_not_declared": "Эта версия приложения не может спросить здесь. Разрешите в полном чате или обновите приложение.",
+			"grant_consent": "На странице приложения нажмите «Включить и разрешить управление чатом», затем вернитесь.",
+			"grant_disabled": "Приложение выключено. На его странице нажмите «Включить».",
+			"grant_unavailable": "Сейчас проверить нельзя. Попробуйте чуть позже.",
+			"open_full": "Открыть в полном чате",
+			"dismiss": "Понятно",
+			"error_title": "В этот раз что-то пошло не так",
+			"show_record": "Показать полную запись",
+			"stuck_title": "Похоже, друг застрял",
+			"stop_restart": "Остановить и начать заново",
+			"wait": "Подождать ещё",
+			"offline_title": "Нет связи с Kiro Crew",
+			"reconnect": "Переподключиться",
+			"all_dropped": "Ни одна из {{count}} найденных песен не играет. Попробовать другое направление?",
+			"follow_ups": "Ответить",
+			"remember": "Запомнить: {{note}}",
+			"remembered": "Запомнено: {{note}}"
+		},
+		card: {
+			"arc_stay": "Побыть рядом",
+			"arc_turn": "Чуть повернуть",
+			"arc_lift": "Подняться",
+			"tier_anchor": "Знакомая",
+			"tier_explore": "Открытие",
+			"tier_deep": "Редкость",
+			"why": "Почему: ",
+			"listen_for": "Слушайте: ",
+			"praised_by": "Хвалили: ",
+			"play": "Играть",
+			"known": "Знаю",
+			"known_done": "Отмечено"
 		}
 	},
 	"zh-CN": {
@@ -1080,13 +1531,9 @@ var CATALOGS = {
 		},
 		page: {
 			"title": "情绪音乐",
-			"subtitle": "贴合你此刻心情的歌",
 			"tab_listen": "聆听",
 			"tab_moments": "时刻",
 			"mood_label": "你现在的心情如何，或哪首歌打动了你？",
-			"mood_placeholder": "下雨的傍晚，想家了——或者一首歌名",
-			"find": "找歌",
-			"finding": "正在找合适的歌…",
 			"mood_chips": "心情",
 			"mood_calm": "平静",
 			"mood_sad": "难过",
@@ -1115,14 +1562,7 @@ var CATALOGS = {
 			"moments_empty_body": "你分享的每份心情都会留在这里，连同它带来的歌。",
 			"error_generic": "出了点问题（{{code}}）",
 			"error_unreadable": "读不懂 DJ 的回答，请再试一次。",
-			"error_all_dropped": "DJ 找到了 {{count}} 首歌，但回的格式不对或链接不能播，一首也没放进来。",
 			"retry": "再问一次",
-			"error_timeout": "DJ 太久没回应，请再试一次。",
-			"approval_title": "DJ 在等你允许它上网搜索",
-			"approval_step_open": "点下面的按钮，打开 DJ 的对话。",
-			"approval_step_trust": "在那里允许网页搜索。选「信任」，以后就不再问。",
-			"approval_step_back": "回到这里，歌会自己出现。",
-			"approval_open": "打开 DJ 对话",
 			"dropped": "有 {{count}} 首歌的链接无法播放，已略过。",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
@@ -1157,6 +1597,58 @@ var CATALOGS = {
 			"clear_yes": "清掉",
 			"error": "没能保存（{{code}}）。",
 			"error_full": "记忆满了，都是你自己加的。先删一条。"
+		},
+		chat: {
+			"subtitle": "你的音乐搭子：说说心情，听没怎么听过的好歌",
+			"conversation": "和搭子的对话",
+			"hello": "嗨，我是你的音乐搭子。说说你现在的心情，或一首打动你的歌。",
+			"you": "你",
+			"buddy": "搭子",
+			"placeholder": "说说你的心情，或一首打动你的歌…",
+			"send": "发送",
+			"stop": "停",
+			"stopped": "已停下。",
+			"status_thinking": "搭子在想…",
+			"status_searching": "搭子在找…（已找了 {{count}} 次）",
+			"status_reading": "搭子在看乐评和歌单…（已看了 {{count}} 页）",
+			"status_writing": "搭子在写…",
+			"status_checking": "搭子在听一下能不能播…",
+			"approval_host": "搭子想打开一个网页：{{host}}",
+			"approval_tool": "搭子想用一个工具，需要你点一下",
+			"allow_once": "允许这一次",
+			"deny": "不允许",
+			"grant_title": "要先允许搭子在这里请求确认",
+			"grant_not_declared": "这个版本的 app 还不能在这里请求。先在完整聊天里允许，或更新 app。",
+			"grant_consent": "去 app 页点「启用并允许聊天控制」，再回来。",
+			"grant_disabled": "这个 app 被停用了。去 app 页点「启用」。",
+			"grant_unavailable": "暂时确认不了，过一会再试。",
+			"open_full": "在完整聊天打开",
+			"dismiss": "知道了",
+			"error_title": "这一轮出错了",
+			"show_record": "查看完整记录",
+			"stuck_title": "搭子好像卡住了",
+			"stop_restart": "停下重来",
+			"wait": "再等等",
+			"offline_title": "连不上 Crew",
+			"reconnect": "重新连接",
+			"all_dropped": "这次找到的 {{count}} 首都放不了，换个方向？",
+			"follow_ups": "接着说",
+			"remember": "记住：{{note}}",
+			"remembered": "记下了：{{note}}"
+		},
+		card: {
+			"arc_stay": "陪着",
+			"arc_turn": "转一点",
+			"arc_lift": "往上走",
+			"tier_anchor": "熟悉",
+			"tier_explore": "探索",
+			"tier_deep": "深挖",
+			"why": "为什么：",
+			"listen_for": "听什么：",
+			"praised_by": "谁夸过：",
+			"play": "播放",
+			"known": "听过了",
+			"known_done": "记下了"
 		}
 	}
 };
@@ -1201,6 +1693,19 @@ var BASE = "/api/apps/mood-music";
 var DJ_AGENT = "mood-music-dj";
 var SLOT_NAME = "mood-music";
 var MEMORY_MODE = "temporary";
+/** The grant cause in a refused approval, or null when it was refused for another reason. */
+function grantCause(e) {
+	const err = e;
+	if (err?.status !== 403 || typeof err.body !== "string") return null;
+	try {
+		const body = JSON.parse(err.body);
+		if (body.code !== "session_approval_not_granted") return null;
+		const cause = body.cause;
+		return cause === "not_declared" || cause === "consent_pending" || cause === "disabled" || cause === "unavailable" ? cause : "other";
+	} catch {
+		return null;
+	}
+}
 function createMoodApi(api) {
 	const openSlot = () => api.post("/api/chat/slots", {
 		name: SLOT_NAME,
@@ -1221,6 +1726,12 @@ function createMoodApi(api) {
 		markUsed: (ids) => api.post(`${BASE}/memory/used`, { ids }),
 		openSlot,
 		getSlot: (key) => api.get(`/api/chat/slots/${encodeURIComponent(key)}`),
+		/** Answer one tool approval once: never Trust, which would approve every later call too. */
+		approve: (key, requestId, action) => api.post(`/api/chat/slots/${encodeURIComponent(key)}/approve`, {
+			action,
+			request_id: requestId
+		}),
+		stop: (key) => api.post(`/api/chat/slots/${encodeURIComponent(key)}/stop`),
 		/** Send one turn; a refusal rejects. Returns the slot key the turn went to. */
 		ask: async (message) => {
 			const { key } = await openSlot();
@@ -1244,20 +1755,6 @@ function latestReply(slot) {
 	}
 	return "";
 }
-/**
-* Whether the DJ's turn is parked on a tool approval: an unanswered `permission`
-* row after the newest user message. The row is the one the chat's approval card
-* reads; the page cannot answer it, so it sends the person to that chat.
-*/
-function awaitingApproval(slot) {
-	const msgs = slot?.messages ?? [];
-	for (let i = msgs.length - 1; i >= 0; i--) {
-		const m = msgs[i];
-		if (m.role === "user") return false;
-		if (m.role === "permission" && m.meta?.approval_id && !m.meta.resolved) return true;
-	}
-	return false;
-}
 // src/cardStyle.ts
 /** A translucent card over the mood backdrop. Inline, because the host
 *  stylesheet carries only the classes its own source uses. */
@@ -1265,6 +1762,29 @@ var CARD_STYLE = {
 	background: "color-mix(in oklab, var(--card) 82%, transparent)",
 	backdropFilter: "blur(12px)"
 };
+// src/Banner.tsx
+function Banner({ title, body, icon, children, testId }) {
+	return /* @__PURE__ */ jsxs("section", {
+		role: "alert",
+		className: "rounded-2xl border border-[var(--accent)] p-3",
+		style: CARD_STYLE,
+		"data-testid": testId,
+		children: [
+			/* @__PURE__ */ jsxs("p", {
+				className: "flex items-center gap-1.5 text-sm font-semibold text-[var(--text)]",
+				children: [icon, title]
+			}),
+			body && /* @__PURE__ */ jsx("div", {
+				className: "mt-1 text-sm text-[var(--text)]",
+				children: body
+			}),
+			children && /* @__PURE__ */ jsx("div", {
+				className: "mt-2 flex flex-wrap gap-2",
+				children
+			})
+		]
+	});
+}
 // src/MemoryTab.tsx
 /**
 * The Memory tab (design §2.4): what the music buddy knows about the person.
@@ -1913,6 +2433,13 @@ function NowPlaying({ pick, autoplay, busy, onLike, onSkip, onMore }) {
 					children: [t("page.why"), ": "]
 				}), pick.why]
 			}),
+			pick.listen_for && /* @__PURE__ */ jsxs("p", {
+				className: "mt-1 text-sm leading-relaxed text-[var(--text)]",
+				children: [/* @__PURE__ */ jsx("span", {
+					className: "text-[var(--muted)]",
+					children: t("card.listen_for")
+				}), pick.listen_for]
+			}),
 			/* @__PURE__ */ jsxs("div", {
 				className: "mt-3 flex flex-wrap gap-2",
 				children: [
@@ -1983,7 +2510,12 @@ var EXPLORE_MIX = {
 */
 function buildRequest(opts) {
 	const { kind, text, state, explore = "balanced", stayOnly = false } = opts;
-	const head = kind === "answer" ? "Answer to your question" : kind === "more" ? "More like this song" : "Mood";
+	const head = {
+		mood: "Mood",
+		answer: "Answer to your question",
+		more: "More like this song",
+		follow: "Follow-up"
+	}[kind];
 	const [anchor, exp, deep] = EXPLORE_MIX[explore];
 	return [
 		"[Mood Music]",
@@ -2181,9 +2713,9 @@ function pick(raw) {
 	}
 	return null;
 }
-/** Picks in arc order (stay, turn, lift); a pick with no arc keeps its place among the rest. */
+/** Picks in arc order (stay, turn, lift), a pick with no arc after them; ties keep their order. */
 function byArc(picks) {
-	const rank = (p) => p.arc ? ARCS.indexOf(p.arc) : -1;
+	const rank = (p) => p.arc ? ARCS.indexOf(p.arc) : ARCS.length;
 	if (!picks.some((p) => p.arc)) return picks;
 	return picks.map((p, i) => [p, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(([p]) => p);
 }
@@ -2237,20 +2769,259 @@ function usePrefersReducedMotion() {
 	}, []);
 	return reduce;
 }
+// src/SongCard.tsx
+/**
+* One pick in the buddy's reply (design §1.6): where it sits on the mood arc,
+* the song, why it is here, what to listen for, who praised it, and play /
+* like / skip / "I know it". Every pick drawn here passed the backend link
+* check; the evidence link only ever opens a new tab.
+*/
+var ARC_LABEL = {
+	stay: "card.arc_stay",
+	turn: "card.arc_turn",
+	lift: "card.arc_lift"
+};
+var TIER_LABEL = {
+	anchor: "card.tier_anchor",
+	explore: "card.tier_explore",
+	deep: "card.tier_deep"
+};
+function SongCard({ pick, playing, known, busy, onPlay, onLike, onSkip, onKnown }) {
+	const liked = pick.feedback === "liked";
+	const evidence = pick.evidence ? evidenceUrl(pick.evidence.url) : null;
+	return /* @__PURE__ */ jsxs("article", {
+		"aria-label": pick.artist ? `${pick.title} · ${pick.artist}` : pick.title,
+		className: `rounded-xl border p-3 ${playing ? "border-[var(--accent)]" : "border-[var(--border)]"} ${pick.feedback === "skipped" ? "opacity-50" : ""}`,
+		"data-testid": "mood-song-card",
+		children: [
+			/* @__PURE__ */ jsxs("div", {
+				className: "flex items-baseline justify-between gap-2",
+				children: [pick.arc && /* @__PURE__ */ jsx("span", {
+					className: "text-[11px] font-semibold text-[var(--accent)]",
+					children: t(ARC_LABEL[pick.arc])
+				}), pick.tier && /* @__PURE__ */ jsx("span", {
+					className: "ml-auto shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
+					children: t(TIER_LABEL[pick.tier])
+				})]
+			}),
+			/* @__PURE__ */ jsxs("p", {
+				className: "mt-1 text-sm font-semibold text-[var(--text)]",
+				children: [pick.title, pick.artist && /* @__PURE__ */ jsxs("span", {
+					className: "font-normal text-[var(--muted)]",
+					children: [" · ", pick.artist]
+				})]
+			}),
+			pick.why && /* @__PURE__ */ jsxs("p", {
+				className: "mt-1 text-xs leading-relaxed text-[var(--text)]",
+				children: [/* @__PURE__ */ jsx("span", {
+					className: "text-[var(--muted)]",
+					children: t("card.why")
+				}), pick.why]
+			}),
+			pick.listen_for && /* @__PURE__ */ jsxs("p", {
+				className: "mt-0.5 text-xs leading-relaxed text-[var(--text)]",
+				children: [/* @__PURE__ */ jsx("span", {
+					className: "text-[var(--muted)]",
+					children: t("card.listen_for")
+				}), pick.listen_for]
+			}),
+			evidence && /* @__PURE__ */ jsxs("a", {
+				href: evidence,
+				target: "_blank",
+				rel: "noopener noreferrer",
+				className: "mt-0.5 inline-flex items-center gap-1 text-xs text-[var(--accent)] hover:underline",
+				children: [
+					t("card.praised_by"),
+					pick.evidence?.label || new URL(evidence).hostname,
+					/* @__PURE__ */ jsx(ExternalLink, {
+						size: 11,
+						"aria-hidden": "true"
+					})
+				]
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "mt-2 flex flex-wrap gap-1.5",
+				children: [
+					/* @__PURE__ */ jsxs(Btn, {
+						onClick: onPlay,
+						"aria-label": t("page.play", { title: pick.title }),
+						primary: playing,
+						children: [/* @__PURE__ */ jsx(Play, {
+							size: 13,
+							"aria-hidden": "true"
+						}), t("card.play")]
+					}),
+					/* @__PURE__ */ jsx(Btn, {
+						onClick: onLike,
+						disabled: busy,
+						"aria-pressed": liked,
+						"aria-label": liked ? t("page.liked") : t("page.like"),
+						children: /* @__PURE__ */ jsx(Heart, {
+							size: 13,
+							"aria-hidden": "true",
+							fill: liked ? "currentColor" : "none"
+						})
+					}),
+					/* @__PURE__ */ jsx(Btn, {
+						onClick: onSkip,
+						disabled: busy,
+						"aria-label": t("page.skip"),
+						children: /* @__PURE__ */ jsx(SkipForward, {
+							size: 13,
+							"aria-hidden": "true"
+						})
+					}),
+					/* @__PURE__ */ jsxs(Btn, {
+						onClick: onKnown,
+						disabled: busy || known,
+						"aria-pressed": known,
+						children: [/* @__PURE__ */ jsx(Check, {
+							size: 13,
+							"aria-hidden": "true"
+						}), known ? t("card.known_done") : t("card.known")]
+					})
+				]
+			})
+		]
+	});
+}
+// src/turnState.ts
+/** The heads `request.prompt.ts` writes on the line after `[Mood Music]`. */
+var HEADS = [
+	"Mood",
+	"Answer to your question",
+	"More like this song",
+	"Follow-up"
+];
+var msgs = (slot) => slot?.messages ?? [];
+/** Rows after the newest `user` row: the current turn. */
+function currentTurn(slot) {
+	const all = msgs(slot);
+	for (let i = all.length - 1; i >= 0; i--) if (all[i].role === "user") return all.slice(i + 1);
+	return all;
+}
+var toolOf = (m) => {
+	const name = m.meta?.tool_name;
+	return typeof name === "string" ? name : "";
+};
+/** The person's own words in a request the page sent; other text is shown as typed. */
+function personText(content) {
+	const lines = content.split("\n");
+	if (lines[0]?.trim() !== "[Mood Music]") return content.trim().slice(0, 300);
+	const second = lines[1] ?? "";
+	for (const head of HEADS) if (second.startsWith(`${head}: `)) return second.slice(head.length + 2).trim();
+	return second.trim();
+}
+/** The conversation as the page draws it: the person's words and the buddy's prose. */
+function conversation(slot) {
+	const out = [];
+	for (const m of msgs(slot)) {
+		if (typeof m.content !== "string" || !m.content.trim()) continue;
+		if (m.role === "user") out.push({
+			who: "you",
+			text: personText(m.content)
+		});
+		else if (m.role === "assistant") out.push({
+			who: "buddy",
+			text: replyText(m.content),
+			reply: m.content
+		});
+	}
+	return out;
+}
+/** What the buddy is doing in the running turn, or null when nothing is running. */
+function buddyStatus(slot, checking) {
+	const turn = currentTurn(slot);
+	const tools = turn.filter((m) => m.role === "tool").map(toolOf);
+	const searches = tools.filter((n) => n === "web_search").length;
+	const pages = tools.filter((n) => n === "web_fetch").length;
+	if (checking) return {
+		phase: "checking",
+		searches,
+		pages
+	};
+	if (!slot?.running) return null;
+	const last = [...turn].reverse().find((m) => m.role === "tool" || m.role === "streaming" || m.role === "assistant");
+	if (last && last.role !== "tool" && last.content?.trim()) return {
+		phase: "writing",
+		searches,
+		pages
+	};
+	const tool = last?.role === "tool" ? toolOf(last) : "";
+	if (tool === "web_fetch") return {
+		phase: "reading",
+		searches,
+		pages
+	};
+	if (tool === "web_search" || tool) return {
+		phase: "searching",
+		searches,
+		pages
+	};
+	return {
+		phase: "thinking",
+		searches,
+		pages
+	};
+}
+/** The unanswered tool approval in the current turn, or null. */
+function pendingApproval(slot) {
+	for (const m of [...currentTurn(slot)].reverse()) {
+		if (m.role !== "permission") continue;
+		const meta = m.meta ?? {};
+		if (!meta.approval_id || meta.resolved) continue;
+		return {
+			id: String(meta.approval_id),
+			host: hostIn(meta.tool_input)
+		};
+	}
+	return null;
+}
+function hostIn(input) {
+	const match = (typeof input === "string" ? input : input ? JSON.stringify(input) : "").match(/https?:\/\/([a-z0-9.-]+)/i);
+	return match ? match[1].toLowerCase() : "";
+}
+/** A failed turn's error text (an auto-retry notice is not a failure), or ''. */
+function turnError(slot) {
+	for (const m of [...currentTurn(slot)].reverse()) {
+		if (m.role !== "error") continue;
+		if ((m.kind ?? m.meta?.kind) === "transient_retry") continue;
+		return (m.content ?? "").replace(/\s+/g, " ").trim().slice(0, 160);
+	}
+	return "";
+}
+/** Changes whenever the slot shows any new activity; the stuck clock restarts on a change. */
+function activityKey(slot) {
+	const all = msgs(slot);
+	const last = all[all.length - 1];
+	return `${all.length}:${last?.role ?? ""}:${last?.content?.length ?? 0}:${slot?.running ? 1 : 0}`;
+}
 // src/MoodMusicPage.tsx
 /**
-* MoodMusicPage — say how you feel, hear songs with the same feeling.
+* MoodMusicPage — talk to your music buddy, hear songs with the same feeling.
 *
-* One screen: a mood input with mood chips, the DJ's one question when it has
-* one, the now-playing card and the queue; a second tab keeps the moments. The
-* page talks to the DJ agent through one hidden worker slot (`api.ts`): it sends
-* the mood plus the app's taste summary, polls the slot until the turn ends, and
-* reads the reply's `mood-music` block (`replyParse.ts`). Every link is checked
-* there and again by the backend before it is queued.
+* The Listen tab is a conversation with the buddy (design §1.6): the person's
+* words, the buddy's one or two sentences, and its picks as song cards, with a
+* status line ("thinking / searching / reading / writing / checking") that
+* never names a tool. The player and the queue sit beside it. Moments and
+* Memory are the other tabs.
+*
+* The page talks to the buddy through one app-owned chat slot (`api.ts`). The
+* App SDK gives an app bundle no slot push of its own (only `ChatEmbed` reads
+* it), so this page polls the slot while a turn runs. A finished reply's
+* `mood-music` block is read (`replyParse.ts`), every pick is looked up by the
+* backend (`/verify-picks`), and only what passed is queued and drawn.
+*
+* Anything that needs the person shows here with a button (design §1.8): a
+* tool approval (allow once / don't), a missing chat-control grant, a failed
+* turn, a turn that went quiet, a lost connection, and a reply with nothing
+* playable left.
 */
 var errMessage = (e) => e instanceof Error ? e.message : typeof e === "string" ? e : "";
-/** Poll cadence while the DJ works, and how long before the page gives up. */
-var POLL_MS = 1500;
+/** Poll cadence while the buddy works. */
+var POLL_MS = 1e3;
+/** Played this long, a song counts as known (design §0.6). */
+var KNOWN_AFTER_MS = 3e4;
 var MOOD_LABELS = {
 	calm: "page.mood_calm",
 	sad: "page.mood_sad",
@@ -2259,36 +3030,72 @@ var MOOD_LABELS = {
 	fired: "page.mood_fired"
 };
 var moodLabel = (key) => t(MOOD_LABELS[key]);
+var songKey = (title = "", artist = "") => `${title.trim().toLowerCase()}|${artist.trim().toLowerCase()}`;
+function statusText(s) {
+	switch (s.phase) {
+		case "searching": return t("chat.status_searching", { count: s.searches });
+		case "reading": return t("chat.status_reading", { count: s.pages });
+		case "writing": return t("chat.status_writing");
+		case "checking": return t("chat.status_checking");
+		default: return t("chat.status_thinking");
+	}
+}
+var GRANT_STEPS = {
+	not_declared: "chat.grant_not_declared",
+	consent_pending: "chat.grant_consent",
+	disabled: "chat.grant_disabled",
+	unavailable: "chat.grant_unavailable",
+	other: "chat.grant_consent"
+};
 function MoodMusicPage() {
 	const reduceMotion = usePrefersReducedMotion();
 	const appApi = useAppApi();
 	const moodApi = useMemo(() => createMoodApi(appApi), [appApi]);
+	const { openChat } = useChatLauncher();
 	const [tab, setTab] = useState("listen");
 	const [state, setState] = useState();
+	const [slotKey, setSlotKey] = useState(null);
+	const [slot, setSlot] = useState();
 	const [text, setText] = useState("");
 	const [chip, setChip] = useState(null);
 	const [answer, setAnswer] = useState("");
-	const [question, setQuestion] = useState("");
 	const [look, setLook] = useState("neutral");
 	const [currentId, setCurrentId] = useState(null);
 	const [autoplay, setAutoplay] = useState(false);
 	const [motionPaused, setMotionPaused] = useState(false);
 	const [pending, setPending] = useState(null);
-	const [approval, setApproval] = useState(false);
-	const { openChat } = useChatLauncher();
+	const [checking, setChecking] = useState(false);
+	const [stuck, setStuck] = useState(false);
+	const [offline, setOffline] = useState(false);
+	const [grant, setGrant] = useState(null);
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState(null);
+	const [turnFailed, setTurnFailed] = useState("");
 	const [droppedAll, setDroppedAll] = useState(0);
 	const [notice, setNotice] = useState(null);
+	const [dismissedRemember, setDismissedRemember] = useState("");
 	const slotRef = useRef(null);
 	const momentRef = useRef("");
 	const lastAskRef = useRef("");
+	const lastShownRef = useRef("");
+	const queueMemoryRef = useRef([]);
 	const chipRef = useRef(null);
 	chipRef.current = chip;
+	const refresh = useCallback(async () => {
+		setState(await moodApi.state());
+	}, [moodApi]);
 	useEffect(() => {
 		let live = true;
-		moodApi.state().then((s) => {
-			if (live) setState(s);
+		moodApi.state().then(async (s) => {
+			if (!live) return;
+			setState(s);
+			if (s.last_source) {
+				const { key } = await moodApi.openSlot();
+				if (!live) return;
+				slotRef.current = key;
+				setSlotKey(key);
+				setSlot(await moodApi.getSlot(key).catch(() => void 0));
+			}
 		}).catch((e) => {
 			if (live) setError(errMessage(e) || "load_failed");
 		});
@@ -2296,27 +3103,31 @@ function MoodMusicPage() {
 			live = false;
 		};
 	}, [moodApi]);
-	const refresh = useCallback(async () => {
-		setState(await moodApi.state());
-	}, [moodApi]);
 	const queue = state?.queue ?? [];
 	const current = queue.find((p) => p.id === currentId) ?? queue.find((p) => p.feedback !== "skipped") ?? null;
-	/** Send one turn to the DJ and start waiting for its reply. */
-	const ask = useCallback(async (message) => {
+	const knownSongs = useMemo(() => new Set((state?.memory ?? []).filter((m) => m.kind === "known").map((m) => songKey(m.title, m.artist))), [state?.memory]);
+	/** Send one turn to the buddy and start waiting for its reply. */
+	const ask = useCallback(async (message, shown, memoryIds) => {
 		const known = slotRef.current ?? (await moodApi.openSlot()).key;
 		const before = await moodApi.getSlot(known).catch(() => void 0);
 		lastAskRef.current = message;
-		slotRef.current = await moodApi.ask(message);
+		lastShownRef.current = shown;
+		const key = await moodApi.ask(message);
+		slotRef.current = key;
+		setSlotKey(key);
 		setPending({
 			momentId: momentRef.current,
 			baseline: replySource(latestReply(before)),
-			startedAt: Date.now()
+			memoryIds,
+			text: shown
 		});
 	}, [moodApi]);
 	const run = useCallback(async (work) => {
 		setBusy(true);
 		setError(null);
+		setTurnFailed("");
 		setNotice(null);
+		setStuck(false);
 		try {
 			await work();
 		} catch (e) {
@@ -2326,24 +3137,31 @@ function MoodMusicPage() {
 			setBusy(false);
 		}
 	}, []);
-	/** Record the mood and ask the DJ for songs. */
-	const startMood = (mood, look) => {
-		if (!mood || pending || busy) return;
-		setLook(look);
-		setQuestion("");
+	const send = (kind, words) => {
+		if (!words || pending || busy) return;
 		run(async () => {
-			const moment = await moodApi.addMoment(mood);
-			momentRef.current = moment.id;
-			setState((s) => s ? {
-				...s,
-				moments: [moment, ...s.moments]
-			} : s);
+			if (kind === "mood") {
+				const moment = await moodApi.addMoment(words);
+				momentRef.current = moment.id;
+				setState((s) => s ? {
+					...s,
+					moments: [moment, ...s.moments]
+				} : s);
+			}
+			const { ids } = memorySummary(state?.memory ?? []);
 			await ask(buildRequest({
-				kind: "mood",
-				text: mood,
+				kind,
+				text: words,
 				state
-			}));
+			}), words, ids);
 		});
+	};
+	/** Record the mood and ask the buddy for songs. */
+	const startMood = (mood, nextLook) => {
+		if (!mood || pending || busy) return;
+		setLook(nextLook);
+		send("mood", mood);
+		setText("");
 	};
 	const submitMood = (e) => {
 		e.preventDefault();
@@ -2359,57 +3177,73 @@ function MoodMusicPage() {
 	const submitAnswer = (e) => {
 		e.preventDefault();
 		const reply = answer.trim();
-		if (!reply || pending) return;
-		setQuestion("");
+		if (!reply) return;
 		setAnswer("");
-		run(() => ask(buildRequest({
-			kind: "answer",
-			text: reply,
-			state
-		})));
+		send("answer", reply);
 	};
-	const moreLike = (pick) => {
-		if (pending) return;
-		const song = pick.artist ? `"${pick.title}" - ${pick.artist}` : `"${pick.title}"`;
-		run(() => ask(buildRequest({
-			kind: "more",
-			text: song,
-			state
-		})));
+	const moreLike = (pick) => send("more", pick.artist ? `"${pick.title}" - ${pick.artist}` : `"${pick.title}"`);
+	const stop = () => {
+		const key = slotRef.current;
+		if (!key || !pending) return;
+		setPending((p) => p ? {
+			...p,
+			stopped: true
+		} : p);
+		moodApi.stop(key).catch((e) => setError(errMessage(e) || "stop_failed"));
 	};
+	const readNow = useCallback(async () => {
+		const key = slotRef.current;
+		if (!key) return;
+		try {
+			setSlot(await moodApi.getSlot(key));
+			setOffline(false);
+		} catch {
+			setOffline(true);
+		}
+	}, [moodApi]);
 	useEffect(() => {
 		if (!pending) return;
 		let live = true;
-		let clock = pending.startedAt;
-		setApproval(false);
+		let lastKey = "";
+		let lastMove = Date.now();
+		let failingSince = 0;
 		const timer = setInterval(async () => {
 			const key = slotRef.current;
 			if (!key || !live) return;
-			let slot;
+			let read;
 			try {
-				slot = await moodApi.getSlot(key);
+				read = await moodApi.getSlot(key);
+				failingSince = 0;
+				setOffline(false);
 			} catch {
-				slot = void 0;
+				if (!failingSince) failingSince = Date.now();
+				if (Date.now() - failingSince > 1e4) setOffline(true);
+				return;
 			}
 			if (!live) return;
-			const parked = !!slot?.running && awaitingApproval(slot);
-			setApproval(parked);
-			if (parked) {
-				clock = Date.now();
-				return;
-			}
-			if (Date.now() - clock > 3e5) {
-				live = false;
-				setPending(null);
-				setError("timeout");
-				return;
-			}
-			if (!slot) return;
-			const reply = latestReply(slot);
+			setSlot(read);
+			const moved = activityKey(read);
+			if (moved !== lastKey || pendingApproval(read)) {
+				lastKey = moved;
+				lastMove = Date.now();
+				setStuck(false);
+			} else if (Date.now() - lastMove > 12e4) setStuck(true);
+			if (read.running) return;
+			const reply = latestReply(read);
 			const source = replySource(reply);
-			if (slot.running || !reply || source === pending.baseline) return;
+			const failed = turnError(read);
+			if (!failed && (!reply || source === pending.baseline) && !pending.stopped) return;
 			live = false;
 			setPending(null);
+			setStuck(false);
+			if (pending.stopped) {
+				setNotice(t("chat.stopped"));
+				return;
+			}
+			if (failed && source === pending.baseline) {
+				setTurnFailed(failed);
+				return;
+			}
 			const parsed = parseDjReply(reply);
 			if (!parsed) {
 				setError("unreadable");
@@ -2418,13 +3252,15 @@ function MoodMusicPage() {
 			const tagLook = moodLookFor(parsed.moodTags);
 			if (!chipRef.current && tagLook !== "neutral") setLook(tagLook);
 			if (parsed.picks.length === 0) {
-				if (parsed.question) setQuestion(parsed.question);
-				else if (parsed.dropped > 0) {
-					setDroppedAll(parsed.dropped);
-					setError("all_dropped");
-				} else setError("unreadable");
+				if (!parsed.question) {
+					if (parsed.dropped > 0) {
+						setDroppedAll(parsed.dropped);
+						setError("all_dropped");
+					} else setError("unreadable");
+				}
 				return;
 			}
+			setChecking(true);
 			try {
 				const checked = await moodApi.verifyPicks(parsed.picks);
 				const dropped = parsed.dropped + Object.values(checked.dropped).reduce((a, b) => a + b, 0);
@@ -2440,11 +3276,14 @@ function MoodMusicPage() {
 					mood_tags: parsed.moodTags,
 					picks: checked.picks
 				});
+				queueMemoryRef.current = pending.memoryIds;
 				setState(await moodApi.state());
 				setCurrentId(next[0]?.id ?? null);
 				setAutoplay(false);
 			} catch (e) {
 				setError(errMessage(e) || "unknown");
+			} finally {
+				setChecking(false);
 			}
 		}, POLL_MS);
 		return () => {
@@ -2452,9 +3291,16 @@ function MoodMusicPage() {
 			clearInterval(timer);
 		};
 	}, [pending, moodApi]);
+	/** The memory behind this queue helped: keep it fresh (design §2.3). */
+	const markUsed = useCallback(() => {
+		const ids = queueMemoryRef.current;
+		queueMemoryRef.current = [];
+		if (ids.length) moodApi.markUsed(ids).catch(() => void 0);
+	}, [moodApi]);
 	const giveFeedback = (pick, verdict) => {
 		run(async () => {
 			const updated = await moodApi.feedback(pick.id, verdict);
+			if (verdict === "liked") markUsed();
 			setState(await moodApi.state().catch(() => state));
 			if (verdict === "skipped") {
 				const rest = queue.filter((p) => p.id !== updated.id && p.feedback !== "skipped");
@@ -2463,24 +3309,81 @@ function MoodMusicPage() {
 			}
 		});
 	};
+	const markKnown = (pick, origin) => {
+		moodApi.addMemory({
+			kind: "known",
+			title: pick.title,
+			artist: pick.artist,
+			origin
+		}).then(refresh).catch((e) => setError(errMessage(e) || "unknown"));
+	};
 	const playPick = (pick) => {
 		setCurrentId(pick.id);
 		setAutoplay(true);
 	};
-	const errorText = error === null ? null : error === "unreadable" ? t("page.error_unreadable") : error === "all_dropped" ? t("page.error_all_dropped", { count: droppedAll }) : error === "timeout" ? t("page.error_timeout") : t("page.error_generic", { code: error });
+	useEffect(() => {
+		if (!current || !autoplay || current.source !== "youtube") return;
+		if (knownSongs.has(songKey(current.title, current.artist))) return;
+		const pick = current;
+		const timer = setTimeout(() => {
+			markKnown(pick, "app");
+			markUsed();
+		}, KNOWN_AFTER_MS);
+		return () => clearTimeout(timer);
+	}, [current?.id, autoplay]);
+	const approve = (id, action) => {
+		const key = slotRef.current;
+		if (!key) return;
+		moodApi.approve(key, id, action).then(readNow).catch((e) => {
+			const cause = grantCause(e);
+			if (cause) setGrant(cause);
+			else setError(errMessage(e) || "approve_failed");
+		});
+	};
+	const openRecord = () => {
+		if (slotRef.current) openChat({ slotKey: slotRef.current });
+	};
+	const retry = () => {
+		const again = lastAskRef.current;
+		if (!again) return;
+		run(() => ask(again, lastShownRef.current, []));
+	};
+	const stopAndRetry = () => {
+		const key = slotRef.current;
+		const again = lastAskRef.current;
+		if (!key || !again) return;
+		setPending(null);
+		run(async () => {
+			await moodApi.stop(key).catch(() => void 0);
+			await ask(again, lastShownRef.current, []);
+		});
+	};
+	const errorText = error === null ? null : error === "unreadable" ? t("page.error_unreadable") : error === "all_dropped" ? t("chat.all_dropped", { count: droppedAll }) : t("page.error_generic", { code: error });
 	const working = busy || !!pending;
+	const moving = !reduceMotion && !motionPaused;
+	const status = pending || checking ? buddyStatus(slot, checking) ?? {
+		phase: "thinking",
+		searches: 0,
+		pages: 0
+	} : null;
+	const approval = pending ? pendingApproval(slot) : null;
+	const lines = conversation(slot);
+	const lastBuddy = [...lines].reverse().find((l) => l.who === "buddy");
+	const lastParsed = !pending && lastBuddy?.reply ? parseDjReply(lastBuddy.reply) : null;
+	const showYou = pending && pending.text && !(lines.length && lines[lines.length - 1].who === "you" && lines[lines.length - 1].text === pending.text);
+	const remember = lastParsed?.remember && lastParsed.remember !== dismissedRemember ? lastParsed.remember : "";
 	return /* @__PURE__ */ jsxs("div", {
 		className: "relative flex h-full flex-col overflow-hidden",
 		"data-testid": "mood-music-page",
 		children: [/* @__PURE__ */ jsx(MoodBackdrop, {
 			look,
-			moving: !reduceMotion && !motionPaused
+			moving
 		}), /* @__PURE__ */ jsxs("div", {
 			className: "relative flex h-full flex-col",
 			children: [
 				/* @__PURE__ */ jsx(PageHeader, {
 					title: t("page.title"),
-					subtitle: t("page.subtitle"),
+					subtitle: t("chat.subtitle"),
 					actions: reduceMotion ? void 0 : /* @__PURE__ */ jsxs(Btn, {
 						onClick: () => setMotionPaused((p) => !p),
 						"data-testid": "mood-motion-toggle",
@@ -2524,191 +3427,317 @@ function MoodMusicPage() {
 						className: "mx-auto max-w-5xl",
 						children: /* @__PURE__ */ jsx(MomentsTab, { moments: state?.moments ?? [] })
 					}) : /* @__PURE__ */ jsxs("div", {
-						className: "mx-auto flex max-w-5xl flex-col gap-4",
-						children: [
-							/* @__PURE__ */ jsxs("form", {
-								onSubmit: submitMood,
-								className: "rounded-2xl border border-[var(--border)] p-4 shadow-sm",
-								style: CARD_STYLE,
-								children: [
-									/* @__PURE__ */ jsx("label", {
-										id: "mood-input-label",
-										htmlFor: "mood-input",
-										className: "text-sm font-medium text-[var(--text)]",
-										children: t("page.mood_label")
+						className: "mx-auto grid max-w-5xl items-start gap-4",
+						style: { gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 360px), 1fr))" },
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex min-w-0 flex-col gap-3",
+							children: [
+								/* @__PURE__ */ jsx("div", {
+									role: "group",
+									"aria-label": t("page.mood_chips"),
+									className: "flex flex-wrap gap-2",
+									children: MOOD_KEYS.map((key) => /* @__PURE__ */ jsx("button", {
+										type: "button",
+										"aria-pressed": chip === key,
+										onClick: () => pickChip(key),
+										disabled: working,
+										className: `rounded-full border px-3 py-1 text-xs transition-colors ${chip === key ? "border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]" : "border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]"}`,
+										children: moodLabel(key)
+									}, key))
+								}),
+								/* @__PURE__ */ jsxs("section", {
+									"aria-label": t("chat.conversation"),
+									className: "flex flex-col gap-2",
+									"data-testid": "mood-chat",
+									children: [
+										lines.length === 0 && !pending && /* @__PURE__ */ jsx("p", {
+											className: "text-sm text-[var(--muted)]",
+											children: t("chat.hello")
+										}),
+										lines.slice(-20).map((line, i) => line.who === "you" ? /* @__PURE__ */ jsxs("p", {
+											className: "self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]",
+											children: [/* @__PURE__ */ jsxs("span", {
+												className: "sr-only",
+												children: [t("chat.you"), ": "]
+											}), line.text]
+										}, i) : /* @__PURE__ */ jsxs("div", {
+											className: "max-w-[95%] rounded-2xl border border-[var(--border)] px-3 py-2",
+											style: CARD_STYLE,
+											children: [/* @__PURE__ */ jsxs("p", {
+												className: "text-sm text-[var(--text)]",
+												children: [/* @__PURE__ */ jsx("span", {
+													className: "mr-1 font-semibold text-[var(--accent)]",
+													children: t("chat.buddy")
+												}), line.text]
+											}), line === lastBuddy && line.reply && replySource(line.reply) === state?.last_source && queue.length > 0 && /* @__PURE__ */ jsx("div", {
+												className: "mt-2 grid gap-2",
+												"data-testid": "mood-cards",
+												children: queue.map((p) => /* @__PURE__ */ jsx(SongCard, {
+													pick: p,
+													playing: current?.id === p.id,
+													known: knownSongs.has(songKey(p.title, p.artist)),
+													busy: working,
+													onPlay: () => playPick(p),
+													onLike: () => giveFeedback(p, p.feedback === "liked" ? "" : "liked"),
+													onSkip: () => giveFeedback(p, "skipped"),
+													onKnown: () => markKnown(p, "user")
+												}, p.id))
+											})]
+										}, i)),
+										showYou && /* @__PURE__ */ jsx("p", {
+											className: "self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]",
+											children: pending.text
+										}),
+										status && /* @__PURE__ */ jsxs("p", {
+											role: "status",
+											className: "flex items-center gap-1.5 text-xs text-[var(--muted)]",
+											"data-testid": "mood-status",
+											children: [/* @__PURE__ */ jsx(Headphones, {
+												size: 13,
+												"aria-hidden": "true",
+												className: reduceMotion ? "" : "animate-pulse"
+											}), statusText(status)]
+										})
+									]
+								}),
+								approval && /* @__PURE__ */ jsxs(Banner, {
+									testId: "mood-approval",
+									title: approval.host ? t("chat.approval_host", { host: approval.host }) : t("chat.approval_tool"),
+									icon: /* @__PURE__ */ jsx(ShieldCheck, {
+										size: 14,
+										"aria-hidden": "true"
 									}),
-									/* @__PURE__ */ jsxs("div", {
-										className: "mt-2 flex gap-2",
-										children: [/* @__PURE__ */ jsx("input", {
-											id: "mood-input",
-											"aria-labelledby": "mood-input-label",
-											value: text,
-											onChange: (e) => setText(e.target.value),
-											maxLength: 200,
-											placeholder: t("page.mood_placeholder"),
-											className: "min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-										}), /* @__PURE__ */ jsxs(Btn, {
-											type: "submit",
+									children: [/* @__PURE__ */ jsx(Btn, {
+										primary: true,
+										onClick: () => approve(approval.id, "approved"),
+										children: t("chat.allow_once")
+									}), /* @__PURE__ */ jsx(Btn, {
+										onClick: () => approve(approval.id, "rejected"),
+										children: t("chat.deny")
+									})]
+								}),
+								grant && /* @__PURE__ */ jsxs(Banner, {
+									testId: "mood-grant",
+									title: t("chat.grant_title"),
+									body: t(GRANT_STEPS[grant]),
+									icon: /* @__PURE__ */ jsx(ShieldCheck, {
+										size: 14,
+										"aria-hidden": "true"
+									}),
+									children: [/* @__PURE__ */ jsx(Btn, {
+										primary: true,
+										onClick: openRecord,
+										children: t("chat.open_full")
+									}), /* @__PURE__ */ jsx(Btn, {
+										onClick: () => setGrant(null),
+										children: t("chat.dismiss")
+									})]
+								}),
+								turnFailed && /* @__PURE__ */ jsxs(Banner, {
+									testId: "mood-turn-error",
+									title: t("chat.error_title"),
+									body: turnFailed,
+									icon: /* @__PURE__ */ jsx(TriangleAlert, {
+										size: 14,
+										"aria-hidden": "true"
+									}),
+									children: [/* @__PURE__ */ jsx(Btn, {
+										primary: true,
+										onClick: retry,
+										children: t("page.retry")
+									}), /* @__PURE__ */ jsx(Btn, {
+										onClick: openRecord,
+										children: t("chat.show_record")
+									})]
+								}),
+								stuck && pending && /* @__PURE__ */ jsxs(Banner, {
+									testId: "mood-stuck",
+									title: t("chat.stuck_title"),
+									icon: /* @__PURE__ */ jsx(TriangleAlert, {
+										size: 14,
+										"aria-hidden": "true"
+									}),
+									children: [
+										/* @__PURE__ */ jsx(Btn, {
 											primary: true,
-											disabled: working || !text.trim() && !chip,
-											children: [/* @__PURE__ */ jsx(Search, {
+											onClick: stopAndRetry,
+											children: t("chat.stop_restart")
+										}),
+										/* @__PURE__ */ jsx(Btn, {
+											onClick: () => setStuck(false),
+											children: t("chat.wait")
+										}),
+										/* @__PURE__ */ jsx(Btn, {
+											onClick: openRecord,
+											children: t("chat.show_record")
+										})
+									]
+								}),
+								offline && /* @__PURE__ */ jsx(Banner, {
+									testId: "mood-offline",
+									title: t("chat.offline_title"),
+									icon: /* @__PURE__ */ jsx(WifiOff, {
+										size: 14,
+										"aria-hidden": "true"
+									}),
+									children: /* @__PURE__ */ jsx(Btn, {
+										primary: true,
+										onClick: () => void readNow(),
+										children: t("chat.reconnect")
+									})
+								}),
+								lastParsed?.question && !pending && /* @__PURE__ */ jsxs("form", {
+									onSubmit: submitAnswer,
+									className: "rounded-2xl border border-[var(--accent)] p-3",
+									style: CARD_STYLE,
+									"data-testid": "mood-question",
+									children: [
+										/* @__PURE__ */ jsxs("p", {
+											className: "flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)]",
+											children: [/* @__PURE__ */ jsx(MessageCircleQuestion, {
 												size: 14,
 												"aria-hidden": "true"
-											}), t("page.find")]
-										})]
-									}),
-									/* @__PURE__ */ jsx("div", {
-										role: "group",
-										"aria-label": t("page.mood_chips"),
-										className: "mt-3 flex flex-wrap gap-2",
-										children: MOOD_KEYS.map((key) => /* @__PURE__ */ jsx("button", {
-											type: "button",
-											"aria-pressed": chip === key,
-											onClick: () => pickChip(key),
-											disabled: working,
-											className: `rounded-full border px-3 py-1 text-xs transition-colors ${chip === key ? "border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]" : "border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]"}`,
-											children: moodLabel(key)
-										}, key))
-									}),
-									working && /* @__PURE__ */ jsx("p", {
-										role: "status",
-										className: "mt-3 text-xs text-[var(--muted)]",
-										children: t("page.finding")
-									}),
-									/* @__PURE__ */ jsx(ErrorNotice, {
-										className: "mt-2",
-										message: errorText
-									}),
-									(error === "unreadable" || error === "all_dropped" || error === "timeout") && lastAskRef.current && !working && /* @__PURE__ */ jsx(Btn, {
-										type: "button",
-										className: "mt-2",
-										onClick: () => {
-											const again = lastAskRef.current;
-											run(() => ask(again));
-										},
-										children: t("page.retry")
-									}),
-									notice && /* @__PURE__ */ jsx("p", {
-										className: "mt-2 text-xs text-[var(--muted)]",
-										children: notice
-									})
-								]
-							}),
-							pending && approval && /* @__PURE__ */ jsxs("section", {
-								role: "alert",
-								"aria-labelledby": "mood-approval-title",
-								className: "rounded-2xl border border-[var(--accent)] p-4",
-								style: CARD_STYLE,
-								"data-testid": "mood-approval",
-								children: [
-									/* @__PURE__ */ jsxs("p", {
-										id: "mood-approval-title",
-										className: "flex items-center gap-1.5 text-sm font-semibold text-[var(--text)]",
-										children: [/* @__PURE__ */ jsx(ShieldCheck, {
-											size: 14,
-											"aria-hidden": "true"
-										}), t("page.approval_title")]
-									}),
-									/* @__PURE__ */ jsxs("ol", {
-										className: "mt-2 list-decimal space-y-1 pl-5 text-sm text-[var(--text)]",
-										children: [
-											/* @__PURE__ */ jsx("li", { children: t("page.approval_step_open") }),
-											/* @__PURE__ */ jsx("li", { children: t("page.approval_step_trust") }),
-											/* @__PURE__ */ jsx("li", { children: t("page.approval_step_back") })
-										]
-									}),
-									/* @__PURE__ */ jsx(Btn, {
-										className: "mt-3",
-										primary: true,
-										onClick: () => {
-											if (slotRef.current) openChat({ slotKey: slotRef.current });
-										},
-										children: t("page.approval_open")
-									})
-								]
-							}),
-							question && /* @__PURE__ */ jsxs("form", {
-								onSubmit: submitAnswer,
-								className: "rounded-2xl border border-[var(--accent)] p-4",
-								style: CARD_STYLE,
-								"data-testid": "mood-question",
-								children: [
-									/* @__PURE__ */ jsxs("p", {
-										className: "flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)]",
-										children: [/* @__PURE__ */ jsx(MessageCircleQuestion, {
-											size: 14,
-											"aria-hidden": "true"
-										}), t("page.question_label")]
-									}),
-									/* @__PURE__ */ jsx("p", {
-										className: "mt-1 text-sm text-[var(--text)]",
-										children: question
-									}),
-									/* @__PURE__ */ jsxs("div", {
-										className: "mt-2 flex gap-2",
-										children: [/* @__PURE__ */ jsx("input", {
-											"aria-label": t("page.answer_placeholder"),
-											value: answer,
-											onChange: (e) => setAnswer(e.target.value),
-											maxLength: 300,
-											placeholder: t("page.answer_placeholder"),
-											className: "min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-										}), /* @__PURE__ */ jsx(Btn, {
-											type: "submit",
-											primary: true,
-											disabled: working || !answer.trim(),
-											children: t("page.send_answer")
-										})]
-									})
-								]
-							}),
-							/* @__PURE__ */ jsxs("div", {
-								className: "grid items-start gap-4",
-								style: { gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))" },
-								children: [current ? /* @__PURE__ */ jsx(NowPlaying, {
-									pick: current,
-									autoplay,
-									busy: working,
-									onLike: () => giveFeedback(current, current.feedback === "liked" ? "" : "liked"),
-									onSkip: () => giveFeedback(current, "skipped"),
-									onMore: () => moreLike(current)
-								}) : /* @__PURE__ */ jsx(EmptyState, {
-									icon: /* @__PURE__ */ jsx(Play, { size: 28 }),
-									title: t("page.empty_title"),
-									subtitle: t("page.empty_body")
-								}), queue.length > 1 && /* @__PURE__ */ jsxs("section", {
-									"aria-label": t("page.queue"),
-									children: [/* @__PURE__ */ jsx("h3", {
-										className: "mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]",
-										children: t("page.queue")
-									}), /* @__PURE__ */ jsx("ul", {
-										className: "flex flex-col gap-1.5",
-										"data-testid": "mood-queue",
-										children: queue.map((p) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("button", {
-											type: "button",
-											onClick: () => playPick(p),
-											"aria-current": current?.id === p.id ? "true" : void 0,
-											"aria-label": t("page.play", { title: p.title }),
-											className: `flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition-colors ${current?.id === p.id ? "border-[var(--accent)] bg-[var(--accent-subtle)]" : "border-[var(--border)] hover:bg-[var(--bg-hover)]"} ${p.feedback === "skipped" ? "opacity-50" : ""}`,
-											style: current?.id === p.id ? void 0 : CARD_STYLE,
-											children: [/* @__PURE__ */ jsxs("span", {
-												className: "min-w-0 flex-1",
-												children: [/* @__PURE__ */ jsx("span", {
-													className: "block truncate text-sm text-[var(--text)]",
-													children: p.title
-												}), /* @__PURE__ */ jsx("span", {
-													className: "block truncate text-xs text-[var(--muted)]",
-													children: p.artist
-												})]
-											}), /* @__PURE__ */ jsx("span", {
-												className: "shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
-												children: p.source === "youtube" ? t("page.source_youtube") : t("page.source_bilibili")
+											}), t("page.question_label")]
+										}),
+										/* @__PURE__ */ jsx("p", {
+											className: "mt-1 text-sm text-[var(--text)]",
+											children: lastParsed.question
+										}),
+										/* @__PURE__ */ jsxs("div", {
+											className: "mt-2 flex gap-2",
+											children: [/* @__PURE__ */ jsx("input", {
+												"aria-label": t("page.answer_placeholder"),
+												value: answer,
+												onChange: (e) => setAnswer(e.target.value),
+												maxLength: 300,
+												placeholder: t("page.answer_placeholder"),
+												className: "min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+											}), /* @__PURE__ */ jsx(Btn, {
+												type: "submit",
+												primary: true,
+												disabled: working || !answer.trim(),
+												children: t("page.send_answer")
 											})]
-										}) }, p.id))
+										})
+									]
+								}),
+								!pending && ((lastParsed?.followUps.length ?? 0) > 0 || remember) && /* @__PURE__ */ jsxs("div", {
+									role: "group",
+									"aria-label": t("chat.follow_ups"),
+									className: "flex flex-wrap gap-2",
+									"data-testid": "mood-follow-ups",
+									children: [lastParsed.followUps.map((f) => /* @__PURE__ */ jsx(Btn, {
+										disabled: working,
+										onClick: () => send("follow", f),
+										children: f
+									}, f)), remember && /* @__PURE__ */ jsx(Btn, {
+										disabled: working,
+										onClick: () => {
+											setDismissedRemember(remember);
+											moodApi.addMemory({
+												kind: "note",
+												text: remember,
+												origin: "user"
+											}).then(refresh).then(() => setNotice(t("chat.remembered", { note: remember }))).catch((e) => setError(errMessage(e) || "unknown"));
+										},
+										children: t("chat.remember", { note: remember })
 									})]
+								}),
+								/* @__PURE__ */ jsxs("form", {
+									onSubmit: submitMood,
+									className: "flex flex-col gap-2",
+									children: [
+										/* @__PURE__ */ jsx("label", {
+											id: "mood-input-label",
+											htmlFor: "mood-input",
+											className: "sr-only",
+											children: t("page.mood_label")
+										}),
+										/* @__PURE__ */ jsxs("div", {
+											className: "flex gap-2",
+											children: [/* @__PURE__ */ jsx("input", {
+												id: "mood-input",
+												"aria-labelledby": "mood-input-label",
+												value: text,
+												onChange: (e) => setText(e.target.value),
+												maxLength: 200,
+												placeholder: t("chat.placeholder"),
+												className: "min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+											}), pending ? /* @__PURE__ */ jsxs(Btn, {
+												type: "button",
+												onClick: stop,
+												disabled: pending.stopped,
+												children: [/* @__PURE__ */ jsx(Square, {
+													size: 14,
+													"aria-hidden": "true"
+												}), t("chat.stop")]
+											}) : /* @__PURE__ */ jsxs(Btn, {
+												type: "submit",
+												primary: true,
+												disabled: working || !text.trim() && !chip,
+												children: [/* @__PURE__ */ jsx(Send, {
+													size: 14,
+													"aria-hidden": "true"
+												}), t("chat.send")]
+											})]
+										}),
+										/* @__PURE__ */ jsx(ErrorNotice, { message: errorText }),
+										(error === "unreadable" || error === "all_dropped") && lastAskRef.current && !working && /* @__PURE__ */ jsx(Btn, {
+											type: "button",
+											onClick: retry,
+											children: t("page.retry")
+										}),
+										notice && /* @__PURE__ */ jsx("p", {
+											className: "text-xs text-[var(--muted)]",
+											children: notice
+										})
+									]
+								})
+							]
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "flex min-w-0 flex-col gap-4",
+							children: [current ? /* @__PURE__ */ jsx(NowPlaying, {
+								pick: current,
+								autoplay,
+								busy: working,
+								onLike: () => giveFeedback(current, current.feedback === "liked" ? "" : "liked"),
+								onSkip: () => giveFeedback(current, "skipped"),
+								onMore: () => moreLike(current)
+							}) : /* @__PURE__ */ jsx(EmptyState, {
+								icon: /* @__PURE__ */ jsx(Play, { size: 28 }),
+								title: t("page.empty_title"),
+								subtitle: t("page.empty_body")
+							}), queue.length > 1 && /* @__PURE__ */ jsxs("section", {
+								"aria-label": t("page.queue"),
+								children: [/* @__PURE__ */ jsx("h3", {
+									className: "mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]",
+									children: t("page.queue")
+								}), /* @__PURE__ */ jsx("ul", {
+									className: "flex flex-col gap-1.5",
+									"data-testid": "mood-queue",
+									children: queue.map((p) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("button", {
+										type: "button",
+										onClick: () => playPick(p),
+										"aria-current": current?.id === p.id ? "true" : void 0,
+										className: `flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition-colors ${current?.id === p.id ? "border-[var(--accent)] bg-[var(--accent-subtle)]" : "border-[var(--border)] hover:bg-[var(--bg-hover)]"} ${p.feedback === "skipped" ? "opacity-50" : ""}`,
+										style: current?.id === p.id ? void 0 : CARD_STYLE,
+										children: [/* @__PURE__ */ jsxs("span", {
+											className: "min-w-0 flex-1",
+											children: [/* @__PURE__ */ jsx("span", {
+												className: "block truncate text-sm text-[var(--text)]",
+												children: p.title
+											}), /* @__PURE__ */ jsx("span", {
+												className: "block truncate text-xs text-[var(--muted)]",
+												children: p.artist
+											})]
+										}), /* @__PURE__ */ jsx("span", {
+											className: "shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
+											children: p.source === "youtube" ? t("page.source_youtube") : t("page.source_bilibili")
+										})]
+									}) }, p.id))
 								})]
-							})
-						]
+							})]
+						})]
 					})
 				})
 			]

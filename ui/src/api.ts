@@ -86,12 +86,29 @@ export interface SlotMessage {
   type?: string
   content?: string
   /** On a `permission` row: the approval's id, and `resolved` once it is answered. */
-  meta?: { approval_id?: unknown; resolved?: unknown }
+  meta?: { approval_id?: unknown; resolved?: unknown; tool_name?: unknown; tool_input?: unknown; kind?: unknown }
 }
 
 export interface SlotData {
   running?: boolean
   messages?: SlotMessage[]
+}
+
+/** The cause a 403 `session_approval_not_granted` names (App Kit api-reference). */
+export type GrantCause = 'not_declared' | 'consent_pending' | 'disabled' | 'unavailable'
+
+/** The grant cause in a refused approval, or null when it was refused for another reason. */
+export function grantCause(e: unknown): GrantCause | 'other' | null {
+  const err = e as { status?: unknown; body?: unknown }
+  if (err?.status !== 403 || typeof err.body !== 'string') return null
+  try {
+    const body = JSON.parse(err.body) as { code?: unknown; cause?: unknown }
+    if (body.code !== 'session_approval_not_granted') return null
+    const cause = body.cause
+    return cause === 'not_declared' || cause === 'consent_pending' || cause === 'disabled' || cause === 'unavailable' ? cause : 'other'
+  } catch {
+    return null
+  }
 }
 
 /** A send the gateway answered but refused (`{ok: false, error}` in a 2xx). */
@@ -123,6 +140,10 @@ export function createMoodApi(api: AppApi) {
     markUsed: (ids: string[]) => api.post<{ marked: number }>(`${BASE}/memory/used`, { ids }),
     openSlot,
     getSlot: (key: string) => api.get<SlotData>(`/api/chat/slots/${encodeURIComponent(key)}`),
+    /** Answer one tool approval once: never Trust, which would approve every later call too. */
+    approve: (key: string, requestId: string, action: 'approved' | 'rejected') =>
+      api.post(`/api/chat/slots/${encodeURIComponent(key)}/approve`, { action, request_id: requestId }),
+    stop: (key: string) => api.post(`/api/chat/slots/${encodeURIComponent(key)}/stop`),
     /** Send one turn; a refusal rejects. Returns the slot key the turn went to. */
     ask: async (message: string): Promise<string> => {
       const { key } = await openSlot()
@@ -143,19 +164,4 @@ export function latestReply(slot: SlotData | undefined): string {
     if (m.role === 'assistant' && typeof m.content === 'string' && m.content.trim()) return m.content
   }
   return ''
-}
-
-/**
- * Whether the DJ's turn is parked on a tool approval: an unanswered `permission`
- * row after the newest user message. The row is the one the chat's approval card
- * reads; the page cannot answer it, so it sends the person to that chat.
- */
-export function awaitingApproval(slot: SlotData | undefined): boolean {
-  const msgs = slot?.messages ?? []
-  for (let i = msgs.length - 1; i >= 0; i--) {
-    const m = msgs[i]
-    if (m.role === 'user') return false
-    if (m.role === 'permission' && m.meta?.approval_id && !m.meta.resolved) return true
-  }
-  return false
 }

@@ -101,9 +101,9 @@ function pick(raw: unknown): NewPick | null {
   return null
 }
 
-/** Picks in arc order (stay, turn, lift); a pick with no arc keeps its place among the rest. */
+/** Picks in arc order (stay, turn, lift), a pick with no arc after them; ties keep their order. */
 function byArc(picks: NewPick[]): NewPick[] {
-  const rank = (p: NewPick) => (p.arc ? ARCS.indexOf(p.arc) : -1)
+  const rank = (p: NewPick) => (p.arc ? ARCS.indexOf(p.arc) : ARCS.length)
   if (!picks.some(p => p.arc)) return picks
   return picks.map((p, i) => [p, i] as const).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(([p]) => p)
 }

@@ -24,14 +24,14 @@ export const EXPLORE_MIX: Readonly<Record<ExploreLevel, readonly [number, number
  * of what the person liked and skipped, marked as data for the agent.
  */
 export function buildRequest(opts: {
-  kind: 'mood' | 'answer' | 'more'
+  kind: 'mood' | 'answer' | 'more' | 'follow'
   text: string
   state: MoodState | undefined
   explore?: ExploreLevel
   stayOnly?: boolean
 }): string {
   const { kind, text, state, explore = 'balanced', stayOnly = false } = opts
-  const head = kind === 'answer' ? 'Answer to your question' : kind === 'more' ? 'More like this song' : 'Mood'
+  const head = { mood: 'Mood', answer: 'Answer to your question', more: 'More like this song', follow: 'Follow-up' }[kind]
   const [anchor, exp, deep] = EXPLORE_MIX[explore]
   return [
     '[Mood Music]',

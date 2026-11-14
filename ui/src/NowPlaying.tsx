@@ -74,6 +74,12 @@ export default function NowPlaying({ pick, autoplay, busy, onLike, onSkip, onMor
           {pick.why}
         </p>
       )}
+      {pick.listen_for && (
+        <p className="mt-1 text-sm leading-relaxed text-[var(--text)]">
+          <span className="text-[var(--muted)]">{t('card.listen_for')}</span>
+          {pick.listen_for}
+        </p>
+      )}
       <div className="mt-3 flex flex-wrap gap-2">
         <Btn onClick={onLike} disabled={busy} aria-pressed={liked} primary={liked}>
           <Heart size={14} aria-hidden="true" fill={liked ? 'currentColor' : 'none'} />
