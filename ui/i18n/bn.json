@@ -117,7 +117,12 @@
     "all_dropped": "এবার পাওয়া {{count}}টি গানের কোনোটিই চলেনি। অন্য দিকে চেষ্টা করবেন?",
     "follow_ups": "উত্তর দিন",
     "remember": "মনে রাখুন: {{note}}",
-    "remembered": "মনে রাখা হলো: {{note}}"
+    "remembered": "মনে রাখা হলো: {{note}}",
+    "explore": "অন্বেষণ",
+    "explore_familiar": "একটু চেনা",
+    "explore_balanced": "ভারসাম্য",
+    "explore_more": "আরও অন্বেষণ",
+    "stay_only": "আজ শুধু এই অনুভূতিতে থাকি"
   },
   "card": {
     "arc_stay": "পাশে থাকা",

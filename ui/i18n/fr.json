@@ -117,7 +117,12 @@
     "all_dropped": "Aucune des {{count}} chansons trouvées ne se lit. Une autre direction ?",
     "follow_ups": "Répondre par",
     "remember": "Retenir : {{note}}",
-    "remembered": "Retenu : {{note}}"
+    "remembered": "Retenu : {{note}}",
+    "explore": "Découverte",
+    "explore_familiar": "Plus familier",
+    "explore_balanced": "Équilibré",
+    "explore_more": "Plus de découvertes",
+    "stay_only": "Aujourd’hui, rester dans cette émotion"
   },
   "card": {
     "arc_stay": "Rester avec",

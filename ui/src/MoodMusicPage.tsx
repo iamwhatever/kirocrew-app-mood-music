@@ -25,12 +25,13 @@ import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from '@kir
 import { t } from './i18n'
 import { createMoodApi, grantCause, latestReply, type GrantCause, type MoodState, type QueuedPick, type Verdict } from './api'
 import Banner from './Banner'
+import FullRecord from './FullRecord'
 import MemoryTab from './MemoryTab'
 import MomentsTab from './MomentsTab'
 import MoodBackdrop from './MoodBackdrop'
 import { MOOD_KEYS, moodLookFor, type MoodKey, type MoodLook } from './moods'
 import NowPlaying from './NowPlaying'
-import { buildRequest, memorySummary } from './request.prompt'
+import { buildRequest, memorySummary, type ExploreLevel } from './request.prompt'
 import { parseDjReply, replySource } from './replyParse'
 import { usePrefersReducedMotion } from './reducedMotion'
 import { CARD_STYLE } from './cardStyle'
@@ -97,9 +98,9 @@ export default function MoodMusicPage() {
   const { openChat } = useChatLauncher()
   const [tab, setTab] = useState<Tab>('listen')
   const [state, setState] = useState<MoodState | undefined>()
-  // Read by the full record (step 7); kept in state so it repaints when the slot opens.
+  // Kept in state so the full record repaints when the slot opens.
   const [slotKey, setSlotKey] = useState<string | null>(null)
-  void slotKey
+  const [stayOnly, setStayOnly] = useState(false)
   const [slot, setSlot] = useState<import('./api').SlotData | undefined>()
   const [text, setText] = useState('')
   const [chip, setChip] = useState<MoodKey | null>(null)
@@ -149,6 +150,13 @@ export default function MoodMusicPage() {
   }, [moodApi])
 
   const queue = state?.queue ?? []
+  const explore: ExploreLevel = state?.settings?.explore ?? 'balanced'
+  const recordOpen = state?.settings?.record_open ?? false
+
+  const saveSettings = (patch: Partial<NonNullable<MoodState['settings']>>) => {
+    setState(s => (s ? { ...s, settings: { ...s.settings, ...patch } } : s))
+    void moodApi.setSettings(patch).catch(e => setError(errMessage(e) || 'unknown'))
+  }
   const current = queue.find(p => p.id === currentId) ?? queue.find(p => p.feedback !== 'skipped') ?? null
   const knownSongs = useMemo(
     () => new Set((state?.memory ?? []).filter(m => m.kind === 'known').map(m => songKey(m.title, m.artist))),
@@ -193,7 +201,7 @@ export default function MoodMusicPage() {
         setState(s => (s ? { ...s, moments: [moment, ...s.moments] } : s))
       }
       const { ids } = memorySummary(state?.memory ?? [])
-      await ask(buildRequest({ kind, text: words, state }), words, ids)
+      await ask(buildRequest({ kind, text: words, state, explore, stayOnly }), words, ids)
     })
   }
 
@@ -375,7 +383,11 @@ export default function MoodMusicPage() {
     })
   }
 
-  const openRecord = () => { if (slotRef.current) openChat({ slotKey: slotRef.current }) }
+  const openFullChat = () => { if (slotRef.current) openChat({ slotKey: slotRef.current }) }
+  const openRecord = () => {
+    if (!recordOpen) saveSettings({ record_open: true })
+    document.getElementById('mood-full-record')?.scrollIntoView?.({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
+  }
 
   const retry = () => {
     const again = lastAskRef.current
@@ -442,6 +454,29 @@ export default function MoodMusicPage() {
           ) : tab === 'moments' ? <div className="mx-auto max-w-5xl"><MomentsTab moments={state?.moments ?? []} /></div> : (
             <div className="mx-auto grid max-w-5xl items-start gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 360px), 1fr))' }}>
               <div className="flex min-w-0 flex-col gap-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs text-[var(--muted)]">{t('chat.explore')}</span>
+                  <SegmentedControl<ExploreLevel>
+                    ariaLabel={t('chat.explore')}
+                    value={explore}
+                    onChange={v => saveSettings({ explore: v })}
+                    segments={[
+                      { key: 'familiar', label: t('chat.explore_familiar') },
+                      { key: 'balanced', label: t('chat.explore_balanced') },
+                      { key: 'explore', label: t('chat.explore_more') },
+                    ]}
+                  />
+                  <button
+                    type="button"
+                    aria-pressed={stayOnly}
+                    onClick={() => setStayOnly(v => !v)}
+                    className={`rounded-full border px-3 py-1 text-xs transition-colors ${stayOnly
+                      ? 'border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]'
+                      : 'border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]'}`}
+                  >
+                    {t('chat.stay_only')}
+                  </button>
+                </div>
                 <div role="group" aria-label={t('page.mood_chips')} className="flex flex-wrap gap-2">
                   {MOOD_KEYS.map(key => (
                     <button
@@ -513,7 +548,7 @@ export default function MoodMusicPage() {
                 )}
                 {grant && (
                   <Banner testId="mood-grant" title={t('chat.grant_title')} body={t(GRANT_STEPS[grant])} icon={<ShieldCheck size={14} aria-hidden="true" />}>
-                    <Btn primary onClick={openRecord}>{t('chat.open_full')}</Btn>
+                    <Btn primary onClick={openFullChat}>{t('chat.open_full')}</Btn>
                     <Btn onClick={() => setGrant(null)}>{t('chat.dismiss')}</Btn>
                   </Banner>
                 )}
@@ -608,6 +643,13 @@ export default function MoodMusicPage() {
                   )}
                   {notice && <p className="text-xs text-[var(--muted)]">{notice}</p>}
                 </form>
+
+                <FullRecord
+                  slotKey={slotKey}
+                  open={recordOpen}
+                  onToggle={open => saveSettings({ record_open: open })}
+                  onSend={message => moodApi.ask(message)}
+                />
               </div>
 
               <div className="flex min-w-0 flex-col gap-4">

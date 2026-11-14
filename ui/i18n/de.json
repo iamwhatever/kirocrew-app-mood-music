@@ -117,7 +117,12 @@
     "all_dropped": "Keiner der {{count}} gefundenen Songs ließ sich abspielen. Eine andere Richtung?",
     "follow_ups": "Antworten mit",
     "remember": "Merken: {{note}}",
-    "remembered": "Gemerkt: {{note}}"
+    "remembered": "Gemerkt: {{note}}",
+    "explore": "Entdecken",
+    "explore_familiar": "Vertrauter",
+    "explore_balanced": "Ausgewogen",
+    "explore_more": "Mehr entdecken",
+    "stay_only": "Heute einfach in diesem Gefühl bleiben"
   },
   "card": {
     "arc_stay": "Dabeibleiben",

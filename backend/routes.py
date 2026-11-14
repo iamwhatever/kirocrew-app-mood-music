@@ -16,6 +16,7 @@ the access its manifest grant gives it.
   DELETE /memory/{id}       -> forget one item
   POST /memory/clear-stale  -> forget every "maybe stale" item
   POST /memory/used         -> mark items as used (keeps them fresh)
+  PUT  /settings            -> the explore level, and whether the full record is open
 
 A pick's link is checked in ``links.py``: a YouTube pick is stored as its video
 id alone, a bilibili pick as an https URL on an exact bilibili host. A request
@@ -34,7 +35,7 @@ from typing import Any
 from aiohttp import web
 
 from . import _host, links, verify
-from .store import MAX_QUEUE, MEMORY_KINDS, ORIGINS, SONG_KINDS, VERDICTS, MemoryFull, MoodStore
+from .store import EXPLORE_LEVELS, MAX_QUEUE, MEMORY_KINDS, ORIGINS, SONG_KINDS, VERDICTS, MemoryFull, MoodStore
 
 _MAX_MOOD = 200
 _MAX_NOTE = 1000
@@ -375,6 +376,26 @@ async def _handle_memory_used(request: web.Request, ctx: Any) -> web.Response:
     return web.json_response({"marked": marked})
 
 
+async def _handle_settings(request: web.Request, ctx: Any) -> web.Response:
+    body, err = await _json_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    changes: dict[str, Any] = {}
+    if "explore" in body:
+        if body["explore"] not in EXPLORE_LEVELS:
+            return _bad_request("explore is not a level this app knows", "invalid_field_type")
+        changes["explore"] = body["explore"]
+    if "record_open" in body:
+        if not isinstance(body["record_open"], bool):
+            return _bad_request("record_open must be true or false", "invalid_field_type")
+        changes["record_open"] = body["record_open"]
+    if not changes or set(body) - {"explore", "record_open"}:
+        return _bad_request("send explore and/or record_open only", "invalid_field_type")
+    settings = await asyncio.to_thread(lambda: _store(ctx).set_settings(**changes))
+    return web.json_response(settings)
+
+
 def register_routes(ctx: Any) -> list[_host.Route]:
     """The manifest's ``backend.hooks.routes``: this app's routes, unprefixed.
 
@@ -402,4 +423,5 @@ def register_routes(ctx: Any) -> list[_host.Route]:
         route("DELETE", "/memory/{id}", _owner_only("delete_memory", _handle_delete_memory)),
         route("POST", "/memory/clear-stale", _owner_only("clear_stale", _handle_clear_stale)),
         route("POST", "/memory/used", _owner_only("memory_used", _handle_memory_used)),
+        route("PUT", "/settings", _owner_only("settings", _handle_settings)),
     ]

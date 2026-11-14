@@ -117,7 +117,12 @@
     "all_dropped": "今回見つけた {{count}} 曲はどれも再生できませんでした。別の方向にしてみる？",
     "follow_ups": "返事する",
     "remember": "覚えておく：{{note}}",
-    "remembered": "覚えました：{{note}}"
+    "remembered": "覚えました：{{note}}",
+    "explore": "探索",
+    "explore_familiar": "なじみ多め",
+    "explore_balanced": "バランス",
+    "explore_more": "もっと探索",
+    "stay_only": "今日はこの気持ちのままでいたい"
   },
   "card": {
     "arc_stay": "寄り添う",

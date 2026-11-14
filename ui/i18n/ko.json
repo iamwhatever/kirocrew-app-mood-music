@@ -117,7 +117,12 @@
     "all_dropped": "이번에 찾은 {{count}}곡 모두 재생할 수 없었어요. 다른 방향으로 가 볼까요?",
     "follow_ups": "이어서 말하기",
     "remember": "기억하기: {{note}}",
-    "remembered": "기억했어요: {{note}}"
+    "remembered": "기억했어요: {{note}}",
+    "explore": "탐색",
+    "explore_familiar": "익숙하게",
+    "explore_balanced": "균형",
+    "explore_more": "더 탐색",
+    "stay_only": "오늘은 이 기분 그대로 있고 싶어"
   },
   "card": {
     "arc_stay": "곁에 머물기",

@@ -117,7 +117,12 @@
     "all_dropped": "इस बार मिले {{count}} गानों में से कोई नहीं चला। कोई और दिशा?",
     "follow_ups": "जवाब दें",
     "remember": "याद रखें: {{note}}",
-    "remembered": "याद रखा: {{note}}"
+    "remembered": "याद रखा: {{note}}",
+    "explore": "खोज",
+    "explore_familiar": "थोड़ा जाना-पहचाना",
+    "explore_balanced": "संतुलित",
+    "explore_more": "और खोज",
+    "stay_only": "आज बस इसी एहसास में रहना है"
   },
   "card": {
     "arc_stay": "साथ रहना",

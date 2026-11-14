@@ -1,6 +1,7 @@
+import * as sdk from "@kirocrew/app-sdk";
 import { activeLocale, fmtDateTime, useAppApi, useChatLauncher, useLanguageGeneration } from "@kirocrew/app-sdk";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Brain, Check, ExternalLink, Headphones, Heart, MessageCircleQuestion, Music, Pin, PinOff, Play, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Waves, WifiOff } from "lucide-react";
+import { Brain, Check, ChevronRight, ExternalLink, Headphones, Heart, MessageCircleQuestion, Music, Pin, PinOff, Play, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Waves, WifiOff } from "lucide-react";
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from "@kirocrew/app-sdk/ui";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 // src/i18n.ts
@@ -138,7 +139,12 @@ var CATALOGS = {
 			"all_dropped": "এবার পাওয়া {{count}}টি গানের কোনোটিই চলেনি। অন্য দিকে চেষ্টা করবেন?",
 			"follow_ups": "উত্তর দিন",
 			"remember": "মনে রাখুন: {{note}}",
-			"remembered": "মনে রাখা হলো: {{note}}"
+			"remembered": "মনে রাখা হলো: {{note}}",
+			"explore": "অন্বেষণ",
+			"explore_familiar": "একটু চেনা",
+			"explore_balanced": "ভারসাম্য",
+			"explore_more": "আরও অন্বেষণ",
+			"stay_only": "আজ শুধু এই অনুভূতিতে থাকি"
 		},
 		card: {
 			"arc_stay": "পাশে থাকা",
@@ -274,7 +280,12 @@ var CATALOGS = {
 			"all_dropped": "Keiner der {{count}} gefundenen Songs ließ sich abspielen. Eine andere Richtung?",
 			"follow_ups": "Antworten mit",
 			"remember": "Merken: {{note}}",
-			"remembered": "Gemerkt: {{note}}"
+			"remembered": "Gemerkt: {{note}}",
+			"explore": "Entdecken",
+			"explore_familiar": "Vertrauter",
+			"explore_balanced": "Ausgewogen",
+			"explore_more": "Mehr entdecken",
+			"stay_only": "Heute einfach in diesem Gefühl bleiben"
 		},
 		card: {
 			"arc_stay": "Dabeibleiben",
@@ -410,7 +421,12 @@ var CATALOGS = {
 			"all_dropped": "None of the {{count}} songs found this time could play. Try another direction?",
 			"follow_ups": "Reply with",
 			"remember": "Remember: {{note}}",
-			"remembered": "Remembered: {{note}}"
+			"remembered": "Remembered: {{note}}",
+			"explore": "Explore",
+			"explore_familiar": "More familiar",
+			"explore_balanced": "Balanced",
+			"explore_more": "Explore more",
+			"stay_only": "Just stay in this feeling today"
 		},
 		card: {
 			"arc_stay": "Stay with it",
@@ -546,7 +562,12 @@ var CATALOGS = {
 			"all_dropped": "Ninguna de las {{count}} canciones encontradas se pudo reproducir. ¿Otra dirección?",
 			"follow_ups": "Responder con",
 			"remember": "Recordar: {{note}}",
-			"remembered": "Recordado: {{note}}"
+			"remembered": "Recordado: {{note}}",
+			"explore": "Explorar",
+			"explore_familiar": "Más conocido",
+			"explore_balanced": "Equilibrado",
+			"explore_more": "Explorar más",
+			"stay_only": "Hoy solo quiero quedarme en este sentimiento"
 		},
 		card: {
 			"arc_stay": "Acompañar",
@@ -682,7 +703,12 @@ var CATALOGS = {
 			"all_dropped": "Aucune des {{count}} chansons trouvées ne se lit. Une autre direction ?",
 			"follow_ups": "Répondre par",
 			"remember": "Retenir : {{note}}",
-			"remembered": "Retenu : {{note}}"
+			"remembered": "Retenu : {{note}}",
+			"explore": "Découverte",
+			"explore_familiar": "Plus familier",
+			"explore_balanced": "Équilibré",
+			"explore_more": "Plus de découvertes",
+			"stay_only": "Aujourd’hui, rester dans cette émotion"
 		},
 		card: {
 			"arc_stay": "Rester avec",
@@ -818,7 +844,12 @@ var CATALOGS = {
 			"all_dropped": "इस बार मिले {{count}} गानों में से कोई नहीं चला। कोई और दिशा?",
 			"follow_ups": "जवाब दें",
 			"remember": "याद रखें: {{note}}",
-			"remembered": "याद रखा: {{note}}"
+			"remembered": "याद रखा: {{note}}",
+			"explore": "खोज",
+			"explore_familiar": "थोड़ा जाना-पहचाना",
+			"explore_balanced": "संतुलित",
+			"explore_more": "और खोज",
+			"stay_only": "आज बस इसी एहसास में रहना है"
 		},
 		card: {
 			"arc_stay": "साथ रहना",
@@ -954,7 +985,12 @@ var CATALOGS = {
 			"all_dropped": "Nessuna delle {{count}} canzoni trovate si poteva ascoltare. Un’altra direzione?",
 			"follow_ups": "Rispondi con",
 			"remember": "Ricorda: {{note}}",
-			"remembered": "Ricordato: {{note}}"
+			"remembered": "Ricordato: {{note}}",
+			"explore": "Esplora",
+			"explore_familiar": "Più familiare",
+			"explore_balanced": "Equilibrato",
+			"explore_more": "Esplora di più",
+			"stay_only": "Oggi voglio solo restare in questa emozione"
 		},
 		card: {
 			"arc_stay": "Restare",
@@ -1090,7 +1126,12 @@ var CATALOGS = {
 			"all_dropped": "今回見つけた {{count}} 曲はどれも再生できませんでした。別の方向にしてみる？",
 			"follow_ups": "返事する",
 			"remember": "覚えておく：{{note}}",
-			"remembered": "覚えました：{{note}}"
+			"remembered": "覚えました：{{note}}",
+			"explore": "探索",
+			"explore_familiar": "なじみ多め",
+			"explore_balanced": "バランス",
+			"explore_more": "もっと探索",
+			"stay_only": "今日はこの気持ちのままでいたい"
 		},
 		card: {
 			"arc_stay": "寄り添う",
@@ -1226,7 +1267,12 @@ var CATALOGS = {
 			"all_dropped": "이번에 찾은 {{count}}곡 모두 재생할 수 없었어요. 다른 방향으로 가 볼까요?",
 			"follow_ups": "이어서 말하기",
 			"remember": "기억하기: {{note}}",
-			"remembered": "기억했어요: {{note}}"
+			"remembered": "기억했어요: {{note}}",
+			"explore": "탐색",
+			"explore_familiar": "익숙하게",
+			"explore_balanced": "균형",
+			"explore_more": "더 탐색",
+			"stay_only": "오늘은 이 기분 그대로 있고 싶어"
 		},
 		card: {
 			"arc_stay": "곁에 머물기",
@@ -1362,7 +1408,12 @@ var CATALOGS = {
 			"all_dropped": "Nenhuma das {{count}} músicas encontradas pôde tocar. Outra direção?",
 			"follow_ups": "Responder com",
 			"remember": "Lembrar: {{note}}",
-			"remembered": "Lembrado: {{note}}"
+			"remembered": "Lembrado: {{note}}",
+			"explore": "Explorar",
+			"explore_familiar": "Mais conhecido",
+			"explore_balanced": "Equilibrado",
+			"explore_more": "Explorar mais",
+			"stay_only": "Hoje só quero ficar neste sentimento"
 		},
 		card: {
 			"arc_stay": "Ficar junto",
@@ -1498,7 +1549,12 @@ var CATALOGS = {
 			"all_dropped": "Ни одна из {{count}} найденных песен не играет. Попробовать другое направление?",
 			"follow_ups": "Ответить",
 			"remember": "Запомнить: {{note}}",
-			"remembered": "Запомнено: {{note}}"
+			"remembered": "Запомнено: {{note}}",
+			"explore": "Открытия",
+			"explore_familiar": "Знакомее",
+			"explore_balanced": "Баланс",
+			"explore_more": "Больше открытий",
+			"stay_only": "Сегодня просто побыть в этом чувстве"
 		},
 		card: {
 			"arc_stay": "Побыть рядом",
@@ -1634,7 +1690,12 @@ var CATALOGS = {
 			"all_dropped": "这次找到的 {{count}} 首都放不了，换个方向？",
 			"follow_ups": "接着说",
 			"remember": "记住：{{note}}",
-			"remembered": "记下了：{{note}}"
+			"remembered": "记下了：{{note}}",
+			"explore": "探索",
+			"explore_familiar": "熟悉一点",
+			"explore_balanced": "平衡",
+			"explore_more": "多探索",
+			"stay_only": "今天只想待在这个情绪里"
 		},
 		card: {
 			"arc_stay": "陪着",
@@ -1719,6 +1780,7 @@ function createMoodApi(api) {
 		/** Look each pick up on YouTube / bilibili; only confirmed picks come back. */
 		verifyPicks: (picks) => api.post(`${BASE}/verify-picks`, { picks }),
 		feedback: (pickId, verdict) => api.put(`${BASE}/queue/${encodeURIComponent(pickId)}/feedback`, { verdict }),
+		setSettings: (patch) => api.put(`${BASE}/settings`, patch),
 		addMemory: (item) => api.post(`${BASE}/memory`, item),
 		updateMemory: (id, patch) => api.put(`${BASE}/memory/${encodeURIComponent(id)}`, patch),
 		deleteMemory: (id) => api.del(`${BASE}/memory/${encodeURIComponent(id)}`),
@@ -1783,6 +1845,57 @@ function Banner({ title, body, icon, children, testId }) {
 				children
 			})
 		]
+	});
+}
+// src/FullRecord.tsx
+/**
+* "Show the full record" (design §1.9): the buddy's whole slot in Kiro Crew's
+* own transcript, with tool names, search words, URLs, the raw block and the
+* memory summary the page added. Collapsed by default; the page remembers
+* whether the person left it open.
+*
+* `ChatEmbed` is read off a namespace import, so a host without it still loads
+* the bundle; there the record is reached through "Open in full chat" alone.
+*/
+function FullRecord({ slotKey, open, onToggle, onSend }) {
+	const { openChat } = sdk.useChatLauncher();
+	const Embed = sdk.ChatEmbed;
+	if (!slotKey) return null;
+	return /* @__PURE__ */ jsxs("section", {
+		id: "mood-full-record",
+		className: "flex flex-col gap-2",
+		"data-testid": "mood-full-record",
+		children: [/* @__PURE__ */ jsxs("div", {
+			className: "flex flex-wrap items-center gap-2",
+			children: [/* @__PURE__ */ jsxs("button", {
+				type: "button",
+				"aria-expanded": open,
+				"aria-controls": "mood-full-record-body",
+				onClick: () => onToggle(!open),
+				className: "inline-flex items-center gap-1 text-xs text-[var(--muted)] hover:text-[var(--text)]",
+				children: [/* @__PURE__ */ jsx(ChevronRight, {
+					size: 13,
+					"aria-hidden": "true",
+					className: open ? "rotate-90" : ""
+				}), t("chat.show_record")]
+			}), /* @__PURE__ */ jsxs(Btn, {
+				type: "button",
+				onClick: () => openChat({ slotKey }),
+				children: [/* @__PURE__ */ jsx(ExternalLink, {
+					size: 13,
+					"aria-hidden": "true"
+				}), t("chat.open_full")]
+			})]
+		}), open && Embed && /* @__PURE__ */ jsx("div", {
+			id: "mood-full-record-body",
+			style: { height: 420 },
+			children: /* @__PURE__ */ jsx(Embed, {
+				slotKey,
+				agent: "mood-music-dj",
+				startAtBottom: true,
+				onSend
+			})
+		})]
 	});
 }
 // src/MemoryTab.tsx
@@ -3055,6 +3168,7 @@ function MoodMusicPage() {
 	const [tab, setTab] = useState("listen");
 	const [state, setState] = useState();
 	const [slotKey, setSlotKey] = useState(null);
+	const [stayOnly, setStayOnly] = useState(false);
 	const [slot, setSlot] = useState();
 	const [text, setText] = useState("");
 	const [chip, setChip] = useState(null);
@@ -3104,6 +3218,18 @@ function MoodMusicPage() {
 		};
 	}, [moodApi]);
 	const queue = state?.queue ?? [];
+	const explore = state?.settings?.explore ?? "balanced";
+	const recordOpen = state?.settings?.record_open ?? false;
+	const saveSettings = (patch) => {
+		setState((s) => s ? {
+			...s,
+			settings: {
+				...s.settings,
+				...patch
+			}
+		} : s);
+		moodApi.setSettings(patch).catch((e) => setError(errMessage(e) || "unknown"));
+	};
 	const current = queue.find((p) => p.id === currentId) ?? queue.find((p) => p.feedback !== "skipped") ?? null;
 	const knownSongs = useMemo(() => new Set((state?.memory ?? []).filter((m) => m.kind === "known").map((m) => songKey(m.title, m.artist))), [state?.memory]);
 	/** Send one turn to the buddy and start waiting for its reply. */
@@ -3152,7 +3278,9 @@ function MoodMusicPage() {
 			await ask(buildRequest({
 				kind,
 				text: words,
-				state
+				state,
+				explore,
+				stayOnly
 			}), words, ids);
 		});
 	};
@@ -3340,8 +3468,15 @@ function MoodMusicPage() {
 			else setError(errMessage(e) || "approve_failed");
 		});
 	};
-	const openRecord = () => {
+	const openFullChat = () => {
 		if (slotRef.current) openChat({ slotKey: slotRef.current });
+	};
+	const openRecord = () => {
+		if (!recordOpen) saveSettings({ record_open: true });
+		document.getElementById("mood-full-record")?.scrollIntoView?.({
+			behavior: reduceMotion ? "auto" : "smooth",
+			block: "start"
+		});
 	};
 	const retry = () => {
 		const again = lastAskRef.current;
@@ -3432,6 +3567,41 @@ function MoodMusicPage() {
 						children: [/* @__PURE__ */ jsxs("div", {
 							className: "flex min-w-0 flex-col gap-3",
 							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "flex flex-wrap items-center gap-2",
+									children: [
+										/* @__PURE__ */ jsx("span", {
+											className: "text-xs text-[var(--muted)]",
+											children: t("chat.explore")
+										}),
+										/* @__PURE__ */ jsx(SegmentedControl, {
+											ariaLabel: t("chat.explore"),
+											value: explore,
+											onChange: (v) => saveSettings({ explore: v }),
+											segments: [
+												{
+													key: "familiar",
+													label: t("chat.explore_familiar")
+												},
+												{
+													key: "balanced",
+													label: t("chat.explore_balanced")
+												},
+												{
+													key: "explore",
+													label: t("chat.explore_more")
+												}
+											]
+										}),
+										/* @__PURE__ */ jsx("button", {
+											type: "button",
+											"aria-pressed": stayOnly,
+											onClick: () => setStayOnly((v) => !v),
+											className: `rounded-full border px-3 py-1 text-xs transition-colors ${stayOnly ? "border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]" : "border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]"}`,
+											children: t("chat.stay_only")
+										})
+									]
+								}),
 								/* @__PURE__ */ jsx("div", {
 									role: "group",
 									"aria-label": t("page.mood_chips"),
@@ -3526,7 +3696,7 @@ function MoodMusicPage() {
 									}),
 									children: [/* @__PURE__ */ jsx(Btn, {
 										primary: true,
-										onClick: openRecord,
+										onClick: openFullChat,
 										children: t("chat.open_full")
 									}), /* @__PURE__ */ jsx(Btn, {
 										onClick: () => setGrant(null),
@@ -3692,6 +3862,12 @@ function MoodMusicPage() {
 											children: notice
 										})
 									]
+								}),
+								/* @__PURE__ */ jsx(FullRecord, {
+									slotKey,
+									open: recordOpen,
+									onToggle: (open) => saveSettings({ record_open: open }),
+									onSend: (message) => moodApi.ask(message)
 								})
 							]
 						}), /* @__PURE__ */ jsxs("div", {

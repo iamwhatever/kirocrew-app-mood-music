@@ -117,7 +117,12 @@
     "all_dropped": "None of the {{count}} songs found this time could play. Try another direction?",
     "follow_ups": "Reply with",
     "remember": "Remember: {{note}}",
-    "remembered": "Remembered: {{note}}"
+    "remembered": "Remembered: {{note}}",
+    "explore": "Explore",
+    "explore_familiar": "More familiar",
+    "explore_balanced": "Balanced",
+    "explore_more": "Explore more",
+    "stay_only": "Just stay in this feeling today"
   },
   "card": {
     "arc_stay": "Stay with it",

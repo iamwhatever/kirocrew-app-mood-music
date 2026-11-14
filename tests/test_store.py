@@ -30,6 +30,7 @@ def test_an_empty_store_reads_empty(tmp_path: Path) -> None:
         "feedback": [],
         "last_source": "",
         "memory": [],
+        "settings": {"explore": "balanced", "record_open": False},
     }
 
 

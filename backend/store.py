@@ -48,6 +48,9 @@ STALE_AFTER = 90 * 86400
 #: A song that was an anchor this recently is not an anchor again.
 ANCHOR_WINDOW = 30 * 86400
 MAX_ANCHORS = 100
+#: The page's own choices (design §0.3, §1.9), with their defaults.
+EXPLORE_LEVELS = ("familiar", "balanced", "explore")
+DEFAULT_SETTINGS = {"explore": "balanced", "record_open": False}
 
 
 class MemoryFull(Exception):
@@ -62,6 +65,7 @@ def _empty() -> dict[str, Any]:
         "last_source": "",
         "memory": [],
         "anchors": [],
+        "settings": dict(DEFAULT_SETTINGS),
     }
 
 
@@ -111,6 +115,11 @@ class MoodStore:
                 state[key] = [r for r in data[key] if isinstance(r, dict)]
         if isinstance(data.get("last_source"), str):
             state["last_source"] = data["last_source"]
+        saved = data.get("settings") if isinstance(data.get("settings"), dict) else {}
+        if saved.get("explore") in EXPLORE_LEVELS:
+            state["settings"]["explore"] = saved["explore"]
+        if isinstance(saved.get("record_open"), bool):
+            state["settings"]["record_open"] = saved["record_open"]
         if not isinstance(data.get("memory"), list):
             # A file from before memory: its likes and skips become memory items.
             for f in reversed(state["feedback"]):
@@ -149,6 +158,14 @@ class MoodStore:
         state["memory"] = [{**m, "stale": self._stale(m, now)} for m in state["memory"]]
         state.pop("anchors", None)
         return state
+
+    def set_settings(self, **changes: Any) -> dict[str, Any]:
+        """Store the page's choices; callers pass only checked values."""
+        with self._lock:
+            state = self._read()
+            state["settings"].update(changes)
+            self._write(state)
+            return dict(state["settings"])
 
     # ── memory ──
 

@@ -53,6 +53,17 @@ declare module '@kirocrew/app-sdk' {
   export function fmtNumber(value: number, options?: NumberOptions): string
   export function fmtDateTime(value: Date | string | number | null | undefined): string
 
+  /** The native transcript and composer for one slot (read through a namespace import). */
+  export const ChatEmbed:
+    | import('react').ComponentType<{
+        slotKey: string
+        agent?: string
+        frameless?: boolean
+        startAtBottom?: boolean
+        onSend?: (message: string) => Promise<unknown> | void
+      }>
+    | undefined
+
   // Level 1 (read through hostSdk.ts only).
   export const fmtCurrency:
     | ((value: number, currency?: string, options?: NumberOptions) => string)

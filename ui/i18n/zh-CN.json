@@ -117,7 +117,12 @@
     "all_dropped": "这次找到的 {{count}} 首都放不了，换个方向？",
     "follow_ups": "接着说",
     "remember": "记住：{{note}}",
-    "remembered": "记下了：{{note}}"
+    "remembered": "记下了：{{note}}",
+    "explore": "探索",
+    "explore_familiar": "熟悉一点",
+    "explore_balanced": "平衡",
+    "explore_more": "多探索",
+    "stay_only": "今天只想待在这个情绪里"
   },
   "card": {
     "arc_stay": "陪着",

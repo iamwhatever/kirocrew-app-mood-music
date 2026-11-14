@@ -236,6 +236,21 @@ def test_a_memory_full_of_the_persons_own_notes_answers_409(ctx, monkeypatch) ->
     assert (status, payload["code"]) == (409, "memory_full")
 
 
+def test_settings_keep_the_explore_level_and_the_record_state(ctx) -> None:
+    assert _call(ctx, "GET", "/state")[1]["settings"] == {"explore": "balanced", "record_open": False}
+    assert _call(ctx, "PUT", "/settings", {"explore": "familiar"})[1] == {"explore": "familiar", "record_open": False}
+    assert _call(ctx, "PUT", "/settings", {"record_open": True})[1]["record_open"] is True
+    assert _call(ctx, "GET", "/state")[1]["settings"] == {"explore": "familiar", "record_open": True}
+
+
+@pytest.mark.parametrize(
+    "body",
+    [{}, {"explore": "wild"}, {"record_open": "yes"}, {"explore": "balanced", "theme": "dark"}],
+)
+def test_bad_settings_are_refused(ctx, body) -> None:
+    assert _call(ctx, "PUT", "/settings", body)[0] == 400
+
+
 ROUTES = [
     ("GET", "/state", None, "read_state"),
     ("POST", "/moments", {"mood": "calm"}, "add_moment"),
@@ -247,6 +262,7 @@ ROUTES = [
     ("DELETE", f"/memory/{'0' * 32}", None, "delete_memory"),
     ("POST", "/memory/clear-stale", None, "clear_stale"),
     ("POST", "/memory/used", {"ids": []}, "memory_used"),
+    ("PUT", "/settings", {"explore": "explore"}, "settings"),
 ]
 
 

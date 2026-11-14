@@ -117,7 +117,12 @@
     "all_dropped": "Ninguna de las {{count}} canciones encontradas se pudo reproducir. ¿Otra dirección?",
     "follow_ups": "Responder con",
     "remember": "Recordar: {{note}}",
-    "remembered": "Recordado: {{note}}"
+    "remembered": "Recordado: {{note}}",
+    "explore": "Explorar",
+    "explore_familiar": "Más conocido",
+    "explore_balanced": "Equilibrado",
+    "explore_more": "Explorar más",
+    "stay_only": "Hoy solo quiero quedarme en este sentimiento"
   },
   "card": {
     "arc_stay": "Acompañar",

@@ -117,7 +117,12 @@
     "all_dropped": "Nessuna delle {{count}} canzoni trovate si poteva ascoltare. Un’altra direzione?",
     "follow_ups": "Rispondi con",
     "remember": "Ricorda: {{note}}",
-    "remembered": "Ricordato: {{note}}"
+    "remembered": "Ricordato: {{note}}",
+    "explore": "Esplora",
+    "explore_familiar": "Più familiare",
+    "explore_balanced": "Equilibrato",
+    "explore_more": "Esplora di più",
+    "stay_only": "Oggi voglio solo restare in questa emozione"
   },
   "card": {
     "arc_stay": "Restare",

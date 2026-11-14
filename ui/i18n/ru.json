@@ -117,7 +117,12 @@
     "all_dropped": "Ни одна из {{count}} найденных песен не играет. Попробовать другое направление?",
     "follow_ups": "Ответить",
     "remember": "Запомнить: {{note}}",
-    "remembered": "Запомнено: {{note}}"
+    "remembered": "Запомнено: {{note}}",
+    "explore": "Открытия",
+    "explore_familiar": "Знакомее",
+    "explore_balanced": "Баланс",
+    "explore_more": "Больше открытий",
+    "stay_only": "Сегодня просто побыть в этом чувстве"
   },
   "card": {
     "arc_stay": "Побыть рядом",

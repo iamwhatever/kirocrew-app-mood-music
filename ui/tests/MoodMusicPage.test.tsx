@@ -15,7 +15,7 @@ const mock = vi.hoisted(() => ({
   api: {
     state: vi.fn(), addMoment: vi.fn(), setQueue: vi.fn(), feedback: vi.fn(), verifyPicks: vi.fn(),
     addMemory: vi.fn(), updateMemory: vi.fn(), deleteMemory: vi.fn(), clearStale: vi.fn(), markUsed: vi.fn(),
-    openSlot: vi.fn(), getSlot: vi.fn(), ask: vi.fn(), approve: vi.fn(), stop: vi.fn(),
+    openSlot: vi.fn(), getSlot: vi.fn(), ask: vi.fn(), approve: vi.fn(), stop: vi.fn(), setSettings: vi.fn(),
   },
 }))
 vi.mock('../src/api', async orig => {
@@ -31,7 +31,7 @@ const api = mock.api
 const ID = 'dQw4w9WgXcQ'
 const t = (k: string, o?: Record<string, string | number>) => tr(k.includes('.') ? k : `page.${k}`, o)
 
-const EMPTY: MoodState = { moments: [], queue: [], feedback: [], last_source: '', memory: [] }
+const EMPTY: MoodState = { moments: [], queue: [], feedback: [], last_source: '', memory: [], settings: { explore: 'balanced', record_open: false } }
 const LIKED: MemoryItem = { id: 'q'.repeat(32), kind: 'liked', origin: 'app', pinned: false, stale: false, created_at: 1, last_used_at: 1, title: 'Old Love', artist: 'B' }
 
 function queued(over: Partial<QueuedPick>): QueuedPick {
@@ -69,6 +69,7 @@ beforeEach(() => {
   api.stop.mockResolvedValue({})
   api.addMemory.mockResolvedValue({})
   api.markUsed.mockResolvedValue({ marked: 1 })
+  api.setSettings.mockResolvedValue({})
 })
 
 afterEach(() => {
@@ -311,6 +312,44 @@ describe('MoodMusicPage', () => {
     expect(api.addMemory).toHaveBeenCalledTimes(1)
     await flush(1000)
     expect(api.addMemory).toHaveBeenLastCalledWith({ kind: 'known', title: 'Two', artist: 'A', origin: 'app' })
+  })
+
+  it('sends the explore level and stay-only choice, and keeps the level', async () => {
+    render(<MoodMusicPage />)
+    await flush()
+    fireEvent.click(screen.getByRole('tab', { name: t('chat.explore_more') }))
+    expect(api.setSettings).toHaveBeenCalledWith({ explore: 'explore' })
+    fireEvent.click(screen.getByRole('button', { name: t('chat.stay_only') }))
+    fireEvent.click(screen.getByRole('button', { name: t('mood_sad') }))
+    await flush()
+    const sent = api.ask.mock.calls[0][0]
+    expect(sent).toContain('Explore level: explore (0 anchor, 4 explore, 1 deep)')
+    expect(sent).toContain('Arc: stay only')
+  })
+
+  it('keeps the full record collapsed until asked, and remembers it open', async () => {
+    const slot = reply({ picks: [] })
+    api.state.mockResolvedValue({ ...EMPTY, last_source: 'r1' })
+    api.getSlot.mockResolvedValue(slot)
+    render(<MoodMusicPage />)
+    await flush()
+    const toggle = screen.getByRole('button', { name: t('chat.show_record') })
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.queryByTestId('chat-embed')).toBeNull()
+    fireEvent.click(toggle)
+    expect(api.setSettings).toHaveBeenCalledWith({ record_open: true })
+    expect(screen.getByTestId('chat-embed').dataset.slot).toBe('mood-music')
+    fireEvent.click(within(screen.getByTestId('mood-full-record')).getByRole('button', { name: t('chat.open_full') }))
+    expect(stubOpenChat).toHaveBeenCalledWith({ slotKey: 'mood-music' })
+  })
+
+  it('opens the full record from a banner', async () => {
+    await start()
+    api.getSlot.mockResolvedValue({ running: false, messages: [USER, { role: 'error', content: 'boom' }] })
+    await flush(POLL_MS)
+    fireEvent.click(within(screen.getByTestId('mood-turn-error')).getByRole('button', { name: t('chat.show_record') }))
+    expect(api.setSettings).toHaveBeenCalledWith({ record_open: true })
+    expect(screen.getByTestId('chat-embed')).toBeInTheDocument()
   })
 
   it('skips to the next pick and records it', async () => {

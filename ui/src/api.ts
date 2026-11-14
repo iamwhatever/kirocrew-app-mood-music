@@ -10,6 +10,7 @@
  */
 import type { AppApi } from '@kirocrew/app-sdk'
 import type { Evidence, NewPick, PickArc, PickSource, PickTier } from './replyParse'
+import type { ExploreLevel } from './request.prompt'
 
 const BASE = '/api/apps/mood-music'
 export const DJ_AGENT = 'mood-music-dj'
@@ -79,6 +80,12 @@ export interface MoodState {
   feedback: FeedbackEntry[]
   last_source: string
   memory: MemoryItem[]
+  settings: Settings
+}
+
+export interface Settings {
+  explore: ExploreLevel
+  record_open: boolean
 }
 
 export interface SlotMessage {
@@ -132,6 +139,7 @@ export function createMoodApi(api: AppApi) {
       api.post<{ picks: NewPick[]; dropped: Record<string, number> }>(`${BASE}/verify-picks`, { picks }),
     feedback: (pickId: string, verdict: Verdict) =>
       api.put<QueuedPick>(`${BASE}/queue/${encodeURIComponent(pickId)}/feedback`, { verdict }),
+    setSettings: (patch: Partial<Settings>) => api.put<Settings>(`${BASE}/settings`, patch),
     addMemory: (item: NewMemory) => api.post<MemoryItem>(`${BASE}/memory`, item),
     updateMemory: (id: string, patch: { text?: string; pinned?: boolean }) =>
       api.put<MemoryItem>(`${BASE}/memory/${encodeURIComponent(id)}`, patch),
