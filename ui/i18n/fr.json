@@ -50,6 +50,11 @@
     "error_generic": "Un problème est survenu ({{code}})",
     "error_unreadable": "Impossible de lire la réponse du DJ. Réessaie.",
     "error_timeout": "Le DJ a mis trop de temps. Réessaie.",
+    "approval_title": "Le DJ attend ton accord pour chercher sur le web",
+    "approval_step_open": "Ouvre le chat du DJ avec le bouton ci-dessous.",
+    "approval_step_trust": "Autorise la recherche web. Choisis Faire confiance pour qu'il ne redemande plus.",
+    "approval_step_back": "Reviens ici. Tes chansons apparaîtront toutes seules.",
+    "approval_open": "Ouvrir le chat du DJ",
     "dropped": "Chansons écartées car leur lien est illisible : {{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili"

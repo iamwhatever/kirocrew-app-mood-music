@@ -181,6 +181,15 @@ class TestTheManifest(unittest.TestCase):
         self.assertEqual(spec["tools"], ["web_search", "web_fetch"])
         self.assertEqual(spec["mcpServers"], {})
 
+    def test_the_dj_runs_its_two_read_only_tools_without_asking(self) -> None:
+        """The approval prompt sits in a chat the page hides, so it would stall the search.
+
+        Only the two network-read tools are pre-allowed; Kiro Crew still drops
+        either one when a governance ceiling has a say about it.
+        """
+        spec = json.loads((APP_ROOT / "agents" / "dj.json").read_text(encoding="utf-8"))
+        self.assertEqual(spec["allowedTools"], ["web_search", "web_fetch"])
+
     def test_listing_copy_matches_the_bundled_catalogs(self) -> None:
         """One source per string: the l10n block is the catalogs' ``manifest`` subtree."""
         manifest = _manifest()

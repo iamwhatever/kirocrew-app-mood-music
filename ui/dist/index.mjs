@@ -1,6 +1,6 @@
-import { activeLocale, fmtDateTime, useAppApi, useLanguageGeneration } from "@kirocrew/app-sdk";
+import { activeLocale, fmtDateTime, useAppApi, useChatLauncher, useLanguageGeneration } from "@kirocrew/app-sdk";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ExternalLink, Heart, MessageCircleQuestion, Music, Play, Search, SkipForward, Sparkles, Waves } from "lucide-react";
+import { ExternalLink, Heart, MessageCircleQuestion, Music, Play, Search, ShieldCheck, SkipForward, Sparkles, Waves } from "lucide-react";
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from "@kirocrew/app-sdk/ui";
 import { jsx, jsxs } from "react/jsx-runtime";
 // src/i18n.ts
@@ -71,6 +71,11 @@ var CATALOGS = {
 			"error_generic": "কিছু ভুল হয়েছে ({{code}})",
 			"error_unreadable": "DJ-এর উত্তর পড়া যায়নি। আবার চেষ্টা করুন।",
 			"error_timeout": "DJ অনেক দেরি করেছে। আবার চেষ্টা করুন।",
+			"approval_title": "DJ ওয়েবে খোঁজার জন্য আপনার অনুমতির অপেক্ষায় আছে",
+			"approval_step_open": "নিচের বোতাম দিয়ে DJ-এর চ্যাট খুলুন।",
+			"approval_step_trust": "সেখানে ওয়েব খোঁজার অনুমতি দিন। বিশ্বাস বেছে নিলে আর জিজ্ঞেস করবে না।",
+			"approval_step_back": "এখানে ফিরে আসুন। গানগুলো নিজে থেকেই দেখা যাবে।",
+			"approval_open": "DJ-এর চ্যাট খুলুন",
 			"dropped": "যে গানের লিংক বাজানো যায় না, সেগুলো বাদ: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili"
@@ -128,6 +133,11 @@ var CATALOGS = {
 			"error_generic": "Etwas ist schiefgelaufen ({{code}})",
 			"error_unreadable": "Die Antwort des DJs ließ sich nicht lesen. Versuch es noch einmal.",
 			"error_timeout": "Der DJ hat zu lange gebraucht. Versuch es noch einmal.",
+			"approval_title": "Der DJ wartet auf dein OK für die Websuche",
+			"approval_step_open": "Öffne den DJ-Chat mit dem Knopf unten.",
+			"approval_step_trust": "Erlaube dort die Websuche. Wähle Vertrauen, dann fragt er nicht mehr.",
+			"approval_step_back": "Komm hierher zurück. Deine Songs erscheinen von selbst.",
+			"approval_open": "DJ-Chat öffnen",
 			"dropped": "Ausgelassene Songs mit nicht abspielbarem Link: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili"
@@ -185,6 +195,11 @@ var CATALOGS = {
 			"error_generic": "Something went wrong ({{code}})",
 			"error_unreadable": "The DJ's answer could not be read. Try again.",
 			"error_timeout": "The DJ took too long. Try again.",
+			"approval_title": "The DJ is waiting for your OK to search the web",
+			"approval_step_open": "Open the DJ chat with the button below.",
+			"approval_step_trust": "Allow the web search there. Choose Trust so it stops asking.",
+			"approval_step_back": "Come back here. Your songs show up on their own.",
+			"approval_open": "Open the DJ chat",
 			"dropped": "Songs left out because their link cannot play: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili"
@@ -242,6 +257,11 @@ var CATALOGS = {
 			"error_generic": "Algo salió mal ({{code}})",
 			"error_unreadable": "No se pudo leer la respuesta del DJ. Inténtalo de nuevo.",
 			"error_timeout": "El DJ tardó demasiado. Inténtalo de nuevo.",
+			"approval_title": "El DJ espera tu permiso para buscar en la web",
+			"approval_step_open": "Abre el chat del DJ con el botón de abajo.",
+			"approval_step_trust": "Permite allí la búsqueda web. Elige Confiar para que no vuelva a preguntar.",
+			"approval_step_back": "Vuelve aquí. Tus canciones aparecerán solas.",
+			"approval_open": "Abrir el chat del DJ",
 			"dropped": "Canciones omitidas por un enlace que no se puede reproducir: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili"
@@ -299,6 +319,11 @@ var CATALOGS = {
 			"error_generic": "Un problème est survenu ({{code}})",
 			"error_unreadable": "Impossible de lire la réponse du DJ. Réessaie.",
 			"error_timeout": "Le DJ a mis trop de temps. Réessaie.",
+			"approval_title": "Le DJ attend ton accord pour chercher sur le web",
+			"approval_step_open": "Ouvre le chat du DJ avec le bouton ci-dessous.",
+			"approval_step_trust": "Autorise la recherche web. Choisis Faire confiance pour qu'il ne redemande plus.",
+			"approval_step_back": "Reviens ici. Tes chansons apparaîtront toutes seules.",
+			"approval_open": "Ouvrir le chat du DJ",
 			"dropped": "Chansons écartées car leur lien est illisible : {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili"
@@ -356,6 +381,11 @@ var CATALOGS = {
 			"error_generic": "कुछ गड़बड़ हो गई ({{code}})",
 			"error_unreadable": "DJ का जवाब पढ़ा नहीं जा सका। फिर कोशिश करें।",
 			"error_timeout": "DJ ने बहुत देर लगाई। फिर कोशिश करें।",
+			"approval_title": "DJ वेब खोज के लिए आपकी अनुमति का इंतज़ार कर रहा है",
+			"approval_step_open": "नीचे दिए बटन से DJ की चैट खोलें।",
+			"approval_step_trust": "वहाँ वेब खोज की अनुमति दें। भरोसा चुनें ताकि वह फिर न पूछे।",
+			"approval_step_back": "यहाँ लौट आएँ। आपके गाने अपने-आप दिखेंगे।",
+			"approval_open": "DJ की चैट खोलें",
 			"dropped": "जिन गानों का लिंक नहीं चल सकता, वे छोड़े गए: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili"
@@ -413,6 +443,11 @@ var CATALOGS = {
 			"error_generic": "Qualcosa è andato storto ({{code}})",
 			"error_unreadable": "Impossibile leggere la risposta del DJ. Riprova.",
 			"error_timeout": "Il DJ ci ha messo troppo. Riprova.",
+			"approval_title": "Il DJ aspetta il tuo ok per cercare sul web",
+			"approval_step_open": "Apri la chat del DJ con il pulsante qui sotto.",
+			"approval_step_trust": "Consenti lì la ricerca web. Scegli Fidati così non chiede più.",
+			"approval_step_back": "Torna qui. Le canzoni compariranno da sole.",
+			"approval_open": "Apri la chat del DJ",
 			"dropped": "Canzoni escluse per un link non riproducibile: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili"
@@ -470,6 +505,11 @@ var CATALOGS = {
 			"error_generic": "問題が発生しました（{{code}}）",
 			"error_unreadable": "DJ の返答を読み取れませんでした。もう一度お試しください。",
 			"error_timeout": "DJ の応答に時間がかかりすぎました。もう一度お試しください。",
+			"approval_title": "DJ がウェブ検索の許可を待っています",
+			"approval_step_open": "下のボタンで DJ のチャットを開きます。",
+			"approval_step_trust": "そこでウェブ検索を許可します。「信頼」を選ぶと次から聞かれません。",
+			"approval_step_back": "ここに戻ると、曲が自動で表示されます。",
+			"approval_open": "DJ のチャットを開く",
 			"dropped": "再生できないリンクのため除外した曲：{{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili"
@@ -527,6 +567,11 @@ var CATALOGS = {
 			"error_generic": "문제가 발생했습니다({{code}})",
 			"error_unreadable": "DJ의 답을 읽을 수 없습니다. 다시 시도하세요.",
 			"error_timeout": "DJ 응답이 너무 오래 걸렸습니다. 다시 시도하세요.",
+			"approval_title": "DJ가 웹 검색 허락을 기다리고 있어요",
+			"approval_step_open": "아래 버튼으로 DJ 채팅을 여세요.",
+			"approval_step_trust": "거기서 웹 검색을 허용하세요. '신뢰'를 고르면 다시 묻지 않아요.",
+			"approval_step_back": "여기로 돌아오면 노래가 저절로 나타나요.",
+			"approval_open": "DJ 채팅 열기",
 			"dropped": "재생할 수 없는 링크라 제외한 곡: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili"
@@ -584,6 +629,11 @@ var CATALOGS = {
 			"error_generic": "Algo deu errado ({{code}})",
 			"error_unreadable": "Não foi possível ler a resposta do DJ. Tente de novo.",
 			"error_timeout": "O DJ demorou demais. Tente de novo.",
+			"approval_title": "O DJ está esperando seu ok para pesquisar na web",
+			"approval_step_open": "Abra o chat do DJ no botão abaixo.",
+			"approval_step_trust": "Permita a pesquisa na web lá. Escolha Confiar para ele não perguntar de novo.",
+			"approval_step_back": "Volte aqui. Suas músicas aparecem sozinhas.",
+			"approval_open": "Abrir o chat do DJ",
 			"dropped": "Músicas deixadas de fora por link que não toca: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili"
@@ -641,6 +691,11 @@ var CATALOGS = {
 			"error_generic": "Что-то пошло не так ({{code}})",
 			"error_unreadable": "Не удалось прочитать ответ DJ. Попробуйте ещё раз.",
 			"error_timeout": "DJ отвечал слишком долго. Попробуйте ещё раз.",
+			"approval_title": "DJ ждёт вашего разрешения на поиск в интернете",
+			"approval_step_open": "Откройте чат DJ кнопкой ниже.",
+			"approval_step_trust": "Разрешите там веб-поиск. Выберите «Доверять», чтобы он больше не спрашивал.",
+			"approval_step_back": "Вернитесь сюда. Песни появятся сами.",
+			"approval_open": "Открыть чат DJ",
 			"dropped": "Пропущено песен со ссылкой, которую нельзя воспроизвести: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili"
@@ -698,6 +753,11 @@ var CATALOGS = {
 			"error_generic": "出了点问题（{{code}}）",
 			"error_unreadable": "读不懂 DJ 的回答，请再试一次。",
 			"error_timeout": "DJ 太久没回应，请再试一次。",
+			"approval_title": "DJ 在等你允许它上网搜索",
+			"approval_step_open": "点下面的按钮，打开 DJ 的对话。",
+			"approval_step_trust": "在那里允许网页搜索。选「信任」，以后就不再问。",
+			"approval_step_back": "回到这里，歌会自己出现。",
+			"approval_open": "打开 DJ 对话",
 			"dropped": "有 {{count}} 首歌的链接无法播放，已略过。",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili"
@@ -780,6 +840,20 @@ function latestReply(slot) {
 		if (m.role === "assistant" && typeof m.content === "string" && m.content.trim()) return m.content;
 	}
 	return "";
+}
+/**
+* Whether the DJ's turn is parked on a tool approval: an unanswered `permission`
+* row after the newest user message. The row is the one the chat's approval card
+* reads; the page cannot answer it, so it sends the person to that chat.
+*/
+function awaitingApproval(slot) {
+	const msgs = slot?.messages ?? [];
+	for (let i = msgs.length - 1; i >= 0; i--) {
+		const m = msgs[i];
+		if (m.role === "user") return false;
+		if (m.role === "permission" && m.meta?.approval_id && !m.meta.resolved) return true;
+	}
+	return false;
 }
 // src/cardStyle.ts
 /** A translucent card over the mood backdrop. Inline, because the host
@@ -1314,6 +1388,8 @@ function MoodMusicPage() {
 	const [autoplay, setAutoplay] = useState(false);
 	const [motionPaused, setMotionPaused] = useState(false);
 	const [pending, setPending] = useState(null);
+	const [approval, setApproval] = useState(false);
+	const { openChat } = useChatLauncher();
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState(null);
 	const [notice, setNotice] = useState(null);
@@ -1412,23 +1488,34 @@ function MoodMusicPage() {
 	useEffect(() => {
 		if (!pending) return;
 		let live = true;
+		let clock = pending.startedAt;
+		setApproval(false);
 		const timer = setInterval(async () => {
 			const key = slotRef.current;
 			if (!key || !live) return;
-			if (Date.now() - pending.startedAt > 3e5) {
-				setPending(null);
-				setError("timeout");
-				return;
-			}
 			let slot;
 			try {
 				slot = await moodApi.getSlot(key);
 			} catch {
+				slot = void 0;
+			}
+			if (!live) return;
+			const parked = !!slot?.running && awaitingApproval(slot);
+			setApproval(parked);
+			if (parked) {
+				clock = Date.now();
 				return;
 			}
+			if (Date.now() - clock > 3e5) {
+				live = false;
+				setPending(null);
+				setError("timeout");
+				return;
+			}
+			if (!slot) return;
 			const reply = latestReply(slot);
 			const source = replySource(reply);
-			if (!live || slot.running || !reply || source === pending.baseline) return;
+			if (slot.running || !reply || source === pending.baseline) return;
 			live = false;
 			setPending(null);
 			const parsed = parseDjReply(reply);
@@ -1579,6 +1666,39 @@ function MoodMusicPage() {
 									notice && /* @__PURE__ */ jsx("p", {
 										className: "mt-2 text-xs text-[var(--muted)]",
 										children: notice
+									})
+								]
+							}),
+							pending && approval && /* @__PURE__ */ jsxs("section", {
+								role: "alert",
+								"aria-labelledby": "mood-approval-title",
+								className: "rounded-2xl border border-[var(--accent)] p-4",
+								style: CARD_STYLE,
+								"data-testid": "mood-approval",
+								children: [
+									/* @__PURE__ */ jsxs("p", {
+										id: "mood-approval-title",
+										className: "flex items-center gap-1.5 text-sm font-semibold text-[var(--text)]",
+										children: [/* @__PURE__ */ jsx(ShieldCheck, {
+											size: 14,
+											"aria-hidden": "true"
+										}), t("page.approval_title")]
+									}),
+									/* @__PURE__ */ jsxs("ol", {
+										className: "mt-2 list-decimal space-y-1 pl-5 text-sm text-[var(--text)]",
+										children: [
+											/* @__PURE__ */ jsx("li", { children: t("page.approval_step_open") }),
+											/* @__PURE__ */ jsx("li", { children: t("page.approval_step_trust") }),
+											/* @__PURE__ */ jsx("li", { children: t("page.approval_step_back") })
+										]
+									}),
+									/* @__PURE__ */ jsx(Btn, {
+										className: "mt-3",
+										primary: true,
+										onClick: () => {
+											if (slotRef.current) openChat({ slotKey: slotRef.current });
+										},
+										children: t("page.approval_open")
 									})
 								]
 							}),

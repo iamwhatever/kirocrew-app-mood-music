@@ -50,6 +50,11 @@
     "error_generic": "Что-то пошло не так ({{code}})",
     "error_unreadable": "Не удалось прочитать ответ DJ. Попробуйте ещё раз.",
     "error_timeout": "DJ отвечал слишком долго. Попробуйте ещё раз.",
+    "approval_title": "DJ ждёт вашего разрешения на поиск в интернете",
+    "approval_step_open": "Откройте чат DJ кнопкой ниже.",
+    "approval_step_trust": "Разрешите там веб-поиск. Выберите «Доверять», чтобы он больше не спрашивал.",
+    "approval_step_back": "Вернитесь сюда. Песни появятся сами.",
+    "approval_open": "Открыть чат DJ",
     "dropped": "Пропущено песен со ссылкой, которую нельзя воспроизвести: {{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili"

@@ -50,6 +50,11 @@
     "error_generic": "出了点问题（{{code}}）",
     "error_unreadable": "读不懂 DJ 的回答，请再试一次。",
     "error_timeout": "DJ 太久没回应，请再试一次。",
+    "approval_title": "DJ 在等你允许它上网搜索",
+    "approval_step_open": "点下面的按钮，打开 DJ 的对话。",
+    "approval_step_trust": "在那里允许网页搜索。选「信任」，以后就不再问。",
+    "approval_step_back": "回到这里，歌会自己出现。",
+    "approval_open": "打开 DJ 对话",
     "dropped": "有 {{count}} 首歌的链接无法播放，已略过。",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili"

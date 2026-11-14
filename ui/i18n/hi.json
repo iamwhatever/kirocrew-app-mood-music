@@ -50,6 +50,11 @@
     "error_generic": "कुछ गड़बड़ हो गई ({{code}})",
     "error_unreadable": "DJ का जवाब पढ़ा नहीं जा सका। फिर कोशिश करें।",
     "error_timeout": "DJ ने बहुत देर लगाई। फिर कोशिश करें।",
+    "approval_title": "DJ वेब खोज के लिए आपकी अनुमति का इंतज़ार कर रहा है",
+    "approval_step_open": "नीचे दिए बटन से DJ की चैट खोलें।",
+    "approval_step_trust": "वहाँ वेब खोज की अनुमति दें। भरोसा चुनें ताकि वह फिर न पूछे।",
+    "approval_step_back": "यहाँ लौट आएँ। आपके गाने अपने-आप दिखेंगे।",
+    "approval_open": "DJ की चैट खोलें",
     "dropped": "जिन गानों का लिंक नहीं चल सकता, वे छोड़े गए: {{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili"

@@ -11,5 +11,9 @@
     "web_search",
     "web_fetch"
   ],
+  "allowedTools": [
+    "web_search",
+    "web_fetch"
+  ],
   "mcpServers": {}
 }

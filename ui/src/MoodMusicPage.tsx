@@ -9,11 +9,11 @@
  * there and again by the backend before it is queued.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
-import { MessageCircleQuestion, Play, Search, Waves } from 'lucide-react'
-import { useAppApi } from '@kirocrew/app-sdk'
+import { MessageCircleQuestion, Play, Search, ShieldCheck, Waves } from 'lucide-react'
+import { useAppApi, useChatLauncher } from '@kirocrew/app-sdk'
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from '@kirocrew/app-sdk/ui'
 import { t } from './i18n'
-import { createMoodApi, latestReply, type MoodState, type QueuedPick, type Verdict } from './api'
+import { awaitingApproval, createMoodApi, latestReply, type MoodState, type QueuedPick, type Verdict } from './api'
 import MomentsTab from './MomentsTab'
 import MoodBackdrop from './MoodBackdrop'
 import { MOOD_KEYS, moodLookFor, type MoodKey, type MoodLook } from './moods'
@@ -62,6 +62,9 @@ export default function MoodMusicPage() {
   const [autoplay, setAutoplay] = useState(false)
   const [motionPaused, setMotionPaused] = useState(false)
   const [pending, setPending] = useState<Pending | null>(null)
+  // The DJ's turn waits on a tool approval in its chat, which the page cannot answer.
+  const [approval, setApproval] = useState(false)
+  const { openChat } = useChatLauncher()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
@@ -145,27 +148,39 @@ export default function MoodMusicPage() {
   }
 
   // Poll the slot while a turn is out. Ends on evidence (a new reply, turn over)
-  // or after GIVE_UP_MS.
+  // or after GIVE_UP_MS without progress. A turn parked on a tool approval is not
+  // stuck: the page shows where to answer it and the clock restarts once it moves.
   useEffect(() => {
     if (!pending) return
     let live = true
+    let clock = pending.startedAt
+    setApproval(false)
     const timer = setInterval(async () => {
       const key = slotRef.current
       if (!key || !live) return
-      if (Date.now() - pending.startedAt > GIVE_UP_MS) {
-        setPending(null)
-        setError('timeout')
-        return
-      }
       let slot
       try {
         slot = await moodApi.getSlot(key)
       } catch {
-        return // a transient blip; the next tick tries again
+        slot = undefined // a transient blip; the next tick tries again
       }
+      if (!live) return
+      const parked = !!slot?.running && awaitingApproval(slot)
+      setApproval(parked)
+      if (parked) {
+        clock = Date.now()
+        return
+      }
+      if (Date.now() - clock > GIVE_UP_MS) {
+        live = false
+        setPending(null)
+        setError('timeout')
+        return
+      }
+      if (!slot) return
       const reply = latestReply(slot)
       const source = replySource(reply)
-      if (!live || slot.running || !reply || source === pending.baseline) return
+      if (slot.running || !reply || source === pending.baseline) return
       live = false
       setPending(null)
       const parsed = parseDjReply(reply)
@@ -291,6 +306,33 @@ export default function MoodMusicPage() {
                 <ErrorNotice className="mt-2" message={errorText} />
                 {notice && <p className="mt-2 text-xs text-[var(--muted)]">{notice}</p>}
               </form>
+
+              {pending && approval && (
+                <section
+                  role="alert"
+                  aria-labelledby="mood-approval-title"
+                  className="rounded-2xl border border-[var(--accent)] p-4"
+                  style={CARD_STYLE}
+                  data-testid="mood-approval"
+                >
+                  <p id="mood-approval-title" className="flex items-center gap-1.5 text-sm font-semibold text-[var(--text)]">
+                    <ShieldCheck size={14} aria-hidden="true" />
+                    {t('page.approval_title')}
+                  </p>
+                  <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-[var(--text)]">
+                    <li>{t('page.approval_step_open')}</li>
+                    <li>{t('page.approval_step_trust')}</li>
+                    <li>{t('page.approval_step_back')}</li>
+                  </ol>
+                  <Btn
+                    className="mt-3"
+                    primary
+                    onClick={() => { if (slotRef.current) openChat({ slotKey: slotRef.current }) }}
+                  >
+                    {t('page.approval_open')}
+                  </Btn>
+                </section>
+              )}
 
               {question && (
                 <form onSubmit={submitAnswer} className="rounded-2xl border border-[var(--accent)] p-4" style={CARD_STYLE} data-testid="mood-question">

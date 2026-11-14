@@ -50,6 +50,11 @@
     "error_generic": "Etwas ist schiefgelaufen ({{code}})",
     "error_unreadable": "Die Antwort des DJs ließ sich nicht lesen. Versuch es noch einmal.",
     "error_timeout": "Der DJ hat zu lange gebraucht. Versuch es noch einmal.",
+    "approval_title": "Der DJ wartet auf dein OK für die Websuche",
+    "approval_step_open": "Öffne den DJ-Chat mit dem Knopf unten.",
+    "approval_step_trust": "Erlaube dort die Websuche. Wähle Vertrauen, dann fragt er nicht mehr.",
+    "approval_step_back": "Komm hierher zurück. Deine Songs erscheinen von selbst.",
+    "approval_open": "DJ-Chat öffnen",
     "dropped": "Ausgelassene Songs mit nicht abspielbarem Link: {{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili"

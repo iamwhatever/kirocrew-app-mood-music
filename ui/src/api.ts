@@ -59,6 +59,8 @@ export interface SlotMessage {
   role?: string
   type?: string
   content?: string
+  /** On a `permission` row: the approval's id, and `resolved` once it is answered. */
+  meta?: { approval_id?: unknown; resolved?: unknown }
 }
 
 export interface SlotData {
@@ -106,4 +108,19 @@ export function latestReply(slot: SlotData | undefined): string {
     if (m.role === 'assistant' && typeof m.content === 'string' && m.content.trim()) return m.content
   }
   return ''
+}
+
+/**
+ * Whether the DJ's turn is parked on a tool approval: an unanswered `permission`
+ * row after the newest user message. The row is the one the chat's approval card
+ * reads; the page cannot answer it, so it sends the person to that chat.
+ */
+export function awaitingApproval(slot: SlotData | undefined): boolean {
+  const msgs = slot?.messages ?? []
+  for (let i = msgs.length - 1; i >= 0; i--) {
+    const m = msgs[i]
+    if (m.role === 'user') return false
+    if (m.role === 'permission' && m.meta?.approval_id && !m.meta.resolved) return true
+  }
+  return false
 }
