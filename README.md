@@ -12,10 +12,14 @@ the open-source personal AI agent.
 
 ## What it is
 
-Mood Music adds a **Mood Music** page to Kiro Crew. You type how you feel, pick a
-mood, or name a song that moved you. A DJ helper searches the web for songs with
-the same feeling, says why each one fits, and lines them up for you. YouTube songs
-play right on the page; bilibili songs open in a new tab of your own browser.
+Mood Music adds a **Mood Music** page to Kiro Crew. You tell your music buddy how
+you feel, or name a song that moved you. The buddy searches reviews and lists for
+good songs most people have not heard yet, says why each one fits and what to listen
+for, and orders them from staying with the feeling to lifting it a little. You see
+what it is doing while it works. Every link is checked before it is shown. YouTube
+songs play right on the page; bilibili songs open in a new tab of your own browser.
+A **Memory** tab shows what the buddy knows about your taste, and you decide what
+stays.
 
 **Get started:** open **Apps → Discover**, find **Mood Music**, choose **Install**,
 then **Enable**. See [Install](#install) for the details.
@@ -81,8 +85,10 @@ player is shown as a stand-in frame.</sub>
    that code the same access Kiro Crew has (your files, your saved sign-ins and the
    internet), as the dialog says. Choose **Trust this app**. You can take it back
    later in **Settings → Security → Third-party apps**.
-4. The app installs switched off. Choose **Enable** on its page. It then shows up
-   under **Apps** in the sidebar and in **Apps → Library**.
+4. The app installs switched off. Choose **Enable and allow chat control** on its
+   page, so the buddy can ask you on the Mood Music page before it opens a web page
+   it was not already allowed to. It then shows up under **Apps** in the sidebar and
+   in **Apps → Library**.
 
 Kiro Crew must already be able to chat: if ordinary chats work, this works. No music
 account or key is needed. Playing YouTube songs inside the page needs a Kiro Crew
@@ -91,32 +97,45 @@ area stays blank, and the bilibili links and everything else still work.
 
 ## First run
 
-The page opens with an empty player and a box that asks **How do you feel, or which
-song moved you?** Type a feeling or a song name and choose **Find songs**, or click
-one of the mood chips: a chip starts the search by itself.
+The page opens with a short hello from the buddy and an empty player. Type a
+feeling or a song name in the box and choose **Send**, or click one of the mood
+chips: a chip starts the search by itself. The conversation is also listed in the
+Kiro Crew sidebar under the app's folder.
 
 ## How to use it
 
 1. Open **Mood Music** in the sidebar.
-2. Type how you feel, or a song that moved you, and choose **Find songs**, or click a
-   mood chip such as **Calm** or **Missing someone**.
-3. If the DJ is not sure what you mean, it asks one short question under **The DJ
-   asks**. Type your answer and choose **Answer**.
-4. Play the song under **Now playing**. Choose **Like** if it fits and **Skip** if it
-   does not; the next song starts. **More like this** finds songs close to this one.
+2. Choose how far to explore: **More familiar**, **Balanced** (one song you may
+   know and four new ones) or **Explore more**. To stay with a feeling, turn on
+   **Just stay in this feeling today**.
+3. Type how you feel, or a song that moved you, and choose **Send**, or click a mood
+   chip such as **Calm** or **Missing someone**. A line under the chat says what the
+   buddy is doing: thinking, searching, reading reviews, writing, or checking that
+   each song plays. **Stop** cancels it.
+4. Each song card says why it is here, what to listen for and who praised it. Choose
+   **Play**, the heart to like it, skip, or **I know it**. Tap a suggestion under the
+   reply to keep talking, or **Remember: ...** to save a preference the buddy heard.
 5. Click any song under **Up next** to play it now.
-6. Open **Moments** to see the moods you shared and the songs they brought.
-7. To stop the background moving, choose **Pause background motion** at the top
+6. Open **Memory** to see your own notes and the songs and moods the app recorded.
+   Add, edit, pin or delete any of them; **Clear everything out of date** removes
+   what the app recorded and has not used for 90 days. What you wrote yourself is
+   never removed for you.
+7. Open **Moments** to see the moods you shared and the songs they brought.
+8. **Show the full record** under the chat opens the whole conversation, with every
+   search and page the buddy used.
+9. To stop the background moving, choose **Pause background motion** at the top
    right. It pauses only the background, never the music.
 
 ## Settings & data
 
 - **Where your data lives:** `~/.kiro/crew/apps/mood-music/data/state.json` (or under
-  `$KIROCREW_HOME` if you set it). It holds your moods, the current list and your likes
-  and skips.
-- **What leaves your computer:** your mood text and a short list of songs you liked
-  and skipped go to the AI model Kiro Crew uses, so the DJ can pick. The DJ searches
-  the public web. YouTube songs load from `www.youtube-nocookie.com`, YouTube's
+  `$KIROCREW_HOME` if you set it). It holds your moods, the current list, your likes
+  and skips, and the Memory tab.
+- **What leaves your computer:** your mood text and a short summary of your memory
+  (your notes, songs you liked, skipped or know, recent moods) go to the AI model
+  Kiro Crew uses, so the buddy can pick. The buddy searches the public web. To check
+  each song, the app asks `www.youtube.com/oembed` or `api.bilibili.com` about that
+  one video, with no cookie. YouTube songs load from `www.youtube-nocookie.com`, YouTube's
   privacy-enhanced player. bilibili songs open on bilibili in your own browser. Your
   moods are not saved into Kiro Crew's memory.
 - **Turn it off:** **Apps → Library**, open the **⋯** menu on Mood Music, choose
@@ -126,17 +145,17 @@ one of the mood chips: a chip starts the search by itself.
 
 ## Troubleshooting / FAQ
 
-**I see "The DJ's answer could not be read. Try again."**
-The DJ answered in a way the page could not use. Click the mood chip again or choose
-**Find songs** again.
+**I see "Couldn't read your buddy's answer" or "Something went wrong this time".**
+Choose **Ask again** or **Try again**. **Show the full record** shows what happened.
 
-**I see "The DJ took too long. Try again."**
-No answer came within five minutes. Check that an ordinary chat in Kiro Crew still
-answers, then try again.
+**I see "Your buddy seems stuck".**
+Nothing moved for two minutes. Choose **Wait a bit more**, or **Stop and start
+over**. Check that an ordinary chat in Kiro Crew still answers.
 
-**A message says some songs were left out.**
-The DJ found a link the page will not play, so that song was dropped. The other songs
-are fine.
+**A message says some songs were left out, or none of them could play.**
+The app checks every song with YouTube or bilibili before showing it and drops one
+that does not open or whose title does not match. bilibili may refuse these checks
+from some networks; those songs are then left out too. Try another direction.
 
 **The player area is blank.**
 Your Kiro Crew does not yet let apps show the YouTube player. Update Kiro Crew. The
@@ -152,8 +171,8 @@ No. It plays YouTube songs on the page and opens bilibili songs in your browser.
 | Path | What it is |
 |---|---|
 | `app.json` | The manifest: page, agent, skill, backend hook, `ui.frameSources` |
-| `agents/dj.json`, `skills/mood-music/` | The DJ agent (`web_search` and `web_fetch` only, both run without asking) and its reply contract; the page also sends the contract with every request (`ui/src/request.prompt.ts`) |
-| `backend/` | Routes (`hooks.routes`), the JSON store and the link checks |
+| `agents/dj.json`, `skills/mood-music/` | The music buddy agent (`web_search` and `web_fetch` only, both run without asking) and its reply contract; the page also sends the contract and a bounded memory summary with every request (`ui/src/request.prompt.ts`) |
+| `backend/` | Routes (`hooks.routes`), the JSON store with memory, the link checks, and `verify.py` (the YouTube oEmbed / bilibili view lookups) |
 | `ui/src/`, `ui/dist/index.mjs` | The page, and its committed ESM bundle |
 | `ui/i18n/` | The app's strings in 12 languages |
 | `tests/`, `ui/tests/` | Backend and UI tests |
