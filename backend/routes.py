@@ -10,6 +10,7 @@ the access its manifest grant gives it.
   POST /moments             -> record a mood moment
   POST /queue               -> replace the queue with new picks
   PUT  /queue/{id}/feedback -> like / skip / clear a pick
+  POST /verify-picks        -> look each pick up on YouTube / bilibili (``verify.py``)
 
 A pick's link is checked in ``links.py``: a YouTube pick is stored as its video
 id alone, a bilibili pick as an https URL on an exact bilibili host. A request
@@ -27,7 +28,7 @@ from typing import Any
 
 from aiohttp import web
 
-from . import _host, links
+from . import _host, links, verify
 from .store import MAX_QUEUE, VERDICTS, MoodStore
 
 _MAX_MOOD = 200
@@ -159,6 +160,24 @@ def _pick(raw: Any) -> tuple[dict[str, Any] | None, str]:
     return out, ""
 
 
+async def _checked_picks(
+    body: dict[str, Any],
+) -> tuple[list[dict[str, Any]], web.Response | None]:
+    """``body["picks"]`` checked one by one; one bad pick refuses them all."""
+    raw_picks = body.get("picks")
+    if not isinstance(raw_picks, list) or not 0 < len(raw_picks) <= MAX_QUEUE:
+        return [], _bad_request(
+            f"picks must be a list of 1 to {MAX_QUEUE}", "invalid_field_type"
+        )
+    picks: list[dict[str, Any]] = []
+    for raw in raw_picks:
+        pick, code = _pick(raw)
+        if pick is None:
+            return [], _bad_request("a pick was refused", code)
+        picks.append(pick)
+    return picks, None
+
+
 def _owner_only(operation: str, handler: _host.Handler) -> _host.Handler:
     """Refuse a non-owner dashboard caller before the handler runs.
 
@@ -221,17 +240,9 @@ async def _handle_set_queue(request: web.Request, ctx: Any) -> web.Response:
         return _bad_request(
             "mood_tags must be a short list of short strings", "invalid_field_type"
         )
-    raw_picks = body.get("picks")
-    if not isinstance(raw_picks, list) or not 0 < len(raw_picks) <= MAX_QUEUE:
-        return _bad_request(
-            f"picks must be a list of 1 to {MAX_QUEUE}", "invalid_field_type"
-        )
-    picks: list[dict[str, Any]] = []
-    for raw in raw_picks:
-        pick, code = _pick(raw)
-        if pick is None:
-            return _bad_request("a pick was refused", code)
-        picks.append(pick)
+    picks, err = await _checked_picks(body)
+    if err is not None:
+        return err
     queue = await asyncio.to_thread(
         lambda: _store(ctx).set_queue(
             picks, source=source, moment_id=moment_id, mood_tags=mood_tags
@@ -259,6 +270,20 @@ async def _handle_feedback(request: web.Request, ctx: Any) -> web.Response:
     return web.json_response(pick)
 
 
+async def _handle_verify(request: web.Request, ctx: Any) -> web.Response:
+    body, err = await _json_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    picks, err = await _checked_picks(body)
+    if err is not None:
+        return err
+    avoid = await asyncio.to_thread(lambda: _store(ctx).avoid_lists())
+    async with verify.http_fetch() as fetch:
+        kept, dropped = await verify.verify_picks(picks, fetch, **avoid)
+    return web.json_response({"picks": kept, "dropped": dropped})
+
+
 def register_routes(ctx: Any) -> list[_host.Route]:
     """The manifest's ``backend.hooks.routes``: this app's routes, unprefixed.
 
@@ -280,4 +305,5 @@ def register_routes(ctx: Any) -> list[_host.Route]:
         route("POST", "/moments", _owner_only("add_moment", _handle_add_moment)),
         route("POST", "/queue", _owner_only("set_queue", _handle_set_queue)),
         route("PUT", "/queue/{id}/feedback", _owner_only("feedback", _handle_feedback)),
+        route("POST", "/verify-picks", _owner_only("verify_picks", _handle_verify)),
     ]

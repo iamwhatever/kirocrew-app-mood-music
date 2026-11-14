@@ -185,6 +185,7 @@ ROUTES = [
     ("POST", "/moments", {"mood": "calm"}, "add_moment"),
     ("POST", "/queue", {"source": "r1", "picks": [_yt()]}, "set_queue"),
     ("PUT", f"/queue/{'0' * 32}/feedback", {"verdict": "liked"}, "feedback"),
+    ("POST", "/verify-picks", {"picks": "not a list"}, "verify_picks"),
 ]
 
 
@@ -205,7 +206,7 @@ def test_a_request_with_no_app_claim_is_refused(ctx, method, path, body, op) -> 
 @pytest.mark.parametrize(("method", "path", "body", "op"), ROUTES)
 def test_an_app_token_keeps_its_grant(ctx, method, path, body, op) -> None:
     status, _ = _call(ctx, method, path, body, user="app:mood-music", app="mood-music")
-    assert status in (200, 201, 404)
+    assert status in (200, 201, 400, 404)
     assert ctx.owner_checks == []
 
 

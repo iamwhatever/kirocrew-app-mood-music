@@ -88,6 +88,9 @@ export function createMoodApi(api: AppApi) {
     addMoment: (mood: string) => api.post<Moment>(`${BASE}/moments`, { mood }),
     setQueue: (body: { source: string; moment_id?: string; mood_tags: string[]; picks: NewPick[] }) =>
       api.post<{ queue: QueuedPick[] }>(`${BASE}/queue`, body),
+    /** Look each pick up on YouTube / bilibili; only confirmed picks come back. */
+    verifyPicks: (picks: NewPick[]) =>
+      api.post<{ picks: NewPick[]; dropped: Record<string, number> }>(`${BASE}/verify-picks`, { picks }),
     feedback: (pickId: string, verdict: Verdict) =>
       api.put<QueuedPick>(`${BASE}/queue/${encodeURIComponent(pickId)}/feedback`, { verdict }),
     openSlot,

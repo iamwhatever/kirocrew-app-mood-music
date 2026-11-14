@@ -839,6 +839,8 @@ function createMoodApi(api) {
 		state: () => api.get(`${BASE}/state`),
 		addMoment: (mood) => api.post(`${BASE}/moments`, { mood }),
 		setQueue: (body) => api.post(`${BASE}/queue`, body),
+		/** Look each pick up on YouTube / bilibili; only confirmed picks come back. */
+		verifyPicks: (picks) => api.post(`${BASE}/verify-picks`, { picks }),
 		feedback: (pickId, verdict) => api.put(`${BASE}/queue/${encodeURIComponent(pickId)}/feedback`, { verdict }),
 		openSlot,
 		getSlot: (key) => api.get(`/api/chat/slots/${encodeURIComponent(key)}`),
@@ -1652,13 +1654,20 @@ function MoodMusicPage() {
 				} else setError("unreadable");
 				return;
 			}
-			if (parsed.dropped > 0) setNotice(t("page.dropped", { count: parsed.dropped }));
 			try {
+				const checked = await moodApi.verifyPicks(parsed.picks);
+				const dropped = parsed.dropped + Object.values(checked.dropped).reduce((a, b) => a + b, 0);
+				if (checked.picks.length === 0) {
+					setDroppedAll(dropped);
+					setError("all_dropped");
+					return;
+				}
+				if (dropped > 0) setNotice(t("page.dropped", { count: dropped }));
 				const { queue: next } = await moodApi.setQueue({
 					source,
 					moment_id: pending.momentId || void 0,
 					mood_tags: parsed.moodTags,
-					picks: parsed.picks
+					picks: checked.picks
 				});
 				setState(await moodApi.state());
 				setCurrentId(next[0]?.id ?? null);

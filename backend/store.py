@@ -93,6 +93,18 @@ class MoodStore:
         with self._lock:
             return self._read()
 
+    def avoid_lists(self) -> dict[str, list[tuple[str, str]]]:
+        """The songs a check drops (``verify.verify_picks`` keywords): liked are known, skipped never return."""
+        from .verify import song_key
+
+        with self._lock:
+            state = self._read()
+        out: dict[str, list[tuple[str, str]]] = {"known": [], "skipped": []}
+        for f in state["feedback"]:
+            bucket = "known" if f.get("verdict") == "liked" else "skipped"
+            out[bucket].append(song_key(f.get("title", ""), f.get("artist", "")))
+        return out
+
     # ── writes ──
 
     def add_moment(

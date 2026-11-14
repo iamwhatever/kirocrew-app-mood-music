@@ -13,7 +13,7 @@ vi.mock('../src/reducedMotion', () => ({ usePrefersReducedMotion: () => motion.r
 
 const mock = vi.hoisted(() => ({
   api: {
-    state: vi.fn(), addMoment: vi.fn(), setQueue: vi.fn(), feedback: vi.fn(),
+    state: vi.fn(), addMoment: vi.fn(), setQueue: vi.fn(), feedback: vi.fn(), verifyPicks: vi.fn(),
     openSlot: vi.fn(), getSlot: vi.fn(), ask: vi.fn(),
   },
 }))
@@ -52,6 +52,7 @@ beforeEach(() => {
   api.openSlot.mockResolvedValue({ key: 'mood-music' })
   api.getSlot.mockResolvedValue({ running: false, messages: [] })
   api.ask.mockResolvedValue('mood-music')
+  api.verifyPicks.mockImplementation(async (picks: unknown[]) => ({ picks, dropped: {} }))
 })
 
 afterEach(() => {
