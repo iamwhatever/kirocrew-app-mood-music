@@ -59,6 +59,37 @@
     "approval_open": "Apri la chat del DJ",
     "dropped": "Canzoni escluse per un link non riproducibile: {{count}}",
     "source_youtube": "YouTube",
-    "source_bilibili": "bilibili"
+    "source_bilibili": "bilibili",
+    "tab_memory": "Memoria"
+  },
+  "memory": {
+    "add_label": "Di' al tuo compagno qualcosa da ricordare",
+    "add_placeholder": "es. non troppo forte / mi piace il cantonese / jazz nei giorni di pioggia",
+    "add": "Aggiungi",
+    "empty_title": "Ancora niente da ricordare",
+    "empty_body": "Qui compaiono le canzoni che ti piacciono, salti o conosci già, e ciò che aggiungi.",
+    "notes": "Quello che hai detto",
+    "notes_empty": "Ancora niente. Aggiungine uno qui sopra.",
+    "edit": "Modifica",
+    "edit_label": "Modifica nota",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "pin": "Fissa {{item}}",
+    "unpin": "Sblocca {{item}}",
+    "pinned": "Fissato",
+    "delete": "Elimina {{item}}",
+    "liked": "Canzoni che ti piacciono ({{count}})",
+    "skipped": "Canzoni saltate ({{count}})",
+    "known": "Canzoni che conosci ({{count}})",
+    "moods": "Parole d’umore ({{count}})",
+    "stale": "forse superato",
+    "by_you": "aggiunto da te",
+    "show_all": "Mostra tutte ({{count}})",
+    "show_less": "Mostra meno",
+    "clear_stale": "Cancella tutto il superato ({{count}})",
+    "clear_confirm": "Rimuovere {{count}} elementi superati? Quello che hai scritto tu resta.",
+    "clear_yes": "Cancella",
+    "error": "Impossibile salvare ({{code}}).",
+    "error_full": "La memoria è piena dei tuoi elementi. Eliminane uno prima."
   }
 }

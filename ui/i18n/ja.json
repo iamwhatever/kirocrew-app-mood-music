@@ -59,6 +59,37 @@
     "approval_open": "DJ のチャットを開く",
     "dropped": "再生できないリンクのため除外した曲：{{count}}",
     "source_youtube": "YouTube",
-    "source_bilibili": "bilibili"
+    "source_bilibili": "bilibili",
+    "tab_memory": "メモリー"
+  },
+  "memory": {
+    "add_label": "相棒に覚えておいてほしいことを伝える",
+    "add_placeholder": "例：うるさすぎない / 広東語が好き / 雨の日はジャズ",
+    "add": "追加",
+    "empty_title": "まだ何も覚えていません",
+    "empty_body": "いいね・スキップ・聴いたことのある曲と、あなたが追加したことがここに表示されます。",
+    "notes": "あなたの言葉",
+    "notes_empty": "まだありません。上で追加してください。",
+    "edit": "編集",
+    "edit_label": "メモを編集",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "pin": "{{item}} をピン留め",
+    "unpin": "{{item}} のピン留めを外す",
+    "pinned": "ピン留め中",
+    "delete": "{{item}} を削除",
+    "liked": "いいねした曲（{{count}}）",
+    "skipped": "スキップした曲（{{count}}）",
+    "known": "聴いたことのある曲（{{count}}）",
+    "moods": "気分のことば（{{count}}）",
+    "stale": "古いかも",
+    "by_you": "あなたが追加",
+    "show_all": "すべて表示（{{count}}）",
+    "show_less": "閉じる",
+    "clear_stale": "古いものをすべて消す（{{count}}）",
+    "clear_confirm": "古い {{count}} 件を消しますか？自分で書いたものは残ります。",
+    "clear_yes": "消す",
+    "error": "保存できませんでした（{{code}}）。",
+    "error_full": "メモリーが自分で追加した項目でいっぱいです。先に1つ削除してください。"
   }
 }

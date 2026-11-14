@@ -59,6 +59,37 @@
     "approval_open": "Open the DJ chat",
     "dropped": "Songs left out because their link cannot play: {{count}}",
     "source_youtube": "YouTube",
-    "source_bilibili": "bilibili"
+    "source_bilibili": "bilibili",
+    "tab_memory": "Memory"
+  },
+  "memory": {
+    "add_label": "Tell your buddy something to remember",
+    "add_placeholder": "e.g. not too loud / I like Cantonese / jazz on rainy days",
+    "add": "Add",
+    "empty_title": "Nothing remembered yet",
+    "empty_body": "Songs you like, skip or already know show up here, with anything you add.",
+    "notes": "What you said",
+    "notes_empty": "Nothing yet. Add one above.",
+    "edit": "Edit",
+    "edit_label": "Edit note",
+    "save": "Save",
+    "cancel": "Cancel",
+    "pin": "Pin {{item}}",
+    "unpin": "Unpin {{item}}",
+    "pinned": "Pinned",
+    "delete": "Delete {{item}}",
+    "liked": "Liked songs ({{count}})",
+    "skipped": "Skipped songs ({{count}})",
+    "known": "Songs you know ({{count}})",
+    "moods": "Mood words ({{count}})",
+    "stale": "maybe out of date",
+    "by_you": "added by you",
+    "show_all": "Show all {{count}}",
+    "show_less": "Show fewer",
+    "clear_stale": "Clear everything out of date ({{count}})",
+    "clear_confirm": "Remove {{count}} out-of-date items? What you wrote yourself stays.",
+    "clear_yes": "Clear",
+    "error": "Could not save that ({{code}}).",
+    "error_full": "Memory is full of your own items. Delete one first."
   }
 }

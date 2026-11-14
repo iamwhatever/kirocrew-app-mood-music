@@ -59,6 +59,37 @@
     "approval_open": "DJ-Chat öffnen",
     "dropped": "Ausgelassene Songs mit nicht abspielbarem Link: {{count}}",
     "source_youtube": "YouTube",
-    "source_bilibili": "bilibili"
+    "source_bilibili": "bilibili",
+    "tab_memory": "Erinnerung"
+  },
+  "memory": {
+    "add_label": "Sag deinem Buddy, was er sich merken soll",
+    "add_placeholder": "z. B. nicht zu laut / ich mag Kantonesisch / Jazz an Regentagen",
+    "add": "Hinzufügen",
+    "empty_title": "Noch nichts gemerkt",
+    "empty_body": "Songs, die du magst, überspringst oder schon kennst, erscheinen hier – mit allem, was du hinzufügst.",
+    "notes": "Was du gesagt hast",
+    "notes_empty": "Noch nichts. Füge oben etwas hinzu.",
+    "edit": "Bearbeiten",
+    "edit_label": "Notiz bearbeiten",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "pin": "{{item}} anheften",
+    "unpin": "{{item}} lösen",
+    "pinned": "Angeheftet",
+    "delete": "{{item}} löschen",
+    "liked": "Gemochte Songs ({{count}})",
+    "skipped": "Übersprungene Songs ({{count}})",
+    "known": "Songs, die du kennst ({{count}})",
+    "moods": "Stimmungswörter ({{count}})",
+    "stale": "evtl. veraltet",
+    "by_you": "von dir",
+    "show_all": "Alle {{count}} zeigen",
+    "show_less": "Weniger zeigen",
+    "clear_stale": "Alles Veraltete entfernen ({{count}})",
+    "clear_confirm": "{{count}} veraltete Einträge entfernen? Was du selbst geschrieben hast, bleibt.",
+    "clear_yes": "Entfernen",
+    "error": "Konnte nicht gespeichert werden ({{code}}).",
+    "error_full": "Die Erinnerung ist voll mit deinen Einträgen. Lösche zuerst einen."
   }
 }

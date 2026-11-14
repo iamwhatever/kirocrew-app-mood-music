@@ -59,6 +59,37 @@
     "approval_open": "打开 DJ 对话",
     "dropped": "有 {{count}} 首歌的链接无法播放，已略过。",
     "source_youtube": "YouTube",
-    "source_bilibili": "bilibili"
+    "source_bilibili": "bilibili",
+    "tab_memory": "记忆"
+  },
+  "memory": {
+    "add_label": "告诉搭子一件要记住的事",
+    "add_placeholder": "例：不要太吵 / 喜欢粤语 / 下雨天想听爵士",
+    "add": "加一条",
+    "empty_title": "还没有记住什么",
+    "empty_body": "你喜欢、跳过、听过的歌，还有你自己加的话，都会出现在这里。",
+    "notes": "我说的",
+    "notes_empty": "还没有。在上面加一条。",
+    "edit": "编辑",
+    "edit_label": "编辑这条",
+    "save": "保存",
+    "cancel": "取消",
+    "pin": "置顶 {{item}}",
+    "unpin": "取消置顶 {{item}}",
+    "pinned": "已置顶",
+    "delete": "删除 {{item}}",
+    "liked": "喜欢的歌（{{count}}）",
+    "skipped": "跳过的歌（{{count}}）",
+    "known": "听过的歌（{{count}}）",
+    "moods": "心情词（{{count}}）",
+    "stale": "可能过时",
+    "by_you": "你加的",
+    "show_all": "显示全部 {{count}} 条",
+    "show_less": "收起",
+    "clear_stale": "清掉所有可能过时的（{{count}}）",
+    "clear_confirm": "删掉 {{count}} 条可能过时的？你自己写的不会删。",
+    "clear_yes": "清掉",
+    "error": "没能保存（{{code}}）。",
+    "error_full": "记忆满了，都是你自己加的。先删一条。"
   }
 }

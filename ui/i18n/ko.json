@@ -59,6 +59,37 @@
     "approval_open": "DJ 채팅 열기",
     "dropped": "재생할 수 없는 링크라 제외한 곡: {{count}}",
     "source_youtube": "YouTube",
-    "source_bilibili": "bilibili"
+    "source_bilibili": "bilibili",
+    "tab_memory": "기억"
+  },
+  "memory": {
+    "add_label": "단짝에게 기억할 것을 알려 주세요",
+    "add_placeholder": "예: 너무 시끄럽지 않게 / 광둥어 노래 좋아 / 비 오는 날엔 재즈",
+    "add": "추가",
+    "empty_title": "아직 기억한 것이 없어요",
+    "empty_body": "좋아요, 건너뛰기, 이미 아는 노래와 직접 추가한 내용이 여기에 표시돼요.",
+    "notes": "내가 한 말",
+    "notes_empty": "아직 없어요. 위에서 추가하세요.",
+    "edit": "편집",
+    "edit_label": "메모 편집",
+    "save": "저장",
+    "cancel": "취소",
+    "pin": "{{item}} 고정",
+    "unpin": "{{item}} 고정 해제",
+    "pinned": "고정됨",
+    "delete": "{{item}} 삭제",
+    "liked": "좋아한 노래 ({{count}})",
+    "skipped": "건너뛴 노래 ({{count}})",
+    "known": "들어 본 노래 ({{count}})",
+    "moods": "기분 단어 ({{count}})",
+    "stale": "오래됐을 수 있음",
+    "by_you": "내가 추가",
+    "show_all": "모두 보기 ({{count}})",
+    "show_less": "접기",
+    "clear_stale": "오래된 항목 모두 지우기 ({{count}})",
+    "clear_confirm": "오래된 {{count}}개를 지울까요? 직접 쓴 것은 남아요.",
+    "clear_yes": "지우기",
+    "error": "저장하지 못했어요 ({{code}}).",
+    "error_full": "기억이 직접 추가한 항목으로 가득 찼어요. 먼저 하나를 지우세요."
   }
 }

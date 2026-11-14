@@ -52,11 +52,33 @@ export interface FeedbackEntry {
   at: number
 }
 
+export type MemoryKind = 'note' | 'liked' | 'skipped' | 'known' | 'mood'
+
+/** One thing the buddy knows about the person (design §2). */
+export interface MemoryItem {
+  id: string
+  kind: MemoryKind
+  origin: 'user' | 'app'
+  pinned: boolean
+  /** Worked out by the backend: an app item unused for 90 days, or replaced. */
+  stale: boolean
+  created_at: number
+  last_used_at: number
+  text?: string
+  title?: string
+  artist?: string
+}
+
+export type NewMemory =
+  | { kind: 'note' | 'mood'; text: string; origin?: 'user' | 'app' }
+  | { kind: 'liked' | 'skipped' | 'known'; title: string; artist?: string; origin?: 'user' | 'app' }
+
 export interface MoodState {
   moments: Moment[]
   queue: QueuedPick[]
   feedback: FeedbackEntry[]
   last_source: string
+  memory: MemoryItem[]
 }
 
 export interface SlotMessage {
@@ -93,6 +115,12 @@ export function createMoodApi(api: AppApi) {
       api.post<{ picks: NewPick[]; dropped: Record<string, number> }>(`${BASE}/verify-picks`, { picks }),
     feedback: (pickId: string, verdict: Verdict) =>
       api.put<QueuedPick>(`${BASE}/queue/${encodeURIComponent(pickId)}/feedback`, { verdict }),
+    addMemory: (item: NewMemory) => api.post<MemoryItem>(`${BASE}/memory`, item),
+    updateMemory: (id: string, patch: { text?: string; pinned?: boolean }) =>
+      api.put<MemoryItem>(`${BASE}/memory/${encodeURIComponent(id)}`, patch),
+    deleteMemory: (id: string) => api.del<{ deleted: string }>(`${BASE}/memory/${encodeURIComponent(id)}`),
+    clearStale: () => api.post<{ removed: number }>(`${BASE}/memory/clear-stale`),
+    markUsed: (ids: string[]) => api.post<{ marked: number }>(`${BASE}/memory/used`, { ids }),
     openSlot,
     getSlot: (key: string) => api.get<SlotData>(`/api/chat/slots/${encodeURIComponent(key)}`),
     /** Send one turn; a refusal rejects. Returns the slot key the turn went to. */

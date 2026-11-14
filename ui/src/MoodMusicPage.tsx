@@ -14,6 +14,7 @@ import { useAppApi, useChatLauncher } from '@kirocrew/app-sdk'
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from '@kirocrew/app-sdk/ui'
 import { t } from './i18n'
 import { awaitingApproval, createMoodApi, latestReply, type MoodState, type QueuedPick, type Verdict } from './api'
+import MemoryTab from './MemoryTab'
 import MomentsTab from './MomentsTab'
 import MoodBackdrop from './MoodBackdrop'
 import { MOOD_KEYS, moodLookFor, type MoodKey, type MoodLook } from './moods'
@@ -25,7 +26,7 @@ import { CARD_STYLE } from './cardStyle'
 
 const errMessage = (e: unknown): string => (e instanceof Error ? e.message : typeof e === 'string' ? e : '')
 
-type Tab = 'listen' | 'moments'
+type Tab = 'listen' | 'moments' | 'memory'
 
 /** Poll cadence while the DJ works, and how long before the page gives up. */
 export const POLL_MS = 1500
@@ -82,6 +83,8 @@ export default function MoodMusicPage() {
     moodApi.state().then(s => { if (live) setState(s) }).catch(e => { if (live) setError(errMessage(e) || 'load_failed') })
     return () => { live = false }
   }, [moodApi])
+
+  const refresh = useCallback(async () => { setState(await moodApi.state()) }, [moodApi])
 
   const queue = state?.queue ?? []
   const current = queue.find(p => p.id === currentId) ?? queue.find(p => p.feedback !== 'skipped') ?? null
@@ -267,12 +270,17 @@ export default function MoodMusicPage() {
             segments={[
               { key: 'listen', label: t('page.tab_listen') },
               { key: 'moments', label: t('page.tab_moments') },
+              { key: 'memory', label: t('page.tab_memory') },
             ]}
           />
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 pb-6">
-          {tab === 'moments' ? <div className="mx-auto max-w-5xl"><MomentsTab moments={state?.moments ?? []} /></div> : (
+          {tab === 'memory' ? (
+            <div className="mx-auto max-w-5xl">
+              <MemoryTab memory={state?.memory ?? []} api={moodApi} onChanged={refresh} />
+            </div>
+          ) : tab === 'moments' ? <div className="mx-auto max-w-5xl"><MomentsTab moments={state?.moments ?? []} /></div> : (
             <div className="mx-auto flex max-w-5xl flex-col gap-4">
               <form onSubmit={submitMood} className="rounded-2xl border border-[var(--border)] p-4 shadow-sm" style={CARD_STYLE}>
                 <label id="mood-input-label" htmlFor="mood-input" className="text-sm font-medium text-[var(--text)]">

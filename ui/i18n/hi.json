@@ -59,6 +59,37 @@
     "approval_open": "DJ की चैट खोलें",
     "dropped": "जिन गानों का लिंक नहीं चल सकता, वे छोड़े गए: {{count}}",
     "source_youtube": "YouTube",
-    "source_bilibili": "bilibili"
+    "source_bilibili": "bilibili",
+    "tab_memory": "याद"
+  },
+  "memory": {
+    "add_label": "अपने साथी को कुछ याद रखने को कहें",
+    "add_placeholder": "जैसे: ज़्यादा शोर नहीं / कैंटोनीज़ पसंद है / बारिश में जैज़",
+    "add": "जोड़ें",
+    "empty_title": "अभी कुछ याद नहीं रखा",
+    "empty_body": "आपके पसंद किए, छोड़े या पहले सुने गाने, और आपकी जोड़ी बातें यहाँ दिखेंगी।",
+    "notes": "आपने जो कहा",
+    "notes_empty": "अभी कुछ नहीं। ऊपर जोड़ें।",
+    "edit": "बदलें",
+    "edit_label": "नोट बदलें",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "pin": "{{item}} पिन करें",
+    "unpin": "{{item}} अनपिन करें",
+    "pinned": "पिन किया",
+    "delete": "{{item}} हटाएँ",
+    "liked": "पसंद के गाने ({{count}})",
+    "skipped": "छोड़े गए गाने ({{count}})",
+    "known": "सुने हुए गाने ({{count}})",
+    "moods": "मूड के शब्द ({{count}})",
+    "stale": "शायद पुराना",
+    "by_you": "आपने जोड़ा",
+    "show_all": "सभी {{count}} दिखाएँ",
+    "show_less": "कम दिखाएँ",
+    "clear_stale": "सब पुराना हटाएँ ({{count}})",
+    "clear_confirm": "{{count}} पुरानी चीज़ें हटाएँ? आपका खुद लिखा रहेगा।",
+    "clear_yes": "हटाएँ",
+    "error": "सहेजा नहीं जा सका ({{code}})।",
+    "error_full": "याद आपकी अपनी चीज़ों से भरी है। पहले एक हटाएँ।"
   }
 }

@@ -59,6 +59,37 @@
     "approval_open": "Abrir el chat del DJ",
     "dropped": "Canciones omitidas por un enlace que no se puede reproducir: {{count}}",
     "source_youtube": "YouTube",
-    "source_bilibili": "bilibili"
+    "source_bilibili": "bilibili",
+    "tab_memory": "Memoria"
+  },
+  "memory": {
+    "add_label": "Dile a tu compañero algo que recordar",
+    "add_placeholder": "p. ej.: no muy fuerte / me gusta el cantonés / jazz en días de lluvia",
+    "add": "Añadir",
+    "empty_title": "Aún no hay nada guardado",
+    "empty_body": "Aquí aparecen las canciones que te gustan, omites o ya conoces, y lo que añadas.",
+    "notes": "Lo que dijiste",
+    "notes_empty": "Nada aún. Añade algo arriba.",
+    "edit": "Editar",
+    "edit_label": "Editar nota",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "pin": "Fijar {{item}}",
+    "unpin": "Desfijar {{item}}",
+    "pinned": "Fijado",
+    "delete": "Eliminar {{item}}",
+    "liked": "Canciones que te gustan ({{count}})",
+    "skipped": "Canciones omitidas ({{count}})",
+    "known": "Canciones que ya conoces ({{count}})",
+    "moods": "Palabras de ánimo ({{count}})",
+    "stale": "quizá desactualizado",
+    "by_you": "añadido por ti",
+    "show_all": "Mostrar las {{count}}",
+    "show_less": "Mostrar menos",
+    "clear_stale": "Borrar todo lo desactualizado ({{count}})",
+    "clear_confirm": "¿Quitar {{count}} elementos desactualizados? Lo que escribiste tú se queda.",
+    "clear_yes": "Borrar",
+    "error": "No se pudo guardar ({{code}}).",
+    "error_full": "La memoria está llena de tus propios elementos. Elimina uno primero."
   }
 }

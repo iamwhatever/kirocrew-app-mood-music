@@ -30,7 +30,7 @@ const ID = 'dQw4w9WgXcQ'
 const t = (k: string, o?: Record<string, string | number>) => tr(`page.${k}`, o)
 const renderWithProviders = (ui: React.ReactElement) => render(ui)
 
-const EMPTY: MoodState = { moments: [], queue: [], feedback: [], last_source: '' }
+const EMPTY: MoodState = { moments: [], queue: [], feedback: [], last_source: '', memory: [] }
 
 function queued(over: Partial<QueuedPick>): QueuedPick {
   return { id: 'p'.repeat(32), title: 'Song', artist: 'A', why: 'it is soft', tags: [], source: 'youtube', video_id: ID, feedback: '', ...over }

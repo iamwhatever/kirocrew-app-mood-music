@@ -1,8 +1,8 @@
 import { activeLocale, fmtDateTime, useAppApi, useChatLauncher, useLanguageGeneration } from "@kirocrew/app-sdk";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ExternalLink, Heart, MessageCircleQuestion, Music, Play, Search, ShieldCheck, SkipForward, Sparkles, Waves } from "lucide-react";
+import { Brain, ExternalLink, Heart, MessageCircleQuestion, Music, Pin, PinOff, Play, Search, ShieldCheck, SkipForward, Sparkles, Trash2, Waves } from "lucide-react";
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from "@kirocrew/app-sdk/ui";
-import { jsx, jsxs } from "react/jsx-runtime";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 // src/i18n.ts
 /**
 * The app's own strings. A bundle cannot read the dashboard's catalogs (those
@@ -80,7 +80,38 @@ var CATALOGS = {
 			"approval_open": "DJ-এর চ্যাট খুলুন",
 			"dropped": "যে গানের লিংক বাজানো যায় না, সেগুলো বাদ: {{count}}",
 			"source_youtube": "YouTube",
-			"source_bilibili": "bilibili"
+			"source_bilibili": "bilibili",
+			"tab_memory": "স্মৃতি"
+		},
+		memory: {
+			"add_label": "বন্ধুকে মনে রাখার মতো কিছু বলুন",
+			"add_placeholder": "যেমন: বেশি জোরে নয় / ক্যান্টোনিজ ভালো লাগে / বৃষ্টির দিনে জ্যাজ",
+			"add": "যোগ করুন",
+			"empty_title": "এখনো কিছু মনে রাখা হয়নি",
+			"empty_body": "আপনার পছন্দের, বাদ দেওয়া বা আগে শোনা গান, আর আপনার যোগ করা কথা এখানে দেখা যাবে।",
+			"notes": "আপনি যা বলেছেন",
+			"notes_empty": "এখনো কিছু নেই। ওপরে যোগ করুন।",
+			"edit": "সম্পাদনা",
+			"edit_label": "নোট সম্পাদনা",
+			"save": "সংরক্ষণ",
+			"cancel": "বাতিল",
+			"pin": "{{item}} পিন করুন",
+			"unpin": "{{item}} আনপিন করুন",
+			"pinned": "পিন করা",
+			"delete": "{{item}} মুছুন",
+			"liked": "পছন্দের গান ({{count}})",
+			"skipped": "বাদ দেওয়া গান ({{count}})",
+			"known": "শোনা গান ({{count}})",
+			"moods": "মনের শব্দ ({{count}})",
+			"stale": "হয়তো পুরোনো",
+			"by_you": "আপনি যোগ করেছেন",
+			"show_all": "সব {{count}}টি দেখুন",
+			"show_less": "কম দেখুন",
+			"clear_stale": "সব পুরোনো মুছুন ({{count}})",
+			"clear_confirm": "{{count}}টি পুরোনো জিনিস মুছবেন? আপনার নিজের লেখা থাকবে।",
+			"clear_yes": "মুছুন",
+			"error": "সংরক্ষণ করা গেল না ({{code}})।",
+			"error_full": "স্মৃতি আপনার নিজের জিনিসে ভরা। আগে একটি মুছুন।"
 		}
 	},
 	de: {
@@ -144,7 +175,38 @@ var CATALOGS = {
 			"approval_open": "DJ-Chat öffnen",
 			"dropped": "Ausgelassene Songs mit nicht abspielbarem Link: {{count}}",
 			"source_youtube": "YouTube",
-			"source_bilibili": "bilibili"
+			"source_bilibili": "bilibili",
+			"tab_memory": "Erinnerung"
+		},
+		memory: {
+			"add_label": "Sag deinem Buddy, was er sich merken soll",
+			"add_placeholder": "z. B. nicht zu laut / ich mag Kantonesisch / Jazz an Regentagen",
+			"add": "Hinzufügen",
+			"empty_title": "Noch nichts gemerkt",
+			"empty_body": "Songs, die du magst, überspringst oder schon kennst, erscheinen hier – mit allem, was du hinzufügst.",
+			"notes": "Was du gesagt hast",
+			"notes_empty": "Noch nichts. Füge oben etwas hinzu.",
+			"edit": "Bearbeiten",
+			"edit_label": "Notiz bearbeiten",
+			"save": "Speichern",
+			"cancel": "Abbrechen",
+			"pin": "{{item}} anheften",
+			"unpin": "{{item}} lösen",
+			"pinned": "Angeheftet",
+			"delete": "{{item}} löschen",
+			"liked": "Gemochte Songs ({{count}})",
+			"skipped": "Übersprungene Songs ({{count}})",
+			"known": "Songs, die du kennst ({{count}})",
+			"moods": "Stimmungswörter ({{count}})",
+			"stale": "evtl. veraltet",
+			"by_you": "von dir",
+			"show_all": "Alle {{count}} zeigen",
+			"show_less": "Weniger zeigen",
+			"clear_stale": "Alles Veraltete entfernen ({{count}})",
+			"clear_confirm": "{{count}} veraltete Einträge entfernen? Was du selbst geschrieben hast, bleibt.",
+			"clear_yes": "Entfernen",
+			"error": "Konnte nicht gespeichert werden ({{code}}).",
+			"error_full": "Die Erinnerung ist voll mit deinen Einträgen. Lösche zuerst einen."
 		}
 	},
 	en: {
@@ -208,7 +270,38 @@ var CATALOGS = {
 			"approval_open": "Open the DJ chat",
 			"dropped": "Songs left out because their link cannot play: {{count}}",
 			"source_youtube": "YouTube",
-			"source_bilibili": "bilibili"
+			"source_bilibili": "bilibili",
+			"tab_memory": "Memory"
+		},
+		memory: {
+			"add_label": "Tell your buddy something to remember",
+			"add_placeholder": "e.g. not too loud / I like Cantonese / jazz on rainy days",
+			"add": "Add",
+			"empty_title": "Nothing remembered yet",
+			"empty_body": "Songs you like, skip or already know show up here, with anything you add.",
+			"notes": "What you said",
+			"notes_empty": "Nothing yet. Add one above.",
+			"edit": "Edit",
+			"edit_label": "Edit note",
+			"save": "Save",
+			"cancel": "Cancel",
+			"pin": "Pin {{item}}",
+			"unpin": "Unpin {{item}}",
+			"pinned": "Pinned",
+			"delete": "Delete {{item}}",
+			"liked": "Liked songs ({{count}})",
+			"skipped": "Skipped songs ({{count}})",
+			"known": "Songs you know ({{count}})",
+			"moods": "Mood words ({{count}})",
+			"stale": "maybe out of date",
+			"by_you": "added by you",
+			"show_all": "Show all {{count}}",
+			"show_less": "Show fewer",
+			"clear_stale": "Clear everything out of date ({{count}})",
+			"clear_confirm": "Remove {{count}} out-of-date items? What you wrote yourself stays.",
+			"clear_yes": "Clear",
+			"error": "Could not save that ({{code}}).",
+			"error_full": "Memory is full of your own items. Delete one first."
 		}
 	},
 	es: {
@@ -272,7 +365,38 @@ var CATALOGS = {
 			"approval_open": "Abrir el chat del DJ",
 			"dropped": "Canciones omitidas por un enlace que no se puede reproducir: {{count}}",
 			"source_youtube": "YouTube",
-			"source_bilibili": "bilibili"
+			"source_bilibili": "bilibili",
+			"tab_memory": "Memoria"
+		},
+		memory: {
+			"add_label": "Dile a tu compañero algo que recordar",
+			"add_placeholder": "p. ej.: no muy fuerte / me gusta el cantonés / jazz en días de lluvia",
+			"add": "Añadir",
+			"empty_title": "Aún no hay nada guardado",
+			"empty_body": "Aquí aparecen las canciones que te gustan, omites o ya conoces, y lo que añadas.",
+			"notes": "Lo que dijiste",
+			"notes_empty": "Nada aún. Añade algo arriba.",
+			"edit": "Editar",
+			"edit_label": "Editar nota",
+			"save": "Guardar",
+			"cancel": "Cancelar",
+			"pin": "Fijar {{item}}",
+			"unpin": "Desfijar {{item}}",
+			"pinned": "Fijado",
+			"delete": "Eliminar {{item}}",
+			"liked": "Canciones que te gustan ({{count}})",
+			"skipped": "Canciones omitidas ({{count}})",
+			"known": "Canciones que ya conoces ({{count}})",
+			"moods": "Palabras de ánimo ({{count}})",
+			"stale": "quizá desactualizado",
+			"by_you": "añadido por ti",
+			"show_all": "Mostrar las {{count}}",
+			"show_less": "Mostrar menos",
+			"clear_stale": "Borrar todo lo desactualizado ({{count}})",
+			"clear_confirm": "¿Quitar {{count}} elementos desactualizados? Lo que escribiste tú se queda.",
+			"clear_yes": "Borrar",
+			"error": "No se pudo guardar ({{code}}).",
+			"error_full": "La memoria está llena de tus propios elementos. Elimina uno primero."
 		}
 	},
 	fr: {
@@ -336,7 +460,38 @@ var CATALOGS = {
 			"approval_open": "Ouvrir le chat du DJ",
 			"dropped": "Chansons écartées car leur lien est illisible : {{count}}",
 			"source_youtube": "YouTube",
-			"source_bilibili": "bilibili"
+			"source_bilibili": "bilibili",
+			"tab_memory": "Mémoire"
+		},
+		memory: {
+			"add_label": "Dis à ton acolyte quelque chose à retenir",
+			"add_placeholder": "ex. : pas trop fort / j’aime le cantonais / du jazz les jours de pluie",
+			"add": "Ajouter",
+			"empty_title": "Rien de retenu pour l’instant",
+			"empty_body": "Les chansons que tu aimes, passes ou connais déjà apparaissent ici, avec ce que tu ajoutes.",
+			"notes": "Ce que tu as dit",
+			"notes_empty": "Rien pour l’instant. Ajoutes-en un ci-dessus.",
+			"edit": "Modifier",
+			"edit_label": "Modifier la note",
+			"save": "Enregistrer",
+			"cancel": "Annuler",
+			"pin": "Épingler {{item}}",
+			"unpin": "Désépingler {{item}}",
+			"pinned": "Épinglé",
+			"delete": "Supprimer {{item}}",
+			"liked": "Chansons aimées ({{count}})",
+			"skipped": "Chansons passées ({{count}})",
+			"known": "Chansons déjà connues ({{count}})",
+			"moods": "Mots d’humeur ({{count}})",
+			"stale": "peut-être dépassé",
+			"by_you": "ajouté par toi",
+			"show_all": "Tout afficher ({{count}})",
+			"show_less": "Afficher moins",
+			"clear_stale": "Effacer tout ce qui est dépassé ({{count}})",
+			"clear_confirm": "Supprimer {{count}} éléments dépassés ? Ce que tu as écrit reste.",
+			"clear_yes": "Effacer",
+			"error": "Impossible d’enregistrer ({{code}}).",
+			"error_full": "La mémoire est pleine de tes propres éléments. Supprimes-en un d’abord."
 		}
 	},
 	hi: {
@@ -400,7 +555,38 @@ var CATALOGS = {
 			"approval_open": "DJ की चैट खोलें",
 			"dropped": "जिन गानों का लिंक नहीं चल सकता, वे छोड़े गए: {{count}}",
 			"source_youtube": "YouTube",
-			"source_bilibili": "bilibili"
+			"source_bilibili": "bilibili",
+			"tab_memory": "याद"
+		},
+		memory: {
+			"add_label": "अपने साथी को कुछ याद रखने को कहें",
+			"add_placeholder": "जैसे: ज़्यादा शोर नहीं / कैंटोनीज़ पसंद है / बारिश में जैज़",
+			"add": "जोड़ें",
+			"empty_title": "अभी कुछ याद नहीं रखा",
+			"empty_body": "आपके पसंद किए, छोड़े या पहले सुने गाने, और आपकी जोड़ी बातें यहाँ दिखेंगी।",
+			"notes": "आपने जो कहा",
+			"notes_empty": "अभी कुछ नहीं। ऊपर जोड़ें।",
+			"edit": "बदलें",
+			"edit_label": "नोट बदलें",
+			"save": "सहेजें",
+			"cancel": "रद्द करें",
+			"pin": "{{item}} पिन करें",
+			"unpin": "{{item}} अनपिन करें",
+			"pinned": "पिन किया",
+			"delete": "{{item}} हटाएँ",
+			"liked": "पसंद के गाने ({{count}})",
+			"skipped": "छोड़े गए गाने ({{count}})",
+			"known": "सुने हुए गाने ({{count}})",
+			"moods": "मूड के शब्द ({{count}})",
+			"stale": "शायद पुराना",
+			"by_you": "आपने जोड़ा",
+			"show_all": "सभी {{count}} दिखाएँ",
+			"show_less": "कम दिखाएँ",
+			"clear_stale": "सब पुराना हटाएँ ({{count}})",
+			"clear_confirm": "{{count}} पुरानी चीज़ें हटाएँ? आपका खुद लिखा रहेगा।",
+			"clear_yes": "हटाएँ",
+			"error": "सहेजा नहीं जा सका ({{code}})।",
+			"error_full": "याद आपकी अपनी चीज़ों से भरी है। पहले एक हटाएँ।"
 		}
 	},
 	it: {
@@ -464,7 +650,38 @@ var CATALOGS = {
 			"approval_open": "Apri la chat del DJ",
 			"dropped": "Canzoni escluse per un link non riproducibile: {{count}}",
 			"source_youtube": "YouTube",
-			"source_bilibili": "bilibili"
+			"source_bilibili": "bilibili",
+			"tab_memory": "Memoria"
+		},
+		memory: {
+			"add_label": "Di' al tuo compagno qualcosa da ricordare",
+			"add_placeholder": "es. non troppo forte / mi piace il cantonese / jazz nei giorni di pioggia",
+			"add": "Aggiungi",
+			"empty_title": "Ancora niente da ricordare",
+			"empty_body": "Qui compaiono le canzoni che ti piacciono, salti o conosci già, e ciò che aggiungi.",
+			"notes": "Quello che hai detto",
+			"notes_empty": "Ancora niente. Aggiungine uno qui sopra.",
+			"edit": "Modifica",
+			"edit_label": "Modifica nota",
+			"save": "Salva",
+			"cancel": "Annulla",
+			"pin": "Fissa {{item}}",
+			"unpin": "Sblocca {{item}}",
+			"pinned": "Fissato",
+			"delete": "Elimina {{item}}",
+			"liked": "Canzoni che ti piacciono ({{count}})",
+			"skipped": "Canzoni saltate ({{count}})",
+			"known": "Canzoni che conosci ({{count}})",
+			"moods": "Parole d’umore ({{count}})",
+			"stale": "forse superato",
+			"by_you": "aggiunto da te",
+			"show_all": "Mostra tutte ({{count}})",
+			"show_less": "Mostra meno",
+			"clear_stale": "Cancella tutto il superato ({{count}})",
+			"clear_confirm": "Rimuovere {{count}} elementi superati? Quello che hai scritto tu resta.",
+			"clear_yes": "Cancella",
+			"error": "Impossibile salvare ({{code}}).",
+			"error_full": "La memoria è piena dei tuoi elementi. Eliminane uno prima."
 		}
 	},
 	ja: {
@@ -528,7 +745,38 @@ var CATALOGS = {
 			"approval_open": "DJ のチャットを開く",
 			"dropped": "再生できないリンクのため除外した曲：{{count}}",
 			"source_youtube": "YouTube",
-			"source_bilibili": "bilibili"
+			"source_bilibili": "bilibili",
+			"tab_memory": "メモリー"
+		},
+		memory: {
+			"add_label": "相棒に覚えておいてほしいことを伝える",
+			"add_placeholder": "例：うるさすぎない / 広東語が好き / 雨の日はジャズ",
+			"add": "追加",
+			"empty_title": "まだ何も覚えていません",
+			"empty_body": "いいね・スキップ・聴いたことのある曲と、あなたが追加したことがここに表示されます。",
+			"notes": "あなたの言葉",
+			"notes_empty": "まだありません。上で追加してください。",
+			"edit": "編集",
+			"edit_label": "メモを編集",
+			"save": "保存",
+			"cancel": "キャンセル",
+			"pin": "{{item}} をピン留め",
+			"unpin": "{{item}} のピン留めを外す",
+			"pinned": "ピン留め中",
+			"delete": "{{item}} を削除",
+			"liked": "いいねした曲（{{count}}）",
+			"skipped": "スキップした曲（{{count}}）",
+			"known": "聴いたことのある曲（{{count}}）",
+			"moods": "気分のことば（{{count}}）",
+			"stale": "古いかも",
+			"by_you": "あなたが追加",
+			"show_all": "すべて表示（{{count}}）",
+			"show_less": "閉じる",
+			"clear_stale": "古いものをすべて消す（{{count}}）",
+			"clear_confirm": "古い {{count}} 件を消しますか？自分で書いたものは残ります。",
+			"clear_yes": "消す",
+			"error": "保存できませんでした（{{code}}）。",
+			"error_full": "メモリーが自分で追加した項目でいっぱいです。先に1つ削除してください。"
 		}
 	},
 	ko: {
@@ -592,7 +840,38 @@ var CATALOGS = {
 			"approval_open": "DJ 채팅 열기",
 			"dropped": "재생할 수 없는 링크라 제외한 곡: {{count}}",
 			"source_youtube": "YouTube",
-			"source_bilibili": "bilibili"
+			"source_bilibili": "bilibili",
+			"tab_memory": "기억"
+		},
+		memory: {
+			"add_label": "단짝에게 기억할 것을 알려 주세요",
+			"add_placeholder": "예: 너무 시끄럽지 않게 / 광둥어 노래 좋아 / 비 오는 날엔 재즈",
+			"add": "추가",
+			"empty_title": "아직 기억한 것이 없어요",
+			"empty_body": "좋아요, 건너뛰기, 이미 아는 노래와 직접 추가한 내용이 여기에 표시돼요.",
+			"notes": "내가 한 말",
+			"notes_empty": "아직 없어요. 위에서 추가하세요.",
+			"edit": "편집",
+			"edit_label": "메모 편집",
+			"save": "저장",
+			"cancel": "취소",
+			"pin": "{{item}} 고정",
+			"unpin": "{{item}} 고정 해제",
+			"pinned": "고정됨",
+			"delete": "{{item}} 삭제",
+			"liked": "좋아한 노래 ({{count}})",
+			"skipped": "건너뛴 노래 ({{count}})",
+			"known": "들어 본 노래 ({{count}})",
+			"moods": "기분 단어 ({{count}})",
+			"stale": "오래됐을 수 있음",
+			"by_you": "내가 추가",
+			"show_all": "모두 보기 ({{count}})",
+			"show_less": "접기",
+			"clear_stale": "오래된 항목 모두 지우기 ({{count}})",
+			"clear_confirm": "오래된 {{count}}개를 지울까요? 직접 쓴 것은 남아요.",
+			"clear_yes": "지우기",
+			"error": "저장하지 못했어요 ({{code}}).",
+			"error_full": "기억이 직접 추가한 항목으로 가득 찼어요. 먼저 하나를 지우세요."
 		}
 	},
 	pt: {
@@ -656,7 +935,38 @@ var CATALOGS = {
 			"approval_open": "Abrir o chat do DJ",
 			"dropped": "Músicas deixadas de fora por link que não toca: {{count}}",
 			"source_youtube": "YouTube",
-			"source_bilibili": "bilibili"
+			"source_bilibili": "bilibili",
+			"tab_memory": "Memória"
+		},
+		memory: {
+			"add_label": "Diga ao seu parceiro algo para lembrar",
+			"add_placeholder": "ex.: não muito alto / gosto de cantonês / jazz em dias de chuva",
+			"add": "Adicionar",
+			"empty_title": "Nada guardado ainda",
+			"empty_body": "Aqui aparecem as músicas que você curte, pula ou já conhece, e o que você adicionar.",
+			"notes": "O que você disse",
+			"notes_empty": "Nada ainda. Adicione acima.",
+			"edit": "Editar",
+			"edit_label": "Editar nota",
+			"save": "Salvar",
+			"cancel": "Cancelar",
+			"pin": "Fixar {{item}}",
+			"unpin": "Desafixar {{item}}",
+			"pinned": "Fixado",
+			"delete": "Excluir {{item}}",
+			"liked": "Músicas curtidas ({{count}})",
+			"skipped": "Músicas puladas ({{count}})",
+			"known": "Músicas que você conhece ({{count}})",
+			"moods": "Palavras de humor ({{count}})",
+			"stale": "talvez desatualizado",
+			"by_you": "adicionado por você",
+			"show_all": "Mostrar todas ({{count}})",
+			"show_less": "Mostrar menos",
+			"clear_stale": "Limpar tudo desatualizado ({{count}})",
+			"clear_confirm": "Remover {{count}} itens desatualizados? O que você escreveu fica.",
+			"clear_yes": "Limpar",
+			"error": "Não foi possível salvar ({{code}}).",
+			"error_full": "A memória está cheia dos seus itens. Exclua um primeiro."
 		}
 	},
 	ru: {
@@ -720,7 +1030,38 @@ var CATALOGS = {
 			"approval_open": "Открыть чат DJ",
 			"dropped": "Пропущено песен со ссылкой, которую нельзя воспроизвести: {{count}}",
 			"source_youtube": "YouTube",
-			"source_bilibili": "bilibili"
+			"source_bilibili": "bilibili",
+			"tab_memory": "Память"
+		},
+		memory: {
+			"add_label": "Скажите другу, что запомнить",
+			"add_placeholder": "напр.: не слишком громко / люблю кантонский / джаз в дождь",
+			"add": "Добавить",
+			"empty_title": "Пока ничего не запомнено",
+			"empty_body": "Здесь появятся песни, которые вам нравятся, вы пропустили или уже знаете, и всё, что вы добавите.",
+			"notes": "Ваши слова",
+			"notes_empty": "Пока пусто. Добавьте выше.",
+			"edit": "Изменить",
+			"edit_label": "Изменить заметку",
+			"save": "Сохранить",
+			"cancel": "Отмена",
+			"pin": "Закрепить {{item}}",
+			"unpin": "Открепить {{item}}",
+			"pinned": "Закреплено",
+			"delete": "Удалить {{item}}",
+			"liked": "Понравившиеся ({{count}})",
+			"skipped": "Пропущенные ({{count}})",
+			"known": "Уже знакомые ({{count}})",
+			"moods": "Слова настроения ({{count}})",
+			"stale": "возможно, устарело",
+			"by_you": "добавлено вами",
+			"show_all": "Показать все ({{count}})",
+			"show_less": "Свернуть",
+			"clear_stale": "Убрать всё устаревшее ({{count}})",
+			"clear_confirm": "Убрать {{count}} устаревших записей? Написанное вами останется.",
+			"clear_yes": "Убрать",
+			"error": "Не удалось сохранить ({{code}}).",
+			"error_full": "Память заполнена вашими записями. Сначала удалите одну."
 		}
 	},
 	"zh-CN": {
@@ -784,7 +1125,38 @@ var CATALOGS = {
 			"approval_open": "打开 DJ 对话",
 			"dropped": "有 {{count}} 首歌的链接无法播放，已略过。",
 			"source_youtube": "YouTube",
-			"source_bilibili": "bilibili"
+			"source_bilibili": "bilibili",
+			"tab_memory": "记忆"
+		},
+		memory: {
+			"add_label": "告诉搭子一件要记住的事",
+			"add_placeholder": "例：不要太吵 / 喜欢粤语 / 下雨天想听爵士",
+			"add": "加一条",
+			"empty_title": "还没有记住什么",
+			"empty_body": "你喜欢、跳过、听过的歌，还有你自己加的话，都会出现在这里。",
+			"notes": "我说的",
+			"notes_empty": "还没有。在上面加一条。",
+			"edit": "编辑",
+			"edit_label": "编辑这条",
+			"save": "保存",
+			"cancel": "取消",
+			"pin": "置顶 {{item}}",
+			"unpin": "取消置顶 {{item}}",
+			"pinned": "已置顶",
+			"delete": "删除 {{item}}",
+			"liked": "喜欢的歌（{{count}}）",
+			"skipped": "跳过的歌（{{count}}）",
+			"known": "听过的歌（{{count}}）",
+			"moods": "心情词（{{count}}）",
+			"stale": "可能过时",
+			"by_you": "你加的",
+			"show_all": "显示全部 {{count}} 条",
+			"show_less": "收起",
+			"clear_stale": "清掉所有可能过时的（{{count}}）",
+			"clear_confirm": "删掉 {{count}} 条可能过时的？你自己写的不会删。",
+			"clear_yes": "清掉",
+			"error": "没能保存（{{code}}）。",
+			"error_full": "记忆满了，都是你自己加的。先删一条。"
 		}
 	}
 };
@@ -842,6 +1214,11 @@ function createMoodApi(api) {
 		/** Look each pick up on YouTube / bilibili; only confirmed picks come back. */
 		verifyPicks: (picks) => api.post(`${BASE}/verify-picks`, { picks }),
 		feedback: (pickId, verdict) => api.put(`${BASE}/queue/${encodeURIComponent(pickId)}/feedback`, { verdict }),
+		addMemory: (item) => api.post(`${BASE}/memory`, item),
+		updateMemory: (id, patch) => api.put(`${BASE}/memory/${encodeURIComponent(id)}`, patch),
+		deleteMemory: (id) => api.del(`${BASE}/memory/${encodeURIComponent(id)}`),
+		clearStale: () => api.post(`${BASE}/memory/clear-stale`),
+		markUsed: (ids) => api.post(`${BASE}/memory/used`, { ids }),
 		openSlot,
 		getSlot: (key) => api.get(`/api/chat/slots/${encodeURIComponent(key)}`),
 		/** Send one turn; a refusal rejects. Returns the slot key the turn went to. */
@@ -888,6 +1265,309 @@ var CARD_STYLE = {
 	background: "color-mix(in oklab, var(--card) 82%, transparent)",
 	backdropFilter: "blur(12px)"
 };
+// src/MemoryTab.tsx
+/**
+* The Memory tab (design §2.4): what the music buddy knows about the person.
+*
+* Their own notes come first and can be added, edited, pinned and deleted.
+* Songs and mood words the app recorded are listed by kind, each deletable
+* and pinnable; one the backend marks stale is greyed and labelled, and one
+* button clears every stale item after a confirm. Nothing here is removed
+* without the person pressing a button.
+*/
+var NOTE_MAX = 60;
+var GROUPS = [
+	{
+		kind: "liked",
+		label: "memory.liked"
+	},
+	{
+		kind: "skipped",
+		label: "memory.skipped"
+	},
+	{
+		kind: "known",
+		label: "memory.known"
+	},
+	{
+		kind: "mood",
+		label: "memory.moods"
+	}
+];
+var errText = (e) => {
+	const body = e?.body;
+	if (typeof body === "string" && body.includes("memory_full")) return t("memory.error_full");
+	return t("memory.error", { code: e instanceof Error ? e.message : "unknown" });
+};
+/** "3 days ago" in the host's language. */
+function ago(seconds, now = Date.now()) {
+	const days = Math.round((seconds * 1e3 - now) / 864e5);
+	const fmt = new Intl.RelativeTimeFormat(activeLocale(), { numeric: "auto" });
+	if (Math.abs(days) >= 60) return fmt.format(Math.round(days / 30), "month");
+	return fmt.format(days, "day");
+}
+var label = (m) => m.title ? m.artist ? `${m.title} — ${m.artist}` : m.title : m.text ?? "";
+function MemoryTab({ memory, api, onChanged }) {
+	const [draft, setDraft] = useState("");
+	const [editing, setEditing] = useState(null);
+	const [busy, setBusy] = useState(false);
+	const [error, setError] = useState(null);
+	const [confirmClear, setConfirmClear] = useState(false);
+	const [open, setOpen] = useState({});
+	const act = async (work) => {
+		setBusy(true);
+		setError(null);
+		try {
+			await work();
+			await onChanged();
+		} catch (e) {
+			setError(errText(e));
+		} finally {
+			setBusy(false);
+		}
+	};
+	const add = (e) => {
+		e.preventDefault();
+		const text = draft.trim();
+		if (!text) return;
+		act(async () => {
+			await api.addMemory({
+				kind: "note",
+				text,
+				origin: "user"
+			});
+			setDraft("");
+		});
+	};
+	const saveEdit = (e) => {
+		e.preventDefault();
+		if (!editing || !editing.text.trim()) return;
+		const { id, text } = editing;
+		act(async () => {
+			await api.updateMemory(id, { text: text.trim() });
+			setEditing(null);
+		});
+	};
+	const notes = memory.filter((m) => m.kind === "note");
+	const staleCount = memory.filter((m) => m.stale).length;
+	const actions = (m) => /* @__PURE__ */ jsxs("span", {
+		className: "flex shrink-0 gap-1",
+		children: [/* @__PURE__ */ jsx(Btn, {
+			type: "button",
+			disabled: busy,
+			"aria-pressed": m.pinned,
+			"aria-label": m.pinned ? t("memory.unpin", { item: label(m) }) : t("memory.pin", { item: label(m) }),
+			onClick: () => void act(() => api.updateMemory(m.id, { pinned: !m.pinned })),
+			children: m.pinned ? /* @__PURE__ */ jsx(PinOff, {
+				size: 13,
+				"aria-hidden": "true"
+			}) : /* @__PURE__ */ jsx(Pin, {
+				size: 13,
+				"aria-hidden": "true"
+			})
+		}), /* @__PURE__ */ jsx(Btn, {
+			type: "button",
+			disabled: busy,
+			"aria-label": t("memory.delete", { item: label(m) }),
+			onClick: () => void act(() => api.deleteMemory(m.id)),
+			children: /* @__PURE__ */ jsx(Trash2, {
+				size: 13,
+				"aria-hidden": "true"
+			})
+		})]
+	});
+	return /* @__PURE__ */ jsxs("div", {
+		className: "flex flex-col gap-4",
+		"data-testid": "mood-memory",
+		children: [/* @__PURE__ */ jsxs("form", {
+			onSubmit: add,
+			className: "rounded-2xl border border-[var(--border)] p-4",
+			style: CARD_STYLE,
+			children: [
+				/* @__PURE__ */ jsx("label", {
+					htmlFor: "memory-add",
+					className: "text-sm font-medium text-[var(--text)]",
+					children: t("memory.add_label")
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "mt-2 flex gap-2",
+					children: [/* @__PURE__ */ jsx("input", {
+						id: "memory-add",
+						value: draft,
+						onChange: (e) => setDraft(e.target.value),
+						maxLength: NOTE_MAX,
+						placeholder: t("memory.add_placeholder"),
+						className: "min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+					}), /* @__PURE__ */ jsx(Btn, {
+						type: "submit",
+						primary: true,
+						disabled: busy || !draft.trim(),
+						children: t("memory.add")
+					})]
+				}),
+				/* @__PURE__ */ jsx(ErrorNotice, {
+					className: "mt-2",
+					message: error
+				})
+			]
+		}), memory.length === 0 ? /* @__PURE__ */ jsx(EmptyState, {
+			icon: /* @__PURE__ */ jsx(Brain, { size: 28 }),
+			title: t("memory.empty_title"),
+			subtitle: t("memory.empty_body")
+		}) : /* @__PURE__ */ jsxs(Fragment, { children: [
+			/* @__PURE__ */ jsxs("section", {
+				"aria-labelledby": "memory-notes",
+				className: "rounded-2xl border border-[var(--border)] p-4",
+				style: CARD_STYLE,
+				children: [
+					/* @__PURE__ */ jsx("h3", {
+						id: "memory-notes",
+						className: "text-xs font-semibold uppercase tracking-wide text-[var(--muted)]",
+						children: t("memory.notes")
+					}),
+					notes.length === 0 && /* @__PURE__ */ jsx("p", {
+						className: "mt-2 text-sm text-[var(--muted)]",
+						children: t("memory.notes_empty")
+					}),
+					/* @__PURE__ */ jsx("ul", {
+						className: "mt-2 flex flex-col gap-1.5",
+						children: notes.map((m) => /* @__PURE__ */ jsx("li", {
+							className: "flex items-center gap-2",
+							children: editing?.id === m.id ? /* @__PURE__ */ jsxs("form", {
+								onSubmit: saveEdit,
+								className: "flex min-w-0 flex-1 gap-2",
+								children: [
+									/* @__PURE__ */ jsx("input", {
+										"aria-label": t("memory.edit_label"),
+										value: editing.text,
+										onChange: (e) => setEditing({
+											id: m.id,
+											text: e.target.value
+										}),
+										maxLength: NOTE_MAX,
+										autoFocus: true,
+										className: "min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-2 py-1 text-sm text-[var(--text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+									}),
+									/* @__PURE__ */ jsx(Btn, {
+										type: "submit",
+										primary: true,
+										disabled: busy || !editing.text.trim(),
+										children: t("memory.save")
+									}),
+									/* @__PURE__ */ jsx(Btn, {
+										type: "button",
+										onClick: () => setEditing(null),
+										children: t("memory.cancel")
+									})
+								]
+							}) : /* @__PURE__ */ jsxs(Fragment, { children: [
+								/* @__PURE__ */ jsxs("span", {
+									className: "min-w-0 flex-1 text-sm text-[var(--text)]",
+									children: [m.pinned && /* @__PURE__ */ jsx(Pin, {
+										size: 12,
+										className: "mr-1 inline text-[var(--accent)]",
+										"aria-label": t("memory.pinned")
+									}), m.text]
+								}),
+								/* @__PURE__ */ jsx(Btn, {
+									type: "button",
+									disabled: busy,
+									onClick: () => setEditing({
+										id: m.id,
+										text: m.text ?? ""
+									}),
+									children: t("memory.edit")
+								}),
+								actions(m)
+							] })
+						}, m.id))
+					})
+				]
+			}),
+			GROUPS.map(({ kind, label: groupLabel }) => {
+				const items = memory.filter((m) => m.kind === kind);
+				if (items.length === 0) return null;
+				const shown = open[kind] ? items : items.slice(0, 20);
+				return /* @__PURE__ */ jsxs("section", {
+					"aria-labelledby": `memory-${kind}`,
+					className: "rounded-2xl border border-[var(--border)] p-4",
+					style: CARD_STYLE,
+					children: [
+						/* @__PURE__ */ jsx("h3", {
+							id: `memory-${kind}`,
+							className: "text-xs font-semibold uppercase tracking-wide text-[var(--muted)]",
+							children: t(groupLabel, { count: items.length })
+						}),
+						/* @__PURE__ */ jsx("ul", {
+							className: "mt-2 flex flex-col gap-1.5",
+							"data-testid": `memory-list-${kind}`,
+							children: shown.map((m) => /* @__PURE__ */ jsxs("li", {
+								className: `flex items-center gap-2 ${m.stale ? "opacity-55" : ""}`,
+								children: [/* @__PURE__ */ jsxs("span", {
+									className: "min-w-0 flex-1",
+									children: [/* @__PURE__ */ jsxs("span", {
+										className: "block truncate text-sm text-[var(--text)]",
+										children: [m.pinned && /* @__PURE__ */ jsx(Pin, {
+											size: 12,
+											className: "mr-1 inline text-[var(--accent)]",
+											"aria-label": t("memory.pinned")
+										}), label(m)]
+									}), /* @__PURE__ */ jsxs("span", {
+										className: "block text-xs text-[var(--muted)]",
+										children: [
+											m.stale ? `${t("memory.stale")} · ` : "",
+											ago(m.last_used_at),
+											m.origin === "user" ? ` · ${t("memory.by_you")}` : ""
+										]
+									})]
+								}), actions(m)]
+							}, m.id))
+						}),
+						items.length > 20 && /* @__PURE__ */ jsx(Btn, {
+							type: "button",
+							className: "mt-2",
+							onClick: () => setOpen((o) => ({
+								...o,
+								[kind]: !o[kind]
+							})),
+							children: open[kind] ? t("memory.show_less") : t("memory.show_all", { count: items.length })
+						})
+					]
+				}, kind);
+			}),
+			staleCount > 0 && /* @__PURE__ */ jsx("div", {
+				className: "flex flex-wrap items-center gap-2",
+				children: confirmClear ? /* @__PURE__ */ jsxs(Fragment, { children: [
+					/* @__PURE__ */ jsx("span", {
+						className: "text-sm text-[var(--text)]",
+						role: "status",
+						children: t("memory.clear_confirm", { count: staleCount })
+					}),
+					/* @__PURE__ */ jsx(Btn, {
+						type: "button",
+						danger: true,
+						disabled: busy,
+						onClick: () => void act(async () => {
+							await api.clearStale();
+							setConfirmClear(false);
+						}),
+						children: t("memory.clear_yes")
+					}),
+					/* @__PURE__ */ jsx(Btn, {
+						type: "button",
+						onClick: () => setConfirmClear(false),
+						children: t("memory.cancel")
+					})
+				] }) : /* @__PURE__ */ jsx(Btn, {
+					type: "button",
+					disabled: busy,
+					onClick: () => setConfirmClear(true),
+					children: t("memory.clear_stale", { count: staleCount })
+				})
+			})
+		] })]
+	});
+}
 // src/MomentsTab.tsx
 /** The Moments tab: each mood the person shared, newest first, with its songs. */
 function MomentsTab({ moments }) {
@@ -1528,6 +2208,9 @@ function MoodMusicPage() {
 			live = false;
 		};
 	}, [moodApi]);
+	const refresh = useCallback(async () => {
+		setState(await moodApi.state());
+	}, [moodApi]);
 	const queue = state?.queue ?? [];
 	const current = queue.find((p) => p.id === currentId) ?? queue.find((p) => p.feedback !== "skipped") ?? null;
 	/** Send one turn to the DJ and start waiting for its reply. */
@@ -1724,18 +2407,32 @@ function MoodMusicPage() {
 					children: /* @__PURE__ */ jsx(SegmentedControl, {
 						value: tab,
 						onChange: (v) => setTab(v),
-						segments: [{
-							key: "listen",
-							label: t("page.tab_listen")
-						}, {
-							key: "moments",
-							label: t("page.tab_moments")
-						}]
+						segments: [
+							{
+								key: "listen",
+								label: t("page.tab_listen")
+							},
+							{
+								key: "moments",
+								label: t("page.tab_moments")
+							},
+							{
+								key: "memory",
+								label: t("page.tab_memory")
+							}
+						]
 					})
 				}),
 				/* @__PURE__ */ jsx("div", {
 					className: "flex-1 overflow-y-auto px-4 pb-6",
-					children: tab === "moments" ? /* @__PURE__ */ jsx("div", {
+					children: tab === "memory" ? /* @__PURE__ */ jsx("div", {
+						className: "mx-auto max-w-5xl",
+						children: /* @__PURE__ */ jsx(MemoryTab, {
+							memory: state?.memory ?? [],
+							api: moodApi,
+							onChanged: refresh
+						})
+					}) : tab === "moments" ? /* @__PURE__ */ jsx("div", {
 						className: "mx-auto max-w-5xl",
 						children: /* @__PURE__ */ jsx(MomentsTab, { moments: state?.moments ?? [] })
 					}) : /* @__PURE__ */ jsxs("div", {

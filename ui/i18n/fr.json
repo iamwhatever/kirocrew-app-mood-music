@@ -59,6 +59,37 @@
     "approval_open": "Ouvrir le chat du DJ",
     "dropped": "Chansons écartées car leur lien est illisible : {{count}}",
     "source_youtube": "YouTube",
-    "source_bilibili": "bilibili"
+    "source_bilibili": "bilibili",
+    "tab_memory": "Mémoire"
+  },
+  "memory": {
+    "add_label": "Dis à ton acolyte quelque chose à retenir",
+    "add_placeholder": "ex. : pas trop fort / j’aime le cantonais / du jazz les jours de pluie",
+    "add": "Ajouter",
+    "empty_title": "Rien de retenu pour l’instant",
+    "empty_body": "Les chansons que tu aimes, passes ou connais déjà apparaissent ici, avec ce que tu ajoutes.",
+    "notes": "Ce que tu as dit",
+    "notes_empty": "Rien pour l’instant. Ajoutes-en un ci-dessus.",
+    "edit": "Modifier",
+    "edit_label": "Modifier la note",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "pin": "Épingler {{item}}",
+    "unpin": "Désépingler {{item}}",
+    "pinned": "Épinglé",
+    "delete": "Supprimer {{item}}",
+    "liked": "Chansons aimées ({{count}})",
+    "skipped": "Chansons passées ({{count}})",
+    "known": "Chansons déjà connues ({{count}})",
+    "moods": "Mots d’humeur ({{count}})",
+    "stale": "peut-être dépassé",
+    "by_you": "ajouté par toi",
+    "show_all": "Tout afficher ({{count}})",
+    "show_less": "Afficher moins",
+    "clear_stale": "Effacer tout ce qui est dépassé ({{count}})",
+    "clear_confirm": "Supprimer {{count}} éléments dépassés ? Ce que tu as écrit reste.",
+    "clear_yes": "Effacer",
+    "error": "Impossible d’enregistrer ({{code}}).",
+    "error_full": "La mémoire est pleine de tes propres éléments. Supprimes-en un d’abord."
   }
 }

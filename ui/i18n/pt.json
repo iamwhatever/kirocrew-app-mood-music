@@ -59,6 +59,37 @@
     "approval_open": "Abrir o chat do DJ",
     "dropped": "Músicas deixadas de fora por link que não toca: {{count}}",
     "source_youtube": "YouTube",
-    "source_bilibili": "bilibili"
+    "source_bilibili": "bilibili",
+    "tab_memory": "Memória"
+  },
+  "memory": {
+    "add_label": "Diga ao seu parceiro algo para lembrar",
+    "add_placeholder": "ex.: não muito alto / gosto de cantonês / jazz em dias de chuva",
+    "add": "Adicionar",
+    "empty_title": "Nada guardado ainda",
+    "empty_body": "Aqui aparecem as músicas que você curte, pula ou já conhece, e o que você adicionar.",
+    "notes": "O que você disse",
+    "notes_empty": "Nada ainda. Adicione acima.",
+    "edit": "Editar",
+    "edit_label": "Editar nota",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "pin": "Fixar {{item}}",
+    "unpin": "Desafixar {{item}}",
+    "pinned": "Fixado",
+    "delete": "Excluir {{item}}",
+    "liked": "Músicas curtidas ({{count}})",
+    "skipped": "Músicas puladas ({{count}})",
+    "known": "Músicas que você conhece ({{count}})",
+    "moods": "Palavras de humor ({{count}})",
+    "stale": "talvez desatualizado",
+    "by_you": "adicionado por você",
+    "show_all": "Mostrar todas ({{count}})",
+    "show_less": "Mostrar menos",
+    "clear_stale": "Limpar tudo desatualizado ({{count}})",
+    "clear_confirm": "Remover {{count}} itens desatualizados? O que você escreveu fica.",
+    "clear_yes": "Limpar",
+    "error": "Não foi possível salvar ({{code}}).",
+    "error_full": "A memória está cheia dos seus itens. Exclua um primeiro."
   }
 }
