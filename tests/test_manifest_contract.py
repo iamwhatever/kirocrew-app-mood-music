@@ -175,6 +175,10 @@ class TestTheManifest(unittest.TestCase):
             ["/api/apps/mood-music", "/api/apps/mood-music/*", "/api/chat", "/api/chat/*"],
         )
 
+    def test_asks_for_approvals_on_its_own_page(self) -> None:
+        """An approval the buddy's turn waits on is answered on the app page (design §1.8)."""
+        self.assertIs(_manifest()["permissions"]["sessionApproval"], True)
+
     def test_the_dj_has_only_web_search_and_web_fetch(self) -> None:
         """Page text is untrusted, so the agent gets no browser, shell or file tool."""
         spec = json.loads((APP_ROOT / "agents" / "dj.json").read_text(encoding="utf-8"))

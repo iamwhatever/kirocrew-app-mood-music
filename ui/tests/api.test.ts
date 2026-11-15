@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { AppApi } from '@kirocrew/app-sdk'
-import { awaitingApproval, createMoodApi, latestReply } from '../src/api'
+import { createMoodApi, grantCause, latestReply } from '../src/api'
 import { CATALOGS } from '../src/i18n'
 
 function fakeApi(post: (path: string, body?: unknown) => unknown): AppApi {
@@ -33,19 +33,16 @@ describe('latestReply', () => {
   })
 })
 
-describe('awaitingApproval', () => {
-  const user = { role: 'user', content: 'u' }
-  const ask = (meta: object) => ({ role: 'permission', content: 'web_search', meta })
-
-  it('sees an unanswered approval after the newest user message', () => {
-    expect(awaitingApproval({ running: true, messages: [user, ask({ approval_id: 'r1' })] })).toBe(true)
+describe('grantCause', () => {
+  const refused = (body: unknown, status = 403) => Object.assign(new Error('x'), { status, body: JSON.stringify(body) })
+  it('reads the cause of a missing chat-control grant', () => {
+    expect(grantCause(refused({ code: 'session_approval_not_granted', cause: 'not_declared' }))).toBe('not_declared')
+    expect(grantCause(refused({ code: 'session_approval_not_granted', cause: 'weird' }))).toBe('other')
   })
-
-  it('ignores an answered one, one from an earlier turn, and a row with no id', () => {
-    expect(awaitingApproval({ messages: [user, ask({ approval_id: 'r1', resolved: 'approve' })] })).toBe(false)
-    expect(awaitingApproval({ messages: [ask({ approval_id: 'r1' }), user] })).toBe(false)
-    expect(awaitingApproval({ messages: [user, ask({})] })).toBe(false)
-    expect(awaitingApproval(undefined)).toBe(false)
+  it('is null for any other refusal', () => {
+    expect(grantCause(refused({ code: 'owner_only' }))).toBeNull()
+    expect(grantCause(refused({ code: 'session_approval_not_granted' }, 500))).toBeNull()
+    expect(grantCause(new Error('x'))).toBeNull()
   })
 })
 

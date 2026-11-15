@@ -10,6 +10,13 @@ the access its manifest grant gives it.
   POST /moments             -> record a mood moment
   POST /queue               -> replace the queue with new picks
   PUT  /queue/{id}/feedback -> like / skip / clear a pick
+  POST /verify-picks        -> look each pick up on YouTube / bilibili (``verify.py``)
+  POST /memory              -> remember a note, a song or a mood
+  PUT  /memory/{id}         -> edit a note's text, or pin / unpin an item
+  DELETE /memory/{id}       -> forget one item
+  POST /memory/clear-stale  -> forget every "maybe stale" item
+  POST /memory/used         -> mark items as used (keeps them fresh)
+  PUT  /settings            -> the explore level, and whether the full record is open
 
 A pick's link is checked in ``links.py``: a YouTube pick is stored as its video
 id alone, a bilibili pick as an https URL on an exact bilibili host. A request
@@ -27,8 +34,8 @@ from typing import Any
 
 from aiohttp import web
 
-from . import _host, links
-from .store import MAX_QUEUE, VERDICTS, MoodStore
+from . import _host, links, verify
+from .store import EXPLORE_LEVELS, MAX_QUEUE, MEMORY_KINDS, ORIGINS, SONG_KINDS, VERDICTS, MemoryFull, MoodStore
 
 _MAX_MOOD = 200
 _MAX_NOTE = 1000
@@ -38,6 +45,10 @@ _MAX_TAGS = 8
 _MAX_TAG = 40
 _MAX_SOURCE = 128
 _ID_RE = re.compile(r"[0-9a-f]{32}")
+_MAX_NOTE_TEXT = 60
+_MAX_IDS = 100
+_TIERS = ("anchor", "explore", "deep")
+_ARCS = ("stay", "turn", "lift")
 
 
 def _store(ctx: Any) -> MoodStore:
@@ -115,6 +126,33 @@ def _pick(raw: Any) -> tuple[dict[str, Any] | None, str]:
     if tags is None:
         return None, "invalid_pick"
     out["tags"] = tags
+    # Design §0: optional fields an older page never sends.
+    for key, allowed in (("tier", _TIERS), ("arc", _ARCS)):
+        value = raw.get(key)
+        if value is not None:
+            if value not in allowed:
+                return None, "invalid_pick"
+            out[key] = value
+    listen_for, err = _text(raw, "listen_for", _MAX_WHY)
+    if err is not None:
+        return None, "invalid_pick"
+    if listen_for:
+        out["listen_for"] = listen_for
+    unverified = raw.get("unverified")
+    if unverified is not None and not isinstance(unverified, bool):
+        return None, "invalid_pick"
+    if unverified:
+        # The link check could not reach YouTube / bilibili for it (verify.py).
+        out["unverified"] = True
+    evidence = raw.get("evidence")
+    if evidence is not None:
+        if not isinstance(evidence, dict):
+            return None, "invalid_pick"
+        url = links.evidence_url(evidence.get("url"))
+        label, err = _text(evidence, "label", _MAX_TEXT)
+        if url is None or err is not None:
+            return None, "invalid_pick"
+        out["evidence"] = {"url": url, "label": label}
     source = raw.get("source")
     if source == "youtube":
         video_id = raw.get("video_id")
@@ -134,6 +172,24 @@ def _pick(raw: Any) -> tuple[dict[str, Any] | None, str]:
     else:
         return None, "invalid_source"
     return out, ""
+
+
+async def _checked_picks(
+    body: dict[str, Any],
+) -> tuple[list[dict[str, Any]], web.Response | None]:
+    """``body["picks"]`` checked one by one; one bad pick refuses them all."""
+    raw_picks = body.get("picks")
+    if not isinstance(raw_picks, list) or not 0 < len(raw_picks) <= MAX_QUEUE:
+        return [], _bad_request(
+            f"picks must be a list of 1 to {MAX_QUEUE}", "invalid_field_type"
+        )
+    picks: list[dict[str, Any]] = []
+    for raw in raw_picks:
+        pick, code = _pick(raw)
+        if pick is None:
+            return [], _bad_request("a pick was refused", code)
+        picks.append(pick)
+    return picks, None
 
 
 def _owner_only(operation: str, handler: _host.Handler) -> _host.Handler:
@@ -198,17 +254,9 @@ async def _handle_set_queue(request: web.Request, ctx: Any) -> web.Response:
         return _bad_request(
             "mood_tags must be a short list of short strings", "invalid_field_type"
         )
-    raw_picks = body.get("picks")
-    if not isinstance(raw_picks, list) or not 0 < len(raw_picks) <= MAX_QUEUE:
-        return _bad_request(
-            f"picks must be a list of 1 to {MAX_QUEUE}", "invalid_field_type"
-        )
-    picks: list[dict[str, Any]] = []
-    for raw in raw_picks:
-        pick, code = _pick(raw)
-        if pick is None:
-            return _bad_request("a pick was refused", code)
-        picks.append(pick)
+    picks, err = await _checked_picks(body)
+    if err is not None:
+        return err
     queue = await asyncio.to_thread(
         lambda: _store(ctx).set_queue(
             picks, source=source, moment_id=moment_id, mood_tags=mood_tags
@@ -236,6 +284,126 @@ async def _handle_feedback(request: web.Request, ctx: Any) -> web.Response:
     return web.json_response(pick)
 
 
+async def _handle_verify(request: web.Request, ctx: Any) -> web.Response:
+    body, err = await _json_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    picks, err = await _checked_picks(body)
+    if err is not None:
+        return err
+    # Whether a pick is confirmed is this route's answer, never the caller's.
+    picks = [{k: v for k, v in p.items() if k != "unverified"} for p in picks]
+    avoid = await asyncio.to_thread(lambda: _store(ctx).avoid_lists())
+    async with verify.http_fetch() as fetch:
+        kept, dropped = await verify.verify_picks(picks, fetch, **avoid)
+    return web.json_response({"picks": kept, "dropped": dropped})
+
+
+def _not_found() -> web.Response:
+    return web.json_response({"error": "no such item", "code": "not_found"}, status=404)
+
+
+async def _handle_add_memory(request: web.Request, ctx: Any) -> web.Response:
+    body, err = await _json_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    kind, origin = body.get("kind"), body.get("origin", "user")
+    if kind not in MEMORY_KINDS or origin not in ORIGINS:
+        return _bad_request("kind or origin is not one this app knows", "invalid_field_type")
+    fields: dict[str, str] = {}
+    if kind in SONG_KINDS:
+        for key, required in (("title", True), ("artist", False)):
+            fields[key], err = _text(body, key, _MAX_TEXT, required=required)
+            if err is not None:
+                return err
+    else:
+        fields["text"], err = _text(body, "text", _MAX_NOTE_TEXT, required=True)
+        if err is not None:
+            return err
+    try:
+        item = await asyncio.to_thread(
+            lambda: _store(ctx).add_memory(kind, origin=origin, **fields)
+        )
+    except MemoryFull:
+        return web.json_response(
+            {"error": "memory is full of your own items", "code": "memory_full"}, status=409
+        )
+    return web.json_response(item, status=201)
+
+
+async def _handle_update_memory(request: web.Request, ctx: Any) -> web.Response:
+    item_id = request.match_info["id"]
+    if not _ID_RE.fullmatch(item_id):
+        return _bad_request("not an item id", "invalid_field_type")
+    body, err = await _json_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    text = None
+    if "text" in body:
+        text, err = _text(body, "text", _MAX_NOTE_TEXT, required=True)
+        if err is not None:
+            return err
+    pinned = body.get("pinned")
+    if pinned is not None and not isinstance(pinned, bool):
+        return _bad_request("pinned must be true or false", "invalid_field_type")
+    item = await asyncio.to_thread(
+        lambda: _store(ctx).update_memory(item_id, text=text, pinned=pinned)
+    )
+    return web.json_response(item) if item is not None else _not_found()
+
+
+async def _handle_delete_memory(request: web.Request, ctx: Any) -> web.Response:
+    item_id = request.match_info["id"]
+    if not _ID_RE.fullmatch(item_id):
+        return _bad_request("not an item id", "invalid_field_type")
+    gone = await asyncio.to_thread(lambda: _store(ctx).delete_memory(item_id))
+    return web.json_response({"deleted": item_id}) if gone else _not_found()
+
+
+async def _handle_clear_stale(request: web.Request, ctx: Any) -> web.Response:
+    removed = await asyncio.to_thread(lambda: _store(ctx).clear_stale())
+    return web.json_response({"removed": removed})
+
+
+async def _handle_memory_used(request: web.Request, ctx: Any) -> web.Response:
+    body, err = await _json_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    ids = body.get("ids")
+    if (
+        not isinstance(ids, list)
+        or len(ids) > _MAX_IDS
+        or not all(isinstance(i, str) and _ID_RE.fullmatch(i) for i in ids)
+    ):
+        return _bad_request("ids must be a short list of item ids", "invalid_field_type")
+    marked = await asyncio.to_thread(lambda: _store(ctx).mark_used(ids))
+    return web.json_response({"marked": marked})
+
+
+async def _handle_settings(request: web.Request, ctx: Any) -> web.Response:
+    body, err = await _json_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    changes: dict[str, Any] = {}
+    if "explore" in body:
+        if body["explore"] not in EXPLORE_LEVELS:
+            return _bad_request("explore is not a level this app knows", "invalid_field_type")
+        changes["explore"] = body["explore"]
+    if "record_open" in body:
+        if not isinstance(body["record_open"], bool):
+            return _bad_request("record_open must be true or false", "invalid_field_type")
+        changes["record_open"] = body["record_open"]
+    if not changes or set(body) - {"explore", "record_open"}:
+        return _bad_request("send explore and/or record_open only", "invalid_field_type")
+    settings = await asyncio.to_thread(lambda: _store(ctx).set_settings(**changes))
+    return web.json_response(settings)
+
+
 def register_routes(ctx: Any) -> list[_host.Route]:
     """The manifest's ``backend.hooks.routes``: this app's routes, unprefixed.
 
@@ -257,4 +425,11 @@ def register_routes(ctx: Any) -> list[_host.Route]:
         route("POST", "/moments", _owner_only("add_moment", _handle_add_moment)),
         route("POST", "/queue", _owner_only("set_queue", _handle_set_queue)),
         route("PUT", "/queue/{id}/feedback", _owner_only("feedback", _handle_feedback)),
+        route("POST", "/verify-picks", _owner_only("verify_picks", _handle_verify)),
+        route("POST", "/memory", _owner_only("add_memory", _handle_add_memory)),
+        route("PUT", "/memory/{id}", _owner_only("update_memory", _handle_update_memory)),
+        route("DELETE", "/memory/{id}", _owner_only("delete_memory", _handle_delete_memory)),
+        route("POST", "/memory/clear-stale", _owner_only("clear_stale", _handle_clear_stale)),
+        route("POST", "/memory/used", _owner_only("memory_used", _handle_memory_used)),
+        route("PUT", "/settings", _owner_only("settings", _handle_settings)),
     ]

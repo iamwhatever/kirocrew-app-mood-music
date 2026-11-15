@@ -67,11 +67,20 @@ export default function NowPlaying({ pick, autoplay, busy, onLike, onSkip, onMor
         </a>
       )}
       <h2 className="mt-3 text-lg font-semibold leading-snug text-[var(--text)]">{pick.title}</h2>
+      {pick.unverified && (
+        <p className="text-xs text-[var(--muted)]" title={t('card.unverified_hint')}>{t('card.unverified')}</p>
+      )}
       {pick.artist && <p className="text-sm text-[var(--muted)]">{pick.artist}</p>}
       {pick.why && (
         <p className="mt-2 text-sm leading-relaxed text-[var(--text)]">
           <span className="sr-only">{t('page.why')}: </span>
           {pick.why}
+        </p>
+      )}
+      {pick.listen_for && (
+        <p className="mt-1 text-sm leading-relaxed text-[var(--text)]">
+          <span className="text-[var(--muted)]">{t('card.listen_for')}</span>
+          {pick.listen_for}
         </p>
       )}
       <div className="mt-3 flex flex-wrap gap-2">

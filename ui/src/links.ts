@@ -24,7 +24,7 @@ export function validVideoId(value: unknown): string | null {
 }
 
 /** A plain https URL: no user info, no port, no character a browser reads differently. */
-function parseHttps(raw: unknown): URL | null {
+export function parseHttps(raw: unknown): URL | null {
   if (typeof raw !== 'string' || raw.length > MAX_URL) return null
   if (/[\\\u0000-\u0020\u007f]/.test(raw)) return null
   let url: URL
@@ -54,6 +54,12 @@ export function bilibiliUrl(raw: unknown): string | null {
   const url = parseHttps(raw)
   if (!url || !BILIBILI_HOSTS.has(url.hostname)) return null
   return `https://${url.hostname}${url.pathname}${url.search}`
+}
+
+/** A page the DJ cites as evidence: any plain https URL, rebuilt from its parts; else null. */
+export function evidenceUrl(raw: unknown): string | null {
+  const url = parseHttps(raw)
+  return url ? url.href : null
 }
 
 /** The privacy-enhanced embed URL for a checked id; null for anything else. */

@@ -90,6 +90,24 @@ def test_a_mood_then_a_queue_then_feedback(ctx) -> None:
     assert state["moments"][0]["songs"][0]["title"] == "Song"
 
 
+def test_a_pick_keeps_its_tier_arc_listen_for_and_evidence(ctx) -> None:
+    extra = {
+        "tier": "explore",
+        "arc": "turn",
+        "listen_for": "  the second verse drops to piano  ",
+        "evidence": {"url": "https://Example.com/review?x=1#top", "label": "A review"},
+        "unverified": True,
+    }
+    status, body = _call(ctx, "POST", "/queue", {"source": "r1", "picks": [_yt(**extra), _yt(unverified=False)]})
+    assert status == 200
+    first, plain = body["queue"]
+    assert first["unverified"] is True
+    assert first["tier"] == "explore" and first["arc"] == "turn"
+    assert first["listen_for"] == "the second verse drops to piano"
+    assert first["evidence"] == {"url": "https://example.com/review?x=1", "label": "A review"}
+    assert not {"tier", "arc", "listen_for", "evidence", "unverified"} & plain.keys()
+
+
 @pytest.mark.parametrize(
     ("pick", "code"),
     [
@@ -106,6 +124,12 @@ def test_a_mood_then_a_queue_then_feedback(ctx) -> None:
         ),
         ({"source": "youtube", "video_id": ID}, "invalid_pick"),
         (_yt(tags="calm"), "invalid_pick"),
+        (_yt(tier="famous"), "invalid_pick"),
+        (_yt(arc="up"), "invalid_pick"),
+        (_yt(evidence={"url": "javascript:alert(1)", "label": "x"}), "invalid_pick"),
+        (_yt(evidence={"url": "http://example.com/r"}), "invalid_pick"),
+        (_yt(evidence="https://example.com/r"), "invalid_pick"),
+        (_yt(unverified="yes"), "invalid_pick"),
         ("not an object", "invalid_pick"),
     ],
 )
@@ -159,11 +183,89 @@ def test_feedback_checks_the_id_and_the_verdict(ctx) -> None:
     assert _call(ctx, "PUT", f"/queue/{'0' * 32}/feedback", {"verdict": "liked"})[0] == 404
 
 
+def test_memory_add_edit_pin_delete_and_clear(ctx) -> None:
+    status, note = _call(ctx, "POST", "/memory", {"kind": "note", "text": " 不要太吵 "})
+    assert status == 201 and (note["text"], note["origin"], note["stale"]) == ("不要太吵", "user", False)
+    status, song = _call(ctx, "POST", "/memory", {"kind": "known", "title": "苏州河", "artist": "薛凯琪", "origin": "app"})
+    assert status == 201 and song["origin"] == "app"
+    status, edited = _call(ctx, "PUT", f"/memory/{note['id']}", {"text": "晚上别推摇滚", "pinned": True})
+    assert status == 200 and (edited["text"], edited["pinned"]) == ("晚上别推摇滚", True)
+    assert _call(ctx, "POST", "/memory/used", {"ids": [song["id"]]})[1] == {"marked": 1}
+    assert _call(ctx, "POST", "/memory/clear-stale")[1] == {"removed": 0}
+    assert _call(ctx, "DELETE", f"/memory/{song['id']}")[0] == 200
+    assert _call(ctx, "DELETE", f"/memory/{song['id']}")[0] == 404
+    state = _call(ctx, "GET", "/state")[1]
+    assert [m["text"] for m in state["memory"]] == ["晚上别推摇滚"]
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        {"kind": "secret", "text": "x"},
+        {"kind": "note", "text": "x", "origin": "agent"},
+        {"kind": "note", "text": ""},
+        {"kind": "note", "text": "x" * 61},
+        {"kind": "known", "artist": "no title"},
+        {"kind": "note", "text": ["x"]},
+    ],
+)
+def test_a_malformed_memory_item_is_refused(ctx, body) -> None:
+    status, payload = _call(ctx, "POST", "/memory", body)
+    assert status == 400 and payload["code"]
+    assert not _state_file(ctx).exists()
+
+
+@pytest.mark.parametrize(
+    ("method", "path", "body"),
+    [
+        ("PUT", "/memory/not-an-id", {"pinned": True}),
+        ("PUT", f"/memory/{'0' * 32}", {"pinned": "yes"}),
+        ("PUT", f"/memory/{'0' * 32}", {"text": ""}),
+        ("DELETE", "/memory/not-an-id", None),
+        ("POST", "/memory/used", {"ids": ["../x"]}),
+        ("POST", "/memory/used", {"ids": ["0" * 32] * 101}),
+    ],
+)
+def test_memory_edits_check_their_input(ctx, method, path, body) -> None:
+    assert _call(ctx, method, path, body)[0] in (400, 404)
+
+
+def test_a_memory_full_of_the_persons_own_notes_answers_409(ctx, monkeypatch) -> None:
+    from backend import store as store_mod
+
+    monkeypatch.setitem(store_mod.MEMORY_CAPS, "note", 1)
+    assert _call(ctx, "POST", "/memory", {"kind": "note", "text": "a"})[0] == 201
+    status, payload = _call(ctx, "POST", "/memory", {"kind": "note", "text": "b"})
+    assert (status, payload["code"]) == (409, "memory_full")
+
+
+def test_settings_keep_the_explore_level_and_the_record_state(ctx) -> None:
+    assert _call(ctx, "GET", "/state")[1]["settings"] == {"explore": "balanced", "record_open": False}
+    assert _call(ctx, "PUT", "/settings", {"explore": "familiar"})[1] == {"explore": "familiar", "record_open": False}
+    assert _call(ctx, "PUT", "/settings", {"record_open": True})[1]["record_open"] is True
+    assert _call(ctx, "GET", "/state")[1]["settings"] == {"explore": "familiar", "record_open": True}
+
+
+@pytest.mark.parametrize(
+    "body",
+    [{}, {"explore": "wild"}, {"record_open": "yes"}, {"explore": "balanced", "theme": "dark"}],
+)
+def test_bad_settings_are_refused(ctx, body) -> None:
+    assert _call(ctx, "PUT", "/settings", body)[0] == 400
+
+
 ROUTES = [
     ("GET", "/state", None, "read_state"),
     ("POST", "/moments", {"mood": "calm"}, "add_moment"),
     ("POST", "/queue", {"source": "r1", "picks": [_yt()]}, "set_queue"),
     ("PUT", f"/queue/{'0' * 32}/feedback", {"verdict": "liked"}, "feedback"),
+    ("POST", "/verify-picks", {"picks": "not a list"}, "verify_picks"),
+    ("POST", "/memory", {"kind": "note", "text": "quiet"}, "add_memory"),
+    ("PUT", f"/memory/{'0' * 32}", {"pinned": True}, "update_memory"),
+    ("DELETE", f"/memory/{'0' * 32}", None, "delete_memory"),
+    ("POST", "/memory/clear-stale", None, "clear_stale"),
+    ("POST", "/memory/used", {"ids": []}, "memory_used"),
+    ("PUT", "/settings", {"explore": "explore"}, "settings"),
 ]
 
 
@@ -184,7 +286,7 @@ def test_a_request_with_no_app_claim_is_refused(ctx, method, path, body, op) -> 
 @pytest.mark.parametrize(("method", "path", "body", "op"), ROUTES)
 def test_an_app_token_keeps_its_grant(ctx, method, path, body, op) -> None:
     status, _ = _call(ctx, method, path, body, user="app:mood-music", app="mood-music")
-    assert status in (200, 201, 404)
+    assert status in (200, 201, 400, 404)
     assert ctx.owner_checks == []
 
 

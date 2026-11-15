@@ -1,8 +1,14 @@
-"""Mood Music's own storage: moments, the current queue and like/skip feedback.
+"""Mood Music's own storage: moments, the current queue, like/skip feedback and memory.
 
 One small JSON document in the app's data directory, written atomically. Every
-record is bounded (:data:`MAX_MOMENTS`, :data:`MAX_FEEDBACK`, :data:`MAX_QUEUE`)
-so the file stays a few hundred KB at most. Callers validate input first
+record is bounded (:data:`MAX_MOMENTS`, :data:`MAX_FEEDBACK`, :data:`MAX_QUEUE`,
+:data:`MEMORY_CAPS`) so the file stays a few hundred KB at most.
+
+Memory (design §2) is what the person's music buddy knows about them: their own
+notes, and songs and moods the app recorded. An item the person wrote
+(``origin: "user"``) is never evicted and never marked stale. An item the app
+recorded is "maybe stale" once it went 90 days unused, or once a newer verdict
+on the same song replaced it; it stays until the person clears it. Callers validate input first
 (``routes.py``); the store trusts the shapes it is handed.
 
 A document that cannot be parsed is moved aside to ``state.json.bad`` before the
@@ -32,9 +38,51 @@ MAX_QUEUE = 12
 #: The two feedback verdicts, and ``""`` to clear one.
 VERDICTS = ("liked", "skipped", "")
 
+#: Memory kinds; the song kinds carry ``title`` / ``artist``, the others ``text``.
+SONG_KINDS = ("liked", "skipped", "known")
+MEMORY_KINDS = ("note", *SONG_KINDS, "mood")
+ORIGINS = ("user", "app")
+MEMORY_CAPS = {"note": 100, "liked": 300, "skipped": 300, "known": 300, "mood": 100}
+#: An app item unused this long is "maybe stale".
+STALE_AFTER = 90 * 86400
+#: A song that was an anchor this recently is not an anchor again.
+ANCHOR_WINDOW = 30 * 86400
+MAX_ANCHORS = 100
+#: The page's own choices (design §0.3, §1.9), with their defaults.
+EXPLORE_LEVELS = ("familiar", "balanced", "explore")
+DEFAULT_SETTINGS = {"explore": "balanced", "record_open": False}
+
+
+class MemoryFull(Exception):
+    """A kind is at its cap and every item in it is the person's own or pinned."""
+
 
 def _empty() -> dict[str, Any]:
-    return {"moments": [], "queue": [], "feedback": [], "last_source": ""}
+    return {
+        "moments": [],
+        "queue": [],
+        "feedback": [],
+        "last_source": "",
+        "memory": [],
+        "anchors": [],
+        "settings": dict(DEFAULT_SETTINGS),
+    }
+
+
+def _song_key(title: str, artist: str = "") -> tuple[str, str]:
+    from .verify import song_key
+
+    return song_key(title, artist)
+
+
+def _same_item(item: dict[str, Any], kind: str, text: str, key: tuple[str, str]) -> bool:
+    if item.get("kind") != kind:
+        return False
+    if kind in SONG_KINDS:
+        from .verify import same_song
+
+        return same_song(_song_key(item.get("title", ""), item.get("artist", "")), key)
+    return str(item.get("text", "")).casefold() == text.casefold()
 
 
 class MoodStore:
@@ -62,11 +110,22 @@ class MoodStore:
             logger.warning("mood music state was unreadable; moved aside")
             return _empty()
         state = _empty()
-        for key in ("moments", "queue", "feedback"):
+        for key in ("moments", "queue", "feedback", "memory", "anchors"):
             if isinstance(data.get(key), list):
                 state[key] = [r for r in data[key] if isinstance(r, dict)]
         if isinstance(data.get("last_source"), str):
             state["last_source"] = data["last_source"]
+        saved = data.get("settings") if isinstance(data.get("settings"), dict) else {}
+        if saved.get("explore") in EXPLORE_LEVELS:
+            state["settings"]["explore"] = saved["explore"]
+        if isinstance(saved.get("record_open"), bool):
+            state["settings"]["record_open"] = saved["record_open"]
+        if not isinstance(data.get("memory"), list):
+            # A file from before memory: its likes and skips become memory items.
+            for f in reversed(state["feedback"]):
+                if f.get("verdict") in ("liked", "skipped"):
+                    self._put(state, f["verdict"], title=f.get("title", ""),
+                              artist=f.get("artist", ""), origin="app", at=f.get("at"))
         return state
 
     def _write(self, state: dict[str, Any]) -> None:
@@ -89,9 +148,169 @@ class MoodStore:
     # ── reads ──
 
     def snapshot(self) -> dict[str, Any]:
-        """Everything the page shows: newest moments and feedback first."""
+        """Everything the page shows: newest moments, feedback and memory first.
+
+        Each memory item carries ``stale``, worked out now rather than stored.
+        """
         with self._lock:
-            return self._read()
+            state = self._read()
+        now = self._now()
+        state["memory"] = [{**m, "stale": self._stale(m, now)} for m in state["memory"]]
+        state.pop("anchors", None)
+        return state
+
+    def set_settings(self, **changes: Any) -> dict[str, Any]:
+        """Store the page's choices; callers pass only checked values."""
+        with self._lock:
+            state = self._read()
+            state["settings"].update(changes)
+            self._write(state)
+            return dict(state["settings"])
+
+    # ── memory ──
+
+    @staticmethod
+    def _stale(item: dict[str, Any], now: float) -> bool:
+        if item.get("origin") == "user":
+            return False
+        if item.get("superseded_at"):
+            return True
+        last = item.get("last_used_at") or item.get("created_at") or 0
+        return now - float(last) > STALE_AFTER
+
+    def _put(
+        self,
+        state: dict[str, Any],
+        kind: str,
+        *,
+        text: str = "",
+        title: str = "",
+        artist: str = "",
+        origin: str,
+        at: float | None = None,
+    ) -> dict[str, Any]:
+        """Add one item to *state* (or refresh its twin) and return it; may raise MemoryFull."""
+        now = float(at) if isinstance(at, (int, float)) else self._now()
+        key = _song_key(title, artist)
+        memory: list[dict[str, Any]] = state["memory"]
+        twin = next((m for m in memory if _same_item(m, kind, text, key)), None)
+        if twin is not None:
+            twin["last_used_at"] = now
+            twin.pop("superseded_at", None)
+            if origin == "user":
+                twin["origin"] = "user"
+            item = twin
+        else:
+            same_kind = [m for m in memory if m.get("kind") == kind]
+            if len(same_kind) >= MEMORY_CAPS[kind]:
+                evictable = [m for m in same_kind if m.get("origin") != "user" and not m.get("pinned")]
+                if not evictable:
+                    raise MemoryFull(kind)
+                oldest = min(evictable, key=lambda m: m.get("last_used_at") or 0)
+                memory.remove(oldest)
+            item = {"id": uuid.uuid4().hex, "kind": kind, "origin": origin, "pinned": False,
+                    "created_at": now, "last_used_at": now}
+            if kind in SONG_KINDS:
+                item.update(title=title, artist=artist)
+            else:
+                item["text"] = text
+            memory.insert(0, item)
+        # A newer like replaces an older skip of the same song, and the other way round.
+        other = {"liked": "skipped", "skipped": "liked"}.get(kind)
+        if other:
+            for m in memory:
+                if _same_item(m, other, "", key) and m.get("origin") != "user":
+                    m["superseded_at"] = now
+        return item
+
+    def add_memory(
+        self, kind: str, *, text: str = "", title: str = "", artist: str = "", origin: str
+    ) -> dict[str, Any]:
+        """Remember one thing; raises :class:`MemoryFull` when it cannot fit."""
+        with self._lock:
+            state = self._read()
+            item = self._put(state, kind, text=text, title=title, artist=artist, origin=origin)
+            self._write(state)
+        return {**item, "stale": self._stale(item, self._now())}
+
+    def update_memory(
+        self, item_id: str, *, text: str | None = None, pinned: bool | None = None
+    ) -> dict[str, Any] | None:
+        """Edit a note's text or any item's pin; ``None`` when there is no such item."""
+        with self._lock:
+            state = self._read()
+            item = next((m for m in state["memory"] if m.get("id") == item_id), None)
+            if item is None:
+                return None
+            if text is not None and item.get("kind") == "note":
+                item["text"] = text
+            if pinned is not None:
+                item["pinned"] = pinned
+            self._write(state)
+        return {**item, "stale": self._stale(item, self._now())}
+
+    def delete_memory(self, item_id: str) -> bool:
+        with self._lock:
+            state = self._read()
+            rest = [m for m in state["memory"] if m.get("id") != item_id]
+            if len(rest) == len(state["memory"]):
+                return False
+            state["memory"] = rest
+            self._write(state)
+        return True
+
+    def clear_stale(self) -> int:
+        """Remove every "maybe stale" item; the person's own are never stale."""
+        now = self._now()
+        with self._lock:
+            state = self._read()
+            rest = [m for m in state["memory"] if not self._stale(m, now)]
+            removed = len(state["memory"]) - len(rest)
+            if removed:
+                state["memory"] = rest
+                self._write(state)
+        return removed
+
+    def mark_used(self, ids: list[str]) -> int:
+        """The items were in a request whose picks the person liked or played: not stale."""
+        now = self._now()
+        wanted = set(ids)
+        with self._lock:
+            state = self._read()
+            hit = [m for m in state["memory"] if m.get("id") in wanted]
+            for m in hit:
+                m["last_used_at"] = now
+            if hit:
+                self._write(state)
+        return len(hit)
+
+    def _remember_quietly(self, state: dict[str, Any], kind: str, **fields: Any) -> None:
+        """An app record that may not fit: the person's own items always win."""
+        try:
+            self._put(state, kind, origin="app", **fields)
+        except MemoryFull:
+            logger.info("mood music memory: %s is full of the person's own items", kind)
+
+    def avoid_lists(self) -> dict[str, list[tuple[str, str]]]:
+        """The songs a check drops (``verify.verify_picks`` keywords).
+
+        Liked and known songs are ``known``; a skip a later like replaced no
+        longer counts; anchors from the last 30 days are ``recent_anchors``.
+        """
+        with self._lock:
+            state = self._read()
+        now = self._now()
+        out: dict[str, list[tuple[str, str]]] = {"known": [], "skipped": [], "recent_anchors": []}
+        for m in state["memory"]:
+            key = _song_key(m.get("title", ""), m.get("artist", ""))
+            if m.get("kind") in ("liked", "known"):
+                out["known"].append(key)
+            elif m.get("kind") == "skipped" and not m.get("superseded_at"):
+                out["skipped"].append(key)
+        for a in state["anchors"]:
+            if now - float(a.get("at") or 0) <= ANCHOR_WINDOW:
+                out["recent_anchors"].append(_song_key(a.get("title", ""), a.get("artist", "")))
+        return out
 
     # ── writes ──
 
@@ -132,6 +351,12 @@ class MoodStore:
             state = self._read()
             state["queue"] = queue
             state["last_source"] = source
+            now = self._now()
+            anchors = [{"title": p["title"], "artist": p.get("artist", ""), "at": now}
+                       for p in queue if p.get("tier") == "anchor"]
+            state["anchors"] = [*anchors, *state["anchors"]][:MAX_ANCHORS]
+            for tag in mood_tags or []:
+                self._remember_quietly(state, "mood", text=tag)
             for moment in state["moments"]:
                 if moment.get("id") == moment_id:
                     moment["songs"] = [{"title": p["title"], "artist": p["artist"]} for p in queue]
@@ -148,7 +373,15 @@ class MoodStore:
             pick = next((p for p in state["queue"] if p.get("id") == pick_id), None)
             if pick is None:
                 return None
+            before = pick.get("feedback")
             pick["feedback"] = verdict
+            song = {"title": pick.get("title", ""), "artist": pick.get("artist", "")}
+            if verdict:
+                self._remember_quietly(state, verdict, **song)
+            elif before in ("liked", "skipped"):
+                key = _song_key(song["title"], song["artist"])
+                state["memory"] = [m for m in state["memory"]
+                                   if not (m.get("origin") == "app" and _same_item(m, before, "", key))]
             rest = [f for f in state["feedback"] if f.get("pick_id") != pick_id]
             if verdict:
                 entry = {

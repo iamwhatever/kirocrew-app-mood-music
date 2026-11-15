@@ -51,7 +51,33 @@ describe('parseDjReply', () => {
   })
 
   it('reads a question with no picks', () => {
-    expect(parseDjReply(block({ question: 'Quiet or loud?' }))).toEqual({ question: 'Quiet or loud?', moodTags: [], picks: [], dropped: 0 })
+    expect(parseDjReply(block({ question: 'Quiet or loud?' }))).toEqual({
+      text: 'Here you go.', question: 'Quiet or loud?', moodTags: [], picks: [], dropped: 0, followUps: [], remember: '',
+    })
+  })
+
+  it('keeps tier, arc, listen_for and https evidence, and orders picks stay -> turn -> lift', () => {
+    const yt = (title: string, extra: object) => ({ title, source: 'youtube', url: `https://www.youtube.com/watch?v=${ID}`, ...extra })
+    const r = parseDjReply(block({
+      picks: [
+        yt('Up', { arc: 'lift', tier: 'explore' }),
+        yt('Here', { arc: 'stay', tier: 'anchor', listen_for: 'the breath in verse two' }),
+        yt('Open', { arc: 'turn', tier: 'deep', evidence: { url: 'https://example.com/review?id=1', label: 'A review' } }),
+        yt('Odd', { arc: 'sideways', tier: 'famous', evidence: { url: 'javascript:alert(1)', label: 'x' } }),
+      ],
+      follow_ups: ['quieter', 'in Cantonese', 'stay here', 'a fourth is cut'],
+      remember: 'likes Cantonese',
+    }))
+    expect(r?.picks.map(p => p.title)).toEqual(['Here', 'Open', 'Up', 'Odd'])
+    const [here, open, , odd] = r!.picks
+    expect(odd).not.toHaveProperty('arc')
+    expect(odd).not.toHaveProperty('tier')
+    expect(odd).not.toHaveProperty('evidence')
+    expect(here).toMatchObject({ tier: 'anchor', arc: 'stay', listen_for: 'the breath in verse two' })
+    expect(open.evidence).toEqual({ url: 'https://example.com/review?id=1', label: 'A review' })
+    expect(r?.followUps).toEqual(['quieter', 'in Cantonese', 'stay here'])
+    expect(r?.remember).toBe('likes Cantonese')
+    expect(r?.text).toBe('Here you go.')
   })
 
   it('uses the last block and returns null when none parses', () => {

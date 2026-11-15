@@ -80,3 +80,15 @@ def bilibili_url(url: object) -> str | None:
     if host not in BILIBILI_HOSTS:
         return None
     return urlunsplit(("https", host, parts.path or "/", parts.query, ""))
+
+
+def evidence_url(url: object) -> str | None:
+    """*url* rebuilt from its parts when it is a plain https link, else ``None``.
+
+    Evidence is a page the agent cites as praise for a pick. It is only ever
+    drawn as a link that opens a new tab, never framed or fetched.
+    """
+    parts = _split_https(url)
+    if parts is None or not parts.hostname:
+        return None
+    return urlunsplit(("https", parts.hostname.lower(), parts.path or "/", parts.query, ""))

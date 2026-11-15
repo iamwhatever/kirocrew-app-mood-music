@@ -8,7 +8,7 @@
  */
 
 import { vi } from 'vitest'
-import type { KeyboardEvent } from 'react'
+import { createElement, type KeyboardEvent } from 'react'
 import type { AppApi, ChatLaunchOptions, NumberOptions } from '@kirocrew/app-sdk'
 
 let locale = 'en'
@@ -49,6 +49,11 @@ export function fmtCurrency(value: number, currency = 'USD', options?: NumberOpt
 }
 
 export const APP_SDK_LEVEL = 1
+
+/** Stands in for the host's native transcript: names the slot it was given. */
+export function ChatEmbed({ slotKey }: { slotKey: string }) {
+  return createElement('div', { 'data-testid': 'chat-embed', 'data-slot': slotKey })
+}
 
 const unstubbed = () => Promise.reject(new Error('stub app-sdk: no API in this test'))
 
