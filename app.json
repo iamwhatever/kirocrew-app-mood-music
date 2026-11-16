@@ -1,6 +1,6 @@
 {
   "name": "mood-music",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "displayName": "Mood Music",
   "description": "Tell it how you feel, or name a song that moved you. A DJ agent finds songs with the same feeling and plays them: YouTube inside the page, bilibili in a new browser tab. Like or skip, and the next picks follow.",
   "author": "iamwhatever",
