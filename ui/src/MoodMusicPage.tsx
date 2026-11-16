@@ -18,7 +18,7 @@
  * turn, a turn that went quiet, a lost connection, and a reply with nothing
  * playable left.
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type UIEvent } from 'react'
 import { Headphones, MessageCircleQuestion, Play, Send, ShieldCheck, Square, TriangleAlert, Waves, WifiOff } from 'lucide-react'
 import { useAppApi, useChatLauncher } from '@kirocrew/app-sdk'
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from '@kirocrew/app-sdk/ui'
@@ -37,10 +37,10 @@ import { usePrefersReducedMotion } from './reducedMotion'
 import { CARD_STYLE } from './cardStyle'
 import SongCard from './SongCard'
 import { activityKey, buddyStatus, conversation, pendingApproval, turnError, type BuddyStatus } from './turnState'
+import { loadView, saveView, type PageView, type SavedPending, type Tab } from './pageMemory'
 
 const errMessage = (e: unknown): string => (e instanceof Error ? e.message : typeof e === 'string' ? e : '')
 
-type Tab = 'listen' | 'moments' | 'memory'
 type Kind = 'mood' | 'answer' | 'more' | 'follow'
 
 /** Poll cadence while the buddy works. */
@@ -52,14 +52,8 @@ export const OFFLINE_MS = 10_000
 /** Played this long, a song counts as known (design §0.6). */
 export const KNOWN_AFTER_MS = 30_000
 
-interface Pending {
-  momentId: string
-  baseline: string
-  /** Memory items the request carried, marked used if its picks land. */
-  memoryIds: string[]
-  text: string
-  stopped?: boolean
-}
+/** A turn out to the buddy. `memoryIds`: memory items the request carried, marked used if its picks land. */
+type Pending = SavedPending
 
 const MOOD_LABELS = {
   calm: 'page.mood_calm',
@@ -70,6 +64,27 @@ const MOOD_LABELS = {
 } as const satisfies Record<MoodKey, string>
 
 const moodLabel = (key: MoodKey) => t(MOOD_LABELS[key])
+
+/**
+ * The Listen tab's two columns. Wide enough for both, the page itself stops
+ * scrolling: the chat column scrolls on its own, and the player stays in view
+ * with "Up next" scrolling under it. Narrower, it is one column and the page
+ * scrolls as before. A container query, so it follows the page's own width
+ * (the Crew sidebar takes part of the window), not the window's.
+ */
+const SPLIT_CSS = `
+.mm-root { container-type: inline-size; }
+.mm-listen { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@container (min-width: 760px) {
+  div.mm-scroll.mm-split { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
+  .mm-split > .mm-listen { flex: 1; min-height: 0; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; width: 100%; }
+  /* No scroll anchoring: rows drawn in after a return must not push the restored position. */
+  .mm-col { min-height: 0; overflow-y: auto; overflow-anchor: none; padding-bottom: 1.5rem; }
+  .mm-player { min-height: 0; overflow: hidden; padding-bottom: 1.5rem; }
+  .mm-player > .mm-upnext { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .mm-upnext > ul { flex: 1; min-height: 0; overflow-y: auto; }
+}
+`
 
 const songKey = (title = '', artist = '') => `${title.trim().toLowerCase()}|${artist.trim().toLowerCase()}`
 
@@ -96,17 +111,19 @@ export default function MoodMusicPage() {
   const appApi = useAppApi()
   const moodApi = useMemo(() => createMoodApi(appApi), [appApi])
   const { openChat } = useChatLauncher()
-  const [tab, setTab] = useState<Tab>('listen')
+  // Where the person was when they last left the page (`pageMemory.ts`).
+  const [saved] = useState(loadView)
+  const [tab, setTab] = useState<Tab>(saved?.tab ?? 'listen')
   const [state, setState] = useState<MoodState | undefined>()
   // Kept in state so the full record repaints when the slot opens.
   const [slotKey, setSlotKey] = useState<string | null>(null)
-  const [stayOnly, setStayOnly] = useState(false)
+  const [stayOnly, setStayOnly] = useState(saved?.stayOnly ?? false)
   const [slot, setSlot] = useState<import('./api').SlotData | undefined>()
-  const [text, setText] = useState('')
-  const [chip, setChip] = useState<MoodKey | null>(null)
+  const [text, setText] = useState(saved?.text ?? '')
+  const [chip, setChip] = useState<MoodKey | null>(saved?.chip ?? null)
   const [answer, setAnswer] = useState('')
-  const [look, setLook] = useState<MoodLook>('neutral')
-  const [currentId, setCurrentId] = useState<string | null>(null)
+  const [look, setLook] = useState<MoodLook>(saved?.look ?? 'neutral')
+  const [currentId, setCurrentId] = useState<string | null>(saved?.currentId ?? null)
   const [autoplay, setAutoplay] = useState(false)
   const [motionPaused, setMotionPaused] = useState(false)
   const [pending, setPending] = useState<Pending | null>(null)
@@ -120,6 +137,12 @@ export default function MoodMusicPage() {
   const [droppedAll, setDroppedAll] = useState(0)
   const [notice, setNotice] = useState<string | null>(null)
   const [dismissedRemember, setDismissedRemember] = useState('')
+  // Set once the saved view is applied; nothing is saved before, so a page
+  // still loading never writes its empty first frame over it.
+  const [restored, setRestored] = useState(false)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const chatColRef = useRef<HTMLDivElement>(null)
+  const scrollTopRef = useRef(saved?.scroll ?? 0)
   const slotRef = useRef<string | null>(null)
   const momentRef = useRef<string>('')
   // The last request sent, so a reply the page could not use can be asked again.
@@ -137,17 +160,50 @@ export default function MoodMusicPage() {
     moodApi.state().then(async s => {
       if (!live) return
       setState(s)
-      // Someone who talked to the buddy before sees that conversation again.
-      if (s.last_source) {
+      // Someone who talked to the buddy before sees that conversation again:
+      // the slot holds it, so it is read back, not kept a second time.
+      const out = saved?.pending
+      if (s.last_source || s.moments.length || saved?.slotKey || out) {
         const { key } = await moodApi.openSlot()
         if (!live) return
         slotRef.current = key
         setSlotKey(key)
-        setSlot(await moodApi.getSlot(key).catch(() => undefined))
+        const read = await moodApi.getSlot(key).catch(() => undefined)
+        if (!live) return
+        setSlot(read)
+        // A turn still out when the person left: wait on it again, so its live
+        // status shows and its reply is read. One whose reply the page already
+        // queued, or that ended with nothing new, is over.
+        if (out) {
+          const source = replySource(latestReply(read))
+          if (!read || read.running || turnError(read) || (source !== out.baseline && source !== s.last_source)) {
+            momentRef.current = out.momentId
+            setPending(out)
+          }
+        }
       }
+      setRestored(true)
     }).catch(e => { if (live) setError(errMessage(e) || 'load_failed') })
     return () => { live = false }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [moodApi])
+
+  const view: PageView = { tab, text, chip, stayOnly, look, currentId, slotKey, scroll: 0, pending }
+  const viewRef = useRef(view)
+  viewRef.current = view
+  const persist = useCallback(() => {
+    if (restored) saveView({ ...viewRef.current, scroll: scrollTopRef.current })
+  }, [restored])
+  const onScrolled = (e: UIEvent<HTMLElement>) => { scrollTopRef.current = e.currentTarget.scrollTop; persist() }
+  useEffect(persist, [persist, tab, text, chip, stayOnly, look, currentId, slotKey, pending])
+
+  // Back where they were on the page, once what it shows is drawn again.
+  useEffect(() => {
+    // One of the two scrolls, by layout: the page (one column) or the chat column.
+    if (!restored || !scrollTopRef.current) return
+    for (const el of [scrollRef.current, chatColRef.current]) if (el) el.scrollTop = scrollTopRef.current
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restored])
 
   const queue = state?.queue ?? []
   const explore: ExploreLevel = state?.settings?.explore ?? 'balanced'
@@ -423,7 +479,8 @@ export default function MoodMusicPage() {
   const remember = lastParsed?.remember && lastParsed.remember !== dismissedRemember ? lastParsed.remember : ''
 
   return (
-    <div className="relative flex h-full flex-col overflow-hidden" data-testid="mood-music-page">
+    <div className="mm-root relative flex h-full flex-col overflow-hidden" data-testid="mood-music-page">
+      <style>{SPLIT_CSS}</style>
       <MoodBackdrop look={look} moving={moving} />
       <div className="relative flex h-full flex-col">
         <PageHeader
@@ -448,14 +505,27 @@ export default function MoodMusicPage() {
           />
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 pb-6">
+        <div
+          ref={scrollRef}
+          onScroll={onScrolled}
+          className={`mm-scroll flex-1 overflow-y-auto px-4 pb-6 ${tab === 'listen' ? 'mm-split' : ''}`}
+          data-testid="mood-scroll"
+        >
           {tab === 'memory' ? (
             <div className="mx-auto max-w-5xl">
               <MemoryTab memory={state?.memory ?? []} api={moodApi} onChanged={refresh} />
             </div>
           ) : tab === 'moments' ? <div className="mx-auto max-w-5xl"><MomentsTab moments={state?.moments ?? []} /></div> : (
-            <div className="mx-auto grid max-w-5xl items-start gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 360px), 1fr))' }}>
-              <div className="flex min-w-0 flex-col gap-3">
+            <div className="mm-listen mx-auto max-w-5xl">
+              <div
+                ref={chatColRef}
+                onScroll={onScrolled}
+                className="mm-col flex min-w-0 flex-col gap-3"
+                data-testid="mood-chat-column"
+                role="region"
+                aria-label={t('page.tab_listen')}
+                tabIndex={0}
+              >
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-xs text-[var(--muted)]">{t('chat.explore')}</span>
                   <SegmentedControl<ExploreLevel>
@@ -654,7 +724,7 @@ export default function MoodMusicPage() {
                 />
               </div>
 
-              <div className="flex min-w-0 flex-col gap-4">
+              <div className="mm-player flex min-w-0 flex-col gap-4" data-testid="mood-player-column">
                 {current ? (
                   <NowPlaying
                     pick={current}
@@ -669,9 +739,9 @@ export default function MoodMusicPage() {
                 )}
 
                 {queue.length > 1 && (
-                  <section aria-label={t('page.queue')}>
+                  <section aria-label={t('page.queue')} className="mm-upnext">
                     <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">{t('page.queue')}</h3>
-                    <ul className="flex flex-col gap-1.5" data-testid="mood-queue">
+                    <ul className="flex flex-col gap-1.5" data-testid="mood-queue" tabIndex={0} aria-label={t('page.queue')}>
                       {queue.map(p => (
                         <li key={p.id}>
                           <button

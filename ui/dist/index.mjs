@@ -3165,6 +3165,68 @@ function activityKey(slot) {
 	const last = all[all.length - 1];
 	return `${all.length}:${last?.role ?? ""}:${last?.content?.length ?? 0}:${slot?.running ? 1 : 0}`;
 }
+// src/pageMemory.ts
+/**
+* Where the person was on the page, so leaving it (the full chat, the sidebar,
+* browser back, a reload) and coming back shows the same view.
+*
+* What the page shows is already durable elsewhere: the conversation is the
+* buddy's chat slot and the cards and queue are the app's storage. This keeps
+* only the view around them (tab, what is typed, which song is up, the scroll
+* position) and a turn still out, so its reply is read when the page is back.
+*
+* It lives in this browser tab's `sessionStorage`, under one key, capped in
+* size: it is the person's own view, gone when the tab closes, and holds no
+* secret (nothing here is not already on their screen).
+*/
+var PAGE_KEY = "mood-music:page";
+var TABS = [
+	"listen",
+	"moments",
+	"memory"
+];
+var str = (v, max) => typeof v === "string" ? v.slice(0, max) : "";
+function readPending(v) {
+	const p = v;
+	if (!p || typeof p !== "object" || typeof p.baseline !== "string") return null;
+	return {
+		momentId: str(p.momentId, 64),
+		baseline: str(p.baseline, 64),
+		memoryIds: Array.isArray(p.memoryIds) ? p.memoryIds.filter((i) => typeof i === "string").slice(0, 50).map((i) => i.slice(0, 64)) : [],
+		text: str(p.text, 300),
+		stopped: p.stopped === true || void 0
+	};
+}
+/** The saved view, or null when there is none or it does not read. */
+function loadView() {
+	try {
+		const raw = window.sessionStorage.getItem(PAGE_KEY);
+		if (!raw || raw.length > 8192) return null;
+		const v = JSON.parse(raw);
+		if (!v || typeof v !== "object") return null;
+		return {
+			tab: TABS.includes(v.tab) ? v.tab : "listen",
+			text: str(v.text, 200),
+			chip: isMoodKey(v.chip) ? v.chip : null,
+			stayOnly: v.stayOnly === true,
+			look: isMoodKey(v.look) ? v.look : "neutral",
+			currentId: typeof v.currentId === "string" ? v.currentId.slice(0, 64) : null,
+			slotKey: typeof v.slotKey === "string" ? v.slotKey.slice(0, 200) : null,
+			scroll: typeof v.scroll === "number" && v.scroll > 0 ? v.scroll : 0,
+			pending: readPending(v.pending)
+		};
+	} catch {
+		return null;
+	}
+}
+/** Save the view; a full or blocked storage just means it is not kept. */
+function saveView(view) {
+	try {
+		const raw = JSON.stringify(view);
+		if (raw.length > 8192) window.sessionStorage.removeItem(PAGE_KEY);
+		else window.sessionStorage.setItem(PAGE_KEY, raw);
+	} catch {}
+}
 // src/MoodMusicPage.tsx
 /**
 * MoodMusicPage — talk to your music buddy, hear songs with the same feeling.
@@ -3199,6 +3261,26 @@ var MOOD_LABELS = {
 	fired: "page.mood_fired"
 };
 var moodLabel = (key) => t(MOOD_LABELS[key]);
+/**
+* The Listen tab's two columns. Wide enough for both, the page itself stops
+* scrolling: the chat column scrolls on its own, and the player stays in view
+* with "Up next" scrolling under it. Narrower, it is one column and the page
+* scrolls as before. A container query, so it follows the page's own width
+* (the Crew sidebar takes part of the window), not the window's.
+*/
+var SPLIT_CSS = `
+.mm-root { container-type: inline-size; }
+.mm-listen { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@container (min-width: 760px) {
+  div.mm-scroll.mm-split { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
+  .mm-split > .mm-listen { flex: 1; min-height: 0; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; width: 100%; }
+  /* No scroll anchoring: rows drawn in after a return must not push the restored position. */
+  .mm-col { min-height: 0; overflow-y: auto; overflow-anchor: none; padding-bottom: 1.5rem; }
+  .mm-player { min-height: 0; overflow: hidden; padding-bottom: 1.5rem; }
+  .mm-player > .mm-upnext { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .mm-upnext > ul { flex: 1; min-height: 0; overflow-y: auto; }
+}
+`;
 var songKey = (title = "", artist = "") => `${title.trim().toLowerCase()}|${artist.trim().toLowerCase()}`;
 function statusText(s) {
 	switch (s.phase) {
@@ -3221,16 +3303,17 @@ function MoodMusicPage() {
 	const appApi = useAppApi();
 	const moodApi = useMemo(() => createMoodApi(appApi), [appApi]);
 	const { openChat } = useChatLauncher();
-	const [tab, setTab] = useState("listen");
+	const [saved] = useState(loadView);
+	const [tab, setTab] = useState(saved?.tab ?? "listen");
 	const [state, setState] = useState();
 	const [slotKey, setSlotKey] = useState(null);
-	const [stayOnly, setStayOnly] = useState(false);
+	const [stayOnly, setStayOnly] = useState(saved?.stayOnly ?? false);
 	const [slot, setSlot] = useState();
-	const [text, setText] = useState("");
-	const [chip, setChip] = useState(null);
+	const [text, setText] = useState(saved?.text ?? "");
+	const [chip, setChip] = useState(saved?.chip ?? null);
 	const [answer, setAnswer] = useState("");
-	const [look, setLook] = useState("neutral");
-	const [currentId, setCurrentId] = useState(null);
+	const [look, setLook] = useState(saved?.look ?? "neutral");
+	const [currentId, setCurrentId] = useState(saved?.currentId ?? null);
 	const [autoplay, setAutoplay] = useState(false);
 	const [motionPaused, setMotionPaused] = useState(false);
 	const [pending, setPending] = useState(null);
@@ -3244,6 +3327,10 @@ function MoodMusicPage() {
 	const [droppedAll, setDroppedAll] = useState(0);
 	const [notice, setNotice] = useState(null);
 	const [dismissedRemember, setDismissedRemember] = useState("");
+	const [restored, setRestored] = useState(false);
+	const scrollRef = useRef(null);
+	const chatColRef = useRef(null);
+	const scrollTopRef = useRef(saved?.scroll ?? 0);
 	const slotRef = useRef(null);
 	const momentRef = useRef("");
 	const lastAskRef = useRef("");
@@ -3259,13 +3346,24 @@ function MoodMusicPage() {
 		moodApi.state().then(async (s) => {
 			if (!live) return;
 			setState(s);
-			if (s.last_source) {
+			const out = saved?.pending;
+			if (s.last_source || s.moments.length || saved?.slotKey || out) {
 				const { key } = await moodApi.openSlot();
 				if (!live) return;
 				slotRef.current = key;
 				setSlotKey(key);
-				setSlot(await moodApi.getSlot(key).catch(() => void 0));
+				const read = await moodApi.getSlot(key).catch(() => void 0);
+				if (!live) return;
+				setSlot(read);
+				if (out) {
+					const source = replySource(latestReply(read));
+					if (!read || read.running || turnError(read) || source !== out.baseline && source !== s.last_source) {
+						momentRef.current = out.momentId;
+						setPending(out);
+					}
+				}
 			}
+			setRestored(true);
 		}).catch((e) => {
 			if (live) setError(errMessage(e) || "load_failed");
 		});
@@ -3273,6 +3371,44 @@ function MoodMusicPage() {
 			live = false;
 		};
 	}, [moodApi]);
+	const view = {
+		tab,
+		text,
+		chip,
+		stayOnly,
+		look,
+		currentId,
+		slotKey,
+		scroll: 0,
+		pending
+	};
+	const viewRef = useRef(view);
+	viewRef.current = view;
+	const persist = useCallback(() => {
+		if (restored) saveView({
+			...viewRef.current,
+			scroll: scrollTopRef.current
+		});
+	}, [restored]);
+	const onScrolled = (e) => {
+		scrollTopRef.current = e.currentTarget.scrollTop;
+		persist();
+	};
+	useEffect(persist, [
+		persist,
+		tab,
+		text,
+		chip,
+		stayOnly,
+		look,
+		currentId,
+		slotKey,
+		pending
+	]);
+	useEffect(() => {
+		if (!restored || !scrollTopRef.current) return;
+		for (const el of [scrollRef.current, chatColRef.current]) if (el) el.scrollTop = scrollTopRef.current;
+	}, [restored]);
 	const queue = state?.queue ?? [];
 	const explore = state?.settings?.explore ?? "balanced";
 	const recordOpen = state?.settings?.record_open ?? false;
@@ -3564,416 +3700,432 @@ function MoodMusicPage() {
 	const showYou = pending && pending.text && !(lines.length && lines[lines.length - 1].who === "you" && lines[lines.length - 1].text === pending.text);
 	const remember = lastParsed?.remember && lastParsed.remember !== dismissedRemember ? lastParsed.remember : "";
 	return /* @__PURE__ */ jsxs("div", {
-		className: "relative flex h-full flex-col overflow-hidden",
+		className: "mm-root relative flex h-full flex-col overflow-hidden",
 		"data-testid": "mood-music-page",
-		children: [/* @__PURE__ */ jsx(MoodBackdrop, {
-			look,
-			moving
-		}), /* @__PURE__ */ jsxs("div", {
-			className: "relative flex h-full flex-col",
-			children: [
-				/* @__PURE__ */ jsx(PageHeader, {
-					title: t("page.title"),
-					subtitle: t("chat.subtitle"),
-					actions: reduceMotion ? void 0 : /* @__PURE__ */ jsxs(Btn, {
-						onClick: () => setMotionPaused((p) => !p),
-						"data-testid": "mood-motion-toggle",
-						children: [/* @__PURE__ */ jsx(Waves, {
-							size: 14,
-							"aria-hidden": "true"
-						}), motionPaused ? t("page.play_motion") : t("page.pause_motion")]
-					})
-				}),
-				/* @__PURE__ */ jsx("div", {
-					className: "px-4 pb-2",
-					children: /* @__PURE__ */ jsx(SegmentedControl, {
-						value: tab,
-						onChange: (v) => setTab(v),
-						segments: [
-							{
-								key: "listen",
-								label: t("page.tab_listen")
-							},
-							{
-								key: "moments",
-								label: t("page.tab_moments")
-							},
-							{
-								key: "memory",
-								label: t("page.tab_memory")
-							}
-						]
-					})
-				}),
-				/* @__PURE__ */ jsx("div", {
-					className: "flex-1 overflow-y-auto px-4 pb-6",
-					children: tab === "memory" ? /* @__PURE__ */ jsx("div", {
-						className: "mx-auto max-w-5xl",
-						children: /* @__PURE__ */ jsx(MemoryTab, {
-							memory: state?.memory ?? [],
-							api: moodApi,
-							onChanged: refresh
+		children: [
+			/* @__PURE__ */ jsx("style", { children: SPLIT_CSS }),
+			/* @__PURE__ */ jsx(MoodBackdrop, {
+				look,
+				moving
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "relative flex h-full flex-col",
+				children: [
+					/* @__PURE__ */ jsx(PageHeader, {
+						title: t("page.title"),
+						subtitle: t("chat.subtitle"),
+						actions: reduceMotion ? void 0 : /* @__PURE__ */ jsxs(Btn, {
+							onClick: () => setMotionPaused((p) => !p),
+							"data-testid": "mood-motion-toggle",
+							children: [/* @__PURE__ */ jsx(Waves, {
+								size: 14,
+								"aria-hidden": "true"
+							}), motionPaused ? t("page.play_motion") : t("page.pause_motion")]
 						})
-					}) : tab === "moments" ? /* @__PURE__ */ jsx("div", {
-						className: "mx-auto max-w-5xl",
-						children: /* @__PURE__ */ jsx(MomentsTab, { moments: state?.moments ?? [] })
-					}) : /* @__PURE__ */ jsxs("div", {
-						className: "mx-auto grid max-w-5xl items-start gap-4",
-						style: { gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 360px), 1fr))" },
-						children: [/* @__PURE__ */ jsxs("div", {
-							className: "flex min-w-0 flex-col gap-3",
-							children: [
-								/* @__PURE__ */ jsxs("div", {
-									className: "flex flex-wrap items-center gap-2",
-									children: [
-										/* @__PURE__ */ jsx("span", {
-											className: "text-xs text-[var(--muted)]",
-											children: t("chat.explore")
-										}),
-										/* @__PURE__ */ jsx(SegmentedControl, {
-											ariaLabel: t("chat.explore"),
-											value: explore,
-											onChange: (v) => saveSettings({ explore: v }),
-											segments: [
-												{
-													key: "familiar",
-													label: t("chat.explore_familiar")
-												},
-												{
-													key: "balanced",
-													label: t("chat.explore_balanced")
-												},
-												{
-													key: "explore",
-													label: t("chat.explore_more")
-												}
-											]
-										}),
-										/* @__PURE__ */ jsx("button", {
-											type: "button",
-											"aria-pressed": stayOnly,
-											onClick: () => setStayOnly((v) => !v),
-											className: `rounded-full border px-3 py-1 text-xs transition-colors ${stayOnly ? "border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]" : "border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]"}`,
-											children: t("chat.stay_only")
-										})
-									]
-								}),
-								/* @__PURE__ */ jsx("div", {
-									role: "group",
-									"aria-label": t("page.mood_chips"),
-									className: "flex flex-wrap gap-2",
-									children: MOOD_KEYS.map((key) => /* @__PURE__ */ jsx("button", {
-										type: "button",
-										"aria-pressed": chip === key,
-										onClick: () => pickChip(key),
-										disabled: working,
-										className: `rounded-full border px-3 py-1 text-xs transition-colors ${chip === key ? "border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]" : "border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]"}`,
-										children: moodLabel(key)
-									}, key))
-								}),
-								/* @__PURE__ */ jsxs("section", {
-									"aria-label": t("chat.conversation"),
-									className: "flex flex-col gap-2",
-									"data-testid": "mood-chat",
-									children: [
-										lines.length === 0 && !pending && /* @__PURE__ */ jsx("p", {
-											className: "text-sm text-[var(--muted)]",
-											children: t("chat.hello")
-										}),
-										lines.slice(-20).map((line, i) => line.who === "you" ? /* @__PURE__ */ jsxs("p", {
-											className: "self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]",
-											children: [/* @__PURE__ */ jsxs("span", {
-												className: "sr-only",
-												children: [t("chat.you"), ": "]
-											}), line.text]
-										}, i) : /* @__PURE__ */ jsxs("div", {
-											className: "max-w-[95%] rounded-2xl border border-[var(--border)] px-3 py-2",
-											style: CARD_STYLE,
-											children: [/* @__PURE__ */ jsxs("p", {
-												className: "text-sm text-[var(--text)]",
-												children: [/* @__PURE__ */ jsx("span", {
-													className: "mr-1 font-semibold text-[var(--accent)]",
-													children: t("chat.buddy")
-												}), line.text]
-											}), line === lastBuddy && line.reply && replySource(line.reply) === state?.last_source && queue.length > 0 && /* @__PURE__ */ jsx("div", {
-												className: "mt-2 grid gap-2",
-												"data-testid": "mood-cards",
-												children: queue.map((p) => /* @__PURE__ */ jsx(SongCard, {
-													pick: p,
-													playing: current?.id === p.id,
-													known: knownSongs.has(songKey(p.title, p.artist)),
-													busy: working,
-													onPlay: () => playPick(p),
-													onLike: () => giveFeedback(p, p.feedback === "liked" ? "" : "liked"),
-													onSkip: () => giveFeedback(p, "skipped"),
-													onKnown: () => markKnown(p, "user")
-												}, p.id))
-											})]
-										}, i)),
-										showYou && /* @__PURE__ */ jsx("p", {
-											className: "self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]",
-											children: pending.text
-										}),
-										status && /* @__PURE__ */ jsxs("p", {
-											role: "status",
-											className: "flex items-center gap-1.5 text-xs text-[var(--muted)]",
-											"data-testid": "mood-status",
-											children: [/* @__PURE__ */ jsx(Headphones, {
-												size: 13,
-												"aria-hidden": "true",
-												className: reduceMotion ? "" : "animate-pulse"
-											}), statusText(status)]
-										})
-									]
-								}),
-								approval && /* @__PURE__ */ jsxs(Banner, {
-									testId: "mood-approval",
-									title: approval.host ? t("chat.approval_host", { host: approval.host }) : t("chat.approval_tool"),
-									icon: /* @__PURE__ */ jsx(ShieldCheck, {
-										size: 14,
-										"aria-hidden": "true"
-									}),
-									children: [/* @__PURE__ */ jsx(Btn, {
-										primary: true,
-										onClick: () => approve(approval.id, "approved"),
-										children: t("chat.allow_once")
-									}), /* @__PURE__ */ jsx(Btn, {
-										onClick: () => approve(approval.id, "rejected"),
-										children: t("chat.deny")
-									})]
-								}),
-								grant && /* @__PURE__ */ jsxs(Banner, {
-									testId: "mood-grant",
-									title: t("chat.grant_title"),
-									body: t(GRANT_STEPS[grant]),
-									icon: /* @__PURE__ */ jsx(ShieldCheck, {
-										size: 14,
-										"aria-hidden": "true"
-									}),
-									children: [/* @__PURE__ */ jsx(Btn, {
-										primary: true,
-										onClick: openFullChat,
-										children: t("chat.open_full")
-									}), /* @__PURE__ */ jsx(Btn, {
-										onClick: () => setGrant(null),
-										children: t("chat.dismiss")
-									})]
-								}),
-								turnFailed && /* @__PURE__ */ jsxs(Banner, {
-									testId: "mood-turn-error",
-									title: t("chat.error_title"),
-									body: turnFailed,
-									icon: /* @__PURE__ */ jsx(TriangleAlert, {
-										size: 14,
-										"aria-hidden": "true"
-									}),
-									children: [/* @__PURE__ */ jsx(Btn, {
-										primary: true,
-										onClick: retry,
-										children: t("page.retry")
-									}), /* @__PURE__ */ jsx(Btn, {
-										onClick: openRecord,
-										children: t("chat.show_record")
-									})]
-								}),
-								stuck && pending && /* @__PURE__ */ jsxs(Banner, {
-									testId: "mood-stuck",
-									title: t("chat.stuck_title"),
-									icon: /* @__PURE__ */ jsx(TriangleAlert, {
-										size: 14,
-										"aria-hidden": "true"
-									}),
-									children: [
-										/* @__PURE__ */ jsx(Btn, {
-											primary: true,
-											onClick: stopAndRetry,
-											children: t("chat.stop_restart")
-										}),
-										/* @__PURE__ */ jsx(Btn, {
-											onClick: () => setStuck(false),
-											children: t("chat.wait")
-										}),
-										/* @__PURE__ */ jsx(Btn, {
-											onClick: openRecord,
-											children: t("chat.show_record")
-										})
-									]
-								}),
-								offline && /* @__PURE__ */ jsx(Banner, {
-									testId: "mood-offline",
-									title: t("chat.offline_title"),
-									icon: /* @__PURE__ */ jsx(WifiOff, {
-										size: 14,
-										"aria-hidden": "true"
-									}),
-									children: /* @__PURE__ */ jsx(Btn, {
-										primary: true,
-										onClick: () => void readNow(),
-										children: t("chat.reconnect")
-									})
-								}),
-								lastParsed?.question && !pending && /* @__PURE__ */ jsxs("form", {
-									onSubmit: submitAnswer,
-									className: "rounded-2xl border border-[var(--accent)] p-3",
-									style: CARD_STYLE,
-									"data-testid": "mood-question",
-									children: [
-										/* @__PURE__ */ jsxs("p", {
-											className: "flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)]",
-											children: [/* @__PURE__ */ jsx(MessageCircleQuestion, {
-												size: 14,
-												"aria-hidden": "true"
-											}), t("page.question_label")]
-										}),
-										/* @__PURE__ */ jsx("p", {
-											className: "mt-1 text-sm text-[var(--text)]",
-											children: lastParsed.question
-										}),
-										/* @__PURE__ */ jsxs("div", {
-											className: "mt-2 flex gap-2",
-											children: [/* @__PURE__ */ jsx("input", {
-												"aria-label": t("page.answer_placeholder"),
-												value: answer,
-												onChange: (e) => setAnswer(e.target.value),
-												maxLength: 300,
-												placeholder: t("page.answer_placeholder"),
-												className: "min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-											}), /* @__PURE__ */ jsx(Btn, {
-												type: "submit",
-												primary: true,
-												disabled: working || !answer.trim(),
-												children: t("page.send_answer")
-											})]
-										})
-									]
-								}),
-								!pending && ((lastParsed?.followUps.length ?? 0) > 0 || remember) && /* @__PURE__ */ jsxs("div", {
-									role: "group",
-									"aria-label": t("chat.follow_ups"),
-									className: "flex flex-wrap gap-2",
-									"data-testid": "mood-follow-ups",
-									children: [lastParsed.followUps.map((f) => /* @__PURE__ */ jsx(Btn, {
-										disabled: working,
-										onClick: () => send("follow", f),
-										children: f
-									}, f)), remember && /* @__PURE__ */ jsx(Btn, {
-										disabled: working,
-										onClick: () => {
-											setDismissedRemember(remember);
-											moodApi.addMemory({
-												kind: "note",
-												text: remember,
-												origin: "user"
-											}).then(refresh).then(() => setNotice(t("chat.remembered", { note: remember }))).catch((e) => setError(errMessage(e) || "unknown"));
-										},
-										children: t("chat.remember", { note: remember })
-									})]
-								}),
-								/* @__PURE__ */ jsxs("form", {
-									onSubmit: submitMood,
-									className: "flex flex-col gap-2",
-									children: [
-										/* @__PURE__ */ jsx("label", {
-											id: "mood-input-label",
-											htmlFor: "mood-input",
-											className: "sr-only",
-											children: t("page.mood_label")
-										}),
-										/* @__PURE__ */ jsxs("div", {
-											className: "flex gap-2",
-											children: [/* @__PURE__ */ jsx("input", {
-												id: "mood-input",
-												"aria-labelledby": "mood-input-label",
-												value: text,
-												onChange: (e) => setText(e.target.value),
-												maxLength: 200,
-												placeholder: t("chat.placeholder"),
-												className: "min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-											}), pending ? /* @__PURE__ */ jsxs(Btn, {
+					}),
+					/* @__PURE__ */ jsx("div", {
+						className: "px-4 pb-2",
+						children: /* @__PURE__ */ jsx(SegmentedControl, {
+							value: tab,
+							onChange: (v) => setTab(v),
+							segments: [
+								{
+									key: "listen",
+									label: t("page.tab_listen")
+								},
+								{
+									key: "moments",
+									label: t("page.tab_moments")
+								},
+								{
+									key: "memory",
+									label: t("page.tab_memory")
+								}
+							]
+						})
+					}),
+					/* @__PURE__ */ jsx("div", {
+						ref: scrollRef,
+						onScroll: onScrolled,
+						className: `mm-scroll flex-1 overflow-y-auto px-4 pb-6 ${tab === "listen" ? "mm-split" : ""}`,
+						"data-testid": "mood-scroll",
+						children: tab === "memory" ? /* @__PURE__ */ jsx("div", {
+							className: "mx-auto max-w-5xl",
+							children: /* @__PURE__ */ jsx(MemoryTab, {
+								memory: state?.memory ?? [],
+								api: moodApi,
+								onChanged: refresh
+							})
+						}) : tab === "moments" ? /* @__PURE__ */ jsx("div", {
+							className: "mx-auto max-w-5xl",
+							children: /* @__PURE__ */ jsx(MomentsTab, { moments: state?.moments ?? [] })
+						}) : /* @__PURE__ */ jsxs("div", {
+							className: "mm-listen mx-auto max-w-5xl",
+							children: [/* @__PURE__ */ jsxs("div", {
+								ref: chatColRef,
+								onScroll: onScrolled,
+								className: "mm-col flex min-w-0 flex-col gap-3",
+								"data-testid": "mood-chat-column",
+								role: "region",
+								"aria-label": t("page.tab_listen"),
+								tabIndex: 0,
+								children: [
+									/* @__PURE__ */ jsxs("div", {
+										className: "flex flex-wrap items-center gap-2",
+										children: [
+											/* @__PURE__ */ jsx("span", {
+												className: "text-xs text-[var(--muted)]",
+												children: t("chat.explore")
+											}),
+											/* @__PURE__ */ jsx(SegmentedControl, {
+												ariaLabel: t("chat.explore"),
+												value: explore,
+												onChange: (v) => saveSettings({ explore: v }),
+												segments: [
+													{
+														key: "familiar",
+														label: t("chat.explore_familiar")
+													},
+													{
+														key: "balanced",
+														label: t("chat.explore_balanced")
+													},
+													{
+														key: "explore",
+														label: t("chat.explore_more")
+													}
+												]
+											}),
+											/* @__PURE__ */ jsx("button", {
 												type: "button",
-												onClick: stop,
-												disabled: pending.stopped,
-												children: [/* @__PURE__ */ jsx(Square, {
-													size: 14,
-													"aria-hidden": "true"
-												}), t("chat.stop")]
-											}) : /* @__PURE__ */ jsxs(Btn, {
-												type: "submit",
-												primary: true,
-												disabled: working || !text.trim() && !chip,
-												children: [/* @__PURE__ */ jsx(Send, {
-													size: 14,
-													"aria-hidden": "true"
-												}), t("chat.send")]
-											})]
-										}),
-										/* @__PURE__ */ jsx(ErrorNotice, { message: errorText }),
-										(error === "unreadable" || error === "all_dropped") && lastAskRef.current && !working && /* @__PURE__ */ jsx(Btn, {
+												"aria-pressed": stayOnly,
+												onClick: () => setStayOnly((v) => !v),
+												className: `rounded-full border px-3 py-1 text-xs transition-colors ${stayOnly ? "border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]" : "border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]"}`,
+												children: t("chat.stay_only")
+											})
+										]
+									}),
+									/* @__PURE__ */ jsx("div", {
+										role: "group",
+										"aria-label": t("page.mood_chips"),
+										className: "flex flex-wrap gap-2",
+										children: MOOD_KEYS.map((key) => /* @__PURE__ */ jsx("button", {
 											type: "button",
+											"aria-pressed": chip === key,
+											onClick: () => pickChip(key),
+											disabled: working,
+											className: `rounded-full border px-3 py-1 text-xs transition-colors ${chip === key ? "border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]" : "border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]"}`,
+											children: moodLabel(key)
+										}, key))
+									}),
+									/* @__PURE__ */ jsxs("section", {
+										"aria-label": t("chat.conversation"),
+										className: "flex flex-col gap-2",
+										"data-testid": "mood-chat",
+										children: [
+											lines.length === 0 && !pending && /* @__PURE__ */ jsx("p", {
+												className: "text-sm text-[var(--muted)]",
+												children: t("chat.hello")
+											}),
+											lines.slice(-20).map((line, i) => line.who === "you" ? /* @__PURE__ */ jsxs("p", {
+												className: "self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]",
+												children: [/* @__PURE__ */ jsxs("span", {
+													className: "sr-only",
+													children: [t("chat.you"), ": "]
+												}), line.text]
+											}, i) : /* @__PURE__ */ jsxs("div", {
+												className: "max-w-[95%] rounded-2xl border border-[var(--border)] px-3 py-2",
+												style: CARD_STYLE,
+												children: [/* @__PURE__ */ jsxs("p", {
+													className: "text-sm text-[var(--text)]",
+													children: [/* @__PURE__ */ jsx("span", {
+														className: "mr-1 font-semibold text-[var(--accent)]",
+														children: t("chat.buddy")
+													}), line.text]
+												}), line === lastBuddy && line.reply && replySource(line.reply) === state?.last_source && queue.length > 0 && /* @__PURE__ */ jsx("div", {
+													className: "mt-2 grid gap-2",
+													"data-testid": "mood-cards",
+													children: queue.map((p) => /* @__PURE__ */ jsx(SongCard, {
+														pick: p,
+														playing: current?.id === p.id,
+														known: knownSongs.has(songKey(p.title, p.artist)),
+														busy: working,
+														onPlay: () => playPick(p),
+														onLike: () => giveFeedback(p, p.feedback === "liked" ? "" : "liked"),
+														onSkip: () => giveFeedback(p, "skipped"),
+														onKnown: () => markKnown(p, "user")
+													}, p.id))
+												})]
+											}, i)),
+											showYou && /* @__PURE__ */ jsx("p", {
+												className: "self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]",
+												children: pending.text
+											}),
+											status && /* @__PURE__ */ jsxs("p", {
+												role: "status",
+												className: "flex items-center gap-1.5 text-xs text-[var(--muted)]",
+												"data-testid": "mood-status",
+												children: [/* @__PURE__ */ jsx(Headphones, {
+													size: 13,
+													"aria-hidden": "true",
+													className: reduceMotion ? "" : "animate-pulse"
+												}), statusText(status)]
+											})
+										]
+									}),
+									approval && /* @__PURE__ */ jsxs(Banner, {
+										testId: "mood-approval",
+										title: approval.host ? t("chat.approval_host", { host: approval.host }) : t("chat.approval_tool"),
+										icon: /* @__PURE__ */ jsx(ShieldCheck, {
+											size: 14,
+											"aria-hidden": "true"
+										}),
+										children: [/* @__PURE__ */ jsx(Btn, {
+											primary: true,
+											onClick: () => approve(approval.id, "approved"),
+											children: t("chat.allow_once")
+										}), /* @__PURE__ */ jsx(Btn, {
+											onClick: () => approve(approval.id, "rejected"),
+											children: t("chat.deny")
+										})]
+									}),
+									grant && /* @__PURE__ */ jsxs(Banner, {
+										testId: "mood-grant",
+										title: t("chat.grant_title"),
+										body: t(GRANT_STEPS[grant]),
+										icon: /* @__PURE__ */ jsx(ShieldCheck, {
+											size: 14,
+											"aria-hidden": "true"
+										}),
+										children: [/* @__PURE__ */ jsx(Btn, {
+											primary: true,
+											onClick: openFullChat,
+											children: t("chat.open_full")
+										}), /* @__PURE__ */ jsx(Btn, {
+											onClick: () => setGrant(null),
+											children: t("chat.dismiss")
+										})]
+									}),
+									turnFailed && /* @__PURE__ */ jsxs(Banner, {
+										testId: "mood-turn-error",
+										title: t("chat.error_title"),
+										body: turnFailed,
+										icon: /* @__PURE__ */ jsx(TriangleAlert, {
+											size: 14,
+											"aria-hidden": "true"
+										}),
+										children: [/* @__PURE__ */ jsx(Btn, {
+											primary: true,
 											onClick: retry,
 											children: t("page.retry")
-										}),
-										notice && /* @__PURE__ */ jsx("p", {
-											className: "text-xs text-[var(--muted)]",
-											children: notice
-										})
-									]
-								}),
-								/* @__PURE__ */ jsx(FullRecord, {
-									slotKey,
-									open: recordOpen,
-									onToggle: (open) => saveSettings({ record_open: open }),
-									onSend: (message) => moodApi.ask(message)
-								})
-							]
-						}), /* @__PURE__ */ jsxs("div", {
-							className: "flex min-w-0 flex-col gap-4",
-							children: [current ? /* @__PURE__ */ jsx(NowPlaying, {
-								pick: current,
-								autoplay,
-								busy: working,
-								onLike: () => giveFeedback(current, current.feedback === "liked" ? "" : "liked"),
-								onSkip: () => giveFeedback(current, "skipped"),
-								onMore: () => moreLike(current)
-							}) : /* @__PURE__ */ jsx(EmptyState, {
-								icon: /* @__PURE__ */ jsx(Play, { size: 28 }),
-								title: t("page.empty_title"),
-								subtitle: t("page.empty_body")
-							}), queue.length > 1 && /* @__PURE__ */ jsxs("section", {
-								"aria-label": t("page.queue"),
-								children: [/* @__PURE__ */ jsx("h3", {
-									className: "mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]",
-									children: t("page.queue")
-								}), /* @__PURE__ */ jsx("ul", {
-									className: "flex flex-col gap-1.5",
-									"data-testid": "mood-queue",
-									children: queue.map((p) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("button", {
-										type: "button",
-										onClick: () => playPick(p),
-										"aria-current": current?.id === p.id ? "true" : void 0,
-										className: `flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition-colors ${current?.id === p.id ? "border-[var(--accent)] bg-[var(--accent-subtle)]" : "border-[var(--border)] hover:bg-[var(--bg-hover)]"} ${p.feedback === "skipped" ? "opacity-50" : ""}`,
-										style: current?.id === p.id ? void 0 : CARD_STYLE,
-										children: [/* @__PURE__ */ jsxs("span", {
-											className: "min-w-0 flex-1",
-											children: [/* @__PURE__ */ jsx("span", {
-												className: "block truncate text-sm text-[var(--text)]",
-												children: p.title
-											}), /* @__PURE__ */ jsx("span", {
-												className: "block truncate text-xs text-[var(--muted)]",
-												children: p.artist
-											})]
-										}), /* @__PURE__ */ jsx("span", {
-											className: "shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
-											children: p.source === "youtube" ? t("page.source_youtube") : t("page.source_bilibili")
+										}), /* @__PURE__ */ jsx(Btn, {
+											onClick: openRecord,
+											children: t("chat.show_record")
 										})]
-									}) }, p.id))
+									}),
+									stuck && pending && /* @__PURE__ */ jsxs(Banner, {
+										testId: "mood-stuck",
+										title: t("chat.stuck_title"),
+										icon: /* @__PURE__ */ jsx(TriangleAlert, {
+											size: 14,
+											"aria-hidden": "true"
+										}),
+										children: [
+											/* @__PURE__ */ jsx(Btn, {
+												primary: true,
+												onClick: stopAndRetry,
+												children: t("chat.stop_restart")
+											}),
+											/* @__PURE__ */ jsx(Btn, {
+												onClick: () => setStuck(false),
+												children: t("chat.wait")
+											}),
+											/* @__PURE__ */ jsx(Btn, {
+												onClick: openRecord,
+												children: t("chat.show_record")
+											})
+										]
+									}),
+									offline && /* @__PURE__ */ jsx(Banner, {
+										testId: "mood-offline",
+										title: t("chat.offline_title"),
+										icon: /* @__PURE__ */ jsx(WifiOff, {
+											size: 14,
+											"aria-hidden": "true"
+										}),
+										children: /* @__PURE__ */ jsx(Btn, {
+											primary: true,
+											onClick: () => void readNow(),
+											children: t("chat.reconnect")
+										})
+									}),
+									lastParsed?.question && !pending && /* @__PURE__ */ jsxs("form", {
+										onSubmit: submitAnswer,
+										className: "rounded-2xl border border-[var(--accent)] p-3",
+										style: CARD_STYLE,
+										"data-testid": "mood-question",
+										children: [
+											/* @__PURE__ */ jsxs("p", {
+												className: "flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)]",
+												children: [/* @__PURE__ */ jsx(MessageCircleQuestion, {
+													size: 14,
+													"aria-hidden": "true"
+												}), t("page.question_label")]
+											}),
+											/* @__PURE__ */ jsx("p", {
+												className: "mt-1 text-sm text-[var(--text)]",
+												children: lastParsed.question
+											}),
+											/* @__PURE__ */ jsxs("div", {
+												className: "mt-2 flex gap-2",
+												children: [/* @__PURE__ */ jsx("input", {
+													"aria-label": t("page.answer_placeholder"),
+													value: answer,
+													onChange: (e) => setAnswer(e.target.value),
+													maxLength: 300,
+													placeholder: t("page.answer_placeholder"),
+													className: "min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+												}), /* @__PURE__ */ jsx(Btn, {
+													type: "submit",
+													primary: true,
+													disabled: working || !answer.trim(),
+													children: t("page.send_answer")
+												})]
+											})
+										]
+									}),
+									!pending && ((lastParsed?.followUps.length ?? 0) > 0 || remember) && /* @__PURE__ */ jsxs("div", {
+										role: "group",
+										"aria-label": t("chat.follow_ups"),
+										className: "flex flex-wrap gap-2",
+										"data-testid": "mood-follow-ups",
+										children: [lastParsed.followUps.map((f) => /* @__PURE__ */ jsx(Btn, {
+											disabled: working,
+											onClick: () => send("follow", f),
+											children: f
+										}, f)), remember && /* @__PURE__ */ jsx(Btn, {
+											disabled: working,
+											onClick: () => {
+												setDismissedRemember(remember);
+												moodApi.addMemory({
+													kind: "note",
+													text: remember,
+													origin: "user"
+												}).then(refresh).then(() => setNotice(t("chat.remembered", { note: remember }))).catch((e) => setError(errMessage(e) || "unknown"));
+											},
+											children: t("chat.remember", { note: remember })
+										})]
+									}),
+									/* @__PURE__ */ jsxs("form", {
+										onSubmit: submitMood,
+										className: "flex flex-col gap-2",
+										children: [
+											/* @__PURE__ */ jsx("label", {
+												id: "mood-input-label",
+												htmlFor: "mood-input",
+												className: "sr-only",
+												children: t("page.mood_label")
+											}),
+											/* @__PURE__ */ jsxs("div", {
+												className: "flex gap-2",
+												children: [/* @__PURE__ */ jsx("input", {
+													id: "mood-input",
+													"aria-labelledby": "mood-input-label",
+													value: text,
+													onChange: (e) => setText(e.target.value),
+													maxLength: 200,
+													placeholder: t("chat.placeholder"),
+													className: "min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+												}), pending ? /* @__PURE__ */ jsxs(Btn, {
+													type: "button",
+													onClick: stop,
+													disabled: pending.stopped,
+													children: [/* @__PURE__ */ jsx(Square, {
+														size: 14,
+														"aria-hidden": "true"
+													}), t("chat.stop")]
+												}) : /* @__PURE__ */ jsxs(Btn, {
+													type: "submit",
+													primary: true,
+													disabled: working || !text.trim() && !chip,
+													children: [/* @__PURE__ */ jsx(Send, {
+														size: 14,
+														"aria-hidden": "true"
+													}), t("chat.send")]
+												})]
+											}),
+											/* @__PURE__ */ jsx(ErrorNotice, { message: errorText }),
+											(error === "unreadable" || error === "all_dropped") && lastAskRef.current && !working && /* @__PURE__ */ jsx(Btn, {
+												type: "button",
+												onClick: retry,
+												children: t("page.retry")
+											}),
+											notice && /* @__PURE__ */ jsx("p", {
+												className: "text-xs text-[var(--muted)]",
+												children: notice
+											})
+										]
+									}),
+									/* @__PURE__ */ jsx(FullRecord, {
+										slotKey,
+										open: recordOpen,
+										onToggle: (open) => saveSettings({ record_open: open }),
+										onSend: (message) => moodApi.ask(message)
+									})
+								]
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "mm-player flex min-w-0 flex-col gap-4",
+								"data-testid": "mood-player-column",
+								children: [current ? /* @__PURE__ */ jsx(NowPlaying, {
+									pick: current,
+									autoplay,
+									busy: working,
+									onLike: () => giveFeedback(current, current.feedback === "liked" ? "" : "liked"),
+									onSkip: () => giveFeedback(current, "skipped"),
+									onMore: () => moreLike(current)
+								}) : /* @__PURE__ */ jsx(EmptyState, {
+									icon: /* @__PURE__ */ jsx(Play, { size: 28 }),
+									title: t("page.empty_title"),
+									subtitle: t("page.empty_body")
+								}), queue.length > 1 && /* @__PURE__ */ jsxs("section", {
+									"aria-label": t("page.queue"),
+									className: "mm-upnext",
+									children: [/* @__PURE__ */ jsx("h3", {
+										className: "mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]",
+										children: t("page.queue")
+									}), /* @__PURE__ */ jsx("ul", {
+										className: "flex flex-col gap-1.5",
+										"data-testid": "mood-queue",
+										tabIndex: 0,
+										"aria-label": t("page.queue"),
+										children: queue.map((p) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("button", {
+											type: "button",
+											onClick: () => playPick(p),
+											"aria-current": current?.id === p.id ? "true" : void 0,
+											className: `flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition-colors ${current?.id === p.id ? "border-[var(--accent)] bg-[var(--accent-subtle)]" : "border-[var(--border)] hover:bg-[var(--bg-hover)]"} ${p.feedback === "skipped" ? "opacity-50" : ""}`,
+											style: current?.id === p.id ? void 0 : CARD_STYLE,
+											children: [/* @__PURE__ */ jsxs("span", {
+												className: "min-w-0 flex-1",
+												children: [/* @__PURE__ */ jsx("span", {
+													className: "block truncate text-sm text-[var(--text)]",
+													children: p.title
+												}), /* @__PURE__ */ jsx("span", {
+													className: "block truncate text-xs text-[var(--muted)]",
+													children: p.artist
+												})]
+											}), /* @__PURE__ */ jsx("span", {
+												className: "shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
+												children: p.source === "youtube" ? t("page.source_youtube") : t("page.source_bilibili")
+											})]
+										}) }, p.id))
+									})]
 								})]
 							})]
-						})]
+						})
 					})
-				})
-			]
-		})]
+				]
+			})
+		]
 	});
 }
 // src/index.tsx
