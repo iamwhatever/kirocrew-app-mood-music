@@ -40,6 +40,7 @@
       "/api/chat/*"
     ],
     "sessionApproval": true,
+    "hiddenSessions": true,
     "storage": true,
     "network": true
   },

@@ -194,6 +194,19 @@ describe('coming back to the page', () => {
     expect(JSON.parse(window.sessionStorage.getItem(PAGE_KEY)!).pending).toBeNull()
   })
 
+  it('does not wait on a turn that went to the old listed chat, after the move to the hidden one', async () => {
+    window.sessionStorage.setItem(PAGE_KEY, JSON.stringify({
+      tab: 'listen', slotKey: 'mood-music', pending: { momentId: MOMENT.id, baseline: 'old', memoryIds: [], text: 'Calm' },
+    }))
+    api.state.mockResolvedValue({ ...EMPTY, moments: [MOMENT] })
+    api.openSlot.mockResolvedValue({ key: 'mood-music-buddy' })
+    render(<MoodMusicPage />)
+    await flush(POLL_MS)
+    expect(api.getSlot).toHaveBeenCalledWith('mood-music-buddy')
+    expect(screen.queryByTestId('mood-status')).toBeNull()
+    expect(JSON.parse(window.sessionStorage.getItem(PAGE_KEY)!)).toMatchObject({ slotKey: 'mood-music-buddy', pending: null })
+  })
+
   it('goes back to where the page was scrolled', async () => {
     render(<MoodMusicPage />)
     await flush()

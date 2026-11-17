@@ -141,6 +141,11 @@ Kiro Crew sidebar under the app's folder.
   one video, with no cookie. YouTube songs load from `www.youtube-nocookie.com`, YouTube's
   privacy-enhanced player. bilibili songs open on bilibili in your own browser. Your
   moods are not saved into Kiro Crew's memory.
+- **The buddy's chat:** it stays out of Kiro Crew's session lists (the app asks
+  for this at the trust prompt as hidden sessions). Open it with **Open in full
+  chat** on the page. A chat from a version before 0.2.3 is still listed. Mood
+  Music no longer uses it and never deletes it, so close or delete it yourself
+  when you like.
 - **Turn it off:** **Apps → Library**, open the **⋯** menu on Mood Music, choose
   **Disable**. Your data is kept.
 - **Remove it:** the same menu, **Uninstall**. **Keep app data** is ticked by

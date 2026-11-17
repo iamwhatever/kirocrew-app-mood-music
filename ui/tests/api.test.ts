@@ -11,13 +11,36 @@ function fakeApi(post: (path: string, body?: unknown) => unknown): AppApi {
 }
 
 describe('createMoodApi', () => {
-  it('reopens its temporary slot, then sends to it as the DJ agent', async () => {
-    const api = fakeApi(path => (path === '/api/chat/slots' ? { key: 'mood-music' } : { ok: true }))
-    await expect(createMoodApi(api).ask('[Mood Music] calm')).resolves.toBe('mood-music')
-    expect(api.post).toHaveBeenNthCalledWith(1, '/api/chat/slots', { name: 'mood-music', agent: 'mood-music-dj', memory_mode: 'temporary' })
-    expect(api.post).toHaveBeenNthCalledWith(2, '/api/chat?ws=1', {
-      message: '[Mood Music] calm', slot: 'mood-music', agent: 'mood-music-dj', memory_mode: 'temporary',
+  it('reopens its hidden temporary slot, then sends to it as the DJ agent', async () => {
+    const api = fakeApi(path => (path === '/api/chat/slots' ? { key: 'mood-music-buddy' } : { ok: true }))
+    await expect(createMoodApi(api).ask('[Mood Music] calm')).resolves.toBe('mood-music-buddy')
+    expect(api.post).toHaveBeenNthCalledWith(1, '/api/chat/slots', {
+      name: 'mood-music-buddy', agent: 'mood-music-dj', memory_mode: 'temporary', mode: 'mood-music',
     })
+    expect(api.post).toHaveBeenNthCalledWith(2, '/api/chat?ws=1', {
+      message: '[Mood Music] calm', slot: 'mood-music-buddy', agent: 'mood-music-dj', memory_mode: 'temporary',
+    })
+  })
+
+  it('falls back to the old listed chat when the host refuses the mode, and stays there', async () => {
+    const refusal = Object.assign(new Error('invalid mode'), { status: 400, body: JSON.stringify({ code: 'invalid_mode' }) })
+    const api = fakeApi((path, body) => {
+      if (path !== '/api/chat/slots') return { ok: true }
+      if ((body as { mode?: string }).mode) throw refusal
+      return { key: 'mood-music' }
+    })
+    const mood = createMoodApi(api)
+    await expect(mood.openSlot()).resolves.toEqual({ key: 'mood-music' })
+    expect(api.post).toHaveBeenNthCalledWith(2, '/api/chat/slots', { name: 'mood-music', agent: 'mood-music-dj', memory_mode: 'temporary' })
+    await mood.openSlot()
+    expect(api.post).toHaveBeenCalledTimes(3)
+  })
+
+  it('does not hide another failure behind the fallback', async () => {
+    const other = Object.assign(new Error('nope'), { status: 403, body: JSON.stringify({ code: 'forbidden' }) })
+    const api = fakeApi(() => { throw other })
+    await expect(createMoodApi(api).openSlot()).rejects.toBe(other)
+    expect(api.post).toHaveBeenCalledTimes(1)
   })
 
   it('rejects a send the gateway refused inside a 2xx', async () => {

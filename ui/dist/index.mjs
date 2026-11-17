@@ -1824,7 +1824,12 @@ function t(key, vars) {
 // src/api.ts
 var BASE = "/api/apps/mood-music";
 var DJ_AGENT = "mood-music-dj";
-var SLOT_NAME = "mood-music";
+/** The hidden chat's name. */
+var SLOT_NAME = "mood-music-buddy";
+/** The chat before hidden sessions: listed, used only when the host refuses the mode. */
+var LISTED_SLOT_NAME = "mood-music";
+/** The app id, which is the only mode Kiro Crew lets this app hide. */
+var HIDDEN_MODE = "mood-music";
 var MEMORY_MODE = "temporary";
 /** The grant cause in a refused approval, or null when it was refused for another reason. */
 function grantCause(e) {
@@ -1839,12 +1844,36 @@ function grantCause(e) {
 		return null;
 	}
 }
+/** Whether the host refused the hidden mode (`400 invalid_mode`): an older Kiro Crew, or no grant. */
+function modeRefused(e) {
+	const err = e;
+	if (!err || err.status !== 400 || typeof err.body !== "string") return false;
+	try {
+		return JSON.parse(err.body).code === "invalid_mode";
+	} catch {
+		return false;
+	}
+}
 function createMoodApi(api) {
-	const openSlot = () => api.post("/api/chat/slots", {
-		name: SLOT_NAME,
-		agent: DJ_AGENT,
-		memory_mode: MEMORY_MODE
-	});
+	let listed = false;
+	const openSlot = async () => {
+		if (!listed) try {
+			return await api.post("/api/chat/slots", {
+				name: SLOT_NAME,
+				agent: DJ_AGENT,
+				memory_mode: MEMORY_MODE,
+				mode: HIDDEN_MODE
+			});
+		} catch (e) {
+			if (!modeRefused(e)) throw e;
+			listed = true;
+		}
+		return api.post("/api/chat/slots", {
+			name: LISTED_SLOT_NAME,
+			agent: DJ_AGENT,
+			memory_mode: MEMORY_MODE
+		});
+	};
 	return {
 		state: () => api.get(`${BASE}/state`),
 		addMoment: (mood) => api.post(`${BASE}/moments`, { mood }),
@@ -3425,7 +3454,7 @@ function MoodMusicPage() {
 				const read = await moodApi.getSlot(key).catch(() => void 0);
 				if (!live) return;
 				setSlot(read);
-				if (out) {
+				if (out && (!saved?.slotKey || saved.slotKey === key)) {
 					const source = replySource(latestReply(read));
 					if (!read || read.running || turnError(read) || source !== out.baseline && source !== s.last_source) {
 						momentRef.current = out.momentId;

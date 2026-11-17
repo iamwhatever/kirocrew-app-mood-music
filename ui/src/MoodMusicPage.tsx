@@ -173,8 +173,9 @@ export default function MoodMusicPage() {
         setSlot(read)
         // A turn still out when the person left: wait on it again, so its live
         // status shows and its reply is read. One whose reply the page already
-        // queued, or that ended with nothing new, is over.
-        if (out) {
+        // queued, or that ended with nothing new, is over. One sent to another
+        // chat (the listed one, before the move to the hidden chat) is not read here.
+        if (out && (!saved?.slotKey || saved.slotKey === key)) {
           const source = replySource(latestReply(read))
           if (!read || read.running || turnError(read) || (source !== out.baseline && source !== s.last_source)) {
             momentRef.current = out.momentId
