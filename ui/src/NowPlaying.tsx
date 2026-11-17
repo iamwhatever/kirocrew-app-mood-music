@@ -11,7 +11,7 @@ import { Btn } from '@kirocrew/app-sdk/ui'
 import { t } from './i18n'
 import { CARD_STYLE } from './cardStyle'
 import type { QueuedPick } from './api'
-import { bilibiliUrl, youtubeEmbedUrl } from './links'
+import { bilibiliUrl, validVideoId, youtubeEmbedUrl } from './links'
 
 export default function NowPlaying({ pick, autoplay, busy, onLike, onSkip, onMore }: {
   pick: QueuedPick
@@ -49,6 +49,19 @@ export default function NowPlaying({ pick, autoplay, busy, onLike, onSkip, onMor
             data-testid="mood-youtube-frame"
           />
         </div>
+      )}
+      {embed && (
+        <p className="mt-1.5 text-xs text-[var(--muted)]" data-testid="mood-youtube-note">
+          {t('page.youtube_blank')}{' '}
+          <a
+            href={`https://www.youtube.com/watch?v=${validVideoId(pick.video_id)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--accent)] underline-offset-2 hover:underline"
+          >
+            {t('page.open_youtube')}
+          </a>
+        </p>
       )}
       {link && (
         <a

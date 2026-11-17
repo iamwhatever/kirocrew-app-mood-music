@@ -36,6 +36,8 @@
     "more": "Ещё похожих",
     "open_bilibili": "Открыть на bilibili",
     "bilibili_note": "Откроется в новой вкладке вашего браузера.",
+    "open_youtube": "Открыть на YouTube",
+    "youtube_blank": "Плеер пустой или Error 153? Обновите Kiro Crew или откройте на YouTube.",
     "queue": "Дальше",
     "play": "Включить {{title}}",
     "player_title": "Плеер YouTube: {{title}}",
@@ -122,10 +124,9 @@
     "explore_familiar": "Знакомее",
     "explore_balanced": "Баланс",
     "explore_more": "Больше открытий",
-    "stay_only": "Сегодня просто побыть в этом чувстве",
-    "browser_setup": "Для поиска в bilibili нужен браузер: настройте его в Настройки -> Браузер. В этот раз искали в интернете.",
-    "browser_policy": "Браузер отключён политикой, поэтому в этот раз bilibili искали в интернете.",
-    "browser_open_settings": "Открыть настройки браузера"
+    "player": "Плеер",
+    "player_auto": "Авто",
+    "stay_only": "Сегодня просто побыть в этом чувстве"
   },
   "card": {
     "arc_stay": "Побыть рядом",

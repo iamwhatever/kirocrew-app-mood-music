@@ -36,6 +36,8 @@
     "more": "Altre così",
     "open_bilibili": "Apri su bilibili",
     "bilibili_note": "Si apre in una nuova scheda del tuo browser.",
+    "open_youtube": "Apri su YouTube",
+    "youtube_blank": "Lettore vuoto o Error 153? Aggiorna Kiro Crew, oppure aprilo su YouTube.",
     "queue": "Prossimi",
     "play": "Riproduci {{title}}",
     "player_title": "Player YouTube: {{title}}",
@@ -122,10 +124,9 @@
     "explore_familiar": "Più familiare",
     "explore_balanced": "Equilibrato",
     "explore_more": "Esplora di più",
-    "stay_only": "Oggi voglio solo restare in questa emozione",
-    "browser_setup": "La ricerca su bilibili richiede il browser: configuralo in Impostazioni -> Browser. Questa volta si è cercato sul web.",
-    "browser_policy": "Il browser è disattivato da una policy, quindi questa volta bilibili è stato cercato sul web.",
-    "browser_open_settings": "Apri impostazioni del browser"
+    "player": "Lettore",
+    "player_auto": "Automatico",
+    "stay_only": "Oggi voglio solo restare in questa emozione"
   },
   "card": {
     "arc_stay": "Restare",

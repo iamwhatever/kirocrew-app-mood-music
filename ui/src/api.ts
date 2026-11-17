@@ -10,7 +10,7 @@
  */
 import type { AppApi } from '@kirocrew/app-sdk'
 import type { Evidence, NewPick, PickArc, PickSource, PickTier } from './replyParse'
-import type { ExploreLevel } from './request.prompt'
+import type { ExploreLevel, Player } from './request.prompt'
 
 const BASE = '/api/apps/mood-music'
 export const DJ_AGENT = 'mood-music-dj'
@@ -87,14 +87,16 @@ export interface MoodState {
 export interface Settings {
   explore: ExploreLevel
   record_open: boolean
+  /** The site the person would rather play on; the other is only a fallback. */
+  player: Player
 }
 
 export interface SlotMessage {
   role?: string
   type?: string
   content?: string
-  /** On a `permission` row: the approval's id, and `resolved` once it is answered. On a `tool` row: its `output`. */
-  meta?: { approval_id?: unknown; resolved?: unknown; tool_name?: unknown; mcp_server?: unknown; tool_input?: unknown; output?: unknown; kind?: unknown }
+  /** On a `permission` row: the approval's id, and `resolved` once it is answered. */
+  meta?: { approval_id?: unknown; resolved?: unknown; tool_name?: unknown; tool_input?: unknown; kind?: unknown }
 }
 
 export interface SlotData {

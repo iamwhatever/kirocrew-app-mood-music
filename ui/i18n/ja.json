@@ -36,6 +36,8 @@
     "more": "似た曲をもっと",
     "open_bilibili": "bilibili で開く",
     "bilibili_note": "ご自身のブラウザの新しいタブで開きます。",
+    "open_youtube": "YouTube で開く",
+    "youtube_blank": "プレーヤーが空白、または Error 153 の場合は Kiro Crew を更新するか、YouTube で開いてください。",
     "queue": "次の曲",
     "play": "{{title}} を再生",
     "player_title": "YouTube プレーヤー：{{title}}",
@@ -122,10 +124,9 @@
     "explore_familiar": "なじみ多め",
     "explore_balanced": "バランス",
     "explore_more": "もっと探索",
-    "stay_only": "今日はこの気持ちのままでいたい",
-    "browser_setup": "bilibili の検索にはブラウザが必要です。設定 -> ブラウザ で準備してください。今回はウェブ検索を使いました。",
-    "browser_policy": "ブラウザはポリシーで無効になっているため、今回は bilibili をウェブ検索しました。",
-    "browser_open_settings": "ブラウザ設定を開く"
+    "player": "プレーヤー",
+    "player_auto": "自動",
+    "stay_only": "今日はこの気持ちのままでいたい"
   },
   "card": {
     "arc_stay": "寄り添う",

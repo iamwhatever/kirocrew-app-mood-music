@@ -19,6 +19,16 @@ export const EXPLORE_MIX: Readonly<Record<ExploreLevel, readonly [number, number
   explore: [0, 4, 1],
 }
 
+/** The site the person would rather play on (`auto`: either). */
+export type Player = 'auto' | 'youtube' | 'bilibili'
+
+/** The request line for each player choice: the preferred site first, the other only as a fallback. */
+export const PLAYER_LINE: Readonly<Record<Player, string>> = {
+  auto: 'Player: any (YouTube or bilibili, whichever has the song)',
+  youtube: 'Player: youtube (give a YouTube link for every song; use bilibili only for a song with no YouTube video you could find)',
+  bilibili: 'Player: bilibili (give a bilibili link for every song; use YouTube only for a song with no bilibili video you could find)',
+}
+
 /**
  * The message the page sends the DJ. The taste summary is the app's own record
  * of what the person liked and skipped, marked as data for the agent.
@@ -29,8 +39,9 @@ export function buildRequest(opts: {
   state: MoodState | undefined
   explore?: ExploreLevel
   stayOnly?: boolean
+  player?: Player
 }): string {
-  const { kind, text, state, explore = 'balanced', stayOnly = false } = opts
+  const { kind, text, state, explore = 'balanced', stayOnly = false, player = 'auto' } = opts
   const head = { mood: 'Mood', answer: 'Answer to your question', more: 'More like this song', follow: 'Follow-up' }[kind]
   const [anchor, exp, deep] = EXPLORE_MIX[explore]
   return [
@@ -39,6 +50,7 @@ export function buildRequest(opts: {
     '',
     `Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`,
     `Arc: ${stayOnly ? 'stay only' : 'stay -> turn -> lift'}`,
+    PLAYER_LINE[player] ?? PLAYER_LINE.auto,
     '',
     ...memorySummary(state?.memory ?? []).lines,
     '',

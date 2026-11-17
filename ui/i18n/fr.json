@@ -36,6 +36,8 @@
     "more": "Plus dans ce genre",
     "open_bilibili": "Ouvrir sur bilibili",
     "bilibili_note": "S’ouvre dans un nouvel onglet de ton propre navigateur.",
+    "open_youtube": "Ouvrir sur YouTube",
+    "youtube_blank": "Lecteur vide ou Error 153 ? Mets Kiro Crew à jour, ou ouvre-le sur YouTube.",
     "queue": "À suivre",
     "play": "Lire {{title}}",
     "player_title": "Lecteur YouTube : {{title}}",
@@ -122,10 +124,9 @@
     "explore_familiar": "Plus familier",
     "explore_balanced": "Équilibré",
     "explore_more": "Plus de découvertes",
-    "stay_only": "Aujourd’hui, rester dans cette émotion",
-    "browser_setup": "La recherche bilibili a besoin du navigateur : configure-le dans Réglages -> Navigateur. Cette fois, la recherche s’est faite sur le web.",
-    "browser_policy": "Le navigateur est désactivé par une règle, donc bilibili a été cherché sur le web cette fois.",
-    "browser_open_settings": "Ouvrir les réglages du navigateur"
+    "player": "Lecteur",
+    "player_auto": "Auto",
+    "stay_only": "Aujourd’hui, rester dans cette émotion"
   },
   "card": {
     "arc_stay": "Rester avec",

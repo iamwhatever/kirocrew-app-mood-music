@@ -9,7 +9,6 @@
  */
 import type { SlotData, SlotMessage } from './api'
 import { replyText } from './replyParse'
-import { browserCallAllowed, isBrowserRow } from './browserUse'
 
 export type Phase = 'thinking' | 'searching' | 'reading' | 'writing' | 'checking'
 
@@ -38,9 +37,8 @@ function currentTurn(slot: SlotData | undefined): SlotMessage[] {
   return all
 }
 
-/** 'web_search', 'web_fetch' or ''. A live row may carry only its title ("🔧 Fetch URL"). A bilibili search in the browser counts as a search. */
+/** 'web_search', 'web_fetch' or ''. A live row may carry only its title ("🔧 Fetch URL"). */
 const toolOf = (m: SlotMessage) => {
-  if (isBrowserRow(m)) return 'web_search'
   const name = (m.meta as { tool_name?: unknown } | undefined)?.tool_name
   const text = `${typeof name === 'string' ? name : ''} ${m.content ?? ''}`.toLowerCase()
   if (/web_fetch|fetch/.test(text)) return 'web_fetch'
@@ -102,8 +100,6 @@ export interface PendingApproval {
   id: string
   /** The site the tool wants, when its input names one. */
   host: string
-  /** A browser call outside `browserUse.ts`'s rule: the page declines it without asking. */
-  refused: boolean
 }
 
 /** The unanswered tool approval in the current turn, or null. */
@@ -112,8 +108,7 @@ export function pendingApproval(slot: SlotData | undefined): PendingApproval | n
     if (m.role !== 'permission') continue
     const meta = (m.meta ?? {}) as { approval_id?: unknown; resolved?: unknown; tool_input?: unknown }
     if (!meta.approval_id || meta.resolved) continue
-    const refused = isBrowserRow(m) && !browserCallAllowed(meta.tool_input)
-    return { id: String(meta.approval_id), host: hostIn(meta.tool_input), refused }
+    return { id: String(meta.approval_id), host: hostIn(meta.tool_input) }
   }
   return null
 }
