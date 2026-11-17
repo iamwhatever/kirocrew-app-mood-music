@@ -138,6 +138,14 @@ Kiro Crew sidebar under the app's folder.
   one video, with no cookie. YouTube songs load from `www.youtube-nocookie.com`, YouTube's
   privacy-enhanced player. bilibili songs open on bilibili in your own browser. Your
   moods are not saved into Kiro Crew's memory.
+- **bilibili search in the browser:** when Kiro Crew's browser is set up
+  (**Settings → Browser**), the buddy searches bilibili there. It only opens
+  `search.bilibili.com` search pages and `www.bilibili.com/video/BV…` pages and reads
+  them; it never clicks, types, signs in, comments, likes or follows. That browser
+  can be your own Chrome, so a search sends your bilibili login with it, as any
+  visit would. Each browser step asks you first, with **Allow this once** on the
+  page; any other browser step the buddy tries is declined by the page without
+  asking. A link the buddy saw on that page counts as checked.
 - **Turn it off:** **Apps → Library**, open the **⋯** menu on Mood Music, choose
   **Disable**. Your data is kept.
 - **Remove it:** the same menu, **Uninstall**. **Keep app data** is ticked by
@@ -158,6 +166,12 @@ that they say does not exist or whose title does not match. When they cannot be
 asked (for example, bilibili refuses the check from some networks, or the check
 times out), the song stays and its card says **Not verified**. Try another direction.
 
+**I see "bilibili search needs the browser".**
+Kiro Crew's browser is not set up, so the buddy searched the web for bilibili links
+this time. Choose **Open Browser settings** and set it up there. If the message says
+browsing is turned off by policy, your organisation turned it off; the web search
+still works.
+
 **The player area is blank.**
 Your Kiro Crew does not yet let apps show the YouTube player. Update Kiro Crew. The
 bilibili songs still open in your browser.
@@ -172,9 +186,9 @@ No. It plays YouTube songs on the page and opens bilibili songs in your browser.
 | Path | What it is |
 |---|---|
 | `app.json` | The manifest: page, agent, skill, backend hook, `ui.frameSources` |
-| `agents/dj.json`, `skills/mood-music/` | The music buddy agent (`web_search` and `web_fetch` only, both run without asking) and its reply contract; the page also sends the contract and a bounded memory summary with every request (`ui/src/request.prompt.ts`) |
+| `agents/dj.json`, `skills/mood-music/` | The music buddy agent (`web_search` and `web_fetch`, both run without asking, and Kiro Crew's `browser` for bilibili search pages only, which always asks; `permissions.mcpTools` withholds every other Kiro Crew tool) and its reply contract; the page also sends the contract and a bounded memory summary with every request (`ui/src/request.prompt.ts`) |
 | `backend/` | Routes (`hooks.routes`), the JSON store with memory, the link checks, and `verify.py` (the YouTube oEmbed / bilibili view lookups) |
-| `ui/src/`, `ui/dist/index.mjs` | The page, and its committed ESM bundle |
+| `ui/src/`, `ui/dist/index.mjs` | The page, and its committed ESM bundle; `ui/src/browserUse.ts` is the rule for which browser steps the page lets the person allow |
 | `ui/i18n/` | The app's strings in 12 languages |
 | `tests/`, `ui/tests/` | Backend and UI tests |
 

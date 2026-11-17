@@ -45,10 +45,23 @@ describe('buddyStatus', () => {
 describe('pendingApproval', () => {
   it('finds the unanswered one in this turn, with the host it wants', () => {
     const ask = { role: 'permission', content: 'web_fetch', meta: { approval_id: 'r1', tool_input: '{"url":"https://Music.Example.org/x"}' } }
-    expect(pendingApproval({ messages: [user(), ask] })).toEqual({ id: 'r1', host: 'music.example.org' })
+    expect(pendingApproval({ messages: [user(), ask] })).toEqual({ id: 'r1', host: 'music.example.org', refused: false })
     expect(pendingApproval({ messages: [user(), { ...ask, meta: { ...ask.meta, resolved: 'approved' } }] })).toBeNull()
     expect(pendingApproval({ messages: [ask, user()] })).toBeNull()
     expect(pendingApproval({ messages: [user(), { role: 'permission', content: 'x', meta: {} }] })).toBeNull()
+  })
+})
+
+describe('pendingApproval for the browser', () => {
+  const ask = (input: object) => ({ role: 'permission', content: 'browser', meta: { approval_id: 'b1', tool_name: 'browser', mcp_server: 'kirocrew-core', tool_input: JSON.stringify(input) } })
+  it('marks a call outside the bilibili rule as refused', () => {
+    expect(pendingApproval({ messages: [user(), ask({ op: 'navigate', args: { url: 'https://search.bilibili.com/all?keyword=x' } })] })?.refused).toBe(false)
+    expect(pendingApproval({ messages: [user(), ask({ op: 'navigate', args: { url: 'https://evil.example/' } })] })?.refused).toBe(true)
+    expect(pendingApproval({ messages: [user(), ask({ op: 'type', args: { ref: 'e1', text: 'x' } })] })?.refused).toBe(true)
+  })
+  it('counts a browser call as a search', () => {
+    const row = { role: 'tool', content: '🔧 browser', meta: { tool_name: 'browser' } }
+    expect(buddyStatus({ running: true, messages: [user(), row] }, false)).toEqual({ phase: 'searching', searches: 1, pages: 0 })
   })
 })
 

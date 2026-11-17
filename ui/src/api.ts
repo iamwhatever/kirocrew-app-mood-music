@@ -93,8 +93,8 @@ export interface SlotMessage {
   role?: string
   type?: string
   content?: string
-  /** On a `permission` row: the approval's id, and `resolved` once it is answered. */
-  meta?: { approval_id?: unknown; resolved?: unknown; tool_name?: unknown; tool_input?: unknown; kind?: unknown }
+  /** On a `permission` row: the approval's id, and `resolved` once it is answered. On a `tool` row: its `output`. */
+  meta?: { approval_id?: unknown; resolved?: unknown; tool_name?: unknown; mcp_server?: unknown; tool_input?: unknown; output?: unknown; kind?: unknown }
 }
 
 export interface SlotData {

@@ -144,7 +144,10 @@ var CATALOGS = {
 			"explore_familiar": "একটু চেনা",
 			"explore_balanced": "ভারসাম্য",
 			"explore_more": "আরও অন্বেষণ",
-			"stay_only": "আজ শুধু এই অনুভূতিতে থাকি"
+			"stay_only": "আজ শুধু এই অনুভূতিতে থাকি",
+			"browser_setup": "bilibili খুঁজতে ব্রাউজার লাগে: সেটিংস -> ব্রাউজার-এ সেট করুন। এবার ওয়েবে খোঁজা হয়েছে।",
+			"browser_policy": "ব্রাউজার নীতির কারণে বন্ধ, তাই এবার bilibili ওয়েবে খোঁজা হয়েছে।",
+			"browser_open_settings": "ব্রাউজার সেটিংস খুলুন"
 		},
 		card: {
 			"arc_stay": "পাশে থাকা",
@@ -287,7 +290,10 @@ var CATALOGS = {
 			"explore_familiar": "Vertrauter",
 			"explore_balanced": "Ausgewogen",
 			"explore_more": "Mehr entdecken",
-			"stay_only": "Heute einfach in diesem Gefühl bleiben"
+			"stay_only": "Heute einfach in diesem Gefühl bleiben",
+			"browser_setup": "Für die bilibili-Suche braucht es den Browser: Richte ihn unter Einstellungen -> Browser ein. Diesmal wurde im Web gesucht.",
+			"browser_policy": "Der Browser ist per Richtlinie abgeschaltet, daher wurde bilibili diesmal im Web gesucht.",
+			"browser_open_settings": "Browser-Einstellungen öffnen"
 		},
 		card: {
 			"arc_stay": "Dabeibleiben",
@@ -430,7 +436,10 @@ var CATALOGS = {
 			"explore_familiar": "More familiar",
 			"explore_balanced": "Balanced",
 			"explore_more": "Explore more",
-			"stay_only": "Just stay in this feeling today"
+			"stay_only": "Just stay in this feeling today",
+			"browser_setup": "bilibili search needs the browser: set it up in Settings -> Browser. Searched the web this time.",
+			"browser_policy": "Browsing is turned off by policy, so bilibili was searched on the web this time.",
+			"browser_open_settings": "Open Browser settings"
 		},
 		card: {
 			"arc_stay": "Stay with it",
@@ -573,7 +582,10 @@ var CATALOGS = {
 			"explore_familiar": "Más conocido",
 			"explore_balanced": "Equilibrado",
 			"explore_more": "Explorar más",
-			"stay_only": "Hoy solo quiero quedarme en este sentimiento"
+			"stay_only": "Hoy solo quiero quedarme en este sentimiento",
+			"browser_setup": "Buscar en bilibili necesita el navegador: configúralo en Ajustes -> Navegador. Esta vez se buscó en la web.",
+			"browser_policy": "El navegador está desactivado por una política, así que esta vez se buscó bilibili en la web.",
+			"browser_open_settings": "Abrir ajustes del navegador"
 		},
 		card: {
 			"arc_stay": "Acompañar",
@@ -716,7 +728,10 @@ var CATALOGS = {
 			"explore_familiar": "Plus familier",
 			"explore_balanced": "Équilibré",
 			"explore_more": "Plus de découvertes",
-			"stay_only": "Aujourd’hui, rester dans cette émotion"
+			"stay_only": "Aujourd’hui, rester dans cette émotion",
+			"browser_setup": "La recherche bilibili a besoin du navigateur : configure-le dans Réglages -> Navigateur. Cette fois, la recherche s’est faite sur le web.",
+			"browser_policy": "Le navigateur est désactivé par une règle, donc bilibili a été cherché sur le web cette fois.",
+			"browser_open_settings": "Ouvrir les réglages du navigateur"
 		},
 		card: {
 			"arc_stay": "Rester avec",
@@ -859,7 +874,10 @@ var CATALOGS = {
 			"explore_familiar": "थोड़ा जाना-पहचाना",
 			"explore_balanced": "संतुलित",
 			"explore_more": "और खोज",
-			"stay_only": "आज बस इसी एहसास में रहना है"
+			"stay_only": "आज बस इसी एहसास में रहना है",
+			"browser_setup": "bilibili खोज के लिए ब्राउज़र चाहिए: इसे सेटिंग्स -> ब्राउज़र में सेट करें। इस बार वेब पर खोजा गया।",
+			"browser_policy": "ब्राउज़र नीति से बंद है, इसलिए इस बार bilibili वेब पर खोजा गया।",
+			"browser_open_settings": "ब्राउज़र सेटिंग्स खोलें"
 		},
 		card: {
 			"arc_stay": "साथ रहना",
@@ -1002,7 +1020,10 @@ var CATALOGS = {
 			"explore_familiar": "Più familiare",
 			"explore_balanced": "Equilibrato",
 			"explore_more": "Esplora di più",
-			"stay_only": "Oggi voglio solo restare in questa emozione"
+			"stay_only": "Oggi voglio solo restare in questa emozione",
+			"browser_setup": "La ricerca su bilibili richiede il browser: configuralo in Impostazioni -> Browser. Questa volta si è cercato sul web.",
+			"browser_policy": "Il browser è disattivato da una policy, quindi questa volta bilibili è stato cercato sul web.",
+			"browser_open_settings": "Apri impostazioni del browser"
 		},
 		card: {
 			"arc_stay": "Restare",
@@ -1145,7 +1166,10 @@ var CATALOGS = {
 			"explore_familiar": "なじみ多め",
 			"explore_balanced": "バランス",
 			"explore_more": "もっと探索",
-			"stay_only": "今日はこの気持ちのままでいたい"
+			"stay_only": "今日はこの気持ちのままでいたい",
+			"browser_setup": "bilibili の検索にはブラウザが必要です。設定 -> ブラウザ で準備してください。今回はウェブ検索を使いました。",
+			"browser_policy": "ブラウザはポリシーで無効になっているため、今回は bilibili をウェブ検索しました。",
+			"browser_open_settings": "ブラウザ設定を開く"
 		},
 		card: {
 			"arc_stay": "寄り添う",
@@ -1288,7 +1312,10 @@ var CATALOGS = {
 			"explore_familiar": "익숙하게",
 			"explore_balanced": "균형",
 			"explore_more": "더 탐색",
-			"stay_only": "오늘은 이 기분 그대로 있고 싶어"
+			"stay_only": "오늘은 이 기분 그대로 있고 싶어",
+			"browser_setup": "bilibili 검색에는 브라우저가 필요합니다. 설정 -> 브라우저에서 준비하세요. 이번에는 웹 검색을 썼어요.",
+			"browser_policy": "브라우저가 정책으로 꺼져 있어 이번에는 bilibili를 웹에서 검색했어요.",
+			"browser_open_settings": "브라우저 설정 열기"
 		},
 		card: {
 			"arc_stay": "곁에 머물기",
@@ -1431,7 +1458,10 @@ var CATALOGS = {
 			"explore_familiar": "Mais conhecido",
 			"explore_balanced": "Equilibrado",
 			"explore_more": "Explorar mais",
-			"stay_only": "Hoje só quero ficar neste sentimento"
+			"stay_only": "Hoje só quero ficar neste sentimento",
+			"browser_setup": "A busca no bilibili precisa do navegador: configure em Configurações -> Navegador. Desta vez a busca foi na web.",
+			"browser_policy": "O navegador está desligado por política, então desta vez o bilibili foi buscado na web.",
+			"browser_open_settings": "Abrir configurações do navegador"
 		},
 		card: {
 			"arc_stay": "Ficar junto",
@@ -1574,7 +1604,10 @@ var CATALOGS = {
 			"explore_familiar": "Знакомее",
 			"explore_balanced": "Баланс",
 			"explore_more": "Больше открытий",
-			"stay_only": "Сегодня просто побыть в этом чувстве"
+			"stay_only": "Сегодня просто побыть в этом чувстве",
+			"browser_setup": "Для поиска в bilibili нужен браузер: настройте его в Настройки -> Браузер. В этот раз искали в интернете.",
+			"browser_policy": "Браузер отключён политикой, поэтому в этот раз bilibili искали в интернете.",
+			"browser_open_settings": "Открыть настройки браузера"
 		},
 		card: {
 			"arc_stay": "Побыть рядом",
@@ -1717,7 +1750,10 @@ var CATALOGS = {
 			"explore_familiar": "熟悉一点",
 			"explore_balanced": "平衡",
 			"explore_more": "多探索",
-			"stay_only": "今天只想待在这个情绪里"
+			"stay_only": "今天只想待在这个情绪里",
+			"browser_setup": "搜 bilibili 需要浏览器：请在 设置 -> 浏览器 里装好。这次先用网页搜索。",
+			"browser_policy": "浏览器已被策略关闭，这次 bilibili 用网页搜索。",
+			"browser_open_settings": "打开浏览器设置"
 		},
 		card: {
 			"arc_stay": "陪着",
@@ -3036,6 +3072,103 @@ function SongCard({ pick, playing, known, busy, onPlay, onLike, onSkip, onKnown 
 		]
 	});
 }
+// src/browserUse.ts
+var BVID = "(BV[0-9A-Za-z]{10})";
+var VIDEO_PATH_RE = new RegExp(`^/video/${BVID}/?$`);
+/** A bilibili video link in page text: `https://`, `//` or bare host. */
+var VIDEO_LINK_RE = new RegExp(`(?:https?:)?//(?:www|m)\\.bilibili\\.com/video/${BVID}`, "g");
+function plainHttps(raw) {
+	if (typeof raw !== "string" || raw.length > 2048 || /[\\\u0000-\u0020\u007f]/.test(raw)) return null;
+	try {
+		const url = new URL(raw);
+		return url.protocol === "https:" && !url.username && !url.password && !url.port ? url : null;
+	} catch {
+		return null;
+	}
+}
+/**
+* Whether the buddy may navigate to *raw*: the search page with exactly one
+* `keyword` (other search filters such as `page` allowed), or a
+* `www.bilibili.com/video/BV…` page with no query.
+*/
+function allowedBrowserUrl(raw) {
+	const url = plainHttps(raw);
+	if (!url || url.hash) return false;
+	if (url.hostname === "search.bilibili.com") {
+		if (url.pathname !== "/all" && url.pathname !== "/video") return false;
+		const keys = [...url.searchParams.keys()];
+		return url.searchParams.getAll("keyword").length === 1 && !!url.searchParams.get("keyword")?.trim() && keys.every((k) => k === "keyword" || k === "page" || k === "order");
+	}
+	if (url.hostname === "www.bilibili.com") return VIDEO_PATH_RE.test(url.pathname) && !url.search;
+	return false;
+}
+/** Whether a slot row is the browser tool of Kiro Crew's own server. */
+function isBrowserRow(m) {
+	const meta = m.meta ?? {};
+	return meta.tool_name === "browser" && (meta.mcp_server === void 0 || meta.mcp_server === "kirocrew-core");
+}
+/**
+* Whether the page lets a browser call through to the person's "Allow once":
+* `snapshot`, or `navigate` to an {@link allowedBrowserUrl}. *input* is the
+* approval's `tool_input`, a JSON string or object.
+*/
+function browserCallAllowed(input) {
+	let call = input;
+	if (typeof input === "string") try {
+		call = JSON.parse(input);
+	} catch {
+		return false;
+	}
+	if (!call || typeof call !== "object") return false;
+	const { op, args } = call;
+	const a = args ?? {};
+	if (typeof a !== "object" || Array.isArray(a)) return false;
+	if (op === "snapshot") return true;
+	if (op === "navigate") return Object.keys(a).every((k) => k === "url") && allowedBrowserUrl(a.url);
+	return false;
+}
+/** The BV ids of every bilibili video link in *text*, in order, once each. */
+function bilibiliLinksIn(text) {
+	const out = [];
+	for (const match of text.matchAll(VIDEO_LINK_RE)) if (!out.includes(match[1])) out.push(match[1]);
+	return out;
+}
+/** Rows after the newest `user` row: the current turn. */
+function currentTurn$1(slot) {
+	const all = slot?.messages ?? [];
+	for (let i = all.length - 1; i >= 0; i--) if (all[i].role === "user") return all.slice(i + 1);
+	return all;
+}
+function outputOf(m) {
+	const out = m.meta?.output;
+	return typeof out === "string" ? out : out ? JSON.stringify(out) : "";
+}
+/** The BV ids the browser showed the buddy in the current turn. */
+function seenInBrowser(slot) {
+	const ids = /* @__PURE__ */ new Set();
+	for (const m of currentTurn$1(slot)) if (m.role === "tool" && isBrowserRow(m)) for (const id of bilibiliLinksIn(outputOf(m))) ids.add(id);
+	return ids;
+}
+/** The BV id of a bilibili video URL, or null. */
+function bvidOf(url) {
+	const parsed = plainHttps(url);
+	if (!parsed || parsed.hostname !== "www.bilibili.com" && parsed.hostname !== "m.bilibili.com") return null;
+	return parsed.pathname.match(VIDEO_PATH_RE)?.[1] ?? null;
+}
+/**
+* Why the browser could not search in the current turn: `setup` (browsing is not
+* set up on this host) or `policy` (turned off by policy); null when it worked
+* or was not used. Read off the tool's own fixed refusal text.
+*/
+function browserBlocked(slot) {
+	for (const m of currentTurn$1(slot)) {
+		if (m.role !== "tool" || !isBrowserRow(m)) continue;
+		const out = outputOf(m);
+		if (/browsing is disabled by governance policy/i.test(out)) return "policy";
+		if (/browsing is not set up/i.test(out)) return "setup";
+	}
+	return null;
+}
 // src/turnState.ts
 /** The heads `request.prompt.ts` writes on the line after `[Mood Music]`. */
 var HEADS = [
@@ -3051,8 +3184,9 @@ function currentTurn(slot) {
 	for (let i = all.length - 1; i >= 0; i--) if (all[i].role === "user") return all.slice(i + 1);
 	return all;
 }
-/** 'web_search', 'web_fetch' or ''. A live row may carry only its title ("🔧 Fetch URL"). */
+/** 'web_search', 'web_fetch' or ''. A live row may carry only its title ("🔧 Fetch URL"). A bilibili search in the browser counts as a search. */
 var toolOf = (m) => {
+	if (isBrowserRow(m)) return "web_search";
 	const name = m.meta?.tool_name;
 	const text = `${typeof name === "string" ? name : ""} ${m.content ?? ""}`.toLowerCase();
 	if (/web_fetch|fetch/.test(text)) return "web_fetch";
@@ -3139,9 +3273,11 @@ function pendingApproval(slot) {
 		if (m.role !== "permission") continue;
 		const meta = m.meta ?? {};
 		if (!meta.approval_id || meta.resolved) continue;
+		const refused = isBrowserRow(m) && !browserCallAllowed(meta.tool_input);
 		return {
 			id: String(meta.approval_id),
-			host: hostIn(meta.tool_input)
+			host: hostIn(meta.tool_input),
+			refused
 		};
 	}
 	return null;
@@ -3244,7 +3380,9 @@ function saveView(view) {
 * backend (`/verify-picks`), and only what passed is queued and drawn.
 *
 * Anything that needs the person shows here with a button (design §1.8): a
-* tool approval (allow once / don't), a missing chat-control grant, a failed
+* tool approval (allow once / don't; a browser call outside `browserUse.ts`'s
+* rule is declined without asking), browsing not set up for bilibili search
+* (a link to Settings -> Browser), a missing chat-control grant, a failed
 * turn, a turn that went quiet, a lost connection, and a reply with nothing
 * playable left.
 */
@@ -3336,6 +3474,8 @@ function MoodMusicPage() {
 	const lastAskRef = useRef("");
 	const lastShownRef = useRef("");
 	const queueMemoryRef = useRef([]);
+	/** Browser approvals the page already declined, so each is answered once. */
+	const refusedRef = useRef(/* @__PURE__ */ new Set());
 	const chipRef = useRef(null);
 	chipRef.current = chip;
 	const refresh = useCallback(async () => {
@@ -3542,6 +3682,11 @@ function MoodMusicPage() {
 			}
 			if (!live) return;
 			setSlot(read);
+			const ask = pendingApproval(read);
+			if (ask?.refused && !refusedRef.current.has(ask.id)) {
+				refusedRef.current.add(ask.id);
+				moodApi.approve(key, ask.id, "rejected").catch(() => void 0);
+			}
 			const moved = activityKey(read);
 			if (moved !== lastKey || pendingApproval(read)) {
 				lastKey = moved;
@@ -3583,6 +3728,13 @@ function MoodMusicPage() {
 			setChecking(true);
 			try {
 				const checked = await moodApi.verifyPicks(parsed.picks);
+				const seen = seenInBrowser(read);
+				checked.picks = checked.picks.map((p) => {
+					const id = p.source === "bilibili" && p.unverified ? bvidOf(p.url) : null;
+					if (!id || !seen.has(id)) return p;
+					const { unverified: _drop, ...rest } = p;
+					return rest;
+				});
 				const dropped = parsed.dropped + Object.values(checked.dropped).reduce((a, b) => a + b, 0);
 				if (checked.picks.length === 0) {
 					setDroppedAll(dropped);
@@ -3693,7 +3845,9 @@ function MoodMusicPage() {
 		searches: 0,
 		pages: 0
 	} : null;
-	const approval = pending ? pendingApproval(slot) : null;
+	const asked = pending ? pendingApproval(slot) : null;
+	const approval = asked && !asked.refused ? asked : null;
+	const blocked = !pending ? browserBlocked(slot) : null;
 	const lines = conversation(slot);
 	const lastBuddy = [...lines].reverse().find((l) => l.who === "buddy");
 	const lastParsed = !pending && lastBuddy?.reply ? parseDjReply(lastBuddy.reply) : null;
@@ -3888,6 +4042,20 @@ function MoodMusicPage() {
 											onClick: () => approve(approval.id, "rejected"),
 											children: t("chat.deny")
 										})]
+									}),
+									blocked && /* @__PURE__ */ jsx(Banner, {
+										testId: "mood-browser",
+										title: t(blocked === "policy" ? "chat.browser_policy" : "chat.browser_setup"),
+										icon: /* @__PURE__ */ jsx(Waves, {
+											size: 14,
+											"aria-hidden": "true"
+										}),
+										children: blocked === "setup" && /* @__PURE__ */ jsx("a", {
+											href: "/settings/browser",
+											className: "rounded-full border border-[var(--accent)] px-3 py-1 text-xs font-medium text-[var(--text)] hover:bg-[var(--accent-subtle)]",
+											"data-testid": "mood-browser-settings",
+											children: t("chat.browser_open_settings")
+										})
 									}),
 									grant && /* @__PURE__ */ jsxs(Banner, {
 										testId: "mood-grant",

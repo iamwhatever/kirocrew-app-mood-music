@@ -122,7 +122,10 @@
     "explore_familiar": "익숙하게",
     "explore_balanced": "균형",
     "explore_more": "더 탐색",
-    "stay_only": "오늘은 이 기분 그대로 있고 싶어"
+    "stay_only": "오늘은 이 기분 그대로 있고 싶어",
+    "browser_setup": "bilibili 검색에는 브라우저가 필요합니다. 설정 -> 브라우저에서 준비하세요. 이번에는 웹 검색을 썼어요.",
+    "browser_policy": "브라우저가 정책으로 꺼져 있어 이번에는 bilibili를 웹에서 검색했어요.",
+    "browser_open_settings": "브라우저 설정 열기"
   },
   "card": {
     "arc_stay": "곁에 머물기",
