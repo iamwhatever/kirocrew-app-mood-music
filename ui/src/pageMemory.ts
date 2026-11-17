@@ -11,7 +11,7 @@
  * size: it is the person's own view, gone when the tab closes, and holds no
  * secret (nothing here is not already on their screen).
  */
-import { isMoodKey, type MoodKey, type MoodLook } from './moods'
+import { isMoodKey, parseScene, presetScene, type MoodKey, type Scene } from './moods'
 
 export const PAGE_KEY = 'mood-music:page'
 /** Larger than this, the saved view is dropped rather than stored in part. */
@@ -32,7 +32,8 @@ export interface PageView {
   text: string
   chip: MoodKey | null
   stayOnly: boolean
-  look: MoodLook
+  /** The backdrop scene on screen (`moods.ts`), checked again on load. */
+  scene: Scene
   currentId: string | null
   slotKey: string | null
   scroll: number
@@ -66,7 +67,8 @@ export function loadView(): Partial<PageView> | null {
       text: str(v.text, 200),
       chip: isMoodKey(v.chip) ? v.chip : null,
       stayOnly: v.stayOnly === true,
-      look: isMoodKey(v.look) ? v.look : 'neutral',
+      // A view saved before scenes carried only a chip's `look`.
+      scene: parseScene(v.scene) ?? presetScene(v.look),
       currentId: typeof v.currentId === 'string' ? v.currentId.slice(0, 64) : null,
       slotKey: typeof v.slotKey === 'string' ? v.slotKey.slice(0, 200) : null,
       scroll: typeof v.scroll === 'number' && v.scroll > 0 ? v.scroll : 0,

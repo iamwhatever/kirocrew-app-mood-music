@@ -16,7 +16,7 @@ the access its manifest grant gives it.
   DELETE /memory/{id}       -> forget one item
   POST /memory/clear-stale  -> forget every "maybe stale" item
   POST /memory/used         -> mark items as used (keeps them fresh)
-  PUT  /settings            -> the explore level, and whether the full record is open
+  PUT  /settings            -> the explore level, the preferred player, and whether the full record is open
 
 A pick's link is checked in ``links.py``: a YouTube pick is stored as its video
 id alone, a bilibili pick as an https URL on an exact bilibili host. A request
@@ -35,7 +35,7 @@ from typing import Any
 from aiohttp import web
 
 from . import _host, links, verify
-from .store import EXPLORE_LEVELS, MAX_QUEUE, MEMORY_KINDS, ORIGINS, SONG_KINDS, VERDICTS, MemoryFull, MoodStore
+from .store import EXPLORE_LEVELS, MAX_QUEUE, MEMORY_KINDS, ORIGINS, PLAYERS, SONG_KINDS, VERDICTS, MemoryFull, MoodStore
 
 _MAX_MOOD = 200
 _MAX_NOTE = 1000
@@ -398,8 +398,12 @@ async def _handle_settings(request: web.Request, ctx: Any) -> web.Response:
         if not isinstance(body["record_open"], bool):
             return _bad_request("record_open must be true or false", "invalid_field_type")
         changes["record_open"] = body["record_open"]
-    if not changes or set(body) - {"explore", "record_open"}:
-        return _bad_request("send explore and/or record_open only", "invalid_field_type")
+    if "player" in body:
+        if body["player"] not in PLAYERS:
+            return _bad_request("player is not one this app knows", "invalid_field_type")
+        changes["player"] = body["player"]
+    if not changes or set(body) - {"explore", "record_open", "player"}:
+        return _bad_request("send explore, record_open and/or player only", "invalid_field_type")
     settings = await asyncio.to_thread(lambda: _store(ctx).set_settings(**changes))
     return web.json_response(settings)
 

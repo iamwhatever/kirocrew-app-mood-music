@@ -58,6 +58,8 @@ var CATALOGS = {
 			"more": "এমন আরও",
 			"open_bilibili": "bilibili-তে খুলুন",
 			"bilibili_note": "আপনার নিজের ব্রাউজারের নতুন ট্যাবে খোলে।",
+			"open_youtube": "YouTube-এ খুলুন",
+			"youtube_blank": "প্লেয়ার ফাঁকা বা Error 153? Kiro Crew আপডেট করুন, বা YouTube-এ খুলুন।",
 			"queue": "এরপর",
 			"play": "{{title}} বাজান",
 			"player_title": "YouTube প্লেয়ার: {{title}}",
@@ -144,10 +146,9 @@ var CATALOGS = {
 			"explore_familiar": "একটু চেনা",
 			"explore_balanced": "ভারসাম্য",
 			"explore_more": "আরও অন্বেষণ",
-			"stay_only": "আজ শুধু এই অনুভূতিতে থাকি",
-			"browser_setup": "bilibili খুঁজতে ব্রাউজার লাগে: সেটিংস -> ব্রাউজার-এ সেট করুন। এবার ওয়েবে খোঁজা হয়েছে।",
-			"browser_policy": "ব্রাউজার নীতির কারণে বন্ধ, তাই এবার bilibili ওয়েবে খোঁজা হয়েছে।",
-			"browser_open_settings": "ব্রাউজার সেটিংস খুলুন"
+			"player": "প্লেয়ার",
+			"player_auto": "স্বয়ংক্রিয়",
+			"stay_only": "আজ শুধু এই অনুভূতিতে থাকি"
 		},
 		card: {
 			"arc_stay": "পাশে থাকা",
@@ -204,6 +205,8 @@ var CATALOGS = {
 			"more": "Mehr davon",
 			"open_bilibili": "Auf bilibili öffnen",
 			"bilibili_note": "Öffnet sich in einem neuen Tab deines eigenen Browsers.",
+			"open_youtube": "Auf YouTube öffnen",
+			"youtube_blank": "Player leer oder Error 153? Aktualisiere Kiro Crew oder öffne es auf YouTube.",
 			"queue": "Als Nächstes",
 			"play": "{{title}} abspielen",
 			"player_title": "YouTube-Player: {{title}}",
@@ -290,10 +293,9 @@ var CATALOGS = {
 			"explore_familiar": "Vertrauter",
 			"explore_balanced": "Ausgewogen",
 			"explore_more": "Mehr entdecken",
-			"stay_only": "Heute einfach in diesem Gefühl bleiben",
-			"browser_setup": "Für die bilibili-Suche braucht es den Browser: Richte ihn unter Einstellungen -> Browser ein. Diesmal wurde im Web gesucht.",
-			"browser_policy": "Der Browser ist per Richtlinie abgeschaltet, daher wurde bilibili diesmal im Web gesucht.",
-			"browser_open_settings": "Browser-Einstellungen öffnen"
+			"player": "Player",
+			"player_auto": "Automatisch",
+			"stay_only": "Heute einfach in diesem Gefühl bleiben"
 		},
 		card: {
 			"arc_stay": "Dabeibleiben",
@@ -350,6 +352,8 @@ var CATALOGS = {
 			"more": "More like this",
 			"open_bilibili": "Open on bilibili",
 			"bilibili_note": "Opens in a new tab of your own browser.",
+			"open_youtube": "Open on YouTube",
+			"youtube_blank": "Blank player or Error 153? Update Kiro Crew, or open it on YouTube.",
 			"queue": "Up next",
 			"play": "Play {{title}}",
 			"player_title": "YouTube player: {{title}}",
@@ -436,10 +440,9 @@ var CATALOGS = {
 			"explore_familiar": "More familiar",
 			"explore_balanced": "Balanced",
 			"explore_more": "Explore more",
-			"stay_only": "Just stay in this feeling today",
-			"browser_setup": "bilibili search needs the browser: set it up in Settings -> Browser. Searched the web this time.",
-			"browser_policy": "Browsing is turned off by policy, so bilibili was searched on the web this time.",
-			"browser_open_settings": "Open Browser settings"
+			"player": "Player",
+			"player_auto": "Auto",
+			"stay_only": "Just stay in this feeling today"
 		},
 		card: {
 			"arc_stay": "Stay with it",
@@ -496,6 +499,8 @@ var CATALOGS = {
 			"more": "Más como esta",
 			"open_bilibili": "Abrir en bilibili",
 			"bilibili_note": "Se abre en una pestaña nueva de tu propio navegador.",
+			"open_youtube": "Abrir en YouTube",
+			"youtube_blank": "¿Reproductor en blanco o Error 153? Actualiza Kiro Crew o ábrelo en YouTube.",
 			"queue": "A continuación",
 			"play": "Reproducir {{title}}",
 			"player_title": "Reproductor de YouTube: {{title}}",
@@ -582,10 +587,9 @@ var CATALOGS = {
 			"explore_familiar": "Más conocido",
 			"explore_balanced": "Equilibrado",
 			"explore_more": "Explorar más",
-			"stay_only": "Hoy solo quiero quedarme en este sentimiento",
-			"browser_setup": "Buscar en bilibili necesita el navegador: configúralo en Ajustes -> Navegador. Esta vez se buscó en la web.",
-			"browser_policy": "El navegador está desactivado por una política, así que esta vez se buscó bilibili en la web.",
-			"browser_open_settings": "Abrir ajustes del navegador"
+			"player": "Reproductor",
+			"player_auto": "Automático",
+			"stay_only": "Hoy solo quiero quedarme en este sentimiento"
 		},
 		card: {
 			"arc_stay": "Acompañar",
@@ -642,6 +646,8 @@ var CATALOGS = {
 			"more": "Plus dans ce genre",
 			"open_bilibili": "Ouvrir sur bilibili",
 			"bilibili_note": "S’ouvre dans un nouvel onglet de ton propre navigateur.",
+			"open_youtube": "Ouvrir sur YouTube",
+			"youtube_blank": "Lecteur vide ou Error 153 ? Mets Kiro Crew à jour, ou ouvre-le sur YouTube.",
 			"queue": "À suivre",
 			"play": "Lire {{title}}",
 			"player_title": "Lecteur YouTube : {{title}}",
@@ -728,10 +734,9 @@ var CATALOGS = {
 			"explore_familiar": "Plus familier",
 			"explore_balanced": "Équilibré",
 			"explore_more": "Plus de découvertes",
-			"stay_only": "Aujourd’hui, rester dans cette émotion",
-			"browser_setup": "La recherche bilibili a besoin du navigateur : configure-le dans Réglages -> Navigateur. Cette fois, la recherche s’est faite sur le web.",
-			"browser_policy": "Le navigateur est désactivé par une règle, donc bilibili a été cherché sur le web cette fois.",
-			"browser_open_settings": "Ouvrir les réglages du navigateur"
+			"player": "Lecteur",
+			"player_auto": "Auto",
+			"stay_only": "Aujourd’hui, rester dans cette émotion"
 		},
 		card: {
 			"arc_stay": "Rester avec",
@@ -788,6 +793,8 @@ var CATALOGS = {
 			"more": "ऐसे और",
 			"open_bilibili": "bilibili पर खोलें",
 			"bilibili_note": "आपके अपने ब्राउज़र के नए टैब में खुलता है।",
+			"open_youtube": "YouTube पर खोलें",
+			"youtube_blank": "प्लेयर खाली है या Error 153? Kiro Crew अपडेट करें, या YouTube पर खोलें।",
 			"queue": "आगे",
 			"play": "{{title}} चलाएँ",
 			"player_title": "YouTube प्लेयर: {{title}}",
@@ -874,10 +881,9 @@ var CATALOGS = {
 			"explore_familiar": "थोड़ा जाना-पहचाना",
 			"explore_balanced": "संतुलित",
 			"explore_more": "और खोज",
-			"stay_only": "आज बस इसी एहसास में रहना है",
-			"browser_setup": "bilibili खोज के लिए ब्राउज़र चाहिए: इसे सेटिंग्स -> ब्राउज़र में सेट करें। इस बार वेब पर खोजा गया।",
-			"browser_policy": "ब्राउज़र नीति से बंद है, इसलिए इस बार bilibili वेब पर खोजा गया।",
-			"browser_open_settings": "ब्राउज़र सेटिंग्स खोलें"
+			"player": "प्लेयर",
+			"player_auto": "अपने-आप",
+			"stay_only": "आज बस इसी एहसास में रहना है"
 		},
 		card: {
 			"arc_stay": "साथ रहना",
@@ -934,6 +940,8 @@ var CATALOGS = {
 			"more": "Altre così",
 			"open_bilibili": "Apri su bilibili",
 			"bilibili_note": "Si apre in una nuova scheda del tuo browser.",
+			"open_youtube": "Apri su YouTube",
+			"youtube_blank": "Lettore vuoto o Error 153? Aggiorna Kiro Crew, oppure aprilo su YouTube.",
 			"queue": "Prossimi",
 			"play": "Riproduci {{title}}",
 			"player_title": "Player YouTube: {{title}}",
@@ -1020,10 +1028,9 @@ var CATALOGS = {
 			"explore_familiar": "Più familiare",
 			"explore_balanced": "Equilibrato",
 			"explore_more": "Esplora di più",
-			"stay_only": "Oggi voglio solo restare in questa emozione",
-			"browser_setup": "La ricerca su bilibili richiede il browser: configuralo in Impostazioni -> Browser. Questa volta si è cercato sul web.",
-			"browser_policy": "Il browser è disattivato da una policy, quindi questa volta bilibili è stato cercato sul web.",
-			"browser_open_settings": "Apri impostazioni del browser"
+			"player": "Lettore",
+			"player_auto": "Automatico",
+			"stay_only": "Oggi voglio solo restare in questa emozione"
 		},
 		card: {
 			"arc_stay": "Restare",
@@ -1080,6 +1087,8 @@ var CATALOGS = {
 			"more": "似た曲をもっと",
 			"open_bilibili": "bilibili で開く",
 			"bilibili_note": "ご自身のブラウザの新しいタブで開きます。",
+			"open_youtube": "YouTube で開く",
+			"youtube_blank": "プレーヤーが空白、または Error 153 の場合は Kiro Crew を更新するか、YouTube で開いてください。",
 			"queue": "次の曲",
 			"play": "{{title}} を再生",
 			"player_title": "YouTube プレーヤー：{{title}}",
@@ -1166,10 +1175,9 @@ var CATALOGS = {
 			"explore_familiar": "なじみ多め",
 			"explore_balanced": "バランス",
 			"explore_more": "もっと探索",
-			"stay_only": "今日はこの気持ちのままでいたい",
-			"browser_setup": "bilibili の検索にはブラウザが必要です。設定 -> ブラウザ で準備してください。今回はウェブ検索を使いました。",
-			"browser_policy": "ブラウザはポリシーで無効になっているため、今回は bilibili をウェブ検索しました。",
-			"browser_open_settings": "ブラウザ設定を開く"
+			"player": "プレーヤー",
+			"player_auto": "自動",
+			"stay_only": "今日はこの気持ちのままでいたい"
 		},
 		card: {
 			"arc_stay": "寄り添う",
@@ -1226,6 +1234,8 @@ var CATALOGS = {
 			"more": "비슷한 곡 더 보기",
 			"open_bilibili": "bilibili에서 열기",
 			"bilibili_note": "내 브라우저의 새 탭에서 열립니다.",
+			"open_youtube": "YouTube에서 열기",
+			"youtube_blank": "플레이어가 비어 있거나 Error 153이 보이나요? Kiro Crew를 업데이트하거나 YouTube에서 여세요.",
 			"queue": "다음 곡",
 			"play": "{{title}} 재생",
 			"player_title": "YouTube 플레이어: {{title}}",
@@ -1312,10 +1322,9 @@ var CATALOGS = {
 			"explore_familiar": "익숙하게",
 			"explore_balanced": "균형",
 			"explore_more": "더 탐색",
-			"stay_only": "오늘은 이 기분 그대로 있고 싶어",
-			"browser_setup": "bilibili 검색에는 브라우저가 필요합니다. 설정 -> 브라우저에서 준비하세요. 이번에는 웹 검색을 썼어요.",
-			"browser_policy": "브라우저가 정책으로 꺼져 있어 이번에는 bilibili를 웹에서 검색했어요.",
-			"browser_open_settings": "브라우저 설정 열기"
+			"player": "플레이어",
+			"player_auto": "자동",
+			"stay_only": "오늘은 이 기분 그대로 있고 싶어"
 		},
 		card: {
 			"arc_stay": "곁에 머물기",
@@ -1372,6 +1381,8 @@ var CATALOGS = {
 			"more": "Mais como esta",
 			"open_bilibili": "Abrir no bilibili",
 			"bilibili_note": "Abre em uma nova aba do seu próprio navegador.",
+			"open_youtube": "Abrir no YouTube",
+			"youtube_blank": "Player em branco ou Error 153? Atualize o Kiro Crew ou abra no YouTube.",
 			"queue": "A seguir",
 			"play": "Tocar {{title}}",
 			"player_title": "Player do YouTube: {{title}}",
@@ -1458,10 +1469,9 @@ var CATALOGS = {
 			"explore_familiar": "Mais conhecido",
 			"explore_balanced": "Equilibrado",
 			"explore_more": "Explorar mais",
-			"stay_only": "Hoje só quero ficar neste sentimento",
-			"browser_setup": "A busca no bilibili precisa do navegador: configure em Configurações -> Navegador. Desta vez a busca foi na web.",
-			"browser_policy": "O navegador está desligado por política, então desta vez o bilibili foi buscado na web.",
-			"browser_open_settings": "Abrir configurações do navegador"
+			"player": "Player",
+			"player_auto": "Automático",
+			"stay_only": "Hoje só quero ficar neste sentimento"
 		},
 		card: {
 			"arc_stay": "Ficar junto",
@@ -1518,6 +1528,8 @@ var CATALOGS = {
 			"more": "Ещё похожих",
 			"open_bilibili": "Открыть на bilibili",
 			"bilibili_note": "Откроется в новой вкладке вашего браузера.",
+			"open_youtube": "Открыть на YouTube",
+			"youtube_blank": "Плеер пустой или Error 153? Обновите Kiro Crew или откройте на YouTube.",
 			"queue": "Дальше",
 			"play": "Включить {{title}}",
 			"player_title": "Плеер YouTube: {{title}}",
@@ -1604,10 +1616,9 @@ var CATALOGS = {
 			"explore_familiar": "Знакомее",
 			"explore_balanced": "Баланс",
 			"explore_more": "Больше открытий",
-			"stay_only": "Сегодня просто побыть в этом чувстве",
-			"browser_setup": "Для поиска в bilibili нужен браузер: настройте его в Настройки -> Браузер. В этот раз искали в интернете.",
-			"browser_policy": "Браузер отключён политикой, поэтому в этот раз bilibili искали в интернете.",
-			"browser_open_settings": "Открыть настройки браузера"
+			"player": "Плеер",
+			"player_auto": "Авто",
+			"stay_only": "Сегодня просто побыть в этом чувстве"
 		},
 		card: {
 			"arc_stay": "Побыть рядом",
@@ -1664,6 +1675,8 @@ var CATALOGS = {
 			"more": "更多类似的",
 			"open_bilibili": "在 bilibili 打开",
 			"bilibili_note": "在你自己浏览器的新标签页打开。",
+			"open_youtube": "在 YouTube 打开",
+			"youtube_blank": "播放器空白或显示 Error 153？请更新 Kiro Crew，或在 YouTube 打开。",
 			"queue": "接下来",
 			"play": "播放 {{title}}",
 			"player_title": "YouTube 播放器：{{title}}",
@@ -1750,10 +1763,9 @@ var CATALOGS = {
 			"explore_familiar": "熟悉一点",
 			"explore_balanced": "平衡",
 			"explore_more": "多探索",
-			"stay_only": "今天只想待在这个情绪里",
-			"browser_setup": "搜 bilibili 需要浏览器：请在 设置 -> 浏览器 里装好。这次先用网页搜索。",
-			"browser_policy": "浏览器已被策略关闭，这次 bilibili 用网页搜索。",
-			"browser_open_settings": "打开浏览器设置"
+			"player": "播放器",
+			"player_auto": "自动",
+			"stay_only": "今天只想待在这个情绪里"
 		},
 		card: {
 			"arc_stay": "陪着",
@@ -1812,7 +1824,12 @@ function t(key, vars) {
 // src/api.ts
 var BASE = "/api/apps/mood-music";
 var DJ_AGENT = "mood-music-dj";
-var SLOT_NAME = "mood-music";
+/** The hidden chat's name. */
+var SLOT_NAME = "mood-music-buddy";
+/** The chat before hidden sessions: listed, used only when the host refuses the mode. */
+var LISTED_SLOT_NAME = "mood-music";
+/** The app id, which is the only mode Kiro Crew lets this app hide. */
+var HIDDEN_MODE = "mood-music";
 var MEMORY_MODE = "temporary";
 /** The grant cause in a refused approval, or null when it was refused for another reason. */
 function grantCause(e) {
@@ -1827,12 +1844,36 @@ function grantCause(e) {
 		return null;
 	}
 }
+/** Whether the host refused the hidden mode (`400 invalid_mode`): an older Kiro Crew, or no grant. */
+function modeRefused(e) {
+	const err = e;
+	if (!err || err.status !== 400 || typeof err.body !== "string") return false;
+	try {
+		return JSON.parse(err.body).code === "invalid_mode";
+	} catch {
+		return false;
+	}
+}
 function createMoodApi(api) {
-	const openSlot = () => api.post("/api/chat/slots", {
-		name: SLOT_NAME,
-		agent: DJ_AGENT,
-		memory_mode: MEMORY_MODE
-	});
+	let listed = false;
+	const openSlot = async () => {
+		if (!listed) try {
+			return await api.post("/api/chat/slots", {
+				name: SLOT_NAME,
+				agent: DJ_AGENT,
+				memory_mode: MEMORY_MODE,
+				mode: HIDDEN_MODE
+			});
+		} catch (e) {
+			if (!modeRefused(e)) throw e;
+			listed = true;
+		}
+		return api.post("/api/chat/slots", {
+			name: LISTED_SLOT_NAME,
+			agent: DJ_AGENT,
+			memory_mode: MEMORY_MODE
+		});
+	};
 	return {
 		state: () => api.get(`${BASE}/state`),
 		addMoment: (mood) => api.post(`${BASE}/moments`, { mood }),
@@ -2305,12 +2346,19 @@ function MomentsTab({ moments }) {
 }
 // src/moods.ts
 /**
-* The mood chips, and how each mood colours and moves the page's backdrop.
+* The mood chips, and the scene the page's backdrop paints.
 *
-* A mood names two hues and a drift period. The backdrop never paints a hue
-* straight: it mixes each one into the theme's own `--bg` (`MoodBackdrop`), so
-* the same mood reads soft on a light theme and deep on a dark one, and text
-* keeps the theme's `--text` contrast.
+* A scene is bounded parameters only: two or three hues, a saturation and a
+* lightness band, a strength, a motion speed, one pattern from a fixed set, and
+* an arc hint. The DJ may send one in its reply (`replyParse.ts`), so
+* {@link parseScene} treats it as untrusted: anything outside these bounds is
+* dropped whole and the page keeps the scene it has. No CSS, HTML or URL from
+* the model ever reaches the page; `MoodBackdrop` builds every style from
+* these numbers and names.
+*
+* The backdrop never paints a hue straight: it mixes each one into the theme's
+* own `--bg`, so the same scene reads soft on a light theme and deep on a dark
+* one, and text keeps the theme's `--text` contrast.
 */
 var MOOD_KEYS = [
 	"calm",
@@ -2319,44 +2367,163 @@ var MOOD_KEYS = [
 	"missing",
 	"fired"
 ];
-var THEMES = {
+var PATTERNS = [
+	"glows",
+	"waves",
+	"particles",
+	"aurora"
+];
+var MOTIONS = [
+	"slow",
+	"medium",
+	"lively"
+];
+var SATURATIONS = [
+	"soft",
+	"medium",
+	"vivid"
+];
+var LIGHTNESSES = [
+	"deep",
+	"medium",
+	"bright"
+];
+var SCENE_ARCS = [
+	"stay",
+	"turn",
+	"lift"
+];
+/** Strength 0-1 maps onto this much colour in `--bg`, in percent: always visible, never loud. */
+var MIX_RANGE = [24, 58];
+function mixPercent(strength) {
+	return Math.round(MIX_RANGE[0] + (MIX_RANGE[1] - MIX_RANGE[0]) * clamp01(strength));
+}
+var PRESETS = {
 	calm: {
-		hues: [195, 165],
-		driftSeconds: 30,
-		strength: 22
+		hues: [
+			178,
+			196,
+			150
+		],
+		saturation: "medium",
+		lightness: "medium",
+		strength: .55,
+		motion: "slow",
+		pattern: "waves",
+		arc: "stay"
 	},
 	sad: {
-		hues: [220, 255],
-		driftSeconds: 36,
-		strength: 20
+		hues: [
+			222,
+			244,
+			205
+		],
+		saturation: "medium",
+		lightness: "deep",
+		strength: .6,
+		motion: "slow",
+		pattern: "glows",
+		arc: "stay"
 	},
 	happy: {
-		hues: [42, 330],
-		driftSeconds: 16,
-		strength: 26
+		hues: [
+			44,
+			18,
+			335
+		],
+		saturation: "vivid",
+		lightness: "bright",
+		strength: .7,
+		motion: "lively",
+		pattern: "particles",
+		arc: "stay"
 	},
 	missing: {
-		hues: [280, 320],
-		driftSeconds: 26,
-		strength: 22
+		hues: [
+			338,
+			20,
+			268
+		],
+		saturation: "medium",
+		lightness: "medium",
+		strength: .6,
+		motion: "slow",
+		pattern: "aurora",
+		arc: "stay"
 	},
 	fired: {
-		hues: [8, 32],
-		driftSeconds: 10,
-		strength: 30
+		hues: [
+			6,
+			28,
+			350
+		],
+		saturation: "vivid",
+		lightness: "medium",
+		strength: .8,
+		motion: "lively",
+		pattern: "glows",
+		arc: "stay"
 	},
 	neutral: {
-		hues: [230, 300],
-		driftSeconds: 24,
-		strength: 16
+		hues: [212, 240],
+		saturation: "soft",
+		lightness: "medium",
+		strength: .25,
+		motion: "medium",
+		pattern: "glows",
+		arc: "stay"
 	}
 };
 function isMoodKey(value) {
 	return typeof value === "string" && MOOD_KEYS.includes(value);
 }
-/** The look for a chip key; anything else (an unknown chip, free text) is neutral. */
-function moodTheme(look) {
-	return isMoodKey(look) ? THEMES[look] : THEMES.neutral;
+/** The preset scene for a chip; anything else (an unknown chip, free text) is the neutral one. */
+function presetScene(look) {
+	const key = isMoodKey(look) ? look : "neutral";
+	const p = PRESETS[key];
+	return {
+		...p,
+		hues: [...p.hues],
+		source: key
+	};
+}
+function clamp01(n) {
+	return Math.min(1, Math.max(0, n));
+}
+function oneOf$1(value, allowed, fallback) {
+	if (value === void 0) return fallback;
+	return allowed.includes(value) ? value : null;
+}
+/**
+* A scene from untrusted input (the DJ's block, or the saved page view), or
+* null when it does not fit the bounds. Hues must be two or three finite
+* numbers and are wrapped into 0-359; strength is clamped to 0-1; every name
+* must be one of its fixed set (an absent one takes the middle value). Unknown
+* fields are ignored.
+*/
+function parseScene(raw) {
+	if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+	const r = raw;
+	if (!Array.isArray(r.hues) || r.hues.length < 2 || r.hues.length > 3) return null;
+	if (!r.hues.every((h) => typeof h === "number" && Number.isFinite(h))) return null;
+	const hues = r.hues.map((h) => (Math.round(h) % 360 + 360) % 360);
+	if (r.strength !== void 0 && (typeof r.strength !== "number" || !Number.isFinite(r.strength))) return null;
+	const saturation = oneOf$1(r.saturation, SATURATIONS, "medium");
+	const lightness = oneOf$1(r.lightness, LIGHTNESSES, "medium");
+	const motion = oneOf$1(r.motion, MOTIONS, "medium");
+	const pattern = oneOf$1(r.pattern, PATTERNS, "glows");
+	const arc = oneOf$1(r.arc, SCENE_ARCS, "stay");
+	if (!saturation || !lightness || !motion || !pattern || !arc) return null;
+	return {
+		hues,
+		saturation,
+		lightness,
+		strength: typeof r.strength === "number" ? clamp01(r.strength) : .6,
+		motion,
+		pattern,
+		arc,
+		source: r.source === "dj" || r.source === "neutral" || isMoodKey(r.source) ? r.source : "dj"
+	};
 }
 /** Words that place free text, or the agent's mood tags, on one of the chips. */
 var WORDS = {
@@ -2415,26 +2582,302 @@ function moodLookFor(texts) {
 	return "neutral";
 }
 // src/MoodBackdrop.tsx
+/**
+* The page's mood backdrop: one scene (`moods.ts`) painted behind the content.
+*
+* Every style is built here from the scene's bounded numbers and names; the
+* scene never carries CSS. Each hue is mixed into the theme's `--bg`, so light
+* and dark both read. Four patterns, all CSS: drifting glows, slow waves, a few
+* floating particles, an aurora band. Motion is CSS animation on `transform`
+* only, with no per-frame script. It stops when the person pauses it, under
+* `prefers-reduced-motion`, and while the page is hidden.
+*
+* A new scene (or the queue moving along the arc) fades in over the old one in
+* {@link FADE_MS}; the old layer is dropped after. Under reduced motion it is
+* swapped at once. The styles are inline because the host's stylesheet only
+* carries the classes its own source uses.
+*/
+/** The crossfade between two scenes. */
+var FADE_MS = 2200;
+var SAT = {
+	soft: 45,
+	medium: 70,
+	vivid: 90
+};
+var LIGHT = {
+	deep: 42,
+	medium: 55,
+	bright: 66
+};
+/** Animation durations are multiplied by this: a calm scene moves slower. */
+var SPEED = {
+	slow: 1.7,
+	medium: 1,
+	lively: .55
+};
+var ARC_STEP = {
+	stay: 0,
+	turn: .5,
+	lift: 1
+};
 var KEYFRAMES = `
-@keyframes mood-music-drift-a { 0%,100% { transform: translate(0,0) } 50% { transform: translate(60px,40px) } }
-@keyframes mood-music-drift-b { 0%,100% { transform: translate(0,0) } 50% { transform: translate(-50px,-30px) } }
+@keyframes mm-drift-a { 0%,100% { transform: translate(0,0) scale(1) } 50% { transform: translate(8%,6%) scale(1.08) } }
+@keyframes mm-drift-b { 0%,100% { transform: translate(0,0) scale(1) } 50% { transform: translate(-7%,-5%) scale(1.05) } }
+@keyframes mm-drift-c { 0%,100% { transform: translate(0,0) } 50% { transform: translate(5%,-8%) } }
+@keyframes mm-spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+@keyframes mm-rise { 0% { transform: translateY(0); opacity: 0 } 15% { opacity: 1 } 85% { opacity: 1 } 100% { transform: translateY(-60vh); opacity: 0 } }
+@keyframes mm-sway { 0%,100% { transform: translateX(-6%) skewY(-8deg) } 50% { transform: translateX(6%) skewY(-4deg) } }
+@keyframes mm-fade-in { from { opacity: 0 } to { opacity: 1 } }
 `;
-function MoodBackdrop({ look, moving }) {
-	const theme = moodTheme(look);
-	const glow = (index, place) => ({
-		position: "absolute",
-		borderRadius: "9999px",
-		filter: "blur(64px)",
-		background: `radial-gradient(closest-side, color-mix(in oklab, hsl(${theme.hues[index]} 85% 60%) ${theme.strength}%, var(--bg)), transparent)`,
-		transition: moving ? "background 1s ease" : void 0,
-		animation: moving ? `mood-music-drift-${index ? "b" : "a"} ${theme.driftSeconds}s ease-in-out infinite` : "none",
-		...place
+/** Where along the arc the scene is: the further of its own hint and the song playing. */
+function arcStep(scene, playing) {
+	return Math.max(ARC_STEP[scene.arc], playing ? ARC_STEP[playing] : 0);
+}
+/** *from* moved the share *t* of the short way round the colour wheel toward *to*. */
+function mixHue(from, to, t) {
+	const d = (to - from + 540) % 360 - 180;
+	return Math.round((from + d * t + 360) % 360);
+}
+/** The hues painted at arc step *step*: each drifts halfway toward the lift (last) hue by the end. */
+function paintedHues(scene, step) {
+	const lift = scene.hues[scene.hues.length - 1];
+	const out = scene.hues.map((h) => mixHue(h, lift, step * .5));
+	return out.length === 2 ? [...out, out[0]] : out;
+}
+/** Fixed spots for the particles, so a render never moves them. */
+var SPOTS = [
+	[
+		8,
+		92,
+		0
+	],
+	[
+		18,
+		80,
+		3
+	],
+	[
+		27,
+		96,
+		7
+	],
+	[
+		36,
+		86,
+		1
+	],
+	[
+		45,
+		99,
+		5
+	],
+	[
+		54,
+		84,
+		9
+	],
+	[
+		63,
+		94,
+		2
+	],
+	[
+		72,
+		82,
+		6
+	],
+	[
+		81,
+		97,
+		4
+	],
+	[
+		90,
+		88,
+		8
+	],
+	[
+		13,
+		70,
+		10
+	],
+	[
+		58,
+		72,
+		11
+	],
+	[
+		77,
+		66,
+		12
+	],
+	[
+		40,
+		64,
+		13
+	]
+];
+function SceneLayer({ scene, step, moving, fading }) {
+	const hues = paintedHues(scene, step);
+	const mix = mixPercent(scene.strength);
+	const color = (h, extra = 0) => `color-mix(in oklab, hsl(${h} ${SAT[scene.saturation]}% ${LIGHT[scene.lightness]}%) ${Math.min(80, mix + extra)}%, var(--bg))`;
+	const speed = SPEED[scene.motion];
+	const anim = (name, seconds, delay = 0) => moving ? `${name} ${(seconds * speed).toFixed(1)}s ${delay ? `-${delay}s ` : ""}ease-in-out infinite` : "none";
+	const glow = (i, place, name, seconds) => /* @__PURE__ */ jsx("div", {
+		"data-testid": "mood-glow",
+		"data-hue": hues[i],
+		style: {
+			position: "absolute",
+			borderRadius: "9999px",
+			filter: "blur(60px)",
+			background: `radial-gradient(closest-side, ${color(hues[i])}, transparent)`,
+			animation: anim(name, seconds),
+			willChange: moving ? "transform" : void 0,
+			...place
+		}
+	}, `g${i}`);
+	const glows = [
+		glow(0, {
+			left: "-15%",
+			top: "-20%",
+			width: "70%",
+			height: "75%"
+		}, "mm-drift-a", 24),
+		glow(1, {
+			right: "-10%",
+			bottom: "-25%",
+			width: "65%",
+			height: "80%"
+		}, "mm-drift-b", 30),
+		glow(2, {
+			left: "30%",
+			top: "25%",
+			width: "45%",
+			height: "50%"
+		}, "mm-drift-c", 36)
+	];
+	let pattern = null;
+	if (scene.pattern === "waves") pattern = [
+		0,
+		1,
+		2
+	].map((i) => /* @__PURE__ */ jsx("div", {
+		"data-testid": "mood-wave",
+		style: {
+			position: "absolute",
+			left: "-40%",
+			width: "180%",
+			aspectRatio: "1 / 1",
+			top: `${58 + i * 7}%`,
+			borderRadius: `${40 + i * 3}%`,
+			background: color(hues[i], -6),
+			opacity: .55,
+			animation: anim("mm-spin", 60 + i * 18),
+			animationTimingFunction: "linear"
+		}
+	}, `w${i}`));
+	else if (scene.pattern === "particles") pattern = SPOTS.map(([x, y, delay], i) => /* @__PURE__ */ jsx("div", {
+		"data-testid": "mood-particle",
+		style: {
+			position: "absolute",
+			left: `${x}%`,
+			top: `${y}%`,
+			width: i % 3 ? 10 : 16,
+			height: i % 3 ? 10 : 16,
+			borderRadius: "9999px",
+			background: color(hues[i % hues.length], 18),
+			filter: "blur(1px)",
+			opacity: moving ? void 0 : .7,
+			animation: anim("mm-rise", 16 + i % 5 * 3, delay)
+		}
+	}, `p${i}`));
+	else if (scene.pattern === "aurora") pattern = [
+		0,
+		1,
+		2
+	].map((i) => /* @__PURE__ */ jsx("div", {
+		"data-testid": "mood-aurora",
+		style: {
+			position: "absolute",
+			left: "-20%",
+			width: "140%",
+			top: `${8 + i * 14}%`,
+			height: "22%",
+			filter: "blur(40px)",
+			background: `linear-gradient(90deg, transparent, ${color(hues[i], 6)}, ${color(hues[(i + 1) % hues.length], 6)}, transparent)`,
+			animation: anim("mm-sway", 22 + i * 6, i * 4)
+		}
+	}, `a${i}`));
+	return /* @__PURE__ */ jsxs("div", {
+		"data-testid": "mood-scene",
+		"data-pattern": scene.pattern,
+		style: {
+			position: "absolute",
+			inset: 0,
+			background: "var(--bg)",
+			animation: fading ? `mm-fade-in ${FADE_MS}ms ease forwards` : void 0
+		},
+		children: [glows, pattern]
 	});
+}
+/** Whether the page is visible, following `visibilitychange`. */
+function usePageVisible() {
+	const read = () => typeof document === "undefined" || document.visibilityState !== "hidden";
+	const [visible, setVisible] = useState(read);
+	useEffect(() => {
+		const on = () => setVisible(read());
+		document.addEventListener("visibilitychange", on);
+		return () => document.removeEventListener("visibilitychange", on);
+	}, []);
+	return visible;
+}
+function MoodBackdrop({ scene, playing, moving, reduced }) {
+	const visible = usePageVisible();
+	const live = moving && visible && !reduced;
+	const step = arcStep(scene, playing);
+	const key = JSON.stringify([
+		scene.hues,
+		scene.saturation,
+		scene.lightness,
+		scene.strength,
+		scene.motion,
+		scene.pattern,
+		step
+	]);
+	const nextId = useRef(1);
+	const [layers, setLayers] = useState([{
+		id: 0,
+		scene,
+		step
+	}]);
+	const shown = useRef(key);
+	useEffect(() => {
+		if (shown.current === key) return;
+		shown.current = key;
+		const id = nextId.current++;
+		if (reduced) {
+			setLayers([{
+				id,
+				scene,
+				step
+			}]);
+			return;
+		}
+		setLayers((ls) => [...ls.slice(-1), {
+			id,
+			scene,
+			step
+		}]);
+		const timer = setTimeout(() => setLayers((ls) => ls.filter((l) => l.id >= id)), 2300);
+		return () => clearTimeout(timer);
+	}, [key, reduced]);
 	return /* @__PURE__ */ jsxs("div", {
 		"aria-hidden": "true",
 		"data-testid": "mood-backdrop",
-		"data-look": look,
-		"data-moving": moving ? "true" : "false",
+		"data-look": scene.source,
+		"data-pattern": scene.pattern,
+		"data-hues": scene.hues.join(","),
+		"data-moving": live ? "true" : "false",
 		style: {
 			position: "absolute",
 			inset: 0,
@@ -2442,29 +2885,12 @@ function MoodBackdrop({ look, moving }) {
 			pointerEvents: "none",
 			background: "var(--bg)"
 		},
-		children: [
-			/* @__PURE__ */ jsx("style", { children: KEYFRAMES }),
-			/* @__PURE__ */ jsx("div", {
-				"data-testid": "mood-glow",
-				"data-hue": theme.hues[0],
-				style: glow(0, {
-					left: "-15%",
-					top: "-20%",
-					width: "70%",
-					height: "75%"
-				})
-			}),
-			/* @__PURE__ */ jsx("div", {
-				"data-testid": "mood-glow",
-				"data-hue": theme.hues[1],
-				style: glow(1, {
-					right: "-10%",
-					bottom: "-25%",
-					width: "65%",
-					height: "80%"
-				})
-			})
-		]
+		children: [/* @__PURE__ */ jsx("style", { children: KEYFRAMES }), layers.map((l, i) => /* @__PURE__ */ jsx(SceneLayer, {
+			scene: l.scene,
+			step: l.step,
+			moving: live,
+			fading: i > 0 && !reduced
+		}, l.id))]
 	});
 }
 // src/links.ts
@@ -2572,6 +2998,21 @@ function NowPlaying({ pick, autoplay, busy, onLike, onSkip, onMore }) {
 					sandbox: "allow-scripts allow-same-origin allow-presentation allow-popups",
 					"data-testid": "mood-youtube-frame"
 				}, embed)
+			}),
+			embed && /* @__PURE__ */ jsxs("p", {
+				className: "mt-1.5 text-xs text-[var(--muted)]",
+				"data-testid": "mood-youtube-note",
+				children: [
+					t("page.youtube_blank"),
+					" ",
+					/* @__PURE__ */ jsx("a", {
+						href: `https://www.youtube.com/watch?v=${validVideoId(pick.video_id)}`,
+						target: "_blank",
+						rel: "noopener noreferrer",
+						className: "text-[var(--accent)] underline-offset-2 hover:underline",
+						children: t("page.open_youtube")
+					})
+				]
 			}),
 			link && /* @__PURE__ */ jsxs("a", {
 				href: link,
@@ -2682,12 +3123,18 @@ var EXPLORE_MIX = {
 		1
 	]
 };
+/** The request line for each player choice: the preferred site first, the other only as a fallback. */
+var PLAYER_LINE = {
+	auto: "Player: any (YouTube or bilibili, whichever has the song)",
+	youtube: "Player: youtube (give a YouTube link for every song; use bilibili only for a song with no YouTube video you could find)",
+	bilibili: "Player: bilibili (give a bilibili link for every song; use YouTube only for a song with no bilibili video you could find)"
+};
 /**
 * The message the page sends the DJ. The taste summary is the app's own record
 * of what the person liked and skipped, marked as data for the agent.
 */
 function buildRequest(opts) {
-	const { kind, text, state, explore = "balanced", stayOnly = false } = opts;
+	const { kind, text, state, explore = "balanced", stayOnly = false, player = "auto" } = opts;
 	const head = {
 		mood: "Mood",
 		answer: "Answer to your question",
@@ -2701,6 +3148,7 @@ function buildRequest(opts) {
 		"",
 		`Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`,
 		`Arc: ${stayOnly ? "stay only" : "stay -> turn -> lift"}`,
+		PLAYER_LINE[player] ?? PLAYER_LINE.auto,
 		"",
 		...memorySummary(state?.memory ?? []).lines,
 		"",
@@ -2806,6 +3254,8 @@ var REPLY_FORMAT = [
 	"- \"why\": why this song now, one line. \"listen_for\": one line on something to hear in it.",
 	"- \"evidence\" (explore and deep): {\"url\": a page you opened this turn that praises it, \"label\": what that page is}.",
 	"- \"follow_ups\": 2 or 3 short replies the person can tap. \"remember\" (optional): one short preference they stated, offered for them to save.",
+	"- \"scene\" (optional): the page background. Send it ONLY on a big mood shift: your first reply in this chat, or when the feeling clearly changes direction (sad -> fired up, calm -> missing someone). Leave it out otherwise; the page keeps the scene it has. Shape: {\"hues\": 2 or 3 numbers 0-359 (stay hue first, lift hue last), \"saturation\": \"soft\"|\"medium\"|\"vivid\", \"lightness\": \"deep\"|\"medium\"|\"bright\", \"strength\": 0 to 1, \"motion\": \"slow\"|\"medium\"|\"lively\", \"pattern\": \"glows\"|\"waves\"|\"particles\"|\"aurora\", \"arc\": \"stay\"|\"turn\"|\"lift\"}. Anything else is ignored.",
+	"- Scene examples: rainy missing -> {\"hues\": [220, 260, 300], \"saturation\": \"medium\", \"lightness\": \"deep\", \"strength\": 0.6, \"motion\": \"slow\", \"pattern\": \"aurora\", \"arc\": \"stay\"}; fired up -> {\"hues\": [8, 30, 350], \"saturation\": \"vivid\", \"lightness\": \"medium\", \"strength\": 0.8, \"motion\": \"lively\", \"pattern\": \"particles\", \"arc\": \"turn\"}.",
 	"Example:",
 	"```mood-music",
 	"{\"mood_tags\": [\"想念\", \"温柔\"], \"picks\": [{\"title\": \"Song\", \"artist\": \"Artist\", \"source\": \"youtube\", \"url\": \"https://www.youtube.com/watch?v=dQw4w9WgXcQ\", \"tier\": \"explore\", \"arc\": \"stay\", \"why\": \"One short line.\", \"listen_for\": \"The second verse drops to piano and breath.\", \"evidence\": {\"url\": \"https://example.com/review\", \"label\": \"A review\"}, \"tags\": []}], \"follow_ups\": [\"再安静一点\", \"换成粤语\"]}",
@@ -2919,8 +3369,18 @@ function parseDjReply(content) {
 		picks: byArc(picks),
 		dropped: rawPicks.length - picks.length,
 		followUps: tags(d.follow_ups, 40, 3),
-		remember: text(d.remember, 60)
+		remember: text(d.remember, 60),
+		...sceneOf(d.scene)
 	};
+}
+/** `{scene}` when the block's scene fits the bounds, else nothing: the page keeps its scene. */
+function sceneOf(raw) {
+	if (raw === void 0) return {};
+	const scene = parseScene(raw);
+	return scene ? { scene: {
+		...scene,
+		source: "dj"
+	} } : {};
 }
 /** The reply's prose: every fenced block removed, cut to a short paragraph. */
 function replyText(content) {
@@ -3072,103 +3532,6 @@ function SongCard({ pick, playing, known, busy, onPlay, onLike, onSkip, onKnown 
 		]
 	});
 }
-// src/browserUse.ts
-var BVID = "(BV[0-9A-Za-z]{10})";
-var VIDEO_PATH_RE = new RegExp(`^/video/${BVID}/?$`);
-/** A bilibili video link in page text: `https://`, `//` or bare host. */
-var VIDEO_LINK_RE = new RegExp(`(?:https?:)?//(?:www|m)\\.bilibili\\.com/video/${BVID}`, "g");
-function plainHttps(raw) {
-	if (typeof raw !== "string" || raw.length > 2048 || /[\\\u0000-\u0020\u007f]/.test(raw)) return null;
-	try {
-		const url = new URL(raw);
-		return url.protocol === "https:" && !url.username && !url.password && !url.port ? url : null;
-	} catch {
-		return null;
-	}
-}
-/**
-* Whether the buddy may navigate to *raw*: the search page with exactly one
-* `keyword` (other search filters such as `page` allowed), or a
-* `www.bilibili.com/video/BV…` page with no query.
-*/
-function allowedBrowserUrl(raw) {
-	const url = plainHttps(raw);
-	if (!url || url.hash) return false;
-	if (url.hostname === "search.bilibili.com") {
-		if (url.pathname !== "/all" && url.pathname !== "/video") return false;
-		const keys = [...url.searchParams.keys()];
-		return url.searchParams.getAll("keyword").length === 1 && !!url.searchParams.get("keyword")?.trim() && keys.every((k) => k === "keyword" || k === "page" || k === "order");
-	}
-	if (url.hostname === "www.bilibili.com") return VIDEO_PATH_RE.test(url.pathname) && !url.search;
-	return false;
-}
-/** Whether a slot row is the browser tool of Kiro Crew's own server. */
-function isBrowserRow(m) {
-	const meta = m.meta ?? {};
-	return meta.tool_name === "browser" && (meta.mcp_server === void 0 || meta.mcp_server === "kirocrew-core");
-}
-/**
-* Whether the page lets a browser call through to the person's "Allow once":
-* `snapshot`, or `navigate` to an {@link allowedBrowserUrl}. *input* is the
-* approval's `tool_input`, a JSON string or object.
-*/
-function browserCallAllowed(input) {
-	let call = input;
-	if (typeof input === "string") try {
-		call = JSON.parse(input);
-	} catch {
-		return false;
-	}
-	if (!call || typeof call !== "object") return false;
-	const { op, args } = call;
-	const a = args ?? {};
-	if (typeof a !== "object" || Array.isArray(a)) return false;
-	if (op === "snapshot") return true;
-	if (op === "navigate") return Object.keys(a).every((k) => k === "url") && allowedBrowserUrl(a.url);
-	return false;
-}
-/** The BV ids of every bilibili video link in *text*, in order, once each. */
-function bilibiliLinksIn(text) {
-	const out = [];
-	for (const match of text.matchAll(VIDEO_LINK_RE)) if (!out.includes(match[1])) out.push(match[1]);
-	return out;
-}
-/** Rows after the newest `user` row: the current turn. */
-function currentTurn$1(slot) {
-	const all = slot?.messages ?? [];
-	for (let i = all.length - 1; i >= 0; i--) if (all[i].role === "user") return all.slice(i + 1);
-	return all;
-}
-function outputOf(m) {
-	const out = m.meta?.output;
-	return typeof out === "string" ? out : out ? JSON.stringify(out) : "";
-}
-/** The BV ids the browser showed the buddy in the current turn. */
-function seenInBrowser(slot) {
-	const ids = /* @__PURE__ */ new Set();
-	for (const m of currentTurn$1(slot)) if (m.role === "tool" && isBrowserRow(m)) for (const id of bilibiliLinksIn(outputOf(m))) ids.add(id);
-	return ids;
-}
-/** The BV id of a bilibili video URL, or null. */
-function bvidOf(url) {
-	const parsed = plainHttps(url);
-	if (!parsed || parsed.hostname !== "www.bilibili.com" && parsed.hostname !== "m.bilibili.com") return null;
-	return parsed.pathname.match(VIDEO_PATH_RE)?.[1] ?? null;
-}
-/**
-* Why the browser could not search in the current turn: `setup` (browsing is not
-* set up on this host) or `policy` (turned off by policy); null when it worked
-* or was not used. Read off the tool's own fixed refusal text.
-*/
-function browserBlocked(slot) {
-	for (const m of currentTurn$1(slot)) {
-		if (m.role !== "tool" || !isBrowserRow(m)) continue;
-		const out = outputOf(m);
-		if (/browsing is disabled by governance policy/i.test(out)) return "policy";
-		if (/browsing is not set up/i.test(out)) return "setup";
-	}
-	return null;
-}
 // src/turnState.ts
 /** The heads `request.prompt.ts` writes on the line after `[Mood Music]`. */
 var HEADS = [
@@ -3184,9 +3547,8 @@ function currentTurn(slot) {
 	for (let i = all.length - 1; i >= 0; i--) if (all[i].role === "user") return all.slice(i + 1);
 	return all;
 }
-/** 'web_search', 'web_fetch' or ''. A live row may carry only its title ("🔧 Fetch URL"). A bilibili search in the browser counts as a search. */
+/** 'web_search', 'web_fetch' or ''. A live row may carry only its title ("🔧 Fetch URL"). */
 var toolOf = (m) => {
-	if (isBrowserRow(m)) return "web_search";
 	const name = m.meta?.tool_name;
 	const text = `${typeof name === "string" ? name : ""} ${m.content ?? ""}`.toLowerCase();
 	if (/web_fetch|fetch/.test(text)) return "web_fetch";
@@ -3273,11 +3635,9 @@ function pendingApproval(slot) {
 		if (m.role !== "permission") continue;
 		const meta = m.meta ?? {};
 		if (!meta.approval_id || meta.resolved) continue;
-		const refused = isBrowserRow(m) && !browserCallAllowed(meta.tool_input);
 		return {
 			id: String(meta.approval_id),
-			host: hostIn(meta.tool_input),
-			refused
+			host: hostIn(meta.tool_input)
 		};
 	}
 	return null;
@@ -3345,7 +3705,7 @@ function loadView() {
 			text: str(v.text, 200),
 			chip: isMoodKey(v.chip) ? v.chip : null,
 			stayOnly: v.stayOnly === true,
-			look: isMoodKey(v.look) ? v.look : "neutral",
+			scene: parseScene(v.scene) ?? presetScene(v.look),
 			currentId: typeof v.currentId === "string" ? v.currentId.slice(0, 64) : null,
 			slotKey: typeof v.slotKey === "string" ? v.slotKey.slice(0, 200) : null,
 			scroll: typeof v.scroll === "number" && v.scroll > 0 ? v.scroll : 0,
@@ -3380,9 +3740,7 @@ function saveView(view) {
 * backend (`/verify-picks`), and only what passed is queued and drawn.
 *
 * Anything that needs the person shows here with a button (design §1.8): a
-* tool approval (allow once / don't; a browser call outside `browserUse.ts`'s
-* rule is declined without asking), browsing not set up for bilibili search
-* (a link to Settings -> Browser), a missing chat-control grant, a failed
+* tool approval (allow once / don't), a missing chat-control grant, a failed
 * turn, a turn that went quiet, a lost connection, and a reply with nothing
 * playable left.
 */
@@ -3450,7 +3808,7 @@ function MoodMusicPage() {
 	const [text, setText] = useState(saved?.text ?? "");
 	const [chip, setChip] = useState(saved?.chip ?? null);
 	const [answer, setAnswer] = useState("");
-	const [look, setLook] = useState(saved?.look ?? "neutral");
+	const [scene, setScene] = useState(saved?.scene ?? presetScene("neutral"));
 	const [currentId, setCurrentId] = useState(saved?.currentId ?? null);
 	const [autoplay, setAutoplay] = useState(false);
 	const [motionPaused, setMotionPaused] = useState(false);
@@ -3474,8 +3832,6 @@ function MoodMusicPage() {
 	const lastAskRef = useRef("");
 	const lastShownRef = useRef("");
 	const queueMemoryRef = useRef([]);
-	/** Browser approvals the page already declined, so each is answered once. */
-	const refusedRef = useRef(/* @__PURE__ */ new Set());
 	const chipRef = useRef(null);
 	chipRef.current = chip;
 	const refresh = useCallback(async () => {
@@ -3495,7 +3851,7 @@ function MoodMusicPage() {
 				const read = await moodApi.getSlot(key).catch(() => void 0);
 				if (!live) return;
 				setSlot(read);
-				if (out) {
+				if (out && (!saved?.slotKey || saved.slotKey === key)) {
 					const source = replySource(latestReply(read));
 					if (!read || read.running || turnError(read) || source !== out.baseline && source !== s.last_source) {
 						momentRef.current = out.momentId;
@@ -3516,7 +3872,7 @@ function MoodMusicPage() {
 		text,
 		chip,
 		stayOnly,
-		look,
+		scene,
 		currentId,
 		slotKey,
 		scroll: 0,
@@ -3540,7 +3896,7 @@ function MoodMusicPage() {
 		text,
 		chip,
 		stayOnly,
-		look,
+		scene,
 		currentId,
 		slotKey,
 		pending
@@ -3551,6 +3907,7 @@ function MoodMusicPage() {
 	}, [restored]);
 	const queue = state?.queue ?? [];
 	const explore = state?.settings?.explore ?? "balanced";
+	const player = state?.settings?.player ?? "auto";
 	const recordOpen = state?.settings?.record_open ?? false;
 	const saveSettings = (patch) => {
 		setState((s) => s ? {
@@ -3612,14 +3969,15 @@ function MoodMusicPage() {
 				text: words,
 				state,
 				explore,
-				stayOnly
+				stayOnly,
+				player
 			}), words, ids);
 		});
 	};
-	/** Record the mood and ask the buddy for songs. */
+	/** Record the mood and ask the buddy for songs. A chip, or words that name one, set its scene now; other words keep the scene. */
 	const startMood = (mood, nextLook) => {
 		if (!mood || pending || busy) return;
-		setLook(nextLook);
+		if (nextLook !== "neutral") setScene(presetScene(nextLook));
 		send("mood", mood);
 		setText("");
 	};
@@ -3682,11 +4040,6 @@ function MoodMusicPage() {
 			}
 			if (!live) return;
 			setSlot(read);
-			const ask = pendingApproval(read);
-			if (ask?.refused && !refusedRef.current.has(ask.id)) {
-				refusedRef.current.add(ask.id);
-				moodApi.approve(key, ask.id, "rejected").catch(() => void 0);
-			}
 			const moved = activityKey(read);
 			if (moved !== lastKey || pendingApproval(read)) {
 				lastKey = moved;
@@ -3714,8 +4067,11 @@ function MoodMusicPage() {
 				setError("unreadable");
 				return;
 			}
-			const tagLook = moodLookFor(parsed.moodTags);
-			if (!chipRef.current && tagLook !== "neutral") setLook(tagLook);
+			if (parsed.scene) setScene(parsed.scene);
+			else {
+				const tagLook = moodLookFor(parsed.moodTags);
+				if (!chipRef.current && tagLook !== "neutral") setScene((s) => s.source === "neutral" ? presetScene(tagLook) : s);
+			}
 			if (parsed.picks.length === 0) {
 				if (!parsed.question && !parsed.followUps.length) {
 					if (parsed.dropped > 0) {
@@ -3728,13 +4084,6 @@ function MoodMusicPage() {
 			setChecking(true);
 			try {
 				const checked = await moodApi.verifyPicks(parsed.picks);
-				const seen = seenInBrowser(read);
-				checked.picks = checked.picks.map((p) => {
-					const id = p.source === "bilibili" && p.unverified ? bvidOf(p.url) : null;
-					if (!id || !seen.has(id)) return p;
-					const { unverified: _drop, ...rest } = p;
-					return rest;
-				});
 				const dropped = parsed.dropped + Object.values(checked.dropped).reduce((a, b) => a + b, 0);
 				if (checked.picks.length === 0) {
 					setDroppedAll(dropped);
@@ -3845,9 +4194,7 @@ function MoodMusicPage() {
 		searches: 0,
 		pages: 0
 	} : null;
-	const asked = pending ? pendingApproval(slot) : null;
-	const approval = asked && !asked.refused ? asked : null;
-	const blocked = !pending ? browserBlocked(slot) : null;
+	const approval = pending ? pendingApproval(slot) : null;
 	const lines = conversation(slot);
 	const lastBuddy = [...lines].reverse().find((l) => l.who === "buddy");
 	const lastParsed = !pending && lastBuddy?.reply ? parseDjReply(lastBuddy.reply) : null;
@@ -3859,8 +4206,10 @@ function MoodMusicPage() {
 		children: [
 			/* @__PURE__ */ jsx("style", { children: SPLIT_CSS }),
 			/* @__PURE__ */ jsx(MoodBackdrop, {
-				look,
-				moving
+				scene,
+				playing: current?.arc,
+				moving,
+				reduced: reduceMotion
 			}),
 			/* @__PURE__ */ jsxs("div", {
 				className: "relative flex h-full flex-col",
@@ -3959,6 +4308,32 @@ function MoodMusicPage() {
 											})
 										]
 									}),
+									/* @__PURE__ */ jsxs("div", {
+										className: "flex flex-wrap items-center gap-2",
+										"data-testid": "mood-player-choice",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "text-xs text-[var(--muted)]",
+											children: t("chat.player")
+										}), /* @__PURE__ */ jsx(SegmentedControl, {
+											ariaLabel: t("chat.player"),
+											value: player,
+											onChange: (v) => saveSettings({ player: v }),
+											segments: [
+												{
+													key: "auto",
+													label: t("chat.player_auto")
+												},
+												{
+													key: "youtube",
+													label: t("page.source_youtube")
+												},
+												{
+													key: "bilibili",
+													label: t("page.source_bilibili")
+												}
+											]
+										})]
+									}),
 									/* @__PURE__ */ jsx("div", {
 										role: "group",
 										"aria-label": t("page.mood_chips"),
@@ -4042,20 +4417,6 @@ function MoodMusicPage() {
 											onClick: () => approve(approval.id, "rejected"),
 											children: t("chat.deny")
 										})]
-									}),
-									blocked && /* @__PURE__ */ jsx(Banner, {
-										testId: "mood-browser",
-										title: t(blocked === "policy" ? "chat.browser_policy" : "chat.browser_setup"),
-										icon: /* @__PURE__ */ jsx(Waves, {
-											size: 14,
-											"aria-hidden": "true"
-										}),
-										children: blocked === "setup" && /* @__PURE__ */ jsx("a", {
-											href: "/settings/browser",
-											className: "rounded-full border border-[var(--accent)] px-3 py-1 text-xs font-medium text-[var(--text)] hover:bg-[var(--accent-subtle)]",
-											"data-testid": "mood-browser-settings",
-											children: t("chat.browser_open_settings")
-										})
 									}),
 									grant && /* @__PURE__ */ jsxs(Banner, {
 										testId: "mood-grant",

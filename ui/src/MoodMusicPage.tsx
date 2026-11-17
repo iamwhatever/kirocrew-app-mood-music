@@ -14,9 +14,7 @@
  * backend (`/verify-picks`), and only what passed is queued and drawn.
  *
  * Anything that needs the person shows here with a button (design §1.8): a
- * tool approval (allow once / don't; a browser call outside `browserUse.ts`'s
- * rule is declined without asking), browsing not set up for bilibili search
- * (a link to Settings -> Browser), a missing chat-control grant, a failed
+ * tool approval (allow once / don't), a missing chat-control grant, a failed
  * turn, a turn that went quiet, a lost connection, and a reply with nothing
  * playable left.
  */
@@ -31,14 +29,13 @@ import FullRecord from './FullRecord'
 import MemoryTab from './MemoryTab'
 import MomentsTab from './MomentsTab'
 import MoodBackdrop from './MoodBackdrop'
-import { MOOD_KEYS, moodLookFor, type MoodKey, type MoodLook } from './moods'
+import { MOOD_KEYS, moodLookFor, presetScene, type MoodKey, type MoodLook, type Scene } from './moods'
 import NowPlaying from './NowPlaying'
-import { buildRequest, memorySummary, type ExploreLevel } from './request.prompt'
+import { buildRequest, memorySummary, type ExploreLevel, type Player } from './request.prompt'
 import { parseDjReply, replySource } from './replyParse'
 import { usePrefersReducedMotion } from './reducedMotion'
 import { CARD_STYLE } from './cardStyle'
 import SongCard from './SongCard'
-import { browserBlocked, bvidOf, seenInBrowser } from './browserUse'
 import { activityKey, buddyStatus, conversation, pendingApproval, turnError, type BuddyStatus } from './turnState'
 import { loadView, saveView, type PageView, type SavedPending, type Tab } from './pageMemory'
 
@@ -125,7 +122,8 @@ export default function MoodMusicPage() {
   const [text, setText] = useState(saved?.text ?? '')
   const [chip, setChip] = useState<MoodKey | null>(saved?.chip ?? null)
   const [answer, setAnswer] = useState('')
-  const [look, setLook] = useState<MoodLook>(saved?.look ?? 'neutral')
+  // The backdrop scene: a chip's preset, or the one the buddy chose on a big mood shift.
+  const [scene, setScene] = useState<Scene>(saved?.scene ?? presetScene('neutral'))
   const [currentId, setCurrentId] = useState<string | null>(saved?.currentId ?? null)
   const [autoplay, setAutoplay] = useState(false)
   const [motionPaused, setMotionPaused] = useState(false)
@@ -153,8 +151,6 @@ export default function MoodMusicPage() {
   const lastShownRef = useRef<string>('')
   // Memory ids behind the queue on screen; marked used once its picks land.
   const queueMemoryRef = useRef<string[]>([])
-  /** Browser approvals the page already declined, so each is answered once. */
-  const refusedRef = useRef<Set<string>>(new Set())
   const chipRef = useRef<MoodKey | null>(null)
   chipRef.current = chip
 
@@ -178,8 +174,9 @@ export default function MoodMusicPage() {
         setSlot(read)
         // A turn still out when the person left: wait on it again, so its live
         // status shows and its reply is read. One whose reply the page already
-        // queued, or that ended with nothing new, is over.
-        if (out) {
+        // queued, or that ended with nothing new, is over. One sent to another
+        // chat (the listed one, before the move to the hidden chat) is not read here.
+        if (out && (!saved?.slotKey || saved.slotKey === key)) {
           const source = replySource(latestReply(read))
           if (!read || read.running || turnError(read) || (source !== out.baseline && source !== s.last_source)) {
             momentRef.current = out.momentId
@@ -193,14 +190,14 @@ export default function MoodMusicPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [moodApi])
 
-  const view: PageView = { tab, text, chip, stayOnly, look, currentId, slotKey, scroll: 0, pending }
+  const view: PageView = { tab, text, chip, stayOnly, scene, currentId, slotKey, scroll: 0, pending }
   const viewRef = useRef(view)
   viewRef.current = view
   const persist = useCallback(() => {
     if (restored) saveView({ ...viewRef.current, scroll: scrollTopRef.current })
   }, [restored])
   const onScrolled = (e: UIEvent<HTMLElement>) => { scrollTopRef.current = e.currentTarget.scrollTop; persist() }
-  useEffect(persist, [persist, tab, text, chip, stayOnly, look, currentId, slotKey, pending])
+  useEffect(persist, [persist, tab, text, chip, stayOnly, scene, currentId, slotKey, pending])
 
   // Back where they were on the page, once what it shows is drawn again.
   useEffect(() => {
@@ -212,6 +209,7 @@ export default function MoodMusicPage() {
 
   const queue = state?.queue ?? []
   const explore: ExploreLevel = state?.settings?.explore ?? 'balanced'
+  const player: Player = state?.settings?.player ?? 'auto'
   const recordOpen = state?.settings?.record_open ?? false
 
   const saveSettings = (patch: Partial<NonNullable<MoodState['settings']>>) => {
@@ -262,14 +260,14 @@ export default function MoodMusicPage() {
         setState(s => (s ? { ...s, moments: [moment, ...s.moments] } : s))
       }
       const { ids } = memorySummary(state?.memory ?? [])
-      await ask(buildRequest({ kind, text: words, state, explore, stayOnly }), words, ids)
+      await ask(buildRequest({ kind, text: words, state, explore, stayOnly, player }), words, ids)
     })
   }
 
-  /** Record the mood and ask the buddy for songs. */
+  /** Record the mood and ask the buddy for songs. A chip, or words that name one, set its scene now; other words keep the scene. */
   const startMood = (mood: string, nextLook: MoodLook) => {
     if (!mood || pending || busy) return
-    setLook(nextLook)
+    if (nextLook !== 'neutral') setScene(presetScene(nextLook))
     send('mood', mood)
     setText('')
   }
@@ -339,12 +337,6 @@ export default function MoodMusicPage() {
       }
       if (!live) return
       setSlot(read)
-      const ask = pendingApproval(read)
-      if (ask?.refused && !refusedRef.current.has(ask.id)) {
-        // Not a bilibili search or video page: declined here, never shown as an "Allow".
-        refusedRef.current.add(ask.id)
-        void moodApi.approve(key, ask.id, 'rejected').catch(() => undefined)
-      }
       const moved = activityKey(read)
       if (moved !== lastKey || pendingApproval(read)) {
         lastKey = moved
@@ -365,8 +357,14 @@ export default function MoodMusicPage() {
       if (failed && source === pending.baseline) { setTurnFailed(failed); return }
       const parsed = parseDjReply(reply)
       if (!parsed) { setError('unreadable'); return }
-      const tagLook = moodLookFor(parsed.moodTags)
-      if (!chipRef.current && tagLook !== 'neutral') setLook(tagLook)
+      if (parsed.scene) {
+        // The buddy marked a big mood shift: its scene replaces the current one.
+        setScene(parsed.scene)
+      } else {
+        // No scene: keep the one on screen. Only the resting scene still follows the tags.
+        const tagLook = moodLookFor(parsed.moodTags)
+        if (!chipRef.current && tagLook !== 'neutral') setScene(s => (s.source === 'neutral' ? presetScene(tagLook) : s))
+      }
       if (parsed.picks.length === 0) {
         // A question, or the buddy saying it found nothing good enough (with
         // follow-ups), is an answer the conversation already shows.
@@ -379,15 +377,6 @@ export default function MoodMusicPage() {
       setChecking(true)
       try {
         const checked = await moodApi.verifyPicks(parsed.picks)
-        // A bilibili link the browser showed the buddy this turn is a real video,
-        // even when bilibili's own lookup could not answer the backend.
-        const seen = seenInBrowser(read)
-        checked.picks = checked.picks.map(p => {
-          const id = p.source === 'bilibili' && p.unverified ? bvidOf(p.url) : null
-          if (!id || !seen.has(id)) return p
-          const { unverified: _drop, ...rest } = p
-          return rest
-        })
         const dropped = parsed.dropped + Object.values(checked.dropped).reduce((a, b) => a + b, 0)
         if (checked.picks.length === 0) { setDroppedAll(dropped); setError('all_dropped'); return }
         if (dropped > 0) setNotice(t('page.dropped', { count: dropped }))
@@ -491,9 +480,7 @@ export default function MoodMusicPage() {
   const working = busy || !!pending
   const moving = !reduceMotion && !motionPaused
   const status = pending || checking ? buddyStatus(slot, checking) ?? { phase: 'thinking' as const, searches: 0, pages: 0 } : null
-  const asked = pending ? pendingApproval(slot) : null
-  const approval = asked && !asked.refused ? asked : null
-  const blocked = !pending ? browserBlocked(slot) : null
+  const approval = pending ? pendingApproval(slot) : null
   const lines = conversation(slot)
   const lastBuddy = [...lines].reverse().find(l => l.who === 'buddy')
   const lastParsed = !pending && lastBuddy?.reply ? parseDjReply(lastBuddy.reply) : null
@@ -503,7 +490,7 @@ export default function MoodMusicPage() {
   return (
     <div className="mm-root relative flex h-full flex-col overflow-hidden" data-testid="mood-music-page">
       <style>{SPLIT_CSS}</style>
-      <MoodBackdrop look={look} moving={moving} />
+      <MoodBackdrop scene={scene} playing={current?.arc} moving={moving} reduced={reduceMotion} />
       <div className="relative flex h-full flex-col">
         <PageHeader
           title={t('page.title')}
@@ -570,6 +557,19 @@ export default function MoodMusicPage() {
                   >
                     {t('chat.stay_only')}
                   </button>
+                </div>
+                <div className="flex flex-wrap items-center gap-2" data-testid="mood-player-choice">
+                  <span className="text-xs text-[var(--muted)]">{t('chat.player')}</span>
+                  <SegmentedControl<Player>
+                    ariaLabel={t('chat.player')}
+                    value={player}
+                    onChange={v => saveSettings({ player: v })}
+                    segments={[
+                      { key: 'auto', label: t('chat.player_auto') },
+                      { key: 'youtube', label: t('page.source_youtube') },
+                      { key: 'bilibili', label: t('page.source_bilibili') },
+                    ]}
+                  />
                 </div>
                 <div role="group" aria-label={t('page.mood_chips')} className="flex flex-wrap gap-2">
                   {MOOD_KEYS.map(key => (
@@ -638,13 +638,6 @@ export default function MoodMusicPage() {
                   <Banner testId="mood-approval" title={approval.host ? t('chat.approval_host', { host: approval.host }) : t('chat.approval_tool')} icon={<ShieldCheck size={14} aria-hidden="true" />}>
                     <Btn primary onClick={() => approve(approval.id, 'approved')}>{t('chat.allow_once')}</Btn>
                     <Btn onClick={() => approve(approval.id, 'rejected')}>{t('chat.deny')}</Btn>
-                  </Banner>
-                )}
-                {blocked && (
-                  <Banner testId="mood-browser" title={t(blocked === 'policy' ? 'chat.browser_policy' : 'chat.browser_setup')} icon={<Waves size={14} aria-hidden="true" />}>
-                    {blocked === 'setup' && (
-                      <a href="/settings/browser" className="rounded-full border border-[var(--accent)] px-3 py-1 text-xs font-medium text-[var(--text)] hover:bg-[var(--accent-subtle)]" data-testid="mood-browser-settings">{t('chat.browser_open_settings')}</a>
-                    )}
                   </Banner>
                 )}
                 {grant && (

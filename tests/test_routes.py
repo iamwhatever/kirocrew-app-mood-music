@@ -240,15 +240,17 @@ def test_a_memory_full_of_the_persons_own_notes_answers_409(ctx, monkeypatch) ->
 
 
 def test_settings_keep_the_explore_level_and_the_record_state(ctx) -> None:
-    assert _call(ctx, "GET", "/state")[1]["settings"] == {"explore": "balanced", "record_open": False}
-    assert _call(ctx, "PUT", "/settings", {"explore": "familiar"})[1] == {"explore": "familiar", "record_open": False}
+    assert _call(ctx, "GET", "/state")[1]["settings"] == {"explore": "balanced", "record_open": False, "player": "auto"}
+    assert _call(ctx, "PUT", "/settings", {"explore": "familiar"})[1] == {"explore": "familiar", "record_open": False, "player": "auto"}
     assert _call(ctx, "PUT", "/settings", {"record_open": True})[1]["record_open"] is True
-    assert _call(ctx, "GET", "/state")[1]["settings"] == {"explore": "familiar", "record_open": True}
+    assert _call(ctx, "PUT", "/settings", {"player": "youtube"})[1]["player"] == "youtube"
+    assert _call(ctx, "GET", "/state")[1]["settings"] == {"explore": "familiar", "record_open": True, "player": "youtube"}
 
 
 @pytest.mark.parametrize(
     "body",
-    [{}, {"explore": "wild"}, {"record_open": "yes"}, {"explore": "balanced", "theme": "dark"}],
+    [{}, {"explore": "wild"}, {"record_open": "yes"}, {"player": "spotify"}, {"player": None},
+     {"explore": "balanced", "theme": "dark"}],
 )
 def test_bad_settings_are_refused(ctx, body) -> None:
     assert _call(ctx, "PUT", "/settings", body)[0] == 400

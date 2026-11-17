@@ -36,6 +36,8 @@
     "more": "Mais como esta",
     "open_bilibili": "Abrir no bilibili",
     "bilibili_note": "Abre em uma nova aba do seu próprio navegador.",
+    "open_youtube": "Abrir no YouTube",
+    "youtube_blank": "Player em branco ou Error 153? Atualize o Kiro Crew ou abra no YouTube.",
     "queue": "A seguir",
     "play": "Tocar {{title}}",
     "player_title": "Player do YouTube: {{title}}",
@@ -122,10 +124,9 @@
     "explore_familiar": "Mais conhecido",
     "explore_balanced": "Equilibrado",
     "explore_more": "Explorar mais",
-    "stay_only": "Hoje só quero ficar neste sentimento",
-    "browser_setup": "A busca no bilibili precisa do navegador: configure em Configurações -> Navegador. Desta vez a busca foi na web.",
-    "browser_policy": "O navegador está desligado por política, então desta vez o bilibili foi buscado na web.",
-    "browser_open_settings": "Abrir configurações do navegador"
+    "player": "Player",
+    "player_auto": "Automático",
+    "stay_only": "Hoje só quero ficar neste sentimento"
   },
   "card": {
     "arc_stay": "Ficar junto",

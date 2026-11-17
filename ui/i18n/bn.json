@@ -36,6 +36,8 @@
     "more": "এমন আরও",
     "open_bilibili": "bilibili-তে খুলুন",
     "bilibili_note": "আপনার নিজের ব্রাউজারের নতুন ট্যাবে খোলে।",
+    "open_youtube": "YouTube-এ খুলুন",
+    "youtube_blank": "প্লেয়ার ফাঁকা বা Error 153? Kiro Crew আপডেট করুন, বা YouTube-এ খুলুন।",
     "queue": "এরপর",
     "play": "{{title}} বাজান",
     "player_title": "YouTube প্লেয়ার: {{title}}",
@@ -122,10 +124,9 @@
     "explore_familiar": "একটু চেনা",
     "explore_balanced": "ভারসাম্য",
     "explore_more": "আরও অন্বেষণ",
-    "stay_only": "আজ শুধু এই অনুভূতিতে থাকি",
-    "browser_setup": "bilibili খুঁজতে ব্রাউজার লাগে: সেটিংস -> ব্রাউজার-এ সেট করুন। এবার ওয়েবে খোঁজা হয়েছে।",
-    "browser_policy": "ব্রাউজার নীতির কারণে বন্ধ, তাই এবার bilibili ওয়েবে খোঁজা হয়েছে।",
-    "browser_open_settings": "ব্রাউজার সেটিংস খুলুন"
+    "player": "প্লেয়ার",
+    "player_auto": "স্বয়ংক্রিয়",
+    "stay_only": "আজ শুধু এই অনুভূতিতে থাকি"
   },
   "card": {
     "arc_stay": "পাশে থাকা",

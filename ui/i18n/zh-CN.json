@@ -36,6 +36,8 @@
     "more": "更多类似的",
     "open_bilibili": "在 bilibili 打开",
     "bilibili_note": "在你自己浏览器的新标签页打开。",
+    "open_youtube": "在 YouTube 打开",
+    "youtube_blank": "播放器空白或显示 Error 153？请更新 Kiro Crew，或在 YouTube 打开。",
     "queue": "接下来",
     "play": "播放 {{title}}",
     "player_title": "YouTube 播放器：{{title}}",
@@ -122,10 +124,9 @@
     "explore_familiar": "熟悉一点",
     "explore_balanced": "平衡",
     "explore_more": "多探索",
-    "stay_only": "今天只想待在这个情绪里",
-    "browser_setup": "搜 bilibili 需要浏览器：请在 设置 -> 浏览器 里装好。这次先用网页搜索。",
-    "browser_policy": "浏览器已被策略关闭，这次 bilibili 用网页搜索。",
-    "browser_open_settings": "打开浏览器设置"
+    "player": "播放器",
+    "player_auto": "自动",
+    "stay_only": "今天只想待在这个情绪里"
   },
   "card": {
     "arc_stay": "陪着",

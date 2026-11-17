@@ -25,13 +25,15 @@ vi.mock('../src/api', async orig => {
 
 import MoodMusicPage, { KNOWN_AFTER_MS, OFFLINE_MS, POLL_MS, STUCK_MS } from '../src/MoodMusicPage'
 import { replySource } from '../src/replyParse'
+import { FADE_MS } from '../src/MoodBackdrop'
+import { presetScene } from '../src/moods'
 import { resetStubSdk, stubOpenChat } from './stubs/app-sdk'
 
 const api = mock.api
 const ID = 'dQw4w9WgXcQ'
 const t = (k: string, o?: Record<string, string | number>) => tr(k.includes('.') ? k : `page.${k}`, o)
 
-const EMPTY: MoodState = { moments: [], queue: [], feedback: [], last_source: '', memory: [], settings: { explore: 'balanced', record_open: false } }
+const EMPTY: MoodState = { moments: [], queue: [], feedback: [], last_source: '', memory: [], settings: { explore: 'balanced', record_open: false, player: 'auto' } }
 const LIKED: MemoryItem = { id: 'q'.repeat(32), kind: 'liked', origin: 'app', pinned: false, stale: false, created_at: 1, last_used_at: 1, title: 'Old Love', artist: 'B' }
 
 function queued(over: Partial<QueuedPick>): QueuedPick {
@@ -130,6 +132,9 @@ describe('MoodMusicPage', () => {
 
     const frame = screen.getByTestId('mood-youtube-frame')
     expect(frame.getAttribute('src')).toBe(`https://www.youtube-nocookie.com/embed/${ID}?rel=0`)
+    // A host that blocks the embed (Error 153) still leaves a way to play it.
+    expect(within(screen.getByTestId('mood-youtube-note')).getByRole('link', { name: t('page.open_youtube') }))
+      .toHaveAttribute('href', `https://www.youtube.com/watch?v=${ID}`)
 
     fireEvent.click(within(screen.getByTestId('mood-follow-ups')).getByRole('button', { name: '再安静一点' }))
     await flush()
@@ -177,64 +182,6 @@ describe('MoodMusicPage', () => {
     // Waiting on the person is not the buddy being stuck.
     await flush(STUCK_MS + POLL_MS)
     expect(screen.queryByTestId('mood-stuck')).toBeNull()
-  })
-
-  it('asks the person about a bilibili search in the browser, and declines any other browser call itself', async () => {
-    await start()
-    const browser = (id: string, input: object) => ({ role: 'permission', content: 'browser', meta: { approval_id: id, tool_name: 'browser', mcp_server: 'kirocrew-core', tool_input: JSON.stringify(input) } })
-    api.getSlot.mockResolvedValue(running(browser('b1', { op: 'navigate', args: { url: 'https://search.bilibili.com/all?keyword=x' } })))
-    await flush(POLL_MS)
-    const card = screen.getByTestId('mood-approval')
-    expect(card).toHaveTextContent(t('chat.approval_host', { host: 'search.bilibili.com' }))
-    expect(api.approve).not.toHaveBeenCalled()
-
-    api.getSlot.mockResolvedValue(running(browser('b2', { op: 'navigate', args: { url: 'https://evil.example/steal' } })))
-    await flush(POLL_MS)
-    expect(screen.queryByTestId('mood-approval')).toBeNull()
-    expect(api.approve).toHaveBeenCalledWith('mood-music', 'b2', 'rejected')
-    await flush(POLL_MS)
-    expect(api.approve).toHaveBeenCalledTimes(1)
-
-    api.getSlot.mockResolvedValue(running(browser('b3', { op: 'click', args: { ref: 'e31' } })))
-    await flush(POLL_MS)
-    expect(screen.queryByTestId('mood-approval')).toBeNull()
-    expect(api.approve).toHaveBeenLastCalledWith('mood-music', 'b3', 'rejected')
-  })
-
-  it('says bilibili search needs Settings -> Browser when browsing is not set up, with a link there', async () => {
-    await start()
-    const notSetUp = { role: 'tool', content: 'browser', meta: { tool_name: 'browser', mcp_server: 'kirocrew-core', output: 'Error: browsing is not set up on this host. Ask the user to install it from Settings -> Browser (one click), then call the tool again.' } }
-    const done = { running: false, messages: [USER, notSetUp, { role: 'tool', content: 'web_search', meta: { tool_name: 'web_search' } }, { role: 'assistant', content: block({ picks: [{ title: 'Song', source: 'youtube', url: `https://www.youtube.com/watch?v=${ID}` }] }) }] }
-    api.setQueue.mockResolvedValue({ queue: [queued({})] })
-    api.getSlot.mockResolvedValue(done)
-    await flush(POLL_MS)
-    const banner = screen.getByTestId('mood-browser')
-    expect(banner).toHaveTextContent(t('chat.browser_setup'))
-    expect(within(banner).getByTestId('mood-browser-settings').getAttribute('href')).toBe('/settings/browser')
-    // The fallback still queued what web_search found.
-    expect(api.setQueue).toHaveBeenCalled()
-  })
-
-  it('says browsing is off by policy, with no settings link', async () => {
-    await start()
-    const denied = { role: 'tool', content: 'browser', meta: { tool_name: 'browser', output: 'Error: web browsing is disabled by governance policy' } }
-    api.getSlot.mockResolvedValue({ running: false, messages: [USER, denied, { role: 'assistant', content: block({ follow_ups: ['换一个方向'] }) }] })
-    await flush(POLL_MS)
-    expect(screen.getByTestId('mood-browser')).toHaveTextContent(t('chat.browser_policy'))
-    expect(screen.queryByTestId('mood-browser-settings')).toBeNull()
-  })
-
-  it('counts a bilibili link the browser showed as checked', async () => {
-    await start()
-    const seen = 'https://www.bilibili.com/video/BV1xx411c7mD'
-    const other = 'https://www.bilibili.com/video/BV1GJ411x7h7'
-    const snap = { role: 'tool', content: 'browser', meta: { tool_name: 'browser', mcp_server: 'kirocrew-core', output: '- link "苏州河" [ref=e40]:\n  - /url: //www.bilibili.com/video/BV1xx411c7mD' } }
-    api.verifyPicks.mockImplementation(async (picks: object[]) => ({ picks: picks.map(p => ({ ...p, unverified: true })), dropped: {} }))
-    api.setQueue.mockResolvedValue({ queue: [] })
-    api.getSlot.mockResolvedValue({ running: false, messages: [USER, snap, { role: 'assistant', content: block({ picks: [{ title: 'A', source: 'bilibili', url: seen }, { title: 'B', source: 'bilibili', url: other }] }) }] })
-    await flush(POLL_MS)
-    const sent = api.setQueue.mock.calls[0][0].picks
-    expect(sent.map((p: { unverified?: boolean }) => !!p.unverified)).toEqual([false, true])
   })
 
   it('shows the steps when the app may not ask for approvals yet', async () => {
@@ -407,6 +354,19 @@ describe('MoodMusicPage', () => {
     expect(sent).toContain('Arc: stay only')
   })
 
+  it('sends the preferred player, keeps it, and reads a saved one back', async () => {
+    api.state.mockResolvedValue({ ...EMPTY, settings: { ...EMPTY.settings, player: 'bilibili' } })
+    render(<MoodMusicPage />)
+    await flush()
+    const choice = screen.getByTestId('mood-player-choice')
+    expect(within(choice).getByRole('tab', { name: t('page.source_bilibili') })).toHaveAttribute('aria-selected', 'true')
+    fireEvent.click(within(choice).getByRole('tab', { name: t('page.source_youtube') }))
+    expect(api.setSettings).toHaveBeenCalledWith({ player: 'youtube' })
+    fireEvent.click(screen.getByRole('button', { name: t('mood_sad') }))
+    await flush()
+    expect(api.ask.mock.calls[0][0]).toContain('Player: youtube (give a YouTube link for every song; use bilibili only')
+  })
+
   it('keeps the full record collapsed until asked, and remembers it open', async () => {
     const slot = reply({ picks: [] })
     api.state.mockResolvedValue({ ...EMPTY, last_source: 'r1' })
@@ -491,9 +451,73 @@ describe('MoodMusicPage', () => {
       expect(styles.join(' ')).not.toMatch(/#[0-9a-f]{3,8}\b|rgb\(/i)
       const glows = screen.getAllByTestId('mood-glow')
       expect(glows[0].style.background).toContain('var(--bg)')
-      expect(glows[0].dataset.hue).toBe('230')
+      expect(glows[0].dataset.hue).toBe('212')
     } finally {
       document.documentElement.classList.remove('dark')
+    }
+  })
+})
+
+describe('the backdrop scene', () => {
+  const SCENE = { hues: [8, 30, 350], saturation: 'vivid', lightness: 'medium', strength: 0.8, motion: 'lively', pattern: 'particles', arc: 'turn' }
+  const backdrop = () => screen.getByTestId('mood-backdrop')
+  const afterFade = () => flush(FADE_MS + 200)
+
+  it('sets a chip preset at once, then takes the scene the buddy chose', async () => {
+    await start('mood_sad')
+    expect(backdrop().dataset.look).toBe('sad')
+    expect(backdrop().dataset.hues).toBe(presetScene('sad').hues.join(','))
+    api.getSlot.mockResolvedValue(reply({ picks: [], follow_ups: ['换成国语歌'], scene: SCENE }))
+    await flush(POLL_MS)
+    expect(backdrop().dataset.look).toBe('dj')
+    expect(backdrop().dataset.pattern).toBe('particles')
+    expect(backdrop().dataset.hues).toBe('8,30,350')
+    // The old scene fades out under the new one, then is dropped.
+    expect(screen.getAllByTestId('mood-scene')).toHaveLength(2)
+    await afterFade()
+    expect(screen.getAllByTestId('mood-scene')).toHaveLength(1)
+    expect(screen.getAllByTestId('mood-particle').length).toBeGreaterThan(0)
+  })
+
+  it('keeps the scene when a reply leaves it out, or sends one out of bounds', async () => {
+    await start('mood_sad')
+    api.getSlot.mockResolvedValue(reply({ picks: [], follow_ups: ['换成国语歌'], scene: SCENE }))
+    await flush(POLL_MS)
+    await afterFade()
+    fireEvent.click(within(screen.getByTestId('mood-follow-ups')).getByRole('button', { name: '换成国语歌' }))
+    await flush()
+    api.getSlot.mockResolvedValue(reply({ picks: [], follow_ups: ['再安静一点'], mood_tags: ['开心'] }))
+    await flush(POLL_MS)
+    expect(backdrop().dataset.hues).toBe('8,30,350')
+    fireEvent.click(within(screen.getByTestId('mood-follow-ups')).getByRole('button', { name: '再安静一点' }))
+    await flush()
+    api.getSlot.mockResolvedValue(reply({ picks: [], follow_ups: ['x'], scene: { ...SCENE, pattern: 'url(https://evil.example)' } }))
+    await flush(POLL_MS)
+    expect(backdrop().dataset.hues).toBe('8,30,350')
+    expect(screen.getAllByTestId('mood-scene')).toHaveLength(1)
+  })
+
+  it('swaps scenes at once and holds still under reduced motion', async () => {
+    motion.reduced = true
+    await start('mood_sad')
+    api.getSlot.mockResolvedValue(reply({ picks: [], follow_ups: ['x'], scene: SCENE }))
+    await flush(POLL_MS)
+    expect(backdrop().dataset.look).toBe('dj')
+    expect(backdrop().dataset.moving).toBe('false')
+    expect(screen.getAllByTestId('mood-scene')).toHaveLength(1)
+    for (const el of screen.getAllByTestId('mood-particle')) expect(el.style.animation).toBe('none')
+  })
+
+  it('pauses while the page is hidden', async () => {
+    render(<MoodMusicPage />)
+    await flush()
+    expect(backdrop().dataset.moving).toBe('true')
+    const state = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
+    try {
+      act(() => { document.dispatchEvent(new Event('visibilitychange')) })
+      expect(backdrop().dataset.moving).toBe('false')
+    } finally {
+      state.mockRestore()
     }
   })
 })

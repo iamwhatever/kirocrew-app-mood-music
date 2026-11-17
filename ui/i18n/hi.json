@@ -36,6 +36,8 @@
     "more": "ऐसे और",
     "open_bilibili": "bilibili पर खोलें",
     "bilibili_note": "आपके अपने ब्राउज़र के नए टैब में खुलता है।",
+    "open_youtube": "YouTube पर खोलें",
+    "youtube_blank": "प्लेयर खाली है या Error 153? Kiro Crew अपडेट करें, या YouTube पर खोलें।",
     "queue": "आगे",
     "play": "{{title}} चलाएँ",
     "player_title": "YouTube प्लेयर: {{title}}",
@@ -122,10 +124,9 @@
     "explore_familiar": "थोड़ा जाना-पहचाना",
     "explore_balanced": "संतुलित",
     "explore_more": "और खोज",
-    "stay_only": "आज बस इसी एहसास में रहना है",
-    "browser_setup": "bilibili खोज के लिए ब्राउज़र चाहिए: इसे सेटिंग्स -> ब्राउज़र में सेट करें। इस बार वेब पर खोजा गया।",
-    "browser_policy": "ब्राउज़र नीति से बंद है, इसलिए इस बार bilibili वेब पर खोजा गया।",
-    "browser_open_settings": "ब्राउज़र सेटिंग्स खोलें"
+    "player": "प्लेयर",
+    "player_auto": "अपने-आप",
+    "stay_only": "आज बस इसी एहसास में रहना है"
   },
   "card": {
     "arc_stay": "साथ रहना",

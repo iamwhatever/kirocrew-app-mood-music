@@ -7,14 +7,25 @@
  * Kiro Crew memory: taste lives in the app's storage and is sent with each
  * request instead (`request.prompt.ts`). The slot is (re)opened before every
  * send, because a send to a missing slot would recreate it as a plain chat.
+ *
+ * It is also created with `mode: 'mood-music'` (`permissions.hiddenSessions`),
+ * so the chat stays out of Kiro Crew's session lists. A chat keeps the mode it
+ * was made with, so the hidden one has a new name ({@link SLOT_NAME}); the old
+ * visible `mood-music` chat is left as it was. A host that refuses the mode
+ * (older Kiro Crew, or the app not trusted) gets the old visible chat instead.
  */
-import type { AppApi } from '@kirocrew/app-sdk'
+import type { AppApi, AppApiError } from '@kirocrew/app-sdk'
 import type { Evidence, NewPick, PickArc, PickSource, PickTier } from './replyParse'
-import type { ExploreLevel } from './request.prompt'
+import type { ExploreLevel, Player } from './request.prompt'
 
 const BASE = '/api/apps/mood-music'
 export const DJ_AGENT = 'mood-music-dj'
-export const SLOT_NAME = 'mood-music'
+/** The hidden chat's name. */
+export const SLOT_NAME = 'mood-music-buddy'
+/** The chat before hidden sessions: listed, used only when the host refuses the mode. */
+export const LISTED_SLOT_NAME = 'mood-music'
+/** The app id, which is the only mode Kiro Crew lets this app hide. */
+export const HIDDEN_MODE = 'mood-music'
 const MEMORY_MODE = 'temporary'
 
 export type Verdict = 'liked' | 'skipped' | ''
@@ -87,14 +98,16 @@ export interface MoodState {
 export interface Settings {
   explore: ExploreLevel
   record_open: boolean
+  /** The site the person would rather play on; the other is only a fallback. */
+  player: Player
 }
 
 export interface SlotMessage {
   role?: string
   type?: string
   content?: string
-  /** On a `permission` row: the approval's id, and `resolved` once it is answered. On a `tool` row: its `output`. */
-  meta?: { approval_id?: unknown; resolved?: unknown; tool_name?: unknown; mcp_server?: unknown; tool_input?: unknown; output?: unknown; kind?: unknown }
+  /** On a `permission` row: the approval's id, and `resolved` once it is answered. */
+  meta?: { approval_id?: unknown; resolved?: unknown; tool_name?: unknown; tool_input?: unknown; kind?: unknown }
 }
 
 export interface SlotData {
@@ -125,11 +138,35 @@ interface SendReceipt {
   error?: string
 }
 
+/** Whether the host refused the hidden mode (`400 invalid_mode`): an older Kiro Crew, or no grant. */
+export function modeRefused(e: unknown): boolean {
+  const err = e as Partial<AppApiError> | null
+  if (!err || err.status !== 400 || typeof err.body !== 'string') return false
+  try {
+    return (JSON.parse(err.body) as { code?: unknown }).code === 'invalid_mode'
+  } catch {
+    return false
+  }
+}
+
 export type MoodApi = ReturnType<typeof createMoodApi>
 
 export function createMoodApi(api: AppApi) {
-  const openSlot = () =>
-    api.post<{ key: string }>('/api/chat/slots', { name: SLOT_NAME, agent: DJ_AGENT, memory_mode: MEMORY_MODE })
+  // Once the host refused the mode, this page stays on the listed chat.
+  let listed = false
+  const openSlot = async () => {
+    if (!listed) {
+      try {
+        return await api.post<{ key: string }>('/api/chat/slots', {
+          name: SLOT_NAME, agent: DJ_AGENT, memory_mode: MEMORY_MODE, mode: HIDDEN_MODE,
+        })
+      } catch (e) {
+        if (!modeRefused(e)) throw e
+        listed = true
+      }
+    }
+    return api.post<{ key: string }>('/api/chat/slots', { name: LISTED_SLOT_NAME, agent: DJ_AGENT, memory_mode: MEMORY_MODE })
+  }
   return {
     state: () => api.get<MoodState>(`${BASE}/state`),
     addMoment: (mood: string) => api.post<Moment>(`${BASE}/moments`, { mood }),

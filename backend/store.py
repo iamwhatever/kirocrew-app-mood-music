@@ -50,7 +50,9 @@ ANCHOR_WINDOW = 30 * 86400
 MAX_ANCHORS = 100
 #: The page's own choices (design §0.3, §1.9), with their defaults.
 EXPLORE_LEVELS = ("familiar", "balanced", "explore")
-DEFAULT_SETTINGS = {"explore": "balanced", "record_open": False}
+#: Which site the person would rather play on; ``auto`` takes either.
+PLAYERS = ("auto", "youtube", "bilibili")
+DEFAULT_SETTINGS = {"explore": "balanced", "record_open": False, "player": "auto"}
 
 
 class MemoryFull(Exception):
@@ -120,6 +122,8 @@ class MoodStore:
             state["settings"]["explore"] = saved["explore"]
         if isinstance(saved.get("record_open"), bool):
             state["settings"]["record_open"] = saved["record_open"]
+        if saved.get("player") in PLAYERS:
+            state["settings"]["player"] = saved["player"]
         if not isinstance(data.get("memory"), list):
             # A file from before memory: its likes and skips become memory items.
             for f in reversed(state["feedback"]):

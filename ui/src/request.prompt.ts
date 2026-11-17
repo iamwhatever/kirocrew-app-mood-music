@@ -19,6 +19,16 @@ export const EXPLORE_MIX: Readonly<Record<ExploreLevel, readonly [number, number
   explore: [0, 4, 1],
 }
 
+/** The site the person would rather play on (`auto`: either). */
+export type Player = 'auto' | 'youtube' | 'bilibili'
+
+/** The request line for each player choice: the preferred site first, the other only as a fallback. */
+export const PLAYER_LINE: Readonly<Record<Player, string>> = {
+  auto: 'Player: any (YouTube or bilibili, whichever has the song)',
+  youtube: 'Player: youtube (give a YouTube link for every song; use bilibili only for a song with no YouTube video you could find)',
+  bilibili: 'Player: bilibili (give a bilibili link for every song; use YouTube only for a song with no bilibili video you could find)',
+}
+
 /**
  * The message the page sends the DJ. The taste summary is the app's own record
  * of what the person liked and skipped, marked as data for the agent.
@@ -29,8 +39,9 @@ export function buildRequest(opts: {
   state: MoodState | undefined
   explore?: ExploreLevel
   stayOnly?: boolean
+  player?: Player
 }): string {
-  const { kind, text, state, explore = 'balanced', stayOnly = false } = opts
+  const { kind, text, state, explore = 'balanced', stayOnly = false, player = 'auto' } = opts
   const head = { mood: 'Mood', answer: 'Answer to your question', more: 'More like this song', follow: 'Follow-up' }[kind]
   const [anchor, exp, deep] = EXPLORE_MIX[explore]
   return [
@@ -39,6 +50,7 @@ export function buildRequest(opts: {
     '',
     `Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`,
     `Arc: ${stayOnly ? 'stay only' : 'stay -> turn -> lift'}`,
+    PLAYER_LINE[player] ?? PLAYER_LINE.auto,
     '',
     ...memorySummary(state?.memory ?? []).lines,
     '',
@@ -126,6 +138,8 @@ export const REPLY_FORMAT = [
   '- "why": why this song now, one line. "listen_for": one line on something to hear in it.',
   '- "evidence" (explore and deep): {"url": a page you opened this turn that praises it, "label": what that page is}.',
   '- "follow_ups": 2 or 3 short replies the person can tap. "remember" (optional): one short preference they stated, offered for them to save.',
+  '- "scene" (optional): the page background. Send it ONLY on a big mood shift: your first reply in this chat, or when the feeling clearly changes direction (sad -> fired up, calm -> missing someone). Leave it out otherwise; the page keeps the scene it has. Shape: {"hues": 2 or 3 numbers 0-359 (stay hue first, lift hue last), "saturation": "soft"|"medium"|"vivid", "lightness": "deep"|"medium"|"bright", "strength": 0 to 1, "motion": "slow"|"medium"|"lively", "pattern": "glows"|"waves"|"particles"|"aurora", "arc": "stay"|"turn"|"lift"}. Anything else is ignored.',
+  '- Scene examples: rainy missing -> {"hues": [220, 260, 300], "saturation": "medium", "lightness": "deep", "strength": 0.6, "motion": "slow", "pattern": "aurora", "arc": "stay"}; fired up -> {"hues": [8, 30, 350], "saturation": "vivid", "lightness": "medium", "strength": 0.8, "motion": "lively", "pattern": "particles", "arc": "turn"}.',
   'Example:',
   '```mood-music',
   '{"mood_tags": ["想念", "温柔"], "picks": [{"title": "Song", "artist": "Artist", "source": "youtube", "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "tier": "explore", "arc": "stay", "why": "One short line.", "listen_for": "The second verse drops to piano and breath.", "evidence": {"url": "https://example.com/review", "label": "A review"}, "tags": []}], "follow_ups": ["再安静一点", "换成粤语"]}',

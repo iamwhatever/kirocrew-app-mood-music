@@ -31,7 +31,7 @@ const ID = 'dQw4w9WgXcQ'
 const ID2 = 'oHg5SJYRHA0'
 const t = (k: string, o?: Record<string, string | number>) => tr(k.includes('.') ? k : `page.${k}`, o)
 const MOMENT = { id: 'm'.repeat(32), mood: 'x', note: '', tags: [], songs: [], at: 1 }
-const EMPTY: MoodState = { moments: [], queue: [], feedback: [], last_source: '', memory: [], settings: { explore: 'balanced', record_open: false } }
+const EMPTY: MoodState = { moments: [], queue: [], feedback: [], last_source: '', memory: [], settings: { explore: 'balanced', record_open: false, player: 'auto' } }
 
 const USER = { role: 'user', content: '[Mood Music]\nMood: Calm\n' }
 const block = (data: unknown) => '听起来是安静地想。\n```mood-music\n' + JSON.stringify(data) + '\n```'
@@ -192,6 +192,34 @@ describe('coming back to the page', () => {
     expect(screen.queryByTestId('mood-status')).toBeNull()
     expect(api.setQueue).not.toHaveBeenCalled()
     expect(JSON.parse(window.sessionStorage.getItem(PAGE_KEY)!).pending).toBeNull()
+  })
+
+  it('does not wait on a turn that went to the old listed chat, after the move to the hidden one', async () => {
+    window.sessionStorage.setItem(PAGE_KEY, JSON.stringify({
+      tab: 'listen', slotKey: 'mood-music', pending: { momentId: MOMENT.id, baseline: 'old', memoryIds: [], text: 'Calm' },
+    }))
+    api.state.mockResolvedValue({ ...EMPTY, moments: [MOMENT] })
+    api.openSlot.mockResolvedValue({ key: 'mood-music-buddy' })
+    render(<MoodMusicPage />)
+    await flush(POLL_MS)
+    expect(api.getSlot).toHaveBeenCalledWith('mood-music-buddy')
+    expect(screen.queryByTestId('mood-status')).toBeNull()
+    expect(JSON.parse(window.sessionStorage.getItem(PAGE_KEY)!)).toMatchObject({ slotKey: 'mood-music-buddy', pending: null })
+  })
+
+  it('brings back the scene on screen, and reads an older saved look as its preset', async () => {
+    const scene = { hues: [8, 30, 350], saturation: 'vivid', lightness: 'medium', strength: 0.8, motion: 'lively', pattern: 'particles', arc: 'turn', source: 'dj' }
+    window.sessionStorage.setItem(PAGE_KEY, JSON.stringify({ tab: 'listen', scene }))
+    render(<MoodMusicPage />)
+    await flush()
+    expect(screen.getByTestId('mood-backdrop').dataset.look).toBe('dj')
+    expect(screen.getByTestId('mood-backdrop').dataset.hues).toBe('8,30,350')
+    expect(JSON.parse(window.sessionStorage.getItem(PAGE_KEY)!).scene).toEqual(scene)
+    cleanup()
+    window.sessionStorage.setItem(PAGE_KEY, JSON.stringify({ tab: 'listen', look: 'missing', scene: { hues: ['x'] } }))
+    render(<MoodMusicPage />)
+    await flush()
+    expect(screen.getByTestId('mood-backdrop').dataset.look).toBe('missing')
   })
 
   it('goes back to where the page was scrolled', async () => {

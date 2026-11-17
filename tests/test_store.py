@@ -30,8 +30,16 @@ def test_an_empty_store_reads_empty(tmp_path: Path) -> None:
         "feedback": [],
         "last_source": "",
         "memory": [],
-        "settings": {"explore": "balanced", "record_open": False},
+        "settings": {"explore": "balanced", "record_open": False, "player": "auto"},
     }
+
+
+def test_a_saved_player_is_read_back_and_a_bad_one_is_ignored(tmp_path: Path) -> None:
+    s = _store(tmp_path)
+    s.set_settings(player="bilibili")
+    assert _store(tmp_path).snapshot()["settings"]["player"] == "bilibili"
+    (tmp_path / "state.json").write_text('{"settings": {"player": "spotify"}}', encoding="utf-8")
+    assert _store(tmp_path).snapshot()["settings"]["player"] == "auto"
 
 
 def test_moments_are_newest_first_and_bounded(tmp_path: Path, monkeypatch) -> None:

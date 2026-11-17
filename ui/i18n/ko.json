@@ -36,6 +36,8 @@
     "more": "비슷한 곡 더 보기",
     "open_bilibili": "bilibili에서 열기",
     "bilibili_note": "내 브라우저의 새 탭에서 열립니다.",
+    "open_youtube": "YouTube에서 열기",
+    "youtube_blank": "플레이어가 비어 있거나 Error 153이 보이나요? Kiro Crew를 업데이트하거나 YouTube에서 여세요.",
     "queue": "다음 곡",
     "play": "{{title}} 재생",
     "player_title": "YouTube 플레이어: {{title}}",
@@ -122,10 +124,9 @@
     "explore_familiar": "익숙하게",
     "explore_balanced": "균형",
     "explore_more": "더 탐색",
-    "stay_only": "오늘은 이 기분 그대로 있고 싶어",
-    "browser_setup": "bilibili 검색에는 브라우저가 필요합니다. 설정 -> 브라우저에서 준비하세요. 이번에는 웹 검색을 썼어요.",
-    "browser_policy": "브라우저가 정책으로 꺼져 있어 이번에는 bilibili를 웹에서 검색했어요.",
-    "browser_open_settings": "브라우저 설정 열기"
+    "player": "플레이어",
+    "player_auto": "자동",
+    "stay_only": "오늘은 이 기분 그대로 있고 싶어"
   },
   "card": {
     "arc_stay": "곁에 머물기",

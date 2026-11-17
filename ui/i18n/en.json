@@ -36,6 +36,8 @@
     "more": "More like this",
     "open_bilibili": "Open on bilibili",
     "bilibili_note": "Opens in a new tab of your own browser.",
+    "open_youtube": "Open on YouTube",
+    "youtube_blank": "Blank player or Error 153? Update Kiro Crew, or open it on YouTube.",
     "queue": "Up next",
     "play": "Play {{title}}",
     "player_title": "YouTube player: {{title}}",
@@ -122,10 +124,9 @@
     "explore_familiar": "More familiar",
     "explore_balanced": "Balanced",
     "explore_more": "Explore more",
-    "stay_only": "Just stay in this feeling today",
-    "browser_setup": "bilibili search needs the browser: set it up in Settings -> Browser. Searched the web this time.",
-    "browser_policy": "Browsing is turned off by policy, so bilibili was searched on the web this time.",
-    "browser_open_settings": "Open Browser settings"
+    "player": "Player",
+    "player_auto": "Auto",
+    "stay_only": "Just stay in this feeling today"
   },
   "card": {
     "arc_stay": "Stay with it",
