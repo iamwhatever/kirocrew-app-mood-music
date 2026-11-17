@@ -122,7 +122,10 @@
     "explore_familiar": "熟悉一点",
     "explore_balanced": "平衡",
     "explore_more": "多探索",
-    "stay_only": "今天只想待在这个情绪里"
+    "stay_only": "今天只想待在这个情绪里",
+    "browser_setup": "搜 bilibili 需要浏览器：请在 设置 -> 浏览器 里装好。这次先用网页搜索。",
+    "browser_policy": "浏览器已被策略关闭，这次 bilibili 用网页搜索。",
+    "browser_open_settings": "打开浏览器设置"
   },
   "card": {
     "arc_stay": "陪着",

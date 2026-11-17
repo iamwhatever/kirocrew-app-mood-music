@@ -122,7 +122,10 @@
     "explore_familiar": "Mais conhecido",
     "explore_balanced": "Equilibrado",
     "explore_more": "Explorar mais",
-    "stay_only": "Hoje só quero ficar neste sentimento"
+    "stay_only": "Hoje só quero ficar neste sentimento",
+    "browser_setup": "A busca no bilibili precisa do navegador: configure em Configurações -> Navegador. Desta vez a busca foi na web.",
+    "browser_policy": "O navegador está desligado por política, então desta vez o bilibili foi buscado na web.",
+    "browser_open_settings": "Abrir configurações do navegador"
   },
   "card": {
     "arc_stay": "Ficar junto",

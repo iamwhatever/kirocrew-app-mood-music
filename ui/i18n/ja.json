@@ -122,7 +122,10 @@
     "explore_familiar": "なじみ多め",
     "explore_balanced": "バランス",
     "explore_more": "もっと探索",
-    "stay_only": "今日はこの気持ちのままでいたい"
+    "stay_only": "今日はこの気持ちのままでいたい",
+    "browser_setup": "bilibili の検索にはブラウザが必要です。設定 -> ブラウザ で準備してください。今回はウェブ検索を使いました。",
+    "browser_policy": "ブラウザはポリシーで無効になっているため、今回は bilibili をウェブ検索しました。",
+    "browser_open_settings": "ブラウザ設定を開く"
   },
   "card": {
     "arc_stay": "寄り添う",

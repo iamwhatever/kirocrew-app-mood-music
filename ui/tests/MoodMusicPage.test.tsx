@@ -179,6 +179,64 @@ describe('MoodMusicPage', () => {
     expect(screen.queryByTestId('mood-stuck')).toBeNull()
   })
 
+  it('asks the person about a bilibili search in the browser, and declines any other browser call itself', async () => {
+    await start()
+    const browser = (id: string, input: object) => ({ role: 'permission', content: 'browser', meta: { approval_id: id, tool_name: 'browser', mcp_server: 'kirocrew-core', tool_input: JSON.stringify(input) } })
+    api.getSlot.mockResolvedValue(running(browser('b1', { op: 'navigate', args: { url: 'https://search.bilibili.com/all?keyword=x' } })))
+    await flush(POLL_MS)
+    const card = screen.getByTestId('mood-approval')
+    expect(card).toHaveTextContent(t('chat.approval_host', { host: 'search.bilibili.com' }))
+    expect(api.approve).not.toHaveBeenCalled()
+
+    api.getSlot.mockResolvedValue(running(browser('b2', { op: 'navigate', args: { url: 'https://evil.example/steal' } })))
+    await flush(POLL_MS)
+    expect(screen.queryByTestId('mood-approval')).toBeNull()
+    expect(api.approve).toHaveBeenCalledWith('mood-music', 'b2', 'rejected')
+    await flush(POLL_MS)
+    expect(api.approve).toHaveBeenCalledTimes(1)
+
+    api.getSlot.mockResolvedValue(running(browser('b3', { op: 'click', args: { ref: 'e31' } })))
+    await flush(POLL_MS)
+    expect(screen.queryByTestId('mood-approval')).toBeNull()
+    expect(api.approve).toHaveBeenLastCalledWith('mood-music', 'b3', 'rejected')
+  })
+
+  it('says bilibili search needs Settings -> Browser when browsing is not set up, with a link there', async () => {
+    await start()
+    const notSetUp = { role: 'tool', content: 'browser', meta: { tool_name: 'browser', mcp_server: 'kirocrew-core', output: 'Error: browsing is not set up on this host. Ask the user to install it from Settings -> Browser (one click), then call the tool again.' } }
+    const done = { running: false, messages: [USER, notSetUp, { role: 'tool', content: 'web_search', meta: { tool_name: 'web_search' } }, { role: 'assistant', content: block({ picks: [{ title: 'Song', source: 'youtube', url: `https://www.youtube.com/watch?v=${ID}` }] }) }] }
+    api.setQueue.mockResolvedValue({ queue: [queued({})] })
+    api.getSlot.mockResolvedValue(done)
+    await flush(POLL_MS)
+    const banner = screen.getByTestId('mood-browser')
+    expect(banner).toHaveTextContent(t('chat.browser_setup'))
+    expect(within(banner).getByTestId('mood-browser-settings').getAttribute('href')).toBe('/settings/browser')
+    // The fallback still queued what web_search found.
+    expect(api.setQueue).toHaveBeenCalled()
+  })
+
+  it('says browsing is off by policy, with no settings link', async () => {
+    await start()
+    const denied = { role: 'tool', content: 'browser', meta: { tool_name: 'browser', output: 'Error: web browsing is disabled by governance policy' } }
+    api.getSlot.mockResolvedValue({ running: false, messages: [USER, denied, { role: 'assistant', content: block({ follow_ups: ['换一个方向'] }) }] })
+    await flush(POLL_MS)
+    expect(screen.getByTestId('mood-browser')).toHaveTextContent(t('chat.browser_policy'))
+    expect(screen.queryByTestId('mood-browser-settings')).toBeNull()
+  })
+
+  it('counts a bilibili link the browser showed as checked', async () => {
+    await start()
+    const seen = 'https://www.bilibili.com/video/BV1xx411c7mD'
+    const other = 'https://www.bilibili.com/video/BV1GJ411x7h7'
+    const snap = { role: 'tool', content: 'browser', meta: { tool_name: 'browser', mcp_server: 'kirocrew-core', output: '- link "苏州河" [ref=e40]:\n  - /url: //www.bilibili.com/video/BV1xx411c7mD' } }
+    api.verifyPicks.mockImplementation(async (picks: object[]) => ({ picks: picks.map(p => ({ ...p, unverified: true })), dropped: {} }))
+    api.setQueue.mockResolvedValue({ queue: [] })
+    api.getSlot.mockResolvedValue({ running: false, messages: [USER, snap, { role: 'assistant', content: block({ picks: [{ title: 'A', source: 'bilibili', url: seen }, { title: 'B', source: 'bilibili', url: other }] }) }] })
+    await flush(POLL_MS)
+    const sent = api.setQueue.mock.calls[0][0].picks
+    expect(sent.map((p: { unverified?: boolean }) => !!p.unverified)).toEqual([false, true])
+  })
+
   it('shows the steps when the app may not ask for approvals yet', async () => {
     await start()
     api.getSlot.mockResolvedValue(running({ role: 'permission', content: 'web_fetch', meta: { approval_id: 'r1' } }))

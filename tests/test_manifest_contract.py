@@ -179,17 +179,27 @@ class TestTheManifest(unittest.TestCase):
         """An approval the buddy's turn waits on is answered on the app page (design §1.8)."""
         self.assertIs(_manifest()["permissions"]["sessionApproval"], True)
 
-    def test_the_dj_has_only_web_search_and_web_fetch(self) -> None:
-        """Page text is untrusted, so the agent gets no browser, shell or file tool."""
+    def test_the_dj_has_web_search_web_fetch_and_the_browser_only(self) -> None:
+        """Page text is untrusted, so the agent gets no shell or file tool.
+
+        The browser is Kiro Crew's own ``browser`` tool, for bilibili search pages
+        only (``ui/src/browserUse.ts``); no other server is mounted.
+        """
         spec = json.loads((APP_ROOT / "agents" / "dj.json").read_text(encoding="utf-8"))
-        self.assertEqual(spec["tools"], ["web_search", "web_fetch"])
+        self.assertEqual(spec["tools"], ["web_search", "web_fetch", "@kirocrew-core/browser"])
         self.assertEqual(spec["mcpServers"], {})
+
+    def test_the_app_reaches_no_other_kiro_crew_tool(self) -> None:
+        """``mcpTools`` withholds every other host-managed tool from the agent."""
+        self.assertEqual(_manifest()["permissions"]["mcpTools"], ["browser"])
 
     def test_the_dj_runs_its_two_read_only_tools_without_asking(self) -> None:
         """The approval prompt sits in a chat the page hides, so it would stall the search.
 
         Only the two network-read tools are pre-allowed; Kiro Crew still drops
-        either one when a governance ceiling has a say about it.
+        either one when a governance ceiling has a say about it. The browser is
+        NOT: it may be the person's own signed-in Chrome, so every call waits for
+        an approval, which the page shows or, outside the bilibili rule, declines.
         """
         spec = json.loads((APP_ROOT / "agents" / "dj.json").read_text(encoding="utf-8"))
         self.assertEqual(spec["allowedTools"], ["web_search", "web_fetch"])

@@ -122,7 +122,10 @@
     "explore_familiar": "Plus familier",
     "explore_balanced": "Équilibré",
     "explore_more": "Plus de découvertes",
-    "stay_only": "Aujourd’hui, rester dans cette émotion"
+    "stay_only": "Aujourd’hui, rester dans cette émotion",
+    "browser_setup": "La recherche bilibili a besoin du navigateur : configure-le dans Réglages -> Navigateur. Cette fois, la recherche s’est faite sur le web.",
+    "browser_policy": "Le navigateur est désactivé par une règle, donc bilibili a été cherché sur le web cette fois.",
+    "browser_open_settings": "Ouvrir les réglages du navigateur"
   },
   "card": {
     "arc_stay": "Rester avec",

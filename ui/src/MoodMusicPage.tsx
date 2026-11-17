@@ -14,7 +14,9 @@
  * backend (`/verify-picks`), and only what passed is queued and drawn.
  *
  * Anything that needs the person shows here with a button (design §1.8): a
- * tool approval (allow once / don't), a missing chat-control grant, a failed
+ * tool approval (allow once / don't; a browser call outside `browserUse.ts`'s
+ * rule is declined without asking), browsing not set up for bilibili search
+ * (a link to Settings -> Browser), a missing chat-control grant, a failed
  * turn, a turn that went quiet, a lost connection, and a reply with nothing
  * playable left.
  */
@@ -36,6 +38,7 @@ import { parseDjReply, replySource } from './replyParse'
 import { usePrefersReducedMotion } from './reducedMotion'
 import { CARD_STYLE } from './cardStyle'
 import SongCard from './SongCard'
+import { browserBlocked, bvidOf, seenInBrowser } from './browserUse'
 import { activityKey, buddyStatus, conversation, pendingApproval, turnError, type BuddyStatus } from './turnState'
 import { loadView, saveView, type PageView, type SavedPending, type Tab } from './pageMemory'
 
@@ -150,6 +153,8 @@ export default function MoodMusicPage() {
   const lastShownRef = useRef<string>('')
   // Memory ids behind the queue on screen; marked used once its picks land.
   const queueMemoryRef = useRef<string[]>([])
+  /** Browser approvals the page already declined, so each is answered once. */
+  const refusedRef = useRef<Set<string>>(new Set())
   const chipRef = useRef<MoodKey | null>(null)
   chipRef.current = chip
 
@@ -334,6 +339,12 @@ export default function MoodMusicPage() {
       }
       if (!live) return
       setSlot(read)
+      const ask = pendingApproval(read)
+      if (ask?.refused && !refusedRef.current.has(ask.id)) {
+        // Not a bilibili search or video page: declined here, never shown as an "Allow".
+        refusedRef.current.add(ask.id)
+        void moodApi.approve(key, ask.id, 'rejected').catch(() => undefined)
+      }
       const moved = activityKey(read)
       if (moved !== lastKey || pendingApproval(read)) {
         lastKey = moved
@@ -368,6 +379,15 @@ export default function MoodMusicPage() {
       setChecking(true)
       try {
         const checked = await moodApi.verifyPicks(parsed.picks)
+        // A bilibili link the browser showed the buddy this turn is a real video,
+        // even when bilibili's own lookup could not answer the backend.
+        const seen = seenInBrowser(read)
+        checked.picks = checked.picks.map(p => {
+          const id = p.source === 'bilibili' && p.unverified ? bvidOf(p.url) : null
+          if (!id || !seen.has(id)) return p
+          const { unverified: _drop, ...rest } = p
+          return rest
+        })
         const dropped = parsed.dropped + Object.values(checked.dropped).reduce((a, b) => a + b, 0)
         if (checked.picks.length === 0) { setDroppedAll(dropped); setError('all_dropped'); return }
         if (dropped > 0) setNotice(t('page.dropped', { count: dropped }))
@@ -471,7 +491,9 @@ export default function MoodMusicPage() {
   const working = busy || !!pending
   const moving = !reduceMotion && !motionPaused
   const status = pending || checking ? buddyStatus(slot, checking) ?? { phase: 'thinking' as const, searches: 0, pages: 0 } : null
-  const approval = pending ? pendingApproval(slot) : null
+  const asked = pending ? pendingApproval(slot) : null
+  const approval = asked && !asked.refused ? asked : null
+  const blocked = !pending ? browserBlocked(slot) : null
   const lines = conversation(slot)
   const lastBuddy = [...lines].reverse().find(l => l.who === 'buddy')
   const lastParsed = !pending && lastBuddy?.reply ? parseDjReply(lastBuddy.reply) : null
@@ -616,6 +638,13 @@ export default function MoodMusicPage() {
                   <Banner testId="mood-approval" title={approval.host ? t('chat.approval_host', { host: approval.host }) : t('chat.approval_tool')} icon={<ShieldCheck size={14} aria-hidden="true" />}>
                     <Btn primary onClick={() => approve(approval.id, 'approved')}>{t('chat.allow_once')}</Btn>
                     <Btn onClick={() => approve(approval.id, 'rejected')}>{t('chat.deny')}</Btn>
+                  </Banner>
+                )}
+                {blocked && (
+                  <Banner testId="mood-browser" title={t(blocked === 'policy' ? 'chat.browser_policy' : 'chat.browser_setup')} icon={<Waves size={14} aria-hidden="true" />}>
+                    {blocked === 'setup' && (
+                      <a href="/settings/browser" className="rounded-full border border-[var(--accent)] px-3 py-1 text-xs font-medium text-[var(--text)] hover:bg-[var(--accent-subtle)]" data-testid="mood-browser-settings">{t('chat.browser_open_settings')}</a>
+                    )}
                   </Banner>
                 )}
                 {grant && (
