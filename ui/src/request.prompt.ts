@@ -138,6 +138,8 @@ export const REPLY_FORMAT = [
   '- "why": why this song now, one line. "listen_for": one line on something to hear in it.',
   '- "evidence" (explore and deep): {"url": a page you opened this turn that praises it, "label": what that page is}.',
   '- "follow_ups": 2 or 3 short replies the person can tap. "remember" (optional): one short preference they stated, offered for them to save.',
+  '- "scene" (optional): the page background. Send it ONLY on a big mood shift: your first reply in this chat, or when the feeling clearly changes direction (sad -> fired up, calm -> missing someone). Leave it out otherwise; the page keeps the scene it has. Shape: {"hues": 2 or 3 numbers 0-359 (stay hue first, lift hue last), "saturation": "soft"|"medium"|"vivid", "lightness": "deep"|"medium"|"bright", "strength": 0 to 1, "motion": "slow"|"medium"|"lively", "pattern": "glows"|"waves"|"particles"|"aurora", "arc": "stay"|"turn"|"lift"}. Anything else is ignored.',
+  '- Scene examples: rainy missing -> {"hues": [220, 260, 300], "saturation": "medium", "lightness": "deep", "strength": 0.6, "motion": "slow", "pattern": "aurora", "arc": "stay"}; fired up -> {"hues": [8, 30, 350], "saturation": "vivid", "lightness": "medium", "strength": 0.8, "motion": "lively", "pattern": "particles", "arc": "turn"}.',
   'Example:',
   '```mood-music',
   '{"mood_tags": ["想念", "温柔"], "picks": [{"title": "Song", "artist": "Artist", "source": "youtube", "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "tier": "explore", "arc": "stay", "why": "One short line.", "listen_for": "The second verse drops to piano and breath.", "evidence": {"url": "https://example.com/review", "label": "A review"}, "tags": []}], "follow_ups": ["再安静一点", "换成粤语"]}',

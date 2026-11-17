@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { buildRequest, memorySummary, REPLY_FORMAT, SUMMARY_LIMITS } from '../src/request.prompt'
 import type { MemoryItem } from '../src/api'
 import { parseDjReply } from '../src/replyParse'
+import { parseScene } from '../src/moods'
 
 describe('buildRequest', () => {
   it('carries the exact reply format, whose example the page can read', () => {
@@ -91,5 +92,22 @@ describe('memorySummary', () => {
     expect(note).not.toMatch(/[[\]`]/)
     expect(msg.split('\n').filter(l => l.startsWith('[Mood Music]'))).toHaveLength(1)
     expect(msg.split('```').length).toBe(REPLY_FORMAT.split('```').length)
+  })
+})
+
+describe('the scene in the reply format', () => {
+  it('asks for a scene only on a big mood shift, and every example scene fits the bounds', () => {
+    expect(REPLY_FORMAT).toContain('ONLY on a big mood shift')
+    const examples = [...REPLY_FORMAT.matchAll(/-> (\{"hues"[^}]*\})/g)].map(m => JSON.parse(m[1]))
+    expect(examples).toHaveLength(2)
+    for (const ex of examples) expect(parseScene(ex)).not.toBeNull()
+  })
+
+  it('reads a scene from the block, and leaves out one that is missing or out of bounds', () => {
+    const scene = { hues: [8, 30, 350], pattern: 'particles', motion: 'lively' }
+    const fence = (d: unknown) => '```mood-music\n' + JSON.stringify(d) + '\n```'
+    expect(parseDjReply(fence({ picks: [], scene }))?.scene).toMatchObject({ hues: [8, 30, 350], pattern: 'particles', source: 'dj' })
+    expect(parseDjReply(fence({ picks: [] }))).not.toHaveProperty('scene')
+    expect(parseDjReply(fence({ picks: [], scene: { ...scene, pattern: '<style>' } }))).not.toHaveProperty('scene')
   })
 })

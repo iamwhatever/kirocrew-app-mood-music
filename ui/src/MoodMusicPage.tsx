@@ -29,7 +29,7 @@ import FullRecord from './FullRecord'
 import MemoryTab from './MemoryTab'
 import MomentsTab from './MomentsTab'
 import MoodBackdrop from './MoodBackdrop'
-import { MOOD_KEYS, moodLookFor, type MoodKey, type MoodLook } from './moods'
+import { MOOD_KEYS, moodLookFor, presetScene, type MoodKey, type MoodLook, type Scene } from './moods'
 import NowPlaying from './NowPlaying'
 import { buildRequest, memorySummary, type ExploreLevel, type Player } from './request.prompt'
 import { parseDjReply, replySource } from './replyParse'
@@ -122,7 +122,8 @@ export default function MoodMusicPage() {
   const [text, setText] = useState(saved?.text ?? '')
   const [chip, setChip] = useState<MoodKey | null>(saved?.chip ?? null)
   const [answer, setAnswer] = useState('')
-  const [look, setLook] = useState<MoodLook>(saved?.look ?? 'neutral')
+  // The backdrop scene: a chip's preset, or the one the buddy chose on a big mood shift.
+  const [scene, setScene] = useState<Scene>(saved?.scene ?? presetScene('neutral'))
   const [currentId, setCurrentId] = useState<string | null>(saved?.currentId ?? null)
   const [autoplay, setAutoplay] = useState(false)
   const [motionPaused, setMotionPaused] = useState(false)
@@ -189,14 +190,14 @@ export default function MoodMusicPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [moodApi])
 
-  const view: PageView = { tab, text, chip, stayOnly, look, currentId, slotKey, scroll: 0, pending }
+  const view: PageView = { tab, text, chip, stayOnly, scene, currentId, slotKey, scroll: 0, pending }
   const viewRef = useRef(view)
   viewRef.current = view
   const persist = useCallback(() => {
     if (restored) saveView({ ...viewRef.current, scroll: scrollTopRef.current })
   }, [restored])
   const onScrolled = (e: UIEvent<HTMLElement>) => { scrollTopRef.current = e.currentTarget.scrollTop; persist() }
-  useEffect(persist, [persist, tab, text, chip, stayOnly, look, currentId, slotKey, pending])
+  useEffect(persist, [persist, tab, text, chip, stayOnly, scene, currentId, slotKey, pending])
 
   // Back where they were on the page, once what it shows is drawn again.
   useEffect(() => {
@@ -263,10 +264,10 @@ export default function MoodMusicPage() {
     })
   }
 
-  /** Record the mood and ask the buddy for songs. */
+  /** Record the mood and ask the buddy for songs. A chip, or words that name one, set its scene now; other words keep the scene. */
   const startMood = (mood: string, nextLook: MoodLook) => {
     if (!mood || pending || busy) return
-    setLook(nextLook)
+    if (nextLook !== 'neutral') setScene(presetScene(nextLook))
     send('mood', mood)
     setText('')
   }
@@ -356,8 +357,14 @@ export default function MoodMusicPage() {
       if (failed && source === pending.baseline) { setTurnFailed(failed); return }
       const parsed = parseDjReply(reply)
       if (!parsed) { setError('unreadable'); return }
-      const tagLook = moodLookFor(parsed.moodTags)
-      if (!chipRef.current && tagLook !== 'neutral') setLook(tagLook)
+      if (parsed.scene) {
+        // The buddy marked a big mood shift: its scene replaces the current one.
+        setScene(parsed.scene)
+      } else {
+        // No scene: keep the one on screen. Only the resting scene still follows the tags.
+        const tagLook = moodLookFor(parsed.moodTags)
+        if (!chipRef.current && tagLook !== 'neutral') setScene(s => (s.source === 'neutral' ? presetScene(tagLook) : s))
+      }
       if (parsed.picks.length === 0) {
         // A question, or the buddy saying it found nothing good enough (with
         // follow-ups), is an answer the conversation already shows.
@@ -483,7 +490,7 @@ export default function MoodMusicPage() {
   return (
     <div className="mm-root relative flex h-full flex-col overflow-hidden" data-testid="mood-music-page">
       <style>{SPLIT_CSS}</style>
-      <MoodBackdrop look={look} moving={moving} />
+      <MoodBackdrop scene={scene} playing={current?.arc} moving={moving} reduced={reduceMotion} />
       <div className="relative flex h-full flex-col">
         <PageHeader
           title={t('page.title')}

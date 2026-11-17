@@ -25,6 +25,8 @@ vi.mock('../src/api', async orig => {
 
 import MoodMusicPage, { KNOWN_AFTER_MS, OFFLINE_MS, POLL_MS, STUCK_MS } from '../src/MoodMusicPage'
 import { replySource } from '../src/replyParse'
+import { FADE_MS } from '../src/MoodBackdrop'
+import { presetScene } from '../src/moods'
 import { resetStubSdk, stubOpenChat } from './stubs/app-sdk'
 
 const api = mock.api
@@ -449,9 +451,73 @@ describe('MoodMusicPage', () => {
       expect(styles.join(' ')).not.toMatch(/#[0-9a-f]{3,8}\b|rgb\(/i)
       const glows = screen.getAllByTestId('mood-glow')
       expect(glows[0].style.background).toContain('var(--bg)')
-      expect(glows[0].dataset.hue).toBe('230')
+      expect(glows[0].dataset.hue).toBe('212')
     } finally {
       document.documentElement.classList.remove('dark')
+    }
+  })
+})
+
+describe('the backdrop scene', () => {
+  const SCENE = { hues: [8, 30, 350], saturation: 'vivid', lightness: 'medium', strength: 0.8, motion: 'lively', pattern: 'particles', arc: 'turn' }
+  const backdrop = () => screen.getByTestId('mood-backdrop')
+  const afterFade = () => flush(FADE_MS + 200)
+
+  it('sets a chip preset at once, then takes the scene the buddy chose', async () => {
+    await start('mood_sad')
+    expect(backdrop().dataset.look).toBe('sad')
+    expect(backdrop().dataset.hues).toBe(presetScene('sad').hues.join(','))
+    api.getSlot.mockResolvedValue(reply({ picks: [], follow_ups: ['换成国语歌'], scene: SCENE }))
+    await flush(POLL_MS)
+    expect(backdrop().dataset.look).toBe('dj')
+    expect(backdrop().dataset.pattern).toBe('particles')
+    expect(backdrop().dataset.hues).toBe('8,30,350')
+    // The old scene fades out under the new one, then is dropped.
+    expect(screen.getAllByTestId('mood-scene')).toHaveLength(2)
+    await afterFade()
+    expect(screen.getAllByTestId('mood-scene')).toHaveLength(1)
+    expect(screen.getAllByTestId('mood-particle').length).toBeGreaterThan(0)
+  })
+
+  it('keeps the scene when a reply leaves it out, or sends one out of bounds', async () => {
+    await start('mood_sad')
+    api.getSlot.mockResolvedValue(reply({ picks: [], follow_ups: ['换成国语歌'], scene: SCENE }))
+    await flush(POLL_MS)
+    await afterFade()
+    fireEvent.click(within(screen.getByTestId('mood-follow-ups')).getByRole('button', { name: '换成国语歌' }))
+    await flush()
+    api.getSlot.mockResolvedValue(reply({ picks: [], follow_ups: ['再安静一点'], mood_tags: ['开心'] }))
+    await flush(POLL_MS)
+    expect(backdrop().dataset.hues).toBe('8,30,350')
+    fireEvent.click(within(screen.getByTestId('mood-follow-ups')).getByRole('button', { name: '再安静一点' }))
+    await flush()
+    api.getSlot.mockResolvedValue(reply({ picks: [], follow_ups: ['x'], scene: { ...SCENE, pattern: 'url(https://evil.example)' } }))
+    await flush(POLL_MS)
+    expect(backdrop().dataset.hues).toBe('8,30,350')
+    expect(screen.getAllByTestId('mood-scene')).toHaveLength(1)
+  })
+
+  it('swaps scenes at once and holds still under reduced motion', async () => {
+    motion.reduced = true
+    await start('mood_sad')
+    api.getSlot.mockResolvedValue(reply({ picks: [], follow_ups: ['x'], scene: SCENE }))
+    await flush(POLL_MS)
+    expect(backdrop().dataset.look).toBe('dj')
+    expect(backdrop().dataset.moving).toBe('false')
+    expect(screen.getAllByTestId('mood-scene')).toHaveLength(1)
+    for (const el of screen.getAllByTestId('mood-particle')) expect(el.style.animation).toBe('none')
+  })
+
+  it('pauses while the page is hidden', async () => {
+    render(<MoodMusicPage />)
+    await flush()
+    expect(backdrop().dataset.moving).toBe('true')
+    const state = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
+    try {
+      act(() => { document.dispatchEvent(new Event('visibilitychange')) })
+      expect(backdrop().dataset.moving).toBe('false')
+    } finally {
+      state.mockRestore()
     }
   })
 })

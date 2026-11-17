@@ -126,7 +126,10 @@ Kiro Crew sidebar under the app's folder.
 7. Open **Moments** to see the moods you shared and the songs they brought.
 8. **Show the full record** under the chat opens the whole conversation, with every
    search and page the buddy used.
-9. To stop the background moving, choose **Pause background motion** at the top
+9. The background follows the mood. A chip sets its scene at once. The buddy
+   picks a new scene only when your mood clearly shifts, and the scene drifts
+   toward its brighter colour as the songs move from stay to lift. To stop the
+   background moving, choose **Pause background motion** at the top
    right. It pauses only the background, never the music.
 
 ## Settings & data

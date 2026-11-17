@@ -207,6 +207,21 @@ describe('coming back to the page', () => {
     expect(JSON.parse(window.sessionStorage.getItem(PAGE_KEY)!)).toMatchObject({ slotKey: 'mood-music-buddy', pending: null })
   })
 
+  it('brings back the scene on screen, and reads an older saved look as its preset', async () => {
+    const scene = { hues: [8, 30, 350], saturation: 'vivid', lightness: 'medium', strength: 0.8, motion: 'lively', pattern: 'particles', arc: 'turn', source: 'dj' }
+    window.sessionStorage.setItem(PAGE_KEY, JSON.stringify({ tab: 'listen', scene }))
+    render(<MoodMusicPage />)
+    await flush()
+    expect(screen.getByTestId('mood-backdrop').dataset.look).toBe('dj')
+    expect(screen.getByTestId('mood-backdrop').dataset.hues).toBe('8,30,350')
+    expect(JSON.parse(window.sessionStorage.getItem(PAGE_KEY)!).scene).toEqual(scene)
+    cleanup()
+    window.sessionStorage.setItem(PAGE_KEY, JSON.stringify({ tab: 'listen', look: 'missing', scene: { hues: ['x'] } }))
+    render(<MoodMusicPage />)
+    await flush()
+    expect(screen.getByTestId('mood-backdrop').dataset.look).toBe('missing')
+  })
+
   it('goes back to where the page was scrolled', async () => {
     render(<MoodMusicPage />)
     await flush()

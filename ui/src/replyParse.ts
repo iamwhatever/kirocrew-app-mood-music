@@ -7,6 +7,7 @@
  * ever rendered as React text, never as HTML.
  */
 import { bilibiliUrl, evidenceUrl, validVideoId, youtubeVideoId } from './links'
+import { parseScene, type Scene } from './moods'
 
 export type PickSource = 'youtube' | 'bilibili'
 export type PickTier = 'anchor' | 'explore' | 'deep'
@@ -45,6 +46,8 @@ export interface DjReply {
   followUps: string[]
   /** A preference the buddy offers to save; stored only if the person taps it. */
   remember: string
+  /** The backdrop scene, only on a big mood shift; absent (or out of bounds) keeps the current one. */
+  scene?: Scene
 }
 
 const FENCE_RE = /```mood-music[^\n]*\n([\s\S]*?)```/g
@@ -133,7 +136,15 @@ export function parseDjReply(content: string): DjReply | null {
     dropped: rawPicks.length - picks.length,
     followUps: tags(d.follow_ups, 40, 3),
     remember: text(d.remember, 60),
+    ...sceneOf(d.scene),
   }
+}
+
+/** `{scene}` when the block's scene fits the bounds, else nothing: the page keeps its scene. */
+function sceneOf(raw: unknown): { scene?: Scene } {
+  if (raw === undefined) return {}
+  const scene = parseScene(raw)
+  return scene ? { scene: { ...scene, source: 'dj' } } : {}
 }
 
 /** The reply's prose: every fenced block removed, cut to a short paragraph. */
