@@ -23,16 +23,16 @@ var CATALOGS = {
 	bn: {
 		manifest: {
 			"display_name": "মুড মিউজিক",
-			"description": "বলুন আপনি কেমন বোধ করছেন, বা এমন একটি গান যা আপনাকে ছুঁয়ে গেছে। DJ এজেন্ট একই অনুভূতির গান খুঁজে বাজায়: YouTube পেজের ভেতরে, bilibili ব্রাউজারের নতুন ট্যাবে। পছন্দ বা বাদ দিন, পরের বাছাই সেই অনুযায়ী বদলাবে।",
+			"description": "বলুন আপনি কেমন বোধ করছেন, বা এমন একটি গান যা আপনাকে ছুঁয়ে গেছে। DJ এজেন্ট একই অনুভূতির গান খুঁজে Kiro Crew-এর ব্রাউজারে YouTube বা bilibili-তে বাজায়। পছন্দ বা বাদ দিন, পরের বাছাই সেই অনুযায়ী বদলাবে।",
 			"page_label": "মুড মিউজিক",
 			"highlight_1": "আপনার মুড বা মন ছুঁয়ে যাওয়া গানটি বলুন — একই অনুভূতির আরও গান খুঁজে দেয়",
 			"highlight_2": "প্রতিটি গানের সঙ্গে বলা থাকে কেন এটি এই মুডে মানায়",
-			"highlight_3": "YouTube গোপনীয়তা-উন্নত এম্বেডে পেজের ভেতরে বাজে",
-			"highlight_4": "bilibili-র গান আপনার নিজের ব্রাউজারের নতুন ট্যাবে খোলে; এজেন্ট কখনো আপনার অ্যাকাউন্ট ছোঁয় না",
+			"highlight_3": "গান Kiro Crew-এর ব্রাউজারে শব্দসহ বাজে; পেজে চালানো, থামানো আর ভলিউমের বোতাম আছে",
+			"highlight_4": "এজেন্ট শুধু bilibili আর YouTube-এর খোঁজ ও ভিডিও পেজ খোলে, কখনো সাইন ইন, মন্তব্য, লাইক বা পেমেন্ট করে না",
 			"highlight_5": "পছন্দ বা বাদ দেওয়া পরের বাছাইয়ে কাজে লাগে",
 			"highlight_6": "পটভূমি আর নড়াচড়া মুডের সঙ্গে বদলায়, লাইট ও ডার্ক দুটোতেই",
 			"use_case_1": "এখনকার মুডের সঙ্গে মেলে এমন গান খুঁজে বাজান, আর মন ছুঁয়ে যাওয়া মুহূর্তগুলো রেখে দিন।",
-			"configuration_1": "কোনো অ্যাকাউন্ট লাগে না। YouTube পেজে বাজে; bilibili আপনার নিজের ব্রাউজারে খোলে, সাইন ইন করা থাকুক বা না থাকুক।"
+			"configuration_1": "অ্যাপ ব্রাউজার সাইট সমর্থিত Kiro Crew লাগবে (v0.13.0-rc.3-এর চেয়ে নতুন)। Kiro Crew-এ অ্যাপের পেজে গানের সাইটগুলো একবার অনুমোদন করুন।"
 		},
 		page: {
 			"title": "মুড মিউজিক",
@@ -56,13 +56,8 @@ var CATALOGS = {
 			"liked": "পছন্দ করেছেন",
 			"skip": "বাদ দিন",
 			"more": "এমন আরও",
-			"open_bilibili": "bilibili-তে খুলুন",
-			"bilibili_note": "আপনার নিজের ব্রাউজারের নতুন ট্যাবে খোলে।",
-			"open_youtube": "YouTube-এ খুলুন",
-			"youtube_blank": "প্লেয়ার ফাঁকা বা Error 153? Kiro Crew আপডেট করুন, বা YouTube-এ খুলুন।",
 			"queue": "এরপর",
 			"play": "{{title}} বাজান",
-			"player_title": "YouTube প্লেয়ার: {{title}}",
 			"pause_motion": "পটভূমির নড়াচড়া থামান",
 			"play_motion": "পটভূমির নড়াচড়া চালান",
 			"moments_empty_title": "এখনো কোনো মুহূর্ত নেই",
@@ -146,10 +141,7 @@ var CATALOGS = {
 			"explore_familiar": "একটু চেনা",
 			"explore_balanced": "ভারসাম্য",
 			"explore_more": "আরও অন্বেষণ",
-			"player": "প্লেয়ার",
-			"player_auto": "স্বয়ংক্রিয়",
 			"stay_only": "আজ শুধু এই অনুভূতিতে থাকি",
-			"player_browser": "Crew ব্রাউজার",
 			"status_playing": "আপনার সঙ্গী Kiro Crew-এর ব্রাউজারে গানটি খুলছে…"
 		},
 		card: {
@@ -183,27 +175,27 @@ var CATALOGS = {
 			"continuous_note": "একটানা বাজানো শুধু এই পেজ খোলা থাকলেই কাজ করে। বন্ধ করলে চলতি গান শেষ হলেই গান থেমে যাবে।",
 			"not_played": "এবার আপনার সঙ্গী গানটি চালাতে পারেনি: {{reason}}",
 			"no_reason": "কোনো কারণ বলা হয়নি",
-			"fallback_title": "Crew ব্রাউজার এখনো প্রস্তুত নয়, তাই গান আগের মতো এখানেই বাজবে",
-			"fallback_old_host": "এই Kiro Crew, Crew ব্রাউজার প্লেয়ারের জন্য খুব পুরোনো। ব্যবহার করতে Kiro Crew আপডেট করুন।",
-			"fallback_not_approved": "আগে মুড মিউজিকের জন্য গানের সাইটগুলো অনুমোদন করুন। অ্যাপের পেজে একবার অনুমোদন করলেই হবে।",
-			"fallback_browse_off": "এই কম্পিউটারের একটি নীতি Kiro Crew-এর ব্রাউজার বন্ধ রেখেছে।",
 			"approve": "সাইটগুলো অনুমোদন করুন",
-			"status_playing": "Kiro Crew-এর ব্রাউজারে বাজছে।"
+			"status_playing": "Kiro Crew-এর ব্রাউজারে বাজছে।",
+			"unready_title": "গান এখনো Kiro Crew-এর ব্রাউজারে বাজতে পারছে না",
+			"unready_old_host": "এই Kiro Crew খুব পুরোনো। অ্যাপ ব্রাউজার সাইট সমর্থিত সংস্করণে (KiroCrew#38333 সহ, v0.13.0-rc.3-এর চেয়ে নতুন) Kiro Crew আপডেট করুন, তারপর এই পেজ আবার খুলুন।",
+			"unready_not_approved": "আগে মুড মিউজিকের জন্য গানের সাইটগুলো অনুমোদন করুন। অ্যাপের পেজে একবার অনুমোদন করলেই হবে।",
+			"unready_browse_off": "এই কম্পিউটারের একটি নীতি Kiro Crew-এর ব্রাউজার বন্ধ রেখেছে।"
 		}
 	},
 	de: {
 		manifest: {
 			"display_name": "Mood Music",
-			"description": "Sag, wie du dich fühlst, oder nenne einen Song, der dich berührt hat. Ein DJ-Agent findet Songs mit demselben Gefühl und spielt sie ab: YouTube direkt auf der Seite, bilibili in einem neuen Browser-Tab. Mit Gefällt mir oder Überspringen richten sich die nächsten Vorschläge danach.",
+			"description": "Sag, wie du dich fühlst, oder nenne einen Song, der dich berührt hat. Ein DJ-Agent findet Songs mit demselben Gefühl und spielt sie auf YouTube oder bilibili im Browser von Kiro Crew ab. Mit Gefällt mir oder Überspringen richten sich die nächsten Vorschläge danach.",
 			"page_label": "Mood Music",
 			"highlight_1": "Sag, wie du dich fühlst, oder nenne einen Song, der dich berührt hat – er findet mehr mit demselben Gefühl",
 			"highlight_2": "Jeder Vorschlag sagt, warum er zur Stimmung passt",
-			"highlight_3": "YouTube läuft auf der Seite über die datenschutzfreundliche Einbettung",
-			"highlight_4": "bilibili-Songs öffnen sich in einem neuen Tab deines eigenen Browsers; der Agent rührt dein Konto nie an",
+			"highlight_3": "Songs laufen im Browser von Kiro Crew, mit Ton; auf der Seite gibt es Abspielen, Pause und Lautstärke",
+			"highlight_4": "Der Agent öffnet nur Such- und Videoseiten von bilibili und YouTube und meldet sich nie an, kommentiert, liked oder bezahlt nie",
 			"highlight_5": "Gefällt mir oder Überspringen fließt in die nächsten Vorschläge ein",
 			"highlight_6": "Hintergrund und Bewegung folgen der Stimmung, hell wie dunkel",
 			"use_case_1": "Songs finden und abspielen, die zu deiner jetzigen Stimmung passen, und die Momente festhalten, die dich berührt haben.",
-			"configuration_1": "Kein Konto nötig. YouTube läuft auf der Seite; bilibili öffnet sich in deinem eigenen Browser, angemeldet oder nicht, wie du willst."
+			"configuration_1": "Braucht ein Kiro Crew mit App-Browserseiten (neuer als v0.13.0-rc.3). Gib die Musikseiten einmal frei, auf der Seite der App in Kiro Crew."
 		},
 		page: {
 			"title": "Mood Music",
@@ -227,13 +219,8 @@ var CATALOGS = {
 			"liked": "Gefällt dir",
 			"skip": "Überspringen",
 			"more": "Mehr davon",
-			"open_bilibili": "Auf bilibili öffnen",
-			"bilibili_note": "Öffnet sich in einem neuen Tab deines eigenen Browsers.",
-			"open_youtube": "Auf YouTube öffnen",
-			"youtube_blank": "Player leer oder Error 153? Aktualisiere Kiro Crew oder öffne es auf YouTube.",
 			"queue": "Als Nächstes",
 			"play": "{{title}} abspielen",
-			"player_title": "YouTube-Player: {{title}}",
 			"pause_motion": "Hintergrundbewegung pausieren",
 			"play_motion": "Hintergrundbewegung abspielen",
 			"moments_empty_title": "Noch keine Momente",
@@ -317,10 +304,7 @@ var CATALOGS = {
 			"explore_familiar": "Vertrauter",
 			"explore_balanced": "Ausgewogen",
 			"explore_more": "Mehr entdecken",
-			"player": "Player",
-			"player_auto": "Automatisch",
 			"stay_only": "Heute einfach in diesem Gefühl bleiben",
-			"player_browser": "Crew-Browser",
 			"status_playing": "Dein Buddy öffnet den Song im Browser von Kiro Crew…"
 		},
 		card: {
@@ -354,27 +338,27 @@ var CATALOGS = {
 			"continuous_note": "Endlos abspielen geht nur, solange diese Seite offen ist. Schließt du sie, endet die Musik mit dem aktuellen Song.",
 			"not_played": "Dein Buddy konnte ihn diesmal nicht abspielen: {{reason}}",
 			"no_reason": "ohne Angabe eines Grundes",
-			"fallback_title": "Der Crew-Browser ist noch nicht bereit, darum laufen Songs wie bisher hier",
-			"fallback_old_host": "Dieses Kiro Crew ist zu alt für den Crew-Browser-Player. Aktualisiere Kiro Crew, um ihn zu nutzen.",
-			"fallback_not_approved": "Gib zuerst die Musikseiten für Mood Music frei. Das machst du einmal, auf der Seite der App.",
-			"fallback_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet.",
 			"approve": "Seiten freigeben",
-			"status_playing": "Läuft im Browser von Kiro Crew."
+			"status_playing": "Läuft im Browser von Kiro Crew.",
+			"unready_title": "Songs können noch nicht im Browser von Kiro Crew laufen",
+			"unready_old_host": "Dieses Kiro Crew ist zu alt. Aktualisiere Kiro Crew auf eine Version mit App-Browserseiten (KiroCrew#38333, neuer als v0.13.0-rc.3) und öffne diese Seite dann erneut.",
+			"unready_not_approved": "Gib zuerst die Musikseiten für Mood Music frei. Das machst du einmal, auf der Seite der App.",
+			"unready_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet."
 		}
 	},
 	en: {
 		manifest: {
 			"display_name": "Mood Music",
-			"description": "Tell it how you feel, or name a song that moved you. A DJ agent finds songs with the same feeling and plays them: YouTube inside the page, bilibili in a new browser tab. Like or skip, and the next picks follow.",
+			"description": "Tell it how you feel, or name a song that moved you. A DJ agent finds songs with the same feeling and plays them on YouTube or bilibili in Kiro Crew's browser. Like or skip, and the next picks follow.",
 			"page_label": "Mood Music",
 			"highlight_1": "Say how you feel, or name a song that moved you — it finds more with the same feeling",
 			"highlight_2": "Every pick says why it fits the mood",
-			"highlight_3": "YouTube plays inside the page through the privacy-enhanced embed",
-			"highlight_4": "bilibili songs open in a new tab of your own browser; the agent never touches your account",
+			"highlight_3": "Songs play in Kiro Crew's browser, with its sound; the page has play, pause and volume",
+			"highlight_4": "The agent opens only bilibili and YouTube search and video pages, and never signs in, comments, likes or pays",
 			"highlight_5": "Like or skip a song, and the next picks use it",
 			"highlight_6": "The background and motion follow the mood, in light and dark",
 			"use_case_1": "Find and play songs that match how you feel right now, and keep a history of the moments that moved you.",
-			"configuration_1": "No account is needed. YouTube plays in the page; bilibili opens in your own browser, signed in or not, as you choose."
+			"configuration_1": "Needs a Kiro Crew with app browser sites (newer than v0.13.0-rc.3). Approve the music sites once, on the app's page in Kiro Crew."
 		},
 		page: {
 			"title": "Mood Music",
@@ -398,13 +382,8 @@ var CATALOGS = {
 			"liked": "Liked",
 			"skip": "Skip",
 			"more": "More like this",
-			"open_bilibili": "Open on bilibili",
-			"bilibili_note": "Opens in a new tab of your own browser.",
-			"open_youtube": "Open on YouTube",
-			"youtube_blank": "Blank player or Error 153? Update Kiro Crew, or open it on YouTube.",
 			"queue": "Up next",
 			"play": "Play {{title}}",
-			"player_title": "YouTube player: {{title}}",
 			"pause_motion": "Pause background motion",
 			"play_motion": "Play background motion",
 			"moments_empty_title": "No moments yet",
@@ -488,10 +467,7 @@ var CATALOGS = {
 			"explore_familiar": "More familiar",
 			"explore_balanced": "Balanced",
 			"explore_more": "Explore more",
-			"player": "Player",
-			"player_auto": "Auto",
 			"stay_only": "Just stay in this feeling today",
-			"player_browser": "Crew Browser",
 			"status_playing": "Your buddy is opening the song in Kiro Crew's browser…"
 		},
 		card: {
@@ -526,26 +502,26 @@ var CATALOGS = {
 			"continuous_note": "Continuous play works only while this page is open. Close it, and the music stops when the current song ends.",
 			"not_played": "Your buddy could not play it this time: {{reason}}",
 			"no_reason": "no reason given",
-			"fallback_title": "Crew Browser is not ready, so songs play here as before",
-			"fallback_old_host": "This Kiro Crew is too old for the Crew Browser player. Update Kiro Crew to use it.",
-			"fallback_not_approved": "First approve the music sites for Mood Music. You approve them once, on the app's page.",
-			"fallback_browse_off": "Kiro Crew's browser is turned off by a policy on this computer.",
-			"approve": "Approve the sites"
+			"approve": "Approve the sites",
+			"unready_title": "Songs cannot play in Kiro Crew's browser yet",
+			"unready_old_host": "This Kiro Crew is too old. Update Kiro Crew to a version with app browser sites (KiroCrew#38333, newer than v0.13.0-rc.3), then open this page again.",
+			"unready_not_approved": "First approve the music sites for Mood Music. You approve them once, on the app's page.",
+			"unready_browse_off": "Kiro Crew's browser is turned off by a policy on this computer."
 		}
 	},
 	es: {
 		manifest: {
 			"display_name": "Mood Music",
-			"description": "Dile cómo te sientes o nombra una canción que te emocionó. Un agente DJ busca canciones con el mismo sentimiento y las reproduce: YouTube dentro de la página y bilibili en una pestaña nueva del navegador. Con Me gusta u Omitir, las siguientes elecciones se ajustan.",
+			"description": "Dile cómo te sientes o nombra una canción que te emocionó. Un agente DJ busca canciones con el mismo sentimiento y las reproduce en YouTube o bilibili dentro del navegador de Kiro Crew. Con Me gusta u Omitir, las siguientes elecciones se ajustan.",
 			"page_label": "Mood Music",
 			"highlight_1": "Di cómo te sientes o nombra una canción que te emocionó: encuentra más con el mismo sentimiento",
 			"highlight_2": "Cada elección explica por qué encaja con tu estado de ánimo",
-			"highlight_3": "YouTube se reproduce en la página con la inserción de privacidad mejorada",
-			"highlight_4": "Las canciones de bilibili se abren en una pestaña nueva de tu propio navegador; el agente nunca toca tu cuenta",
+			"highlight_3": "Las canciones suenan en el navegador de Kiro Crew, con sonido; la página tiene reproducir, pausa y volumen",
+			"highlight_4": "El agente solo abre páginas de búsqueda y de vídeo de bilibili y YouTube, y nunca inicia sesión, comenta, da me gusta ni paga",
 			"highlight_5": "Me gusta u Omitir se usan en las siguientes elecciones",
 			"highlight_6": "El fondo y el movimiento siguen tu estado de ánimo, en claro y en oscuro",
 			"use_case_1": "Encuentra y reproduce canciones que encajan con cómo te sientes ahora y guarda los momentos que te emocionaron.",
-			"configuration_1": "No necesitas cuenta. YouTube se reproduce en la página; bilibili se abre en tu propio navegador, con sesión o sin ella, como prefieras."
+			"configuration_1": "Necesita un Kiro Crew con sitios de navegador para apps (más nuevo que v0.13.0-rc.3). Aprueba los sitios de música una vez, en la página de la app en Kiro Crew."
 		},
 		page: {
 			"title": "Mood Music",
@@ -569,13 +545,8 @@ var CATALOGS = {
 			"liked": "Te gusta",
 			"skip": "Omitir",
 			"more": "Más como esta",
-			"open_bilibili": "Abrir en bilibili",
-			"bilibili_note": "Se abre en una pestaña nueva de tu propio navegador.",
-			"open_youtube": "Abrir en YouTube",
-			"youtube_blank": "¿Reproductor en blanco o Error 153? Actualiza Kiro Crew o ábrelo en YouTube.",
 			"queue": "A continuación",
 			"play": "Reproducir {{title}}",
-			"player_title": "Reproductor de YouTube: {{title}}",
 			"pause_motion": "Pausar el movimiento del fondo",
 			"play_motion": "Reanudar el movimiento del fondo",
 			"moments_empty_title": "Aún no hay momentos",
@@ -659,10 +630,7 @@ var CATALOGS = {
 			"explore_familiar": "Más conocido",
 			"explore_balanced": "Equilibrado",
 			"explore_more": "Explorar más",
-			"player": "Reproductor",
-			"player_auto": "Automático",
 			"stay_only": "Hoy solo quiero quedarme en este sentimiento",
-			"player_browser": "Navegador de Crew",
 			"status_playing": "Tu compañero está abriendo la canción en el navegador de Kiro Crew…"
 		},
 		card: {
@@ -696,27 +664,27 @@ var CATALOGS = {
 			"continuous_note": "La reproducción continua solo funciona con esta página abierta. Si la cierras, la música se detiene al acabar la canción actual.",
 			"not_played": "Tu compañero no pudo reproducirla esta vez: {{reason}}",
 			"no_reason": "sin motivo",
-			"fallback_title": "El navegador de Crew aún no está listo, así que las canciones suenan aquí como antes",
-			"fallback_old_host": "Este Kiro Crew es demasiado antiguo para el reproductor del navegador de Crew. Actualiza Kiro Crew para usarlo.",
-			"fallback_not_approved": "Primero aprueba los sitios de música para Mood Music. Se aprueban una vez, en la página de la app.",
-			"fallback_browse_off": "Una política de este equipo tiene apagado el navegador de Kiro Crew.",
 			"approve": "Aprobar los sitios",
-			"status_playing": "Sonando en el navegador de Kiro Crew."
+			"status_playing": "Sonando en el navegador de Kiro Crew.",
+			"unready_title": "Las canciones aún no pueden sonar en el navegador de Kiro Crew",
+			"unready_old_host": "Este Kiro Crew es demasiado antiguo. Actualiza Kiro Crew a una versión con sitios de navegador para apps (KiroCrew#38333, más nueva que v0.13.0-rc.3) y vuelve a abrir esta página.",
+			"unready_not_approved": "Primero aprueba los sitios de música para Mood Music. Se aprueban una vez, en la página de la app.",
+			"unready_browse_off": "Una política de este equipo tiene apagado el navegador de Kiro Crew."
 		}
 	},
 	fr: {
 		manifest: {
 			"display_name": "Mood Music",
-			"description": "Dis-lui ce que tu ressens, ou cite une chanson qui t’a ému. Un agent DJ trouve des chansons qui portent la même émotion et les joue : YouTube dans la page, bilibili dans un nouvel onglet du navigateur. J’aime ou Passer, et les choix suivants s’adaptent.",
+			"description": "Dis-lui ce que tu ressens, ou cite une chanson qui t’a ému. Un agent DJ trouve des chansons qui portent la même émotion et les joue sur YouTube ou bilibili dans le navigateur de Kiro Crew. J’aime ou Passer, et les choix suivants s’adaptent.",
 			"page_label": "Mood Music",
 			"highlight_1": "Dis ce que tu ressens, ou cite une chanson qui t’a ému : il en trouve d’autres avec la même émotion",
 			"highlight_2": "Chaque choix dit pourquoi il correspond à ton humeur",
-			"highlight_3": "YouTube se lit dans la page via l’intégration à confidentialité renforcée",
-			"highlight_4": "Les chansons bilibili s’ouvrent dans un nouvel onglet de ton propre navigateur ; l’agent ne touche jamais ton compte",
+			"highlight_3": "Les chansons se lisent dans le navigateur de Kiro Crew, avec le son ; la page a lecture, pause et volume",
+			"highlight_4": "L’agent n’ouvre que les pages de recherche et de vidéo de bilibili et YouTube, et ne se connecte, ne commente, n’aime ni ne paie jamais",
 			"highlight_5": "J’aime ou Passer sert aux choix suivants",
 			"highlight_6": "Le fond et le mouvement suivent l’humeur, en clair comme en sombre",
 			"use_case_1": "Trouver et écouter des chansons qui correspondent à ce que tu ressens maintenant, et garder les moments qui t’ont ému.",
-			"configuration_1": "Aucun compte n’est nécessaire. YouTube se lit dans la page ; bilibili s’ouvre dans ton propre navigateur, connecté ou non, comme tu veux."
+			"configuration_1": "Nécessite un Kiro Crew avec les sites de navigateur pour apps (plus récent que v0.13.0-rc.3). Approuve les sites de musique une fois, sur la page de l’app dans Kiro Crew."
 		},
 		page: {
 			"title": "Mood Music",
@@ -740,13 +708,8 @@ var CATALOGS = {
 			"liked": "Aimé",
 			"skip": "Passer",
 			"more": "Plus dans ce genre",
-			"open_bilibili": "Ouvrir sur bilibili",
-			"bilibili_note": "S’ouvre dans un nouvel onglet de ton propre navigateur.",
-			"open_youtube": "Ouvrir sur YouTube",
-			"youtube_blank": "Lecteur vide ou Error 153 ? Mets Kiro Crew à jour, ou ouvre-le sur YouTube.",
 			"queue": "À suivre",
 			"play": "Lire {{title}}",
-			"player_title": "Lecteur YouTube : {{title}}",
 			"pause_motion": "Mettre en pause le mouvement du fond",
 			"play_motion": "Relancer le mouvement du fond",
 			"moments_empty_title": "Aucun moment pour l’instant",
@@ -830,10 +793,7 @@ var CATALOGS = {
 			"explore_familiar": "Plus familier",
 			"explore_balanced": "Équilibré",
 			"explore_more": "Plus de découvertes",
-			"player": "Lecteur",
-			"player_auto": "Auto",
 			"stay_only": "Aujourd’hui, rester dans cette émotion",
-			"player_browser": "Navigateur Crew",
 			"status_playing": "Ton compagnon ouvre la chanson dans le navigateur de Kiro Crew…"
 		},
 		card: {
@@ -867,27 +827,27 @@ var CATALOGS = {
 			"continuous_note": "La lecture continue ne marche que tant que cette page est ouverte. Ferme-la, et la musique s’arrête à la fin de la chanson en cours.",
 			"not_played": "Ton compagnon n’a pas pu la lancer cette fois : {{reason}}",
 			"no_reason": "sans raison donnée",
-			"fallback_title": "Le navigateur Crew n’est pas prêt, les chansons se lisent donc ici comme avant",
-			"fallback_old_host": "Ce Kiro Crew est trop ancien pour le lecteur du navigateur Crew. Mets Kiro Crew à jour pour l’utiliser.",
-			"fallback_not_approved": "Approuve d’abord les sites de musique pour Mood Music. Une seule fois, sur la page de l’app.",
-			"fallback_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew.",
 			"approve": "Approuver les sites",
-			"status_playing": "Lecture dans le navigateur de Kiro Crew."
+			"status_playing": "Lecture dans le navigateur de Kiro Crew.",
+			"unready_title": "Les chansons ne peuvent pas encore se lire dans le navigateur de Kiro Crew",
+			"unready_old_host": "Ce Kiro Crew est trop ancien. Mets Kiro Crew à jour vers une version avec les sites de navigateur pour apps (KiroCrew#38333, plus récente que v0.13.0-rc.3), puis rouvre cette page.",
+			"unready_not_approved": "Approuve d’abord les sites de musique pour Mood Music. Une seule fois, sur la page de l’app.",
+			"unready_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew."
 		}
 	},
 	hi: {
 		manifest: {
 			"display_name": "मूड म्यूज़िक",
-			"description": "बताइए आप कैसा महसूस कर रहे हैं, या कोई गाना जिसने आपको छू लिया। DJ एजेंट उसी एहसास वाले गाने ढूँढकर चलाता है: YouTube पेज के अंदर, bilibili ब्राउज़र के नए टैब में। पसंद या छोड़ें दबाएँ, अगली पसंद उसी हिसाब से बदलेगी।",
+			"description": "बताइए आप कैसा महसूस कर रहे हैं, या कोई गाना जिसने आपको छू लिया। DJ एजेंट उसी एहसास वाले गाने ढूँढकर Kiro Crew के ब्राउज़र में YouTube या bilibili पर चलाता है। पसंद या छोड़ें दबाएँ, अगली पसंद उसी हिसाब से बदलेगी।",
 			"page_label": "मूड म्यूज़िक",
 			"highlight_1": "अपना मूड बताइए या कोई गाना जिसने आपको छुआ — यह उसी एहसास वाले और गाने ढूँढता है",
 			"highlight_2": "हर गाने के साथ बताया जाता है कि यह इस मूड में क्यों जमता है",
-			"highlight_3": "YouTube निजता-बढ़ाए गए एम्बेड से पेज के अंदर चलता है",
-			"highlight_4": "bilibili के गाने आपके अपने ब्राउज़र के नए टैब में खुलते हैं; एजेंट कभी आपका खाता नहीं छूता",
+			"highlight_3": "गाने Kiro Crew के ब्राउज़र में आवाज़ के साथ चलते हैं; पेज पर चलाएँ, रोकें और आवाज़ के बटन हैं",
+			"highlight_4": "एजेंट सिर्फ़ bilibili और YouTube के खोज और वीडियो पेज खोलता है, और कभी साइन इन, टिप्पणी, लाइक या भुगतान नहीं करता",
 			"highlight_5": "पसंद या छोड़ें अगली पसंद में काम आता है",
 			"highlight_6": "पृष्ठभूमि और हलचल मूड के साथ बदलती है, लाइट और डार्क दोनों में",
 			"use_case_1": "अभी के मूड से मेल खाते गाने ढूँढें और चलाएँ, और दिल छूने वाले पल सहेजें।",
-			"configuration_1": "किसी खाते की ज़रूरत नहीं। YouTube पेज में चलता है; bilibili आपके अपने ब्राउज़र में खुलता है, साइन इन हो या नहीं, आपकी मर्ज़ी।"
+			"configuration_1": "ऐप ब्राउज़र साइटों वाला Kiro Crew चाहिए (v0.13.0-rc.3 से नया)। Kiro Crew में ऐप के पेज पर संगीत साइटों को एक बार मंज़ूरी दें।"
 		},
 		page: {
 			"title": "मूड म्यूज़िक",
@@ -911,13 +871,8 @@ var CATALOGS = {
 			"liked": "पसंद किया",
 			"skip": "छोड़ें",
 			"more": "ऐसे और",
-			"open_bilibili": "bilibili पर खोलें",
-			"bilibili_note": "आपके अपने ब्राउज़र के नए टैब में खुलता है।",
-			"open_youtube": "YouTube पर खोलें",
-			"youtube_blank": "प्लेयर खाली है या Error 153? Kiro Crew अपडेट करें, या YouTube पर खोलें।",
 			"queue": "आगे",
 			"play": "{{title}} चलाएँ",
-			"player_title": "YouTube प्लेयर: {{title}}",
 			"pause_motion": "पृष्ठभूमि की हलचल रोकें",
 			"play_motion": "पृष्ठभूमि की हलचल चलाएँ",
 			"moments_empty_title": "अभी कोई पल नहीं",
@@ -1001,10 +956,7 @@ var CATALOGS = {
 			"explore_familiar": "थोड़ा जाना-पहचाना",
 			"explore_balanced": "संतुलित",
 			"explore_more": "और खोज",
-			"player": "प्लेयर",
-			"player_auto": "अपने-आप",
 			"stay_only": "आज बस इसी एहसास में रहना है",
-			"player_browser": "Crew ब्राउज़र",
 			"status_playing": "आपका साथी Kiro Crew के ब्राउज़र में गाना खोल रहा है…"
 		},
 		card: {
@@ -1038,27 +990,27 @@ var CATALOGS = {
 			"continuous_note": "लगातार चलाना तभी काम करता है जब यह पेज खुला हो। इसे बंद करेंगे तो मौजूदा गाना ख़त्म होते ही संगीत रुक जाएगा।",
 			"not_played": "इस बार आपका साथी इसे नहीं चला पाया: {{reason}}",
 			"no_reason": "कोई कारण नहीं बताया",
-			"fallback_title": "Crew ब्राउज़र अभी तैयार नहीं है, इसलिए गाने पहले की तरह यहीं चलेंगे",
-			"fallback_old_host": "यह Kiro Crew, Crew ब्राउज़र प्लेयर के लिए बहुत पुराना है। इसे इस्तेमाल करने के लिए Kiro Crew अपडेट करें।",
-			"fallback_not_approved": "पहले मूड म्यूज़िक के लिए संगीत साइटों को मंज़ूरी दें। ऐप के पेज पर एक बार मंज़ूरी देनी होती है।",
-			"fallback_browse_off": "इस कंप्यूटर की एक नीति ने Kiro Crew का ब्राउज़र बंद कर रखा है।",
 			"approve": "साइटों को मंज़ूरी दें",
-			"status_playing": "Kiro Crew के ब्राउज़र में चल रहा है।"
+			"status_playing": "Kiro Crew के ब्राउज़र में चल रहा है।",
+			"unready_title": "गाने अभी Kiro Crew के ब्राउज़र में नहीं चल सकते",
+			"unready_old_host": "यह Kiro Crew बहुत पुराना है। Kiro Crew को ऐप ब्राउज़र साइटों वाले संस्करण (KiroCrew#38333 सहित, v0.13.0-rc.3 से नया) में अपडेट करें, फिर यह पेज दोबारा खोलें।",
+			"unready_not_approved": "पहले मूड म्यूज़िक के लिए संगीत साइटों को मंज़ूरी दें। ऐप के पेज पर एक बार मंज़ूरी देनी होती है।",
+			"unready_browse_off": "इस कंप्यूटर की एक नीति ने Kiro Crew का ब्राउज़र बंद कर रखा है।"
 		}
 	},
 	it: {
 		manifest: {
 			"display_name": "Mood Music",
-			"description": "Digli come ti senti o nomina una canzone che ti ha emozionato. Un agente DJ trova canzoni con la stessa emozione e le riproduce: YouTube nella pagina, bilibili in una nuova scheda del browser. Con Mi piace o Salta le scelte successive si adattano.",
+			"description": "Digli come ti senti o nomina una canzone che ti ha emozionato. Un agente DJ trova canzoni con la stessa emozione e le riproduce su YouTube o bilibili nel browser di Kiro Crew. Con Mi piace o Salta le scelte successive si adattano.",
 			"page_label": "Mood Music",
 			"highlight_1": "Di’ come ti senti o nomina una canzone che ti ha emozionato: ne trova altre con la stessa emozione",
 			"highlight_2": "Ogni scelta spiega perché si adatta al tuo umore",
-			"highlight_3": "YouTube si riproduce nella pagina con l’incorporamento a privacy avanzata",
-			"highlight_4": "Le canzoni di bilibili si aprono in una nuova scheda del tuo browser; l’agente non tocca mai il tuo account",
+			"highlight_3": "Le canzoni suonano nel browser di Kiro Crew, con l’audio; la pagina ha riproduci, pausa e volume",
+			"highlight_4": "L’agente apre solo pagine di ricerca e video di bilibili e YouTube, e non accede, non commenta, non mette mi piace e non paga mai",
 			"highlight_5": "Mi piace o Salta vengono usati per le scelte successive",
 			"highlight_6": "Lo sfondo e il movimento seguono l’umore, in chiaro e in scuro",
 			"use_case_1": "Trova e riproduci canzoni adatte a come ti senti ora e conserva i momenti che ti hanno emozionato.",
-			"configuration_1": "Non serve un account. YouTube si riproduce nella pagina; bilibili si apre nel tuo browser, con o senza accesso, come preferisci."
+			"configuration_1": "Serve un Kiro Crew con i siti del browser per le app (più recente di v0.13.0-rc.3). Approva i siti musicali una volta, nella pagina dell’app in Kiro Crew."
 		},
 		page: {
 			"title": "Mood Music",
@@ -1082,13 +1034,8 @@ var CATALOGS = {
 			"liked": "Ti piace",
 			"skip": "Salta",
 			"more": "Altre così",
-			"open_bilibili": "Apri su bilibili",
-			"bilibili_note": "Si apre in una nuova scheda del tuo browser.",
-			"open_youtube": "Apri su YouTube",
-			"youtube_blank": "Lettore vuoto o Error 153? Aggiorna Kiro Crew, oppure aprilo su YouTube.",
 			"queue": "Prossimi",
 			"play": "Riproduci {{title}}",
-			"player_title": "Player YouTube: {{title}}",
 			"pause_motion": "Metti in pausa il movimento dello sfondo",
 			"play_motion": "Riprendi il movimento dello sfondo",
 			"moments_empty_title": "Ancora nessun momento",
@@ -1172,10 +1119,7 @@ var CATALOGS = {
 			"explore_familiar": "Più familiare",
 			"explore_balanced": "Equilibrato",
 			"explore_more": "Esplora di più",
-			"player": "Lettore",
-			"player_auto": "Automatico",
 			"stay_only": "Oggi voglio solo restare in questa emozione",
-			"player_browser": "Browser di Crew",
 			"status_playing": "Il tuo compagno sta aprendo la canzone nel browser di Kiro Crew…"
 		},
 		card: {
@@ -1209,27 +1153,27 @@ var CATALOGS = {
 			"continuous_note": "La riproduzione continua funziona solo con questa pagina aperta. Se la chiudi, la musica si ferma alla fine della canzone in corso.",
 			"not_played": "Questa volta il tuo compagno non è riuscito a riprodurla: {{reason}}",
 			"no_reason": "nessun motivo indicato",
-			"fallback_title": "Il browser di Crew non è pronto, quindi le canzoni suonano qui come prima",
-			"fallback_old_host": "Questo Kiro Crew è troppo vecchio per il player del browser di Crew. Aggiorna Kiro Crew per usarlo.",
-			"fallback_not_approved": "Prima approva i siti musicali per Mood Music. Si approvano una volta, nella pagina dell’app.",
-			"fallback_browse_off": "Una regola di questo computer ha spento il browser di Kiro Crew.",
 			"approve": "Approva i siti",
-			"status_playing": "In riproduzione nel browser di Kiro Crew."
+			"status_playing": "In riproduzione nel browser di Kiro Crew.",
+			"unready_title": "Le canzoni non possono ancora suonare nel browser di Kiro Crew",
+			"unready_old_host": "Questo Kiro Crew è troppo vecchio. Aggiorna Kiro Crew a una versione con i siti del browser per le app (KiroCrew#38333, più recente di v0.13.0-rc.3), poi riapri questa pagina.",
+			"unready_not_approved": "Prima approva i siti musicali per Mood Music. Si approvano una volta, nella pagina dell’app.",
+			"unready_browse_off": "Una regola di questo computer ha spento il browser di Kiro Crew."
 		}
 	},
 	ja: {
 		manifest: {
 			"display_name": "ムードミュージック",
-			"description": "今の気持ちや、心を動かされた曲を伝えてください。DJ エージェントが同じ気分の曲を探して再生します。YouTube はページ内で、bilibili はブラウザの新しいタブで開きます。いいね・スキップすると次の選曲に反映されます。",
+			"description": "今の気持ちや、心を動かされた曲を伝えてください。DJ エージェントが同じ気分の曲を探し、Kiro Crew のブラウザで YouTube か bilibili を使って再生します。いいね・スキップすると次の選曲に反映されます。",
 			"page_label": "ムードミュージック",
 			"highlight_1": "気持ちや心に響いた曲を伝えると、同じ気分の曲をもっと探します",
 			"highlight_2": "どの曲にも、その気分に合う理由が添えられます",
-			"highlight_3": "YouTube はプライバシー強化モードの埋め込みでページ内再生",
-			"highlight_4": "bilibili の曲はご自身のブラウザの新しいタブで開き、エージェントがアカウントに触れることはありません",
+			"highlight_3": "曲は Kiro Crew のブラウザで音付きで再生。ページで再生・一時停止・音量を操作できます",
+			"highlight_4": "エージェントが開くのは bilibili と YouTube の検索ページと動画ページだけ。ログイン、コメント、いいね、支払いはしません",
 			"highlight_5": "いいね・スキップが次の選曲に使われます",
 			"highlight_6": "背景と動きが気分に合わせて変わります（ライト・ダーク対応）",
 			"use_case_1": "今の気持ちに合う曲を探して再生し、心に残った瞬間を記録します。",
-			"configuration_1": "アカウントは不要です。YouTube はページ内で再生、bilibili はご自身のブラウザで開きます（ログインは任意）。"
+			"configuration_1": "アプリのブラウザサイトに対応した Kiro Crew（v0.13.0-rc.3 より新しい版）が必要です。Kiro Crew のアプリページで音楽サイトを一度承認してください。"
 		},
 		page: {
 			"title": "ムードミュージック",
@@ -1253,13 +1197,8 @@ var CATALOGS = {
 			"liked": "いいね済み",
 			"skip": "スキップ",
 			"more": "似た曲をもっと",
-			"open_bilibili": "bilibili で開く",
-			"bilibili_note": "ご自身のブラウザの新しいタブで開きます。",
-			"open_youtube": "YouTube で開く",
-			"youtube_blank": "プレーヤーが空白、または Error 153 の場合は Kiro Crew を更新するか、YouTube で開いてください。",
 			"queue": "次の曲",
 			"play": "{{title}} を再生",
-			"player_title": "YouTube プレーヤー：{{title}}",
 			"pause_motion": "背景の動きを一時停止",
 			"play_motion": "背景の動きを再生",
 			"moments_empty_title": "まだモーメントはありません",
@@ -1343,10 +1282,7 @@ var CATALOGS = {
 			"explore_familiar": "なじみ多め",
 			"explore_balanced": "バランス",
 			"explore_more": "もっと探索",
-			"player": "プレーヤー",
-			"player_auto": "自動",
 			"stay_only": "今日はこの気持ちのままでいたい",
-			"player_browser": "Crew ブラウザ",
 			"status_playing": "相棒が Kiro Crew のブラウザで曲を開いています…"
 		},
 		card: {
@@ -1380,27 +1316,27 @@ var CATALOGS = {
 			"continuous_note": "連続再生はこのページを開いている間だけ有効です。閉じると、今の曲が終わったところで止まります。",
 			"not_played": "今回は再生できませんでした：{{reason}}",
 			"no_reason": "理由の説明なし",
-			"fallback_title": "Crew ブラウザはまだ使えないため、これまでどおりここで再生します",
-			"fallback_old_host": "この Kiro Crew は Crew ブラウザ再生に対応していません。Kiro Crew を更新してください。",
-			"fallback_not_approved": "先に Mood Music の音楽サイトを承認してください。アプリのページで一度だけ承認します。",
-			"fallback_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。",
 			"approve": "サイトを承認する",
-			"status_playing": "Kiro Crew のブラウザで再生中。"
+			"status_playing": "Kiro Crew のブラウザで再生中。",
+			"unready_title": "まだ Kiro Crew のブラウザで曲を再生できません",
+			"unready_old_host": "この Kiro Crew は古すぎます。アプリのブラウザサイトに対応した版（KiroCrew#38333 を含む、v0.13.0-rc.3 より新しい版）に更新して、このページを開き直してください。",
+			"unready_not_approved": "先に Mood Music の音楽サイトを承認してください。アプリのページで一度だけ承認します。",
+			"unready_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。"
 		}
 	},
 	ko: {
 		manifest: {
 			"display_name": "무드 뮤직",
-			"description": "지금 기분이나 마음을 울린 노래를 알려 주세요. DJ 에이전트가 같은 느낌의 노래를 찾아 재생합니다. YouTube는 페이지 안에서, bilibili는 브라우저 새 탭에서 열립니다. 좋아요나 건너뛰기를 누르면 다음 추천에 반영됩니다.",
+			"description": "지금 기분이나 마음을 울린 노래를 알려 주세요. DJ 에이전트가 같은 느낌의 노래를 찾아 Kiro Crew 브라우저에서 YouTube나 bilibili로 재생합니다. 좋아요나 건너뛰기를 누르면 다음 추천에 반영됩니다.",
 			"page_label": "무드 뮤직",
 			"highlight_1": "기분이나 마음을 울린 노래를 말하면 같은 느낌의 노래를 더 찾아 줍니다",
 			"highlight_2": "추천곡마다 이 기분에 맞는 이유를 알려 줍니다",
-			"highlight_3": "YouTube는 개인정보 보호 강화 임베드로 페이지 안에서 재생됩니다",
-			"highlight_4": "bilibili 노래는 내 브라우저의 새 탭에서 열리며, 에이전트는 계정에 손대지 않습니다",
+			"highlight_3": "노래는 Kiro Crew 브라우저에서 소리와 함께 재생되고, 페이지에서 재생·일시정지·음량을 조절해요",
+			"highlight_4": "에이전트는 bilibili와 YouTube의 검색 페이지와 영상 페이지만 열고, 로그인·댓글·좋아요·결제는 하지 않아요",
 			"highlight_5": "좋아요나 건너뛰기가 다음 추천에 쓰입니다",
 			"highlight_6": "배경과 움직임이 기분에 따라 바뀌며 라이트·다크 모두 지원합니다",
 			"use_case_1": "지금 기분에 맞는 노래를 찾아 재생하고, 마음을 울린 순간을 기록합니다.",
-			"configuration_1": "계정이 필요 없습니다. YouTube는 페이지에서 재생되고, bilibili는 내 브라우저에서 열립니다(로그인은 선택)."
+			"configuration_1": "앱 브라우저 사이트를 지원하는 Kiro Crew(v0.13.0-rc.3보다 새 버전)가 필요해요. Kiro Crew의 앱 페이지에서 음악 사이트를 한 번 승인하세요."
 		},
 		page: {
 			"title": "무드 뮤직",
@@ -1424,13 +1360,8 @@ var CATALOGS = {
 			"liked": "좋아요 함",
 			"skip": "건너뛰기",
 			"more": "비슷한 곡 더 보기",
-			"open_bilibili": "bilibili에서 열기",
-			"bilibili_note": "내 브라우저의 새 탭에서 열립니다.",
-			"open_youtube": "YouTube에서 열기",
-			"youtube_blank": "플레이어가 비어 있거나 Error 153이 보이나요? Kiro Crew를 업데이트하거나 YouTube에서 여세요.",
 			"queue": "다음 곡",
 			"play": "{{title}} 재생",
-			"player_title": "YouTube 플레이어: {{title}}",
 			"pause_motion": "배경 움직임 일시정지",
 			"play_motion": "배경 움직임 재생",
 			"moments_empty_title": "아직 순간이 없습니다",
@@ -1514,10 +1445,7 @@ var CATALOGS = {
 			"explore_familiar": "익숙하게",
 			"explore_balanced": "균형",
 			"explore_more": "더 탐색",
-			"player": "플레이어",
-			"player_auto": "자동",
 			"stay_only": "오늘은 이 기분 그대로 있고 싶어",
-			"player_browser": "Crew 브라우저",
 			"status_playing": "친구가 Kiro Crew 브라우저에서 노래를 여는 중이에요…"
 		},
 		card: {
@@ -1551,27 +1479,27 @@ var CATALOGS = {
 			"continuous_note": "연속 재생은 이 페이지가 열려 있을 때만 돼요. 닫으면 지금 노래가 끝날 때 멈춰요.",
 			"not_played": "이번에는 재생하지 못했어요: {{reason}}",
 			"no_reason": "이유 없음",
-			"fallback_title": "Crew 브라우저를 아직 쓸 수 없어서 노래는 전처럼 여기서 재생돼요",
-			"fallback_old_host": "이 Kiro Crew는 Crew 브라우저 재생을 지원하기에 너무 오래됐어요. Kiro Crew를 업데이트하세요.",
-			"fallback_not_approved": "먼저 무드 뮤직의 음악 사이트를 승인하세요. 앱 페이지에서 한 번만 승인하면 돼요.",
-			"fallback_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요.",
 			"approve": "사이트 승인하기",
-			"status_playing": "Kiro Crew 브라우저에서 재생 중."
+			"status_playing": "Kiro Crew 브라우저에서 재생 중.",
+			"unready_title": "아직 Kiro Crew 브라우저에서 노래를 재생할 수 없어요",
+			"unready_old_host": "이 Kiro Crew는 너무 오래됐어요. 앱 브라우저 사이트를 지원하는 버전(KiroCrew#38333 포함, v0.13.0-rc.3보다 새 버전)으로 업데이트한 뒤 이 페이지를 다시 여세요.",
+			"unready_not_approved": "먼저 무드 뮤직의 음악 사이트를 승인하세요. 앱 페이지에서 한 번만 승인하면 돼요.",
+			"unready_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요."
 		}
 	},
 	pt: {
 		manifest: {
 			"display_name": "Mood Music",
-			"description": "Diga como você se sente ou cite uma música que te emocionou. Um agente DJ encontra músicas com o mesmo sentimento e as toca: YouTube dentro da página e bilibili em uma nova aba do navegador. Curtir ou Pular ajusta as próximas escolhas.",
+			"description": "Diga como você se sente ou cite uma música que te emocionou. Um agente DJ encontra músicas com o mesmo sentimento e as toca no YouTube ou no bilibili, dentro do navegador do Kiro Crew. Curtir ou Pular ajusta as próximas escolhas.",
 			"page_label": "Mood Music",
 			"highlight_1": "Diga como você se sente ou cite uma música que te emocionou — ele encontra mais com o mesmo sentimento",
 			"highlight_2": "Cada escolha diz por que combina com o seu humor",
-			"highlight_3": "O YouTube toca na página pela incorporação com privacidade aprimorada",
-			"highlight_4": "As músicas do bilibili abrem em uma nova aba do seu próprio navegador; o agente nunca mexe na sua conta",
+			"highlight_3": "As músicas tocam no navegador do Kiro Crew, com som; a página tem tocar, pausar e volume",
+			"highlight_4": "O agente só abre páginas de busca e de vídeo do bilibili e do YouTube, e nunca faz login, comenta, curte ou paga",
 			"highlight_5": "Curtir ou Pular é usado nas próximas escolhas",
 			"highlight_6": "O fundo e o movimento acompanham o humor, no claro e no escuro",
 			"use_case_1": "Encontre e toque músicas que combinam com como você se sente agora e guarde os momentos que te emocionaram.",
-			"configuration_1": "Não precisa de conta. O YouTube toca na página; o bilibili abre no seu próprio navegador, com ou sem login, como preferir."
+			"configuration_1": "Precisa de um Kiro Crew com sites de navegador para apps (mais novo que v0.13.0-rc.3). Aprove os sites de música uma vez, na página do app no Kiro Crew."
 		},
 		page: {
 			"title": "Mood Music",
@@ -1595,13 +1523,8 @@ var CATALOGS = {
 			"liked": "Curtida",
 			"skip": "Pular",
 			"more": "Mais como esta",
-			"open_bilibili": "Abrir no bilibili",
-			"bilibili_note": "Abre em uma nova aba do seu próprio navegador.",
-			"open_youtube": "Abrir no YouTube",
-			"youtube_blank": "Player em branco ou Error 153? Atualize o Kiro Crew ou abra no YouTube.",
 			"queue": "A seguir",
 			"play": "Tocar {{title}}",
-			"player_title": "Player do YouTube: {{title}}",
 			"pause_motion": "Pausar o movimento do fundo",
 			"play_motion": "Retomar o movimento do fundo",
 			"moments_empty_title": "Ainda não há momentos",
@@ -1685,10 +1608,7 @@ var CATALOGS = {
 			"explore_familiar": "Mais conhecido",
 			"explore_balanced": "Equilibrado",
 			"explore_more": "Explorar mais",
-			"player": "Player",
-			"player_auto": "Automático",
 			"stay_only": "Hoje só quero ficar neste sentimento",
-			"player_browser": "Navegador do Crew",
 			"status_playing": "Seu parceiro está abrindo a música no navegador do Kiro Crew…"
 		},
 		card: {
@@ -1722,27 +1642,27 @@ var CATALOGS = {
 			"continuous_note": "A reprodução contínua só funciona com esta página aberta. Feche-a, e a música para quando a música atual acabar.",
 			"not_played": "Seu parceiro não conseguiu tocar desta vez: {{reason}}",
 			"no_reason": "sem motivo informado",
-			"fallback_title": "O navegador do Crew ainda não está pronto, então as músicas tocam aqui como antes",
-			"fallback_old_host": "Este Kiro Crew é antigo demais para o player do navegador do Crew. Atualize o Kiro Crew para usá-lo.",
-			"fallback_not_approved": "Primeiro aprove os sites de música para o Mood Music. Você aprova uma vez, na página do app.",
-			"fallback_browse_off": "Uma política deste computador desligou o navegador do Kiro Crew.",
 			"approve": "Aprovar os sites",
-			"status_playing": "Tocando no navegador do Kiro Crew."
+			"status_playing": "Tocando no navegador do Kiro Crew.",
+			"unready_title": "As músicas ainda não podem tocar no navegador do Kiro Crew",
+			"unready_old_host": "Este Kiro Crew é antigo demais. Atualize o Kiro Crew para uma versão com sites de navegador para apps (KiroCrew#38333, mais nova que v0.13.0-rc.3) e abra esta página de novo.",
+			"unready_not_approved": "Primeiro aprove os sites de música para o Mood Music. Você aprova uma vez, na página do app.",
+			"unready_browse_off": "Uma política deste computador desligou o navegador do Kiro Crew."
 		}
 	},
 	ru: {
 		manifest: {
 			"display_name": "Музыка настроения",
-			"description": "Расскажите, что вы чувствуете, или назовите песню, которая вас тронула. DJ-агент найдёт песни с тем же настроением и включит их: YouTube прямо на странице, bilibili в новой вкладке браузера. Отмечайте «Нравится» или «Пропустить» — следующие подборки это учтут.",
+			"description": "Расскажите, что вы чувствуете, или назовите песню, которая вас тронула. DJ-агент найдёт песни с тем же настроением и включит их на YouTube или bilibili в браузере Kiro Crew. Отмечайте «Нравится» или «Пропустить» — следующие подборки это учтут.",
 			"page_label": "Музыка настроения",
 			"highlight_1": "Расскажите о настроении или назовите песню, которая тронула, — он найдёт ещё с тем же чувством",
 			"highlight_2": "К каждой песне — пояснение, почему она подходит настроению",
-			"highlight_3": "YouTube играет на странице через встраивание с усиленной конфиденциальностью",
-			"highlight_4": "Песни bilibili открываются в новой вкладке вашего браузера; агент никогда не трогает ваш аккаунт",
+			"highlight_3": "Песни играют в браузере Kiro Crew, со звуком; на странице есть воспроизведение, пауза и громкость",
+			"highlight_4": "Агент открывает только страницы поиска и видео bilibili и YouTube и никогда не входит в аккаунт, не комментирует, не ставит лайки и не платит",
 			"highlight_5": "«Нравится» и «Пропустить» учитываются в следующих подборках",
 			"highlight_6": "Фон и движение меняются с настроением, в светлой и тёмной теме",
 			"use_case_1": "Находите и слушайте песни под ваше настроение и сохраняйте моменты, которые вас тронули.",
-			"configuration_1": "Аккаунт не нужен. YouTube играет на странице; bilibili открывается в вашем браузере — со входом или без, как захотите."
+			"configuration_1": "Нужен Kiro Crew с сайтами браузера для приложений (новее v0.13.0-rc.3). Одобрите музыкальные сайты один раз, на странице приложения в Kiro Crew."
 		},
 		page: {
 			"title": "Музыка настроения",
@@ -1766,13 +1686,8 @@ var CATALOGS = {
 			"liked": "Понравилось",
 			"skip": "Пропустить",
 			"more": "Ещё похожих",
-			"open_bilibili": "Открыть на bilibili",
-			"bilibili_note": "Откроется в новой вкладке вашего браузера.",
-			"open_youtube": "Открыть на YouTube",
-			"youtube_blank": "Плеер пустой или Error 153? Обновите Kiro Crew или откройте на YouTube.",
 			"queue": "Дальше",
 			"play": "Включить {{title}}",
-			"player_title": "Плеер YouTube: {{title}}",
 			"pause_motion": "Приостановить движение фона",
 			"play_motion": "Возобновить движение фона",
 			"moments_empty_title": "Пока нет моментов",
@@ -1856,10 +1771,7 @@ var CATALOGS = {
 			"explore_familiar": "Знакомее",
 			"explore_balanced": "Баланс",
 			"explore_more": "Больше открытий",
-			"player": "Плеер",
-			"player_auto": "Авто",
 			"stay_only": "Сегодня просто побыть в этом чувстве",
-			"player_browser": "Браузер Crew",
 			"status_playing": "Ваш напарник открывает песню в браузере Kiro Crew…"
 		},
 		card: {
@@ -1893,27 +1805,27 @@ var CATALOGS = {
 			"continuous_note": "Непрерывное воспроизведение работает, только пока эта страница открыта. Закройте её — и музыка остановится после текущей песни.",
 			"not_played": "Напарнику не удалось её включить: {{reason}}",
 			"no_reason": "причина не указана",
-			"fallback_title": "Браузер Crew пока не готов, поэтому песни играют здесь, как раньше",
-			"fallback_old_host": "Эта версия Kiro Crew слишком старая для плеера в браузере Crew. Обновите Kiro Crew.",
-			"fallback_not_approved": "Сначала одобрите музыкальные сайты для «Музыки настроения». Это делается один раз, на странице приложения.",
-			"fallback_browse_off": "Браузер Kiro Crew отключён политикой на этом компьютере.",
 			"approve": "Одобрить сайты",
-			"status_playing": "Играет в браузере Kiro Crew."
+			"status_playing": "Играет в браузере Kiro Crew.",
+			"unready_title": "Песни пока не могут играть в браузере Kiro Crew",
+			"unready_old_host": "Эта версия Kiro Crew слишком старая. Обновите Kiro Crew до версии с сайтами браузера для приложений (KiroCrew#38333, новее v0.13.0-rc.3) и откройте эту страницу снова.",
+			"unready_not_approved": "Сначала одобрите музыкальные сайты для «Музыки настроения». Это делается один раз, на странице приложения.",
+			"unready_browse_off": "Браузер Kiro Crew отключён политикой на этом компьютере."
 		}
 	},
 	"zh-CN": {
 		manifest: {
 			"display_name": "情绪音乐",
-			"description": "说说你的心情，或说出一首打动你的歌。DJ 助手会找来感觉相同的歌并播放：YouTube 在页面里播放，bilibili 在浏览器新标签页打开。点喜欢或跳过，下次推荐会跟着变。",
+			"description": "说说你的心情，或说出一首打动你的歌。DJ 助手会找来感觉相同的歌，在 Kiro Crew 的浏览器里用 YouTube 或 bilibili 播放。点喜欢或跳过，下次推荐会跟着变。",
 			"page_label": "情绪音乐",
 			"highlight_1": "说出心情，或说出一首打动你的歌，它会找来更多感觉相同的歌",
 			"highlight_2": "每首歌都会说明为什么适合这份心情",
-			"highlight_3": "YouTube 通过隐私增强的嵌入方式在页面里播放",
-			"highlight_4": "bilibili 的歌在你自己浏览器的新标签页打开，助手从不碰你的账号",
+			"highlight_3": "歌在 Kiro Crew 的浏览器里播放，有声音；页面上有播放、暂停和音量",
+			"highlight_4": "助手只打开 bilibili 和 YouTube 的搜索页和视频页，从不登录、评论、点赞或付款",
 			"highlight_5": "喜欢或跳过一首歌，下次推荐会用上",
 			"highlight_6": "背景和动效随心情变化，亮色暗色都适用",
 			"use_case_1": "找到并播放符合你此刻心情的歌，并记下打动你的那些时刻。",
-			"configuration_1": "不需要账号。YouTube 在页面里播放；bilibili 在你自己的浏览器打开，登录与否由你决定。"
+			"configuration_1": "需要支持应用浏览器网站的 Kiro Crew（比 v0.13.0-rc.3 新）。在 Kiro Crew 的应用页面批准一次音乐网站即可。"
 		},
 		page: {
 			"title": "情绪音乐",
@@ -1937,13 +1849,8 @@ var CATALOGS = {
 			"liked": "已喜欢",
 			"skip": "跳过",
 			"more": "更多类似的",
-			"open_bilibili": "在 bilibili 打开",
-			"bilibili_note": "在你自己浏览器的新标签页打开。",
-			"open_youtube": "在 YouTube 打开",
-			"youtube_blank": "播放器空白或显示 Error 153？请更新 Kiro Crew，或在 YouTube 打开。",
 			"queue": "接下来",
 			"play": "播放 {{title}}",
-			"player_title": "YouTube 播放器：{{title}}",
 			"pause_motion": "暂停背景动效",
 			"play_motion": "播放背景动效",
 			"moments_empty_title": "还没有时刻",
@@ -2027,10 +1934,7 @@ var CATALOGS = {
 			"explore_familiar": "熟悉一点",
 			"explore_balanced": "平衡",
 			"explore_more": "多探索",
-			"player": "播放器",
-			"player_auto": "自动",
 			"stay_only": "今天只想待在这个情绪里",
-			"player_browser": "Crew 浏览器",
 			"status_playing": "搭子正在 Kiro Crew 的浏览器里打开这首歌…"
 		},
 		card: {
@@ -2065,11 +1969,11 @@ var CATALOGS = {
 			"continuous_note": "连续播放只在这个页面开着时有效。关掉页面后，这首放完就停。",
 			"not_played": "搭子这次没能放出来：{{reason}}",
 			"no_reason": "没有说明原因",
-			"fallback_title": "Crew 浏览器还不能用，歌曲照旧在这里播放",
-			"fallback_old_host": "这个 Kiro Crew 版本太旧，不支持 Crew 浏览器播放。请先更新 Kiro Crew。",
-			"fallback_not_approved": "请先为情绪音乐批准这几个音乐网站。只需在应用页面批准一次。",
-			"fallback_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。",
-			"approve": "去批准网站"
+			"approve": "去批准网站",
+			"unready_title": "歌还不能在 Kiro Crew 的浏览器里播放",
+			"unready_old_host": "这个 Kiro Crew 版本太旧。请把 Kiro Crew 更新到支持应用浏览器网站的版本（含 KiroCrew#38333，比 v0.13.0-rc.3 新），再打开这个页面。",
+			"unready_not_approved": "请先为情绪音乐批准这几个音乐网站。只需在应用页面批准一次。",
+			"unready_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。"
 		}
 	}
 };
@@ -3372,79 +3276,8 @@ function MoodBackdrop({ scene, playing, moving, reduced }) {
 		}, l.id))]
 	});
 }
-// src/links.ts
-/**
-* The two song links Mood Music plays, and nothing else.
-*
-* Mirrors `src/kiro_crew/apps/builtins/mood_music/backend/links.py`: the page
-* drops a pick the backend would refuse, so one bad link from the agent loses
-* only that song. A YouTube pick keeps only its 11-character video id, and the
-* embed URL is built here on the one host the dashboard CSP frames. A bilibili
-* pick must be https on an exact bilibili host.
-*/
-var VIDEO_ID_RE = /^[A-Za-z0-9_-]{11}$/;
-var BILIBILI_HOSTS = /* @__PURE__ */ new Set([
-	"www.bilibili.com",
-	"m.bilibili.com",
-	"b23.tv"
-]);
-var YOUTUBE_WATCH_HOSTS = /* @__PURE__ */ new Set([
-	"www.youtube.com",
-	"youtube.com",
-	"m.youtube.com",
-	"music.youtube.com"
-]);
-var MAX_URL = 2048;
-/** The embed origin and path the dashboard CSP `frame-src` admits. */
-var YOUTUBE_EMBED_BASE = "https://www.youtube-nocookie.com/embed/";
-function validVideoId(value) {
-	return typeof value === "string" && VIDEO_ID_RE.test(value) ? value : null;
-}
-/** A plain https URL: no user info, no port, no character a browser reads differently. */
-function parseHttps(raw) {
-	if (typeof raw !== "string" || raw.length > MAX_URL) return null;
-	if (/[\\\u0000-\u0020\u007f]/.test(raw)) return null;
-	let url;
-	try {
-		url = new URL(raw);
-	} catch {
-		return null;
-	}
-	if (url.protocol !== "https:" || url.username || url.password || url.port) return null;
-	return url;
-}
-/** The video id a YouTube watch or share link names, or null. */
-function youtubeVideoId(raw) {
-	const url = parseHttps(raw);
-	if (!url) return null;
-	if (url.hostname === "youtu.be") return validVideoId(url.pathname.slice(1));
-	if (YOUTUBE_WATCH_HOSTS.has(url.hostname) && url.pathname === "/watch") {
-		const ids = url.searchParams.getAll("v");
-		return ids.length === 1 ? validVideoId(ids[0]) : null;
-	}
-	return null;
-}
-/** The link rebuilt from its parts when it is an https bilibili link, else null. */
-function bilibiliUrl(raw) {
-	const url = parseHttps(raw);
-	if (!url || !BILIBILI_HOSTS.has(url.hostname)) return null;
-	return `https://${url.hostname}${url.pathname}${url.search}`;
-}
-/** A page the DJ cites as evidence: any plain https URL, rebuilt from its parts; else null. */
-function evidenceUrl(raw) {
-	const url = parseHttps(raw);
-	return url ? url.href : null;
-}
-/** The privacy-enhanced embed URL for a checked id; null for anything else. */
-function youtubeEmbedUrl(videoId, autoplay) {
-	const id = validVideoId(videoId);
-	if (!id) return null;
-	return `${YOUTUBE_EMBED_BASE}${id}?rel=0${autoplay ? "&autoplay=1" : ""}`;
-}
 // src/NowPlaying.tsx
-function NowPlaying({ pick, autoplay, busy, onLike, onSkip, onMore, stage }) {
-	const embed = !stage && pick.source === "youtube" ? youtubeEmbedUrl(pick.video_id, autoplay) : null;
-	const link = !stage && pick.source === "bilibili" ? bilibiliUrl(pick.url) : null;
+function NowPlaying({ pick, busy, onLike, onSkip, onMore, stage }) {
 	const liked = pick.feedback === "liked";
 	return /* @__PURE__ */ jsxs("section", {
 		"aria-label": t("page.now_playing"),
@@ -3457,53 +3290,6 @@ function NowPlaying({ pick, autoplay, busy, onLike, onSkip, onMore, stage }) {
 				children: t("page.now_playing")
 			}),
 			stage,
-			embed && /* @__PURE__ */ jsx("div", {
-				className: "mt-3 w-full overflow-hidden rounded-xl bg-[var(--bg-elevated)]",
-				style: { aspectRatio: "16 / 9" },
-				children: /* @__PURE__ */ jsx("iframe", {
-					src: embed,
-					title: t("page.player_title", { title: pick.title }),
-					className: "h-full w-full border-0",
-					allow: "autoplay; encrypted-media; picture-in-picture; fullscreen",
-					allowFullScreen: true,
-					referrerPolicy: "strict-origin-when-cross-origin",
-					sandbox: "allow-scripts allow-same-origin allow-presentation allow-popups",
-					"data-testid": "mood-youtube-frame"
-				}, embed)
-			}),
-			embed && /* @__PURE__ */ jsxs("p", {
-				className: "mt-1.5 text-xs text-[var(--muted)]",
-				"data-testid": "mood-youtube-note",
-				children: [
-					t("page.youtube_blank"),
-					" ",
-					/* @__PURE__ */ jsx("a", {
-						href: `https://www.youtube.com/watch?v=${validVideoId(pick.video_id)}`,
-						target: "_blank",
-						rel: "noopener noreferrer",
-						className: "text-[var(--accent)] underline-offset-2 hover:underline",
-						children: t("page.open_youtube")
-					})
-				]
-			}),
-			link && /* @__PURE__ */ jsxs("a", {
-				href: link,
-				target: "_blank",
-				rel: "noopener noreferrer",
-				style: { aspectRatio: "3 / 1" },
-				className: "mt-3 flex w-full flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[var(--border)] text-[var(--accent)] no-underline hover:bg-[var(--bg-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]",
-				"data-testid": "mood-bilibili-link",
-				children: [/* @__PURE__ */ jsxs("span", {
-					className: "inline-flex items-center gap-1.5 text-sm font-semibold",
-					children: [/* @__PURE__ */ jsx(ExternalLink, {
-						size: 15,
-						"aria-hidden": "true"
-					}), t("page.open_bilibili")]
-				}), /* @__PURE__ */ jsx("span", {
-					className: "text-xs text-[var(--muted)]",
-					children: t("page.bilibili_note")
-				})]
-			}),
 			/* @__PURE__ */ jsx("h2", {
 				className: "mt-3 text-lg font-semibold leading-snug text-[var(--text)]",
 				children: pick.title
@@ -3595,19 +3381,18 @@ var EXPLORE_MIX = {
 		1
 	]
 };
-/** The request line for each player choice: the preferred site first, the other only as a fallback. */
-var PLAYER_LINE = {
-	auto: "Player: any (YouTube or bilibili, whichever has the song)",
-	youtube: "Player: youtube (give a YouTube link for every song; use bilibili only for a song with no YouTube video you could find)",
-	bilibili: "Player: bilibili (give a bilibili link for every song; use YouTube only for a song with no bilibili video you could find)",
-	browser: "Player: browser (YouTube or bilibili, whichever has the song; the page asks you to play each one in Kiro Crew's browser later, so do not open the browser now)"
-};
+/**
+* How songs are played: always in Kiro Crew's browser, found there by searching
+* the pick's site when the person presses play. So a pick needs its site, and a
+* link only when the buddy already has one.
+*/
+var PLAYER_LINE = "Player: Kiro Crew's browser. Give every pick the site that has it (\"source\": \"youtube\" or \"bilibili\"). A \"url\" is optional: add it only when you already have the exact video link, and do not spend searches hunting for links. The page asks you to play each song later, by searching its site in the browser, so do not open the browser now.";
 /**
 * The message the page sends the DJ. The taste summary is the app's own record
 * of what the person liked and skipped, marked as data for the agent.
 */
 function buildRequest(opts) {
-	const { kind, text, state, explore = "balanced", stayOnly = false, player = "auto" } = opts;
+	const { kind, text, state, explore = "balanced", stayOnly = false } = opts;
 	const head = {
 		mood: "Mood",
 		answer: "Answer to your question",
@@ -3621,7 +3406,7 @@ function buildRequest(opts) {
 		"",
 		`Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`,
 		`Arc: ${stayOnly ? "stay only" : "stay -> turn -> lift"}`,
-		PLAYER_LINE[player] ?? PLAYER_LINE.auto,
+		PLAYER_LINE,
 		"",
 		...memorySummary(state?.memory ?? []).lines,
 		"",
@@ -3749,7 +3534,7 @@ function buildPlayRequest(opts) {
 	if (refill) {
 		const [anchor, exp, deep] = EXPLORE_MIX[explore];
 		const queued = refill.queued.map((q) => `"${clean(q.title, 80)}"${q.artist ? ` - ${clean(q.artist, 60)}` : ""}`);
-		lines.push("", `The queue is nearly empty: also add 4 new picks for the same feeling, found with web_search and web_fetch as in How to pick.`, `Mood so far: ${refill.moodTags.map((m) => clean(m, 40)).join("; ") || "as in this chat"}`, `Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`, `Arc: ${stayOnly ? "stay only" : "stay -> turn -> lift"}`, `Already in the queue, do not pick again: ${queued.join("; ") || "none"}`, PLAYER_LINE.auto, "", ...memorySummary(state?.memory ?? []).lines);
+		lines.push("", `The queue is nearly empty: also add 4 new picks for the same feeling, found with web_search and web_fetch as in How to pick.`, `Mood so far: ${refill.moodTags.map((m) => clean(m, 40)).join("; ") || "as in this chat"}`, `Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`, `Arc: ${stayOnly ? "stay only" : "stay -> turn -> lift"}`, `Already in the queue, do not pick again: ${queued.join("; ") || "none"}`, PLAYER_LINE, "", ...memorySummary(state?.memory ?? []).lines);
 	}
 	lines.push("", refill ? `${PLAY_FORMAT}\n${playRefillFormat()}` : PLAY_FORMAT);
 	return lines.join("\n");
@@ -3777,7 +3562,7 @@ var REPLY_LINES = [
 	"Write one or two short sentences, then end your reply with ONE fenced block tagged mood-music holding plain JSON, with exactly these field names:",
 	"- \"mood_tags\": 2 to 4 short words for the feeling, in the person's language.",
 	"- \"picks\": the songs, in arc order, each {\"title\", \"artist\", \"source\", \"url\", \"tier\", \"arc\", \"why\", \"listen_for\", \"evidence\", \"tags\"}.",
-	"- \"source\" is \"youtube\" or \"bilibili\". A youtube \"url\" is https://www.youtube.com/watch?v=<11-char id> or https://youtu.be/<id>; a bilibili \"url\" is https://www.bilibili.com/video/<BV id>.",
+	"- \"source\" is \"youtube\" or \"bilibili\". \"url\" is optional; when you give one, a youtube \"url\" is https://www.youtube.com/watch?v=<11-char id> or https://youtu.be/<id>, and a bilibili \"url\" is https://www.bilibili.com/video/<BV id>.",
 	"- \"tier\" is \"anchor\", \"explore\" or \"deep\". \"arc\" is \"stay\", \"turn\" or \"lift\".",
 	"- \"why\": why this song now, one line. \"listen_for\": one line on something to hear in it.",
 	"- \"evidence\" (explore and deep): {\"url\": a page you opened this turn that praises it, \"label\": what that page is}.",
@@ -3791,6 +3576,67 @@ var REPLY_LINES = [
 	"To ask one question instead, the block is {\"question\": \"...\"} with no picks."
 ];
 var REPLY_FORMAT = REPLY_LINES.join("\n");
+// src/links.ts
+/**
+* The two song links Mood Music plays, and nothing else.
+*
+* Mirrors `backend/links.py`: the page drops a pick the backend would refuse,
+* so one bad link from the agent loses only that song. A YouTube pick keeps
+* only its 11-character video id; a bilibili pick must be https on an exact
+* bilibili host. Links are optional: the buddy finds a song by searching its
+* site in Kiro Crew's browser.
+*/
+var VIDEO_ID_RE = /^[A-Za-z0-9_-]{11}$/;
+var BILIBILI_HOSTS = /* @__PURE__ */ new Set([
+	"www.bilibili.com",
+	"m.bilibili.com",
+	"b23.tv"
+]);
+var YOUTUBE_WATCH_HOSTS = /* @__PURE__ */ new Set([
+	"www.youtube.com",
+	"youtube.com",
+	"m.youtube.com",
+	"music.youtube.com"
+]);
+var MAX_URL = 2048;
+function validVideoId(value) {
+	return typeof value === "string" && VIDEO_ID_RE.test(value) ? value : null;
+}
+/** A plain https URL: no user info, no port, no character a browser reads differently. */
+function parseHttps(raw) {
+	if (typeof raw !== "string" || raw.length > MAX_URL) return null;
+	if (/[\\\u0000-\u0020\u007f]/.test(raw)) return null;
+	let url;
+	try {
+		url = new URL(raw);
+	} catch {
+		return null;
+	}
+	if (url.protocol !== "https:" || url.username || url.password || url.port) return null;
+	return url;
+}
+/** The video id a YouTube watch or share link names, or null. */
+function youtubeVideoId(raw) {
+	const url = parseHttps(raw);
+	if (!url) return null;
+	if (url.hostname === "youtu.be") return validVideoId(url.pathname.slice(1));
+	if (YOUTUBE_WATCH_HOSTS.has(url.hostname) && url.pathname === "/watch") {
+		const ids = url.searchParams.getAll("v");
+		return ids.length === 1 ? validVideoId(ids[0]) : null;
+	}
+	return null;
+}
+/** The link rebuilt from its parts when it is an https bilibili link, else null. */
+function bilibiliUrl(raw) {
+	const url = parseHttps(raw);
+	if (!url || !BILIBILI_HOSTS.has(url.hostname)) return null;
+	return `https://${url.hostname}${url.pathname}${url.search}`;
+}
+/** A page the DJ cites as evidence: any plain https URL, rebuilt from its parts; else null. */
+function evidenceUrl(raw) {
+	const url = parseHttps(raw);
+	return url ? url.href : null;
+}
 // src/replyParse.ts
 /**
 * Read the DJ agent's `mood-music` block out of a reply.
@@ -3867,7 +3713,12 @@ function pick(raw) {
 	if (listenFor) base.listen_for = listenFor;
 	if (ev) base.evidence = ev;
 	const source = r.source ?? r.platform;
+	const noLink = (r.url === void 0 || r.url === null || r.url === "") && r.video_id === void 0;
 	if (source === "youtube") {
+		if (noLink) return {
+			...base,
+			source: "youtube"
+		};
 		const id = r.video_id !== void 0 ? validVideoId(r.video_id) : youtubeVideoId(r.url);
 		return id ? {
 			...base,
@@ -3876,6 +3727,10 @@ function pick(raw) {
 		} : null;
 	}
 	if (source === "bilibili") {
+		if (noLink) return {
+			...base,
+			source: "bilibili"
+		};
 		const url = bilibiliUrl(r.url);
 		return url ? {
 			...base,
@@ -4304,13 +4159,14 @@ function saveView(view) {
 * `mood-music` block is read (`replyParse.ts`), every pick is looked up by the
 * backend (`/verify-picks`), and only what passed is queued and drawn.
 *
-* With the Crew Browser player (`crewBrowser.ts`), a play goes to the buddy as
-* one request: it opens the song in Kiro Crew's browser and reports the steps
-* that worked, which the app keeps per site and sends back next time. Pause,
-* seek and volume go straight to the tab. With continuous play on, a song's end
-* (read by this page's poll) wakes the buddy once for the next song, and asks
-* for more when the queue runs low. A host without the seam, or sites the owner
-* has not approved, fall back to the embed and the link, with a note.
+* Songs play only in Kiro Crew's browser (`crewBrowser.ts`). A play goes to
+* the buddy as one request: it finds the song on its site in Kiro Crew's
+* browser and reports the steps that worked, which the app keeps per site and
+* sends back next time. Pause, seek and volume go straight to the tab. With
+* continuous play on, a song's end (read by this page's poll) wakes the buddy
+* once for the next song, and asks for more when the queue runs low. A host
+* without the seam, sites the owner has not approved, or a policy that turns the
+* browser off, show a note with what to do, and the play button stays off.
 *
 * Anything that needs the person shows here with a button (design §1.8): a
 * tool approval (allow once / don't), a missing chat-control grant, a failed
@@ -4320,8 +4176,6 @@ function saveView(view) {
 var errMessage = (e) => e instanceof Error ? e.message : typeof e === "string" ? e : "";
 /** Poll cadence while the buddy works. */
 var POLL_MS = 1e3;
-/** Played this long, a song counts as known (design §0.6). */
-var KNOWN_AFTER_MS = 3e4;
 var MOOD_LABELS = {
 	calm: "page.mood_calm",
 	sad: "page.mood_sad",
@@ -4385,7 +4239,6 @@ function MoodMusicPage() {
 	const [answer, setAnswer] = useState("");
 	const [scene, setScene] = useState(saved?.scene ?? presetScene("neutral"));
 	const [currentId, setCurrentId] = useState(saved?.currentId ?? null);
-	const [autoplay, setAutoplay] = useState(false);
 	const [motionPaused, setMotionPaused] = useState(false);
 	const [pending, setPending] = useState(null);
 	const [checking, setChecking] = useState(false);
@@ -4490,14 +4343,12 @@ function MoodMusicPage() {
 	}, [restored]);
 	const queue = state?.queue ?? [];
 	const explore = state?.settings?.explore ?? "balanced";
-	const player = state?.settings?.player ?? "auto";
 	const recordOpen = state?.settings?.record_open ?? false;
 	const continuous = state?.settings?.continuous ?? false;
-	const browserOn = player === "browser";
 	const onEndedRef = useRef(() => void 0);
-	const crew = useCrewBrowser(slotKey ?? "", browserOn, () => onEndedRef.current());
+	const crew = useCrewBrowser(slotKey ?? "", !!browserPick, () => onEndedRef.current());
 	const browserReady = readiness(crew);
-	const browserMode = browserOn && browserReady === "ready";
+	const browserMode = browserReady === "ready" || browserReady === "unknown";
 	const saveSettings = (patch) => {
 		setState((s) => s ? {
 			...s,
@@ -4593,8 +4444,7 @@ function MoodMusicPage() {
 				text: words,
 				state,
 				explore,
-				stayOnly,
-				player
+				stayOnly
 			}), words, ids);
 		});
 	};
@@ -4728,7 +4578,6 @@ function MoodMusicPage() {
 				queueMemoryRef.current = pending.memoryIds;
 				setState(await moodApi.state());
 				setCurrentId(next[0]?.id ?? null);
-				setAutoplay(false);
 			} catch (e) {
 				setError(errMessage(e) || "unknown");
 			} finally {
@@ -4750,6 +4599,11 @@ function MoodMusicPage() {
 		const result = parsed?.play;
 		if (result?.played) {
 			setBrowserPick(play.pickId);
+			const heard = queue.find((p) => p.id === play.pickId);
+			if (heard && !knownSongs.has(songKey(heard.title, heard.artist))) {
+				markKnown(heard, "app");
+				markUsed();
+			}
 			if (endedForRef.current === play.pickId) {
 				endedForRef.current = null;
 				setEndedFor(null);
@@ -4792,7 +4646,6 @@ function MoodMusicPage() {
 			if (verdict === "skipped") {
 				const rest = queue.filter((p) => p.id !== updated.id && p.feedback !== "skipped");
 				setCurrentId(rest[0]?.id ?? null);
-				setAutoplay(true);
 				if (browserMode && rest[0]) {
 					stoppedRef.current = false;
 					await askPlay(rest[0], "start");
@@ -4810,7 +4663,6 @@ function MoodMusicPage() {
 	};
 	const playPick = (pick) => {
 		setCurrentId(pick.id);
-		setAutoplay(true);
 		if (browserMode && !pending && !busy) {
 			stoppedRef.current = false;
 			run(() => askPlay(pick, "start"));
@@ -4837,7 +4689,7 @@ function MoodMusicPage() {
 	};
 	onEndedRef.current = onEnded;
 	useEffect(() => {
-		if (!browserOn || !restored || slotRef.current) return;
+		if (!restored || slotRef.current) return;
 		let live = true;
 		moodApi.openSlot().then(({ key }) => {
 			if (!live || slotRef.current) return;
@@ -4847,11 +4699,7 @@ function MoodMusicPage() {
 		return () => {
 			live = false;
 		};
-	}, [
-		browserOn,
-		restored,
-		moodApi
-	]);
+	}, [restored, moodApi]);
 	const pauseBrowser = () => {
 		stoppedRef.current = true;
 		crew.pause();
@@ -4869,16 +4717,6 @@ function MoodMusicPage() {
 		stoppedRef.current = false;
 		run(() => askPlay(current, "start"));
 	};
-	useEffect(() => {
-		if (!current || !autoplay || current.source !== "youtube" || browserMode) return;
-		if (knownSongs.has(songKey(current.title, current.artist))) return;
-		const pick = current;
-		const timer = setTimeout(() => {
-			markKnown(pick, "app");
-			markUsed();
-		}, KNOWN_AFTER_MS);
-		return () => clearTimeout(timer);
-	}, [current?.id, autoplay]);
 	const approve = (id, action) => {
 		const key = slotRef.current;
 		if (!key) return;
@@ -4927,6 +4765,20 @@ function MoodMusicPage() {
 	const lastParsed = !pending && lastBuddy?.reply ? parseDjReply(lastBuddy.reply) : null;
 	const showYou = pending && pending.text && !(lines.length && lines[lines.length - 1].who === "you" && lines[lines.length - 1].text === pending.text);
 	const remember = lastParsed?.remember && lastParsed.remember !== dismissedRemember ? lastParsed.remember : "";
+	const unready = browserMode ? null : /* @__PURE__ */ jsx(Banner, {
+		testId: "mood-browser-unready",
+		title: t("browser.unready_title"),
+		body: t(`browser.unready_${browserReady}`),
+		icon: /* @__PURE__ */ jsx(ShieldCheck, {
+			size: 14,
+			"aria-hidden": "true"
+		}),
+		children: browserReady === "not_approved" && /* @__PURE__ */ jsx(Btn, {
+			primary: true,
+			onClick: () => navigate("/apps/detail/mood-music"),
+			children: t("browser.approve")
+		})
+	});
 	return /* @__PURE__ */ jsxs("div", {
 		className: "mm-root relative flex h-full flex-col overflow-hidden",
 		"data-testid": "mood-music-page",
@@ -5034,36 +4886,6 @@ function MoodMusicPage() {
 												children: t("chat.stay_only")
 											})
 										]
-									}),
-									/* @__PURE__ */ jsxs("div", {
-										className: "flex flex-wrap items-center gap-2",
-										"data-testid": "mood-player-choice",
-										children: [/* @__PURE__ */ jsx("span", {
-											className: "text-xs text-[var(--muted)]",
-											children: t("chat.player")
-										}), /* @__PURE__ */ jsx(SegmentedControl, {
-											ariaLabel: t("chat.player"),
-											value: player,
-											onChange: (v) => saveSettings({ player: v }),
-											segments: [
-												{
-													key: "auto",
-													label: t("chat.player_auto")
-												},
-												{
-													key: "youtube",
-													label: t("page.source_youtube")
-												},
-												{
-													key: "bilibili",
-													label: t("page.source_bilibili")
-												},
-												{
-													key: "browser",
-													label: t("chat.player_browser")
-												}
-											]
-										})]
 									}),
 									/* @__PURE__ */ jsx("div", {
 										role: "group",
@@ -5337,24 +5159,10 @@ function MoodMusicPage() {
 								className: "mm-player flex min-w-0 flex-col gap-4",
 								"data-testid": "mood-player-column",
 								children: [
-									browserOn && browserReady !== "ready" && browserReady !== "unknown" && /* @__PURE__ */ jsx(Banner, {
-										testId: "mood-browser-fallback",
-										title: t("browser.fallback_title"),
-										body: t(`browser.fallback_${browserReady}`),
-										icon: /* @__PURE__ */ jsx(ShieldCheck, {
-											size: 14,
-											"aria-hidden": "true"
-										}),
-										children: browserReady === "not_approved" && /* @__PURE__ */ jsx(Btn, {
-											primary: true,
-											onClick: () => navigate("/apps/detail/mood-music"),
-											children: t("browser.approve")
-										})
-									}),
+									!current && unready,
 									current ? /* @__PURE__ */ jsx(NowPlaying, {
 										pick: current,
-										autoplay,
-										stage: browserMode ? /* @__PURE__ */ jsx(BrowserControls, {
+										stage: unready ?? /* @__PURE__ */ jsx(BrowserControls, {
 											media: crew,
 											inTab: browserPick === current.id,
 											waiting: working,
@@ -5363,7 +5171,7 @@ function MoodMusicPage() {
 											onPause: pauseBrowser,
 											onPlay: resumeBrowser,
 											onContinuous: setContinuous
-										}) : void 0,
+										}),
 										busy: working,
 										onLike: () => giveFeedback(current, current.feedback === "liked" ? "" : "liked"),
 										onSkip: () => giveFeedback(current, "skipped"),

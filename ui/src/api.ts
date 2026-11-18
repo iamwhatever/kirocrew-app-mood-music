@@ -16,7 +16,7 @@
  */
 import type { AppApi, AppApiError } from '@kirocrew/app-sdk'
 import type { Evidence, NewPick, PickArc, PickSource, PickTier } from './replyParse'
-import type { ExploreLevel, Player } from './request.prompt'
+import type { ExploreLevel } from './request.prompt'
 
 const BASE = '/api/apps/mood-music'
 export const DJ_AGENT = 'mood-music-dj'
@@ -100,9 +100,7 @@ export interface MoodState {
 export interface Settings {
   explore: ExploreLevel
   record_open: boolean
-  /** The site the person would rather play on; the other is only a fallback. */
-  player: Player
-  /** With the Crew Browser player: when a song ends, the buddy plays the next one. */
+  /** When a song ends, the buddy plays the next one. */
   continuous?: boolean
 }
 

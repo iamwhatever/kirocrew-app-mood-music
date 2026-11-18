@@ -30,17 +30,16 @@ def test_an_empty_store_reads_empty(tmp_path: Path) -> None:
         "feedback": [],
         "last_source": "",
         "memory": [],
-        "settings": {"explore": "balanced", "record_open": False, "player": "auto", "continuous": False},
+        "settings": {"explore": "balanced", "record_open": False, "continuous": False},
         "play_steps": {},
     }
 
 
-def test_a_saved_player_is_read_back_and_a_bad_one_is_ignored(tmp_path: Path) -> None:
-    s = _store(tmp_path)
-    s.set_settings(player="bilibili")
-    assert _store(tmp_path).snapshot()["settings"]["player"] == "bilibili"
-    (tmp_path / "state.json").write_text('{"settings": {"player": "spotify"}}', encoding="utf-8")
-    assert _store(tmp_path).snapshot()["settings"]["player"] == "auto"
+def test_a_player_saved_by_an_older_version_is_dropped(tmp_path: Path) -> None:
+    (tmp_path / "state.json").write_text('{"settings": {"player": "youtube", "explore": "familiar"}}', encoding="utf-8")
+    assert _store(tmp_path).snapshot()["settings"] == {
+        "explore": "familiar", "record_open": False, "continuous": False,
+    }
 
 
 def test_saved_steps_are_read_back_and_damaged_ones_are_ignored(tmp_path: Path) -> None:

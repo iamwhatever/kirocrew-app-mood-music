@@ -4,8 +4,8 @@ Kiro Crew installs an app by git clone and a safe copy, with no build step, so:
 a committed UI bundle that imports only the modules the dashboard provides (and
 from the SDK only names every supported host exports), no root build file, no
 links or names a Windows checkout cannot hold, ``minKiroCrewVersion`` set, the
-listing copy kept equal to the bundled catalogs, and the YouTube player framed
-only on the one exact origin ``ui.frameSources`` declares.
+listing copy kept equal to the bundled catalogs, and no framed player at all:
+songs play only in Kiro Crew's browser.
 """
 
 from __future__ import annotations
@@ -144,26 +144,20 @@ class TestTheBundle(unittest.TestCase):
     def test_no_build_machine_path_is_baked_in(self) -> None:
         self.assertNotRegex(_text(), r"/(?:home|Users|workplace)/|[A-Za-z]:\\\\")
 
-    def test_the_player_frames_only_the_declared_origin(self) -> None:
-        """The bundle builds embed URLs on exactly the origin ``ui.frameSources`` names."""
-        (origin,) = _manifest()["ui"]["frameSources"]
-        self.assertIn(f"{origin}/embed/", _text())
-        framed = set(re.findall(r"https://[a-z0-9.-]+/embed/", _text()))
-        self.assertEqual(framed, {f"{origin}/embed/"})
+    def test_the_page_frames_nothing(self) -> None:
+        """Songs play only in Kiro Crew's browser: no iframe, no embed URL."""
+        self.assertNotIn("<iframe", _text())
+        self.assertNotIn('"iframe"', _text())
+        self.assertNotRegex(_text(), r"https://[a-z0-9.-]+/embed/")
 
 
 class TestTheManifest(unittest.TestCase):
     def test_declares_the_first_kiro_crew_with_the_seams(self) -> None:
         self.assertRegex(_manifest().get("minKiroCrewVersion", ""), r"^\d+\.\d+\.\d+$")
 
-    def test_frame_sources_are_exact_https_origins(self) -> None:
-        """No path, port, wildcard, user info or IP: one exact https origin per entry."""
-        sources = _manifest()["ui"]["frameSources"]
-        self.assertEqual(sources, ["https://www.youtube-nocookie.com"])
-        for source in sources:
-            with self.subTest(source=source):
-                self.assertRegex(source, r"^https://[a-z0-9-]+(\.[a-z0-9-]+)+$")
-                self.assertNotRegex(source, r"\d+\.\d+\.\d+\.\d+$")
+    def test_declares_no_frame_source(self) -> None:
+        """No embedded player, so the dashboard CSP frames nothing for this app."""
+        self.assertNotIn("frameSources", _manifest()["ui"])
 
     def test_off_by_default_and_no_extra_powers(self) -> None:
         manifest = _manifest()

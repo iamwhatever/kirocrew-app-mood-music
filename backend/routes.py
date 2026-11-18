@@ -16,13 +16,16 @@ the access its manifest grant gives it.
   DELETE /memory/{id}       -> forget one item
   POST /memory/clear-stale  -> forget every "maybe stale" item
   POST /memory/used         -> mark items as used (keeps them fresh)
-  PUT  /settings            -> the explore level, the preferred player, continuous play, and whether the full record is open
+  PUT  /settings            -> the explore level, continuous play, and whether the full record is open
   PUT  /play-steps/{site}   -> keep the steps that just played a song in Kiro Crew's browser
   DELETE /play-steps/{site} -> forget them after they failed, so the buddy finds the way again
 
-A pick's link is checked in ``links.py``: a YouTube pick is stored as its video
-id alone, a bilibili pick as an https URL on an exact bilibili host. A request
-carrying one bad pick is refused whole, so nothing half-checked is stored.
+A pick names the site the buddy plays it on (``source``). Its link is optional:
+the buddy finds the song by searching that site in Kiro Crew's browser when it
+is played. A link that is sent is checked in ``links.py``: a YouTube pick keeps
+its video id alone, a bilibili pick an https URL on an exact bilibili host. A
+request carrying one bad pick is refused whole, so nothing half-checked is
+stored.
 """
 
 from __future__ import annotations
@@ -45,7 +48,6 @@ from .store import (
     MEMORY_KINDS,
     ORIGINS,
     PLAY_SITES,
-    PLAYERS,
     SONG_KINDS,
     VERDICTS,
     MemoryFull,
@@ -172,21 +174,29 @@ def _pick(raw: Any) -> tuple[dict[str, Any] | None, str]:
             return None, "invalid_pick"
         out["evidence"] = {"url": url, "label": label}
     source = raw.get("source")
+    # No link at all is a pick the buddy finds by searching its site when it plays.
+    video_id = raw.get("video_id")
+    url = raw.get("url")
     if source == "youtube":
-        video_id = raw.get("video_id")
+        out["source"] = "youtube"
+        if video_id is None and url in (None, ""):
+            return out, ""
         vid = (
             links.valid_video_id(video_id)
             if video_id is not None
-            else links.youtube_video_id(raw.get("url"))
+            else links.youtube_video_id(url)
         )
         if vid is None:
             return None, "invalid_video_id"
-        out.update(source="youtube", video_id=vid)
+        out["video_id"] = vid
     elif source == "bilibili":
-        url = links.bilibili_url(raw.get("url"))
-        if url is None:
+        out["source"] = "bilibili"
+        if url in (None, ""):
+            return out, ""
+        checked = links.bilibili_url(url)
+        if checked is None:
             return None, "invalid_bilibili_url"
-        out.update(source="bilibili", url=url)
+        out["url"] = checked
     else:
         return None, "invalid_source"
     return out, ""
@@ -419,19 +429,13 @@ async def _handle_settings(request: web.Request, ctx: Any) -> web.Response:
         if not isinstance(body["record_open"], bool):
             return _bad_request("record_open must be true or false", "invalid_field_type")
         changes["record_open"] = body["record_open"]
-    if "player" in body:
-        if body["player"] not in PLAYERS:
-            return _bad_request("player is not one this app knows", "invalid_field_type")
-        changes["player"] = body["player"]
     if "continuous" in body:
         if not isinstance(body["continuous"], bool):
             return _bad_request("continuous must be true or false", "invalid_field_type")
         changes["continuous"] = body["continuous"]
-    allowed = {"explore", "record_open", "player", "continuous"}
+    allowed = {"explore", "record_open", "continuous"}
     if not changes or set(body) - allowed:
-        return _bad_request(
-            "send explore, record_open, player and/or continuous only", "invalid_field_type"
-        )
+        return _bad_request("send explore, record_open and/or continuous only", "invalid_field_type")
     settings = await asyncio.to_thread(lambda: _store(ctx).set_settings(**changes))
     return web.json_response(settings)
 

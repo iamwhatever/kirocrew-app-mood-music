@@ -1,16 +1,16 @@
 {
   "manifest": {
     "display_name": "Mood Music",
-    "description": "Sag, wie du dich fühlst, oder nenne einen Song, der dich berührt hat. Ein DJ-Agent findet Songs mit demselben Gefühl und spielt sie ab: YouTube direkt auf der Seite, bilibili in einem neuen Browser-Tab. Mit Gefällt mir oder Überspringen richten sich die nächsten Vorschläge danach.",
+    "description": "Sag, wie du dich fühlst, oder nenne einen Song, der dich berührt hat. Ein DJ-Agent findet Songs mit demselben Gefühl und spielt sie auf YouTube oder bilibili im Browser von Kiro Crew ab. Mit Gefällt mir oder Überspringen richten sich die nächsten Vorschläge danach.",
     "page_label": "Mood Music",
     "highlight_1": "Sag, wie du dich fühlst, oder nenne einen Song, der dich berührt hat – er findet mehr mit demselben Gefühl",
     "highlight_2": "Jeder Vorschlag sagt, warum er zur Stimmung passt",
-    "highlight_3": "YouTube läuft auf der Seite über die datenschutzfreundliche Einbettung",
-    "highlight_4": "bilibili-Songs öffnen sich in einem neuen Tab deines eigenen Browsers; der Agent rührt dein Konto nie an",
+    "highlight_3": "Songs laufen im Browser von Kiro Crew, mit Ton; auf der Seite gibt es Abspielen, Pause und Lautstärke",
+    "highlight_4": "Der Agent öffnet nur Such- und Videoseiten von bilibili und YouTube und meldet sich nie an, kommentiert, liked oder bezahlt nie",
     "highlight_5": "Gefällt mir oder Überspringen fließt in die nächsten Vorschläge ein",
     "highlight_6": "Hintergrund und Bewegung folgen der Stimmung, hell wie dunkel",
     "use_case_1": "Songs finden und abspielen, die zu deiner jetzigen Stimmung passen, und die Momente festhalten, die dich berührt haben.",
-    "configuration_1": "Kein Konto nötig. YouTube läuft auf der Seite; bilibili öffnet sich in deinem eigenen Browser, angemeldet oder nicht, wie du willst."
+    "configuration_1": "Braucht ein Kiro Crew mit App-Browserseiten (neuer als v0.13.0-rc.3). Gib die Musikseiten einmal frei, auf der Seite der App in Kiro Crew."
   },
   "page": {
     "title": "Mood Music",
@@ -34,13 +34,8 @@
     "liked": "Gefällt dir",
     "skip": "Überspringen",
     "more": "Mehr davon",
-    "open_bilibili": "Auf bilibili öffnen",
-    "bilibili_note": "Öffnet sich in einem neuen Tab deines eigenen Browsers.",
-    "open_youtube": "Auf YouTube öffnen",
-    "youtube_blank": "Player leer oder Error 153? Aktualisiere Kiro Crew oder öffne es auf YouTube.",
     "queue": "Als Nächstes",
     "play": "{{title}} abspielen",
-    "player_title": "YouTube-Player: {{title}}",
     "pause_motion": "Hintergrundbewegung pausieren",
     "play_motion": "Hintergrundbewegung abspielen",
     "moments_empty_title": "Noch keine Momente",
@@ -124,10 +119,7 @@
     "explore_familiar": "Vertrauter",
     "explore_balanced": "Ausgewogen",
     "explore_more": "Mehr entdecken",
-    "player": "Player",
-    "player_auto": "Automatisch",
     "stay_only": "Heute einfach in diesem Gefühl bleiben",
-    "player_browser": "Crew-Browser",
     "status_playing": "Dein Buddy öffnet den Song im Browser von Kiro Crew…"
   },
   "card": {
@@ -161,11 +153,11 @@
     "continuous_note": "Endlos abspielen geht nur, solange diese Seite offen ist. Schließt du sie, endet die Musik mit dem aktuellen Song.",
     "not_played": "Dein Buddy konnte ihn diesmal nicht abspielen: {{reason}}",
     "no_reason": "ohne Angabe eines Grundes",
-    "fallback_title": "Der Crew-Browser ist noch nicht bereit, darum laufen Songs wie bisher hier",
-    "fallback_old_host": "Dieses Kiro Crew ist zu alt für den Crew-Browser-Player. Aktualisiere Kiro Crew, um ihn zu nutzen.",
-    "fallback_not_approved": "Gib zuerst die Musikseiten für Mood Music frei. Das machst du einmal, auf der Seite der App.",
-    "fallback_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet.",
     "approve": "Seiten freigeben",
-    "status_playing": "Läuft im Browser von Kiro Crew."
+    "status_playing": "Läuft im Browser von Kiro Crew.",
+    "unready_title": "Songs können noch nicht im Browser von Kiro Crew laufen",
+    "unready_old_host": "Dieses Kiro Crew ist zu alt. Aktualisiere Kiro Crew auf eine Version mit App-Browserseiten (KiroCrew#38333, neuer als v0.13.0-rc.3) und öffne diese Seite dann erneut.",
+    "unready_not_approved": "Gib zuerst die Musikseiten für Mood Music frei. Das machst du einmal, auf der Seite der App.",
+    "unready_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet."
   }
 }

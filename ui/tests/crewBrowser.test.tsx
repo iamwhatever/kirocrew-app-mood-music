@@ -2,8 +2,8 @@
 // `useBrowserMedia` (`stubs/app-sdk.ts`): a play goes to the buddy and its steps are
 // kept per site, the page's buttons reach the tab directly, a song's end wakes the
 // buddy once (never after a pause or with continuous play off), a low queue asks
-// for more, a failed play forgets the steps, and an older host or unapproved sites
-// fall back to the embed with a note and an approve button.
+// for more, a failed play forgets the steps, and an older host, unapproved sites or
+// a policy say so in the player's place, with the play button gone.
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { BrowserMediaState } from '@kirocrew/app-sdk'
@@ -49,7 +49,7 @@ function state(over: Partial<MoodState['settings']> = {}, extra: Partial<MoodSta
   return {
     moments: [{ id: 'm'.repeat(32), mood: 'calm', note: '', tags: ['平静', '温柔'], songs: [], at: 1 }],
     queue: QUEUE, feedback: [], last_source: 'r0', memory: [],
-    settings: { explore: 'balanced', record_open: false, player: 'browser', continuous: true, ...over },
+    settings: { explore: 'balanced', record_open: false, continuous: true, ...over },
     ...extra,
   }
 }
@@ -108,6 +108,7 @@ beforeEach(() => {
   api.setPlaySteps.mockResolvedValue({})
   api.forgetPlaySteps.mockResolvedValue({ forgotten: true })
   api.markUsed.mockResolvedValue({ marked: 0 })
+  api.addMemory.mockResolvedValue({})
 })
 
 afterEach(() => {
@@ -116,18 +117,41 @@ afterEach(() => {
 })
 
 describe('Crew Browser player', () => {
-  it('is a player choice next to auto, YouTube and bilibili', async () => {
-    api.state.mockResolvedValue(state({ player: 'auto' }))
+  it('is the only player: no choice, no embed, no link', async () => {
     await open()
-    const choice = screen.getByTestId('mood-player-choice')
-    fireEvent.click(within(choice).getByRole('tab', { name: t('chat.player_browser') }))
-    expect(api.setSettings).toHaveBeenCalledWith({ player: 'browser' })
+    expect(screen.queryByTestId('mood-player-choice')).toBeNull()
+    expect(screen.getByTestId('mood-browser-controls')).toBeInTheDocument()
+    expect(document.querySelector('iframe')).toBeNull()
+    expect(screen.queryByTestId('mood-bilibili-link')).toBeNull()
   })
 
-  it('polls the tab of the buddy chat while it is the player', async () => {
+  it('reads the tab of the buddy chat once, and polls it once a song plays there', async () => {
     await open()
     expect(stubMedia.sessionKey).toBe('dashboard:mood-music-buddy')
+    expect(stubMedia.pollMs).toBe(0)
+    await playAndAnswer({ played: true, site: 'youtube', steps: ['x'] })
     expect(stubMedia.pollMs).toBeGreaterThan(0)
+  })
+
+  it('opens the buddy chat on a first visit, so it can tell whether songs can play', async () => {
+    api.state.mockResolvedValue(state({}, { last_source: '', moments: [], queue: [] }))
+    await open()
+    expect(api.openSlot).toHaveBeenCalled()
+    expect(stubMedia.sessionKey).toBe('dashboard:mood-music-buddy')
+  })
+
+  it('marks a song the buddy started as heard', async () => {
+    await open()
+    await playAndAnswer({ played: true, site: 'youtube', steps: ['x'] })
+    expect(api.addMemory).toHaveBeenCalledWith({ kind: 'known', title: 'Song 1', artist: 'Artist 1', origin: 'app' })
+  })
+
+  it('plays a pick with no link by searching its site', async () => {
+    api.state.mockResolvedValue(state({}, { queue: [pick(1, { video_id: undefined })] }))
+    await open()
+    const asked = await playAndAnswer({ played: true, site: 'youtube', steps: ['x'] })
+    expect(asked).toContain('Play in Crew Browser: "Song 1" - Artist 1')
+    expect(asked).not.toContain('Checked link')
   })
 
   it('asks the buddy to play with the saved steps, and keeps the steps that worked', async () => {
@@ -268,29 +292,47 @@ describe('Crew Browser player', () => {
     expect(api.setPlaySteps).toHaveBeenCalledWith('youtube', ['new way'])
   })
 
-  it('falls back to the embed with an approve button when the sites are not approved', async () => {
+  it('says to approve the sites, with a button, and offers no play', async () => {
     stubMedia.error = 'not_app_browser'
     await open()
-    const banner = screen.getByTestId('mood-browser-fallback')
-    expect(banner).toHaveTextContent(t('browser.fallback_not_approved'))
+    const banner = screen.getByTestId('mood-browser-unready')
+    expect(banner).toHaveTextContent(t('browser.unready_not_approved'))
     fireEvent.click(within(banner).getByRole('button', { name: t('browser.approve') }))
     expect(stubNavigate).toHaveBeenCalledWith('/apps/detail/mood-music')
     expect(screen.queryByTestId('mood-browser-controls')).toBeNull()
-    expect(screen.getByTestId('mood-youtube-frame')).toBeInTheDocument()
-  })
-
-  it('falls back to the embed with a note on a Kiro Crew too old for it', async () => {
-    host.level = 9
-    await open()
-    const banner = screen.getByTestId('mood-browser-fallback')
-    expect(banner).toHaveTextContent(t('browser.fallback_old_host'))
-    expect(within(banner).queryByRole('button')).toBeNull()
-    expect(screen.queryByTestId('mood-browser-controls')).toBeNull()
-    expect(screen.getByTestId('mood-youtube-frame')).toBeInTheDocument()
-    // Pressing a song plays it in the page, as before: the buddy is not asked.
+    expect(document.querySelector('iframe')).toBeNull()
     fireEvent.click(within(screen.getByTestId('mood-queue')).getByText('Song 3'))
     await flush()
     expect(api.ask).not.toHaveBeenCalled()
+  })
+
+  it('says to update Kiro Crew on a host too old for it, and offers no play', async () => {
+    host.level = 9
+    await open()
+    const banner = screen.getByTestId('mood-browser-unready')
+    expect(banner).toHaveTextContent(t('browser.unready_title'))
+    expect(banner).toHaveTextContent(t('browser.unready_old_host'))
+    expect(t('browser.unready_old_host')).toContain('#38333')
+    expect(within(banner).queryByRole('button')).toBeNull()
+    expect(screen.queryByTestId('mood-browser-controls')).toBeNull()
+    expect(document.querySelector('iframe')).toBeNull()
+    fireEvent.click(within(screen.getByTestId('mood-queue')).getByText('Song 3'))
+    await flush()
+    expect(api.ask).not.toHaveBeenCalled()
+  })
+
+  it('says so when a policy turns the browser off', async () => {
+    stubMedia.error = 'policy_denied'
+    await open()
+    expect(screen.getByTestId('mood-browser-unready')).toHaveTextContent(t('browser.unready_browse_off'))
+    expect(screen.queryByTestId('mood-browser-controls')).toBeNull()
+  })
+
+  it('shows the note before any song, so nobody waits on a mood first', async () => {
+    host.level = 9
+    api.state.mockResolvedValue(state({}, { queue: [] }))
+    await open()
+    expect(screen.getByTestId('mood-browser-unready')).toHaveTextContent(t('browser.unready_old_host'))
   })
 
   it('says on the page that continuous play stops with the page closed', async () => {

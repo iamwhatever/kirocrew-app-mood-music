@@ -1,16 +1,16 @@
 {
   "manifest": {
     "display_name": "무드 뮤직",
-    "description": "지금 기분이나 마음을 울린 노래를 알려 주세요. DJ 에이전트가 같은 느낌의 노래를 찾아 재생합니다. YouTube는 페이지 안에서, bilibili는 브라우저 새 탭에서 열립니다. 좋아요나 건너뛰기를 누르면 다음 추천에 반영됩니다.",
+    "description": "지금 기분이나 마음을 울린 노래를 알려 주세요. DJ 에이전트가 같은 느낌의 노래를 찾아 Kiro Crew 브라우저에서 YouTube나 bilibili로 재생합니다. 좋아요나 건너뛰기를 누르면 다음 추천에 반영됩니다.",
     "page_label": "무드 뮤직",
     "highlight_1": "기분이나 마음을 울린 노래를 말하면 같은 느낌의 노래를 더 찾아 줍니다",
     "highlight_2": "추천곡마다 이 기분에 맞는 이유를 알려 줍니다",
-    "highlight_3": "YouTube는 개인정보 보호 강화 임베드로 페이지 안에서 재생됩니다",
-    "highlight_4": "bilibili 노래는 내 브라우저의 새 탭에서 열리며, 에이전트는 계정에 손대지 않습니다",
+    "highlight_3": "노래는 Kiro Crew 브라우저에서 소리와 함께 재생되고, 페이지에서 재생·일시정지·음량을 조절해요",
+    "highlight_4": "에이전트는 bilibili와 YouTube의 검색 페이지와 영상 페이지만 열고, 로그인·댓글·좋아요·결제는 하지 않아요",
     "highlight_5": "좋아요나 건너뛰기가 다음 추천에 쓰입니다",
     "highlight_6": "배경과 움직임이 기분에 따라 바뀌며 라이트·다크 모두 지원합니다",
     "use_case_1": "지금 기분에 맞는 노래를 찾아 재생하고, 마음을 울린 순간을 기록합니다.",
-    "configuration_1": "계정이 필요 없습니다. YouTube는 페이지에서 재생되고, bilibili는 내 브라우저에서 열립니다(로그인은 선택)."
+    "configuration_1": "앱 브라우저 사이트를 지원하는 Kiro Crew(v0.13.0-rc.3보다 새 버전)가 필요해요. Kiro Crew의 앱 페이지에서 음악 사이트를 한 번 승인하세요."
   },
   "page": {
     "title": "무드 뮤직",
@@ -34,13 +34,8 @@
     "liked": "좋아요 함",
     "skip": "건너뛰기",
     "more": "비슷한 곡 더 보기",
-    "open_bilibili": "bilibili에서 열기",
-    "bilibili_note": "내 브라우저의 새 탭에서 열립니다.",
-    "open_youtube": "YouTube에서 열기",
-    "youtube_blank": "플레이어가 비어 있거나 Error 153이 보이나요? Kiro Crew를 업데이트하거나 YouTube에서 여세요.",
     "queue": "다음 곡",
     "play": "{{title}} 재생",
-    "player_title": "YouTube 플레이어: {{title}}",
     "pause_motion": "배경 움직임 일시정지",
     "play_motion": "배경 움직임 재생",
     "moments_empty_title": "아직 순간이 없습니다",
@@ -124,10 +119,7 @@
     "explore_familiar": "익숙하게",
     "explore_balanced": "균형",
     "explore_more": "더 탐색",
-    "player": "플레이어",
-    "player_auto": "자동",
     "stay_only": "오늘은 이 기분 그대로 있고 싶어",
-    "player_browser": "Crew 브라우저",
     "status_playing": "친구가 Kiro Crew 브라우저에서 노래를 여는 중이에요…"
   },
   "card": {
@@ -161,11 +153,11 @@
     "continuous_note": "연속 재생은 이 페이지가 열려 있을 때만 돼요. 닫으면 지금 노래가 끝날 때 멈춰요.",
     "not_played": "이번에는 재생하지 못했어요: {{reason}}",
     "no_reason": "이유 없음",
-    "fallback_title": "Crew 브라우저를 아직 쓸 수 없어서 노래는 전처럼 여기서 재생돼요",
-    "fallback_old_host": "이 Kiro Crew는 Crew 브라우저 재생을 지원하기에 너무 오래됐어요. Kiro Crew를 업데이트하세요.",
-    "fallback_not_approved": "먼저 무드 뮤직의 음악 사이트를 승인하세요. 앱 페이지에서 한 번만 승인하면 돼요.",
-    "fallback_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요.",
     "approve": "사이트 승인하기",
-    "status_playing": "Kiro Crew 브라우저에서 재생 중."
+    "status_playing": "Kiro Crew 브라우저에서 재생 중.",
+    "unready_title": "아직 Kiro Crew 브라우저에서 노래를 재생할 수 없어요",
+    "unready_old_host": "이 Kiro Crew는 너무 오래됐어요. 앱 브라우저 사이트를 지원하는 버전(KiroCrew#38333 포함, v0.13.0-rc.3보다 새 버전)으로 업데이트한 뒤 이 페이지를 다시 여세요.",
+    "unready_not_approved": "먼저 무드 뮤직의 음악 사이트를 승인하세요. 앱 페이지에서 한 번만 승인하면 돼요.",
+    "unready_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요."
   }
 }

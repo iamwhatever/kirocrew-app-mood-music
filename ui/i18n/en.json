@@ -1,16 +1,16 @@
 {
   "manifest": {
     "display_name": "Mood Music",
-    "description": "Tell it how you feel, or name a song that moved you. A DJ agent finds songs with the same feeling and plays them: YouTube inside the page, bilibili in a new browser tab. Like or skip, and the next picks follow.",
+    "description": "Tell it how you feel, or name a song that moved you. A DJ agent finds songs with the same feeling and plays them on YouTube or bilibili in Kiro Crew's browser. Like or skip, and the next picks follow.",
     "page_label": "Mood Music",
     "highlight_1": "Say how you feel, or name a song that moved you — it finds more with the same feeling",
     "highlight_2": "Every pick says why it fits the mood",
-    "highlight_3": "YouTube plays inside the page through the privacy-enhanced embed",
-    "highlight_4": "bilibili songs open in a new tab of your own browser; the agent never touches your account",
+    "highlight_3": "Songs play in Kiro Crew's browser, with its sound; the page has play, pause and volume",
+    "highlight_4": "The agent opens only bilibili and YouTube search and video pages, and never signs in, comments, likes or pays",
     "highlight_5": "Like or skip a song, and the next picks use it",
     "highlight_6": "The background and motion follow the mood, in light and dark",
     "use_case_1": "Find and play songs that match how you feel right now, and keep a history of the moments that moved you.",
-    "configuration_1": "No account is needed. YouTube plays in the page; bilibili opens in your own browser, signed in or not, as you choose."
+    "configuration_1": "Needs a Kiro Crew with app browser sites (newer than v0.13.0-rc.3). Approve the music sites once, on the app's page in Kiro Crew."
   },
   "page": {
     "title": "Mood Music",
@@ -34,13 +34,8 @@
     "liked": "Liked",
     "skip": "Skip",
     "more": "More like this",
-    "open_bilibili": "Open on bilibili",
-    "bilibili_note": "Opens in a new tab of your own browser.",
-    "open_youtube": "Open on YouTube",
-    "youtube_blank": "Blank player or Error 153? Update Kiro Crew, or open it on YouTube.",
     "queue": "Up next",
     "play": "Play {{title}}",
-    "player_title": "YouTube player: {{title}}",
     "pause_motion": "Pause background motion",
     "play_motion": "Play background motion",
     "moments_empty_title": "No moments yet",
@@ -124,10 +119,7 @@
     "explore_familiar": "More familiar",
     "explore_balanced": "Balanced",
     "explore_more": "Explore more",
-    "player": "Player",
-    "player_auto": "Auto",
     "stay_only": "Just stay in this feeling today",
-    "player_browser": "Crew Browser",
     "status_playing": "Your buddy is opening the song in Kiro Crew's browser…"
   },
   "card": {
@@ -162,10 +154,10 @@
     "continuous_note": "Continuous play works only while this page is open. Close it, and the music stops when the current song ends.",
     "not_played": "Your buddy could not play it this time: {{reason}}",
     "no_reason": "no reason given",
-    "fallback_title": "Crew Browser is not ready, so songs play here as before",
-    "fallback_old_host": "This Kiro Crew is too old for the Crew Browser player. Update Kiro Crew to use it.",
-    "fallback_not_approved": "First approve the music sites for Mood Music. You approve them once, on the app's page.",
-    "fallback_browse_off": "Kiro Crew's browser is turned off by a policy on this computer.",
-    "approve": "Approve the sites"
+    "approve": "Approve the sites",
+    "unready_title": "Songs cannot play in Kiro Crew's browser yet",
+    "unready_old_host": "This Kiro Crew is too old. Update Kiro Crew to a version with app browser sites (KiroCrew#38333, newer than v0.13.0-rc.3), then open this page again.",
+    "unready_not_approved": "First approve the music sites for Mood Music. You approve them once, on the app's page.",
+    "unready_browse_off": "Kiro Crew's browser is turned off by a policy on this computer."
   }
 }

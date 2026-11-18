@@ -26,6 +26,22 @@ describe('parseDjReply', () => {
     expect(r?.dropped).toBe(4)
   })
 
+  it('keeps a pick with no link by its site, and still needs a known site', () => {
+    const r = parseDjReply(block({
+      picks: [
+        { title: 'A', artist: 'x', source: 'youtube' },
+        { title: 'B', artist: 'y', source: 'bilibili', url: '' },
+        { title: 'C', source: 'spotify' },
+        { title: 'D', source: 'youtube', video_id: 'bad' },
+      ],
+    }))
+    expect(r?.picks).toEqual([
+      { title: 'A', artist: 'x', why: '', tags: [], source: 'youtube' },
+      { title: 'B', artist: 'y', why: '', tags: [], source: 'bilibili' },
+    ])
+    expect(r?.dropped).toBe(2)
+  })
+
   it('reads a real reply that said platform and moods', () => {
     const r = parseDjReply(realReply.content)
     expect(r?.moodTags).toEqual(['怀念恋人', '温暖', '淡淡遗憾', '温柔回忆'])

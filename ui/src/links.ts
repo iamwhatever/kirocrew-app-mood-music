@@ -1,11 +1,11 @@
 /**
  * The two song links Mood Music plays, and nothing else.
  *
- * Mirrors `src/kiro_crew/apps/builtins/mood_music/backend/links.py`: the page
- * drops a pick the backend would refuse, so one bad link from the agent loses
- * only that song. A YouTube pick keeps only its 11-character video id, and the
- * embed URL is built here on the one host the dashboard CSP frames. A bilibili
- * pick must be https on an exact bilibili host.
+ * Mirrors `backend/links.py`: the page drops a pick the backend would refuse,
+ * so one bad link from the agent loses only that song. A YouTube pick keeps
+ * only its 11-character video id; a bilibili pick must be https on an exact
+ * bilibili host. Links are optional: the buddy finds a song by searching its
+ * site in Kiro Crew's browser.
  */
 
 export const VIDEO_ID_RE = /^[A-Za-z0-9_-]{11}$/
@@ -15,9 +15,6 @@ export const BILIBILI_HOSTS: ReadonlySet<string> = new Set(['www.bilibili.com', 
 const YOUTUBE_WATCH_HOSTS: ReadonlySet<string> = new Set(['www.youtube.com', 'youtube.com', 'm.youtube.com', 'music.youtube.com'])
 
 const MAX_URL = 2048
-
-/** The embed origin and path the dashboard CSP `frame-src` admits. */
-export const YOUTUBE_EMBED_BASE = 'https://www.youtube-nocookie.com/embed/'
 
 export function validVideoId(value: unknown): string | null {
   return typeof value === 'string' && VIDEO_ID_RE.test(value) ? value : null
@@ -60,11 +57,4 @@ export function bilibiliUrl(raw: unknown): string | null {
 export function evidenceUrl(raw: unknown): string | null {
   const url = parseHttps(raw)
   return url ? url.href : null
-}
-
-/** The privacy-enhanced embed URL for a checked id; null for anything else. */
-export function youtubeEmbedUrl(videoId: unknown, autoplay: boolean): string | null {
-  const id = validVideoId(videoId)
-  if (!id) return null
-  return `${YOUTUBE_EMBED_BASE}${id}?rel=0${autoplay ? '&autoplay=1' : ''}`
 }

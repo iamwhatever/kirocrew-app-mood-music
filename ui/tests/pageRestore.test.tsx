@@ -31,7 +31,7 @@ const ID = 'dQw4w9WgXcQ'
 const ID2 = 'oHg5SJYRHA0'
 const t = (k: string, o?: Record<string, string | number>) => tr(k.includes('.') ? k : `page.${k}`, o)
 const MOMENT = { id: 'm'.repeat(32), mood: 'x', note: '', tags: [], songs: [], at: 1 }
-const EMPTY: MoodState = { moments: [], queue: [], feedback: [], last_source: '', memory: [], settings: { explore: 'balanced', record_open: false, player: 'auto' } }
+const EMPTY: MoodState = { moments: [], queue: [], feedback: [], last_source: '', memory: [], settings: { explore: 'balanced', record_open: false } }
 
 const USER = { role: 'user', content: '[Mood Music]\nMood: Calm\n' }
 const block = (data: unknown) => '听起来是安静地想。\n```mood-music\n' + JSON.stringify(data) + '\n```'
@@ -114,7 +114,7 @@ describe('coming back to the page', () => {
     expect(screen.getAllByTestId('mood-song-card')).toHaveLength(2)
     const queue = within(screen.getByTestId('mood-queue'))
     expect(queue.getByRole('button', { name: /Second/ })).toHaveAttribute('aria-current', 'true')
-    expect(screen.getByTestId('mood-youtube-frame').getAttribute('src')).toContain(ID2)
+    expect(screen.getByRole('heading', { name: 'Second' })).toBeInTheDocument()
   })
 
   it('shows a buddy question again, though it queued no songs', async () => {
@@ -247,7 +247,7 @@ describe('coming back to the page', () => {
     expect(upNext).toHaveAttribute('tabindex', '0')
     expect(upNext).toHaveAccessibleName(t('queue'))
     // The player sits outside the chat's scroll area, so scrolling the chat never moves it.
-    expect(chat).not.toContainElement(screen.getByTestId('mood-youtube-frame'))
+    expect(chat).not.toContainElement(screen.getByTestId('mood-browser-controls'))
     expect(screen.getByTestId('mood-scroll')).toHaveClass('mm-split')
 
     chat.scrollTop = 220

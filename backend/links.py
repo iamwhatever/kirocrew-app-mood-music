@@ -3,9 +3,8 @@
 A pick comes from the agent, which read it off a web page, so every link is
 untrusted until it passes here.
 
-* YouTube: only an 11-character video id survives. The page builds the embed URL
-  itself, always on ``https://www.youtube-nocookie.com/embed/<id>``, so no host,
-  path or query from the agent ever reaches an iframe.
+* YouTube: only an 11-character video id survives. The play request rebuilds the
+  watch link from it, so no host, path or query from the agent is passed on.
 * bilibili: an ``https`` URL whose host is exactly one of :data:`BILIBILI_HOSTS`,
   with no user info and no port. It is rebuilt from its parsed parts, so what is
   stored is what was checked.

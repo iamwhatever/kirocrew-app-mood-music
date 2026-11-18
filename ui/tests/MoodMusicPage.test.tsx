@@ -23,7 +23,7 @@ vi.mock('../src/api', async orig => {
   return { ...real, createMoodApi: () => mock.api }
 })
 
-import MoodMusicPage, { KNOWN_AFTER_MS, OFFLINE_MS, POLL_MS, STUCK_MS } from '../src/MoodMusicPage'
+import MoodMusicPage, { OFFLINE_MS, POLL_MS, STUCK_MS } from '../src/MoodMusicPage'
 import { replySource } from '../src/replyParse'
 import { FADE_MS } from '../src/MoodBackdrop'
 import { presetScene } from '../src/moods'
@@ -33,7 +33,7 @@ const api = mock.api
 const ID = 'dQw4w9WgXcQ'
 const t = (k: string, o?: Record<string, string | number>) => tr(k.includes('.') ? k : `page.${k}`, o)
 
-const EMPTY: MoodState = { moments: [], queue: [], feedback: [], last_source: '', memory: [], settings: { explore: 'balanced', record_open: false, player: 'auto' } }
+const EMPTY: MoodState = { moments: [], queue: [], feedback: [], last_source: '', memory: [], settings: { explore: 'balanced', record_open: false } }
 const LIKED: MemoryItem = { id: 'q'.repeat(32), kind: 'liked', origin: 'app', pinned: false, stale: false, created_at: 1, last_used_at: 1, title: 'Old Love', artist: 'B' }
 
 function queued(over: Partial<QueuedPick>): QueuedPick {
@@ -130,11 +130,9 @@ describe('MoodMusicPage', () => {
     expect(screen.getByText('听起来是安静地想。')).toBeInTheDocument()
     expect(screen.queryByText(/mood-music/)).toBeNull()
 
-    const frame = screen.getByTestId('mood-youtube-frame')
-    expect(frame.getAttribute('src')).toBe(`https://www.youtube-nocookie.com/embed/${ID}?rel=0`)
-    // A host that blocks the embed (Error 153) still leaves a way to play it.
-    expect(within(screen.getByTestId('mood-youtube-note')).getByRole('link', { name: t('page.open_youtube') }))
-      .toHaveAttribute('href', `https://www.youtube.com/watch?v=${ID}`)
+    // The only player is Kiro Crew's browser: its controls, never an embed.
+    expect(within(screen.getByTestId('mood-now-playing')).getByTestId('mood-browser-controls')).toBeInTheDocument()
+    expect(document.querySelector('iframe')).toBeNull()
 
     fireEvent.click(within(screen.getByTestId('mood-follow-ups')).getByRole('button', { name: '再安静一点' }))
     await flush()
@@ -322,7 +320,7 @@ describe('MoodMusicPage', () => {
     expect(within(unchecked).getByTestId('mood-unverified').getAttribute('title')).toBe(t('card.unverified_hint'))
   })
 
-  it('records "I know it" as the person’s, and 30 s of play as the app’s', async () => {
+  it('records "I know it" as the person’s', async () => {
     const picks = [queued({ id: 'a'.repeat(32), title: 'One' }), queued({ id: 'b'.repeat(32), title: 'Two' })]
     const slot = reply({ picks: [] })
     api.state.mockResolvedValue({ ...EMPTY, queue: picks, last_source: replySource(slot.messages![1].content!) })
@@ -333,12 +331,10 @@ describe('MoodMusicPage', () => {
     fireEvent.click(within(one).getByRole('button', { name: t('card.known') }))
     await flush()
     expect(api.addMemory).toHaveBeenCalledWith({ kind: 'known', title: 'One', artist: 'A', origin: 'user' })
-
+    // Pressing play alone marks nothing: a song counts as heard once the buddy started it.
     fireEvent.click(within(two).getByRole('button', { name: t('play', { title: 'Two' }) }))
-    await flush(KNOWN_AFTER_MS - 1000)
+    await flush()
     expect(api.addMemory).toHaveBeenCalledTimes(1)
-    await flush(1000)
-    expect(api.addMemory).toHaveBeenLastCalledWith({ kind: 'known', title: 'Two', artist: 'A', origin: 'app' })
   })
 
   it('sends the explore level and stay-only choice, and keeps the level', async () => {
@@ -354,17 +350,13 @@ describe('MoodMusicPage', () => {
     expect(sent).toContain('Arc: stay only')
   })
 
-  it('sends the preferred player, keeps it, and reads a saved one back', async () => {
-    api.state.mockResolvedValue({ ...EMPTY, settings: { ...EMPTY.settings, player: 'bilibili' } })
+  it('has no player choice, and every request says songs play in Kiro Crew\'s browser', async () => {
     render(<MoodMusicPage />)
     await flush()
-    const choice = screen.getByTestId('mood-player-choice')
-    expect(within(choice).getByRole('tab', { name: t('page.source_bilibili') })).toHaveAttribute('aria-selected', 'true')
-    fireEvent.click(within(choice).getByRole('tab', { name: t('page.source_youtube') }))
-    expect(api.setSettings).toHaveBeenCalledWith({ player: 'youtube' })
+    expect(screen.queryByTestId('mood-player-choice')).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: t('mood_sad') }))
     await flush()
-    expect(api.ask.mock.calls[0][0]).toContain('Player: youtube (give a YouTube link for every song; use bilibili only')
+    expect(api.ask.mock.calls[0][0]).toContain("Player: Kiro Crew's browser.")
   })
 
   it('keeps the full record collapsed until asked, and remembers it open', async () => {
@@ -404,7 +396,8 @@ describe('MoodMusicPage', () => {
     await flush()
     expect(api.feedback).toHaveBeenCalledWith('a'.repeat(32), 'skipped')
     expect(screen.getByRole('heading', { name: 'Two' })).toBeInTheDocument()
-    expect(screen.getByTestId('mood-youtube-frame').getAttribute('src')).toContain('autoplay=1')
+    // The next song goes straight to the buddy to play in Kiro Crew's browser.
+    expect(api.ask.mock.calls[api.ask.mock.calls.length - 1][0]).toContain('Play in Crew Browser: "Two"')
   })
 
   it('lists the moments with their songs on the second tab', async () => {
