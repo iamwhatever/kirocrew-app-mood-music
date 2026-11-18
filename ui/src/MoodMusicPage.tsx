@@ -35,7 +35,8 @@ import { t } from './i18n'
 import { createMoodApi, grantCause, latestReply, type GrantCause, type MoodState, type QueuedPick, type Verdict } from './api'
 import Banner from './Banner'
 import BrowserControls from './BrowserControls'
-import { APPROVE_PATH, readiness, useCrewBrowser } from './crewBrowser'
+import BrowserView from './BrowserView'
+import { APPROVE_PATH, hostBrowserView, readiness, useCrewBrowser } from './crewBrowser'
 import FullRecord from './FullRecord'
 import MemoryTab from './MemoryTab'
 import MomentsTab from './MomentsTab'
@@ -226,6 +227,9 @@ export default function MoodMusicPage() {
   const queue = state?.queue ?? []
   const explore: ExploreLevel = state?.settings?.explore ?? 'balanced'
   const recordOpen = state?.settings?.record_open ?? false
+  const viewOpen = state?.settings?.view_open ?? true
+  // The host's live view of the buddy's tab (level 11); absent on an older host.
+  const HostView = hostBrowserView()
   const continuous = state?.settings?.continuous ?? false
   // The Crew Browser player. Polled while the tab holds a song; read once otherwise,
   // which is how the page learns whether it can play here at all.
@@ -610,6 +614,8 @@ export default function MoodMusicPage() {
 
   const errorText = error === null ? null
     : error === 'unreadable' ? t('page.error_unreadable')
+      : error === 'old_host' ? t('page.error_old_host')
+      : error === 'hidden_refused' ? t('page.error_hidden_refused')
       : error === 'all_dropped' ? t('chat.all_dropped', { count: droppedAll })
         : t('page.error_generic', { code: error })
   const working = busy || !!pending
@@ -883,6 +889,14 @@ export default function MoodMusicPage() {
 
               <div className="mm-player flex min-w-0 flex-col gap-4" data-testid="mood-player-column">
                 {!current && unready}
+                {browserMode && slotKey && (
+                  <BrowserView
+                    open={viewOpen}
+                    onToggle={open => saveSettings({ view_open: open })}
+                    operating={status?.phase === 'playing'}
+                    live={HostView ? <HostView slot={slotKey} aria-label={t('view.title')} /> : null}
+                  />
+                )}
                 {current ? (
                   <NowPlaying
                     pick={current}

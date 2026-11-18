@@ -31,6 +31,15 @@ export function hostMediaHook(): typeof sdk.useBrowserMedia {
   return level >= BROWSER_SDK_LEVEL && typeof sdk.useBrowserMedia === 'function' ? sdk.useBrowserMedia : undefined
 }
 
+/** The level that brought `BrowserView` (the live view of the app's own slot). */
+export const VIEW_SDK_LEVEL = 11
+
+/** The host's live view when it has one; feature-checked, never the level alone. */
+export function hostBrowserView(): typeof sdk.BrowserView {
+  const level = typeof sdk.APP_SDK_LEVEL === 'number' ? sdk.APP_SDK_LEVEL : 0
+  return level >= VIEW_SDK_LEVEL && typeof sdk.BrowserView === 'function' ? sdk.BrowserView : undefined
+}
+
 const noop = async () => undefined
 const NO_MEDIA: BrowserMedia = {
   media: null, error: 'old_host', busy: false,

@@ -1,7 +1,7 @@
 import * as sdk from "@kirocrew/app-sdk";
 import { activeLocale, fmtDateTime, useAppApi, useChatLauncher, useLanguageGeneration, useNavigate } from "@kirocrew/app-sdk";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Brain, Check, ChevronRight, ExternalLink, Headphones, Heart, MessageCircleQuestion, Music, Pause, Pin, PinOff, Play, Repeat, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Volume2, Waves, WifiOff } from "lucide-react";
+import { Brain, Check, ChevronRight, ExternalLink, Headphones, Heart, MessageCircleQuestion, MonitorPlay, Music, Pause, Pin, PinOff, Play, Repeat, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Volume2, Waves, WifiOff } from "lucide-react";
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from "@kirocrew/app-sdk/ui";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 // src/i18n.ts
@@ -68,7 +68,9 @@ var CATALOGS = {
 			"dropped": "যে গানের লিংক বাজানো যায় না, সেগুলো বাদ: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
-			"tab_memory": "স্মৃতি"
+			"tab_memory": "স্মৃতি",
+			"error_old_host": "এই Kiro Crew সঙ্গীর লুকানো চ্যাট খোলার জন্য খুব পুরোনো। Kiro Crew আপডেট করুন, তারপর এই পেজ আবার খুলুন।",
+			"error_hidden_refused": "Kiro Crew সঙ্গীর লুকানো চ্যাট খোলেনি। অ্যাপের পেজে দেখুন মুড মিউজিক চালু ও বিশ্বস্ত কি না।"
 		},
 		memory: {
 			"add_label": "বন্ধুকে মনে রাখার মতো কিছু বলুন",
@@ -181,6 +183,14 @@ var CATALOGS = {
 			"unready_old_host": "এই Kiro Crew খুব পুরোনো। অ্যাপ ব্রাউজার সাইট সমর্থিত সংস্করণে (KiroCrew#38333 সহ, v0.13.0-rc.3-এর চেয়ে নতুন) Kiro Crew আপডেট করুন, তারপর এই পেজ আবার খুলুন।",
 			"unready_not_approved": "আগে মুড মিউজিকের জন্য গানের সাইটগুলো অনুমোদন করুন। অ্যাপের পেজে একবার অনুমোদন করলেই হবে।",
 			"unready_browse_off": "এই কম্পিউটারের একটি নীতি Kiro Crew-এর ব্রাউজার বন্ধ রেখেছে।"
+		},
+		view: {
+			"title": "Kiro Crew-এর ব্রাউজার",
+			"operating": "ব্রাউজার চালাচ্ছে…",
+			"idle": "সঙ্গী এখন ব্রাউজার ব্যবহার করছে না।",
+			"show": "দেখান",
+			"hide": "লুকান",
+			"old_host": "এই Kiro Crew এখনো এখানে ব্রাউজার দেখাতে পারে না। Kiro Crew আপডেট করলে সঙ্গীকে গান বাছতে দেখতে পাবেন।"
 		}
 	},
 	de: {
@@ -231,7 +241,9 @@ var CATALOGS = {
 			"dropped": "Ausgelassene Songs mit nicht abspielbarem Link: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
-			"tab_memory": "Erinnerung"
+			"tab_memory": "Erinnerung",
+			"error_old_host": "Dieses Kiro Crew ist zu alt, um den versteckten Chat deines Buddys zu öffnen. Aktualisiere Kiro Crew und öffne diese Seite erneut.",
+			"error_hidden_refused": "Kiro Crew hat den versteckten Chat deines Buddys nicht geöffnet. Prüfe auf der App-Seite, ob Mood Music eingeschaltet und vertrauenswürdig ist."
 		},
 		memory: {
 			"add_label": "Sag deinem Buddy, was er sich merken soll",
@@ -344,6 +356,14 @@ var CATALOGS = {
 			"unready_old_host": "Dieses Kiro Crew ist zu alt. Aktualisiere Kiro Crew auf eine Version mit App-Browserseiten (KiroCrew#38333, neuer als v0.13.0-rc.3) und öffne diese Seite dann erneut.",
 			"unready_not_approved": "Gib zuerst die Musikseiten für Mood Music frei. Das machst du einmal, auf der Seite der App.",
 			"unready_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet."
+		},
+		view: {
+			"title": "Browser von Kiro Crew",
+			"operating": "Bedient den Browser…",
+			"idle": "Dein Buddy nutzt den Browser gerade nicht.",
+			"show": "Anzeigen",
+			"hide": "Ausblenden",
+			"old_host": "Dieses Kiro Crew kann den Browser hier noch nicht zeigen. Aktualisiere Kiro Crew, um zuzusehen, wie dein Buddy Songs wählt."
 		}
 	},
 	en: {
@@ -394,7 +414,9 @@ var CATALOGS = {
 			"dropped": "Songs left out because their link cannot play: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
-			"tab_memory": "Memory"
+			"tab_memory": "Memory",
+			"error_old_host": "This Kiro Crew is too old to open your buddy's hidden chat. Update Kiro Crew, then open this page again.",
+			"error_hidden_refused": "Kiro Crew would not open your buddy's hidden chat. Check that Mood Music is turned on and trusted, on the app's page."
 		},
 		memory: {
 			"add_label": "Tell your buddy something to remember",
@@ -507,6 +529,14 @@ var CATALOGS = {
 			"unready_old_host": "This Kiro Crew is too old. Update Kiro Crew to a version with app browser sites (KiroCrew#38333, newer than v0.13.0-rc.3), then open this page again.",
 			"unready_not_approved": "First approve the music sites for Mood Music. You approve them once, on the app's page.",
 			"unready_browse_off": "Kiro Crew's browser is turned off by a policy on this computer."
+		},
+		view: {
+			"title": "Kiro Crew's browser",
+			"operating": "Using the browser…",
+			"idle": "Your buddy is not using the browser right now.",
+			"show": "Show",
+			"hide": "Hide",
+			"old_host": "This Kiro Crew cannot show its browser here yet. Update Kiro Crew to watch your buddy pick songs."
 		}
 	},
 	es: {
@@ -557,7 +587,9 @@ var CATALOGS = {
 			"dropped": "Canciones omitidas por un enlace que no se puede reproducir: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
-			"tab_memory": "Memoria"
+			"tab_memory": "Memoria",
+			"error_old_host": "Este Kiro Crew es demasiado antiguo para abrir el chat oculto de tu compañero. Actualiza Kiro Crew y vuelve a abrir esta página.",
+			"error_hidden_refused": "Kiro Crew no abrió el chat oculto de tu compañero. Comprueba en la página de la app que Mood Music está activada y es de confianza."
 		},
 		memory: {
 			"add_label": "Dile a tu compañero algo que recordar",
@@ -670,6 +702,14 @@ var CATALOGS = {
 			"unready_old_host": "Este Kiro Crew es demasiado antiguo. Actualiza Kiro Crew a una versión con sitios de navegador para apps (KiroCrew#38333, más nueva que v0.13.0-rc.3) y vuelve a abrir esta página.",
 			"unready_not_approved": "Primero aprueba los sitios de música para Mood Music. Se aprueban una vez, en la página de la app.",
 			"unready_browse_off": "Una política de este equipo tiene apagado el navegador de Kiro Crew."
+		},
+		view: {
+			"title": "Navegador de Kiro Crew",
+			"operating": "Usando el navegador…",
+			"idle": "Tu compañero no está usando el navegador ahora.",
+			"show": "Mostrar",
+			"hide": "Ocultar",
+			"old_host": "Este Kiro Crew aún no puede mostrar su navegador aquí. Actualiza Kiro Crew para ver cómo tu compañero elige canciones."
 		}
 	},
 	fr: {
@@ -720,7 +760,9 @@ var CATALOGS = {
 			"dropped": "Chansons écartées car leur lien est illisible : {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
-			"tab_memory": "Mémoire"
+			"tab_memory": "Mémoire",
+			"error_old_host": "Ce Kiro Crew est trop ancien pour ouvrir le chat caché de ton compagnon. Mets à jour Kiro Crew, puis rouvre cette page.",
+			"error_hidden_refused": "Kiro Crew n’a pas ouvert le chat caché de ton compagnon. Vérifie sur la page de l’app que Mood Music est activée et approuvée."
 		},
 		memory: {
 			"add_label": "Dis à ton acolyte quelque chose à retenir",
@@ -833,6 +875,14 @@ var CATALOGS = {
 			"unready_old_host": "Ce Kiro Crew est trop ancien. Mets Kiro Crew à jour vers une version avec les sites de navigateur pour apps (KiroCrew#38333, plus récente que v0.13.0-rc.3), puis rouvre cette page.",
 			"unready_not_approved": "Approuve d’abord les sites de musique pour Mood Music. Une seule fois, sur la page de l’app.",
 			"unready_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew."
+		},
+		view: {
+			"title": "Navigateur de Kiro Crew",
+			"operating": "Utilise le navigateur…",
+			"idle": "Ton compagnon n’utilise pas le navigateur en ce moment.",
+			"show": "Afficher",
+			"hide": "Masquer",
+			"old_host": "Ce Kiro Crew ne peut pas encore afficher son navigateur ici. Mets à jour Kiro Crew pour voir ton compagnon choisir les chansons."
 		}
 	},
 	hi: {
@@ -883,7 +933,9 @@ var CATALOGS = {
 			"dropped": "जिन गानों का लिंक नहीं चल सकता, वे छोड़े गए: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
-			"tab_memory": "याद"
+			"tab_memory": "याद",
+			"error_old_host": "यह Kiro Crew साथी की छिपी चैट खोलने के लिए बहुत पुराना है। Kiro Crew अपडेट करें, फिर यह पेज दोबारा खोलें।",
+			"error_hidden_refused": "Kiro Crew ने साथी की छिपी चैट नहीं खोली। ऐप पेज पर देखें कि मूड म्यूज़िक चालू और भरोसेमंद है।"
 		},
 		memory: {
 			"add_label": "अपने साथी को कुछ याद रखने को कहें",
@@ -996,6 +1048,14 @@ var CATALOGS = {
 			"unready_old_host": "यह Kiro Crew बहुत पुराना है। Kiro Crew को ऐप ब्राउज़र साइटों वाले संस्करण (KiroCrew#38333 सहित, v0.13.0-rc.3 से नया) में अपडेट करें, फिर यह पेज दोबारा खोलें।",
 			"unready_not_approved": "पहले मूड म्यूज़िक के लिए संगीत साइटों को मंज़ूरी दें। ऐप के पेज पर एक बार मंज़ूरी देनी होती है।",
 			"unready_browse_off": "इस कंप्यूटर की एक नीति ने Kiro Crew का ब्राउज़र बंद कर रखा है।"
+		},
+		view: {
+			"title": "Kiro Crew का ब्राउज़र",
+			"operating": "ब्राउज़र चला रहा है…",
+			"idle": "साथी अभी ब्राउज़र इस्तेमाल नहीं कर रहा।",
+			"show": "दिखाएँ",
+			"hide": "छिपाएँ",
+			"old_host": "यह Kiro Crew अभी यहाँ ब्राउज़र नहीं दिखा सकता। Kiro Crew अपडेट करें, फिर साथी को गाने चुनते देख पाएँगे।"
 		}
 	},
 	it: {
@@ -1046,7 +1106,9 @@ var CATALOGS = {
 			"dropped": "Canzoni escluse per un link non riproducibile: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
-			"tab_memory": "Memoria"
+			"tab_memory": "Memoria",
+			"error_old_host": "Questo Kiro Crew è troppo vecchio per aprire la chat nascosta del tuo compagno. Aggiorna Kiro Crew e riapri questa pagina.",
+			"error_hidden_refused": "Kiro Crew non ha aperto la chat nascosta del tuo compagno. Controlla nella pagina dell’app che Mood Music sia attiva e attendibile."
 		},
 		memory: {
 			"add_label": "Di' al tuo compagno qualcosa da ricordare",
@@ -1159,6 +1221,14 @@ var CATALOGS = {
 			"unready_old_host": "Questo Kiro Crew è troppo vecchio. Aggiorna Kiro Crew a una versione con i siti del browser per le app (KiroCrew#38333, più recente di v0.13.0-rc.3), poi riapri questa pagina.",
 			"unready_not_approved": "Prima approva i siti musicali per Mood Music. Si approvano una volta, nella pagina dell’app.",
 			"unready_browse_off": "Una regola di questo computer ha spento il browser di Kiro Crew."
+		},
+		view: {
+			"title": "Browser di Kiro Crew",
+			"operating": "Sta usando il browser…",
+			"idle": "Il tuo compagno non sta usando il browser ora.",
+			"show": "Mostra",
+			"hide": "Nascondi",
+			"old_host": "Questo Kiro Crew non può ancora mostrare qui il suo browser. Aggiorna Kiro Crew per vedere il compagno scegliere le canzoni."
 		}
 	},
 	ja: {
@@ -1209,7 +1279,9 @@ var CATALOGS = {
 			"dropped": "再生できないリンクのため除外した曲：{{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
-			"tab_memory": "メモリー"
+			"tab_memory": "メモリー",
+			"error_old_host": "この Kiro Crew は古いため、相棒の非表示チャットを開けません。Kiro Crew を更新してから、このページを開き直してください。",
+			"error_hidden_refused": "Kiro Crew が相棒の非表示チャットを開きませんでした。アプリのページで、ムードミュージックが有効で信頼済みか確認してください。"
 		},
 		memory: {
 			"add_label": "相棒に覚えておいてほしいことを伝える",
@@ -1322,6 +1394,14 @@ var CATALOGS = {
 			"unready_old_host": "この Kiro Crew は古すぎます。アプリのブラウザサイトに対応した版（KiroCrew#38333 を含む、v0.13.0-rc.3 より新しい版）に更新して、このページを開き直してください。",
 			"unready_not_approved": "先に Mood Music の音楽サイトを承認してください。アプリのページで一度だけ承認します。",
 			"unready_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。"
+		},
+		view: {
+			"title": "Kiro Crew のブラウザ",
+			"operating": "ブラウザを操作中…",
+			"idle": "相棒は今ブラウザを使っていません。",
+			"show": "表示",
+			"hide": "隠す",
+			"old_host": "この Kiro Crew ではまだここにブラウザを表示できません。Kiro Crew を更新すると、選曲の様子が見られます。"
 		}
 	},
 	ko: {
@@ -1372,7 +1452,9 @@ var CATALOGS = {
 			"dropped": "재생할 수 없는 링크라 제외한 곡: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
-			"tab_memory": "기억"
+			"tab_memory": "기억",
+			"error_old_host": "이 Kiro Crew는 너무 오래되어 친구의 숨김 채팅을 열 수 없어요. Kiro Crew를 업데이트한 뒤 이 페이지를 다시 여세요.",
+			"error_hidden_refused": "Kiro Crew가 친구의 숨김 채팅을 열지 않았어요. 앱 페이지에서 무드 뮤직이 켜져 있고 신뢰됨인지 확인하세요."
 		},
 		memory: {
 			"add_label": "단짝에게 기억할 것을 알려 주세요",
@@ -1485,6 +1567,14 @@ var CATALOGS = {
 			"unready_old_host": "이 Kiro Crew는 너무 오래됐어요. 앱 브라우저 사이트를 지원하는 버전(KiroCrew#38333 포함, v0.13.0-rc.3보다 새 버전)으로 업데이트한 뒤 이 페이지를 다시 여세요.",
 			"unready_not_approved": "먼저 무드 뮤직의 음악 사이트를 승인하세요. 앱 페이지에서 한 번만 승인하면 돼요.",
 			"unready_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요."
+		},
+		view: {
+			"title": "Kiro Crew 브라우저",
+			"operating": "브라우저 사용 중…",
+			"idle": "지금은 친구가 브라우저를 쓰고 있지 않아요.",
+			"show": "보기",
+			"hide": "숨기기",
+			"old_host": "이 Kiro Crew는 아직 여기에 브라우저를 보여 줄 수 없어요. Kiro Crew를 업데이트하면 선곡하는 모습을 볼 수 있어요."
 		}
 	},
 	pt: {
@@ -1535,7 +1625,9 @@ var CATALOGS = {
 			"dropped": "Músicas deixadas de fora por link que não toca: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
-			"tab_memory": "Memória"
+			"tab_memory": "Memória",
+			"error_old_host": "Este Kiro Crew é antigo demais para abrir o chat oculto do seu parceiro. Atualize o Kiro Crew e abra esta página de novo.",
+			"error_hidden_refused": "O Kiro Crew não abriu o chat oculto do seu parceiro. Confira na página do app se o Mood Music está ativado e confiável."
 		},
 		memory: {
 			"add_label": "Diga ao seu parceiro algo para lembrar",
@@ -1648,6 +1740,14 @@ var CATALOGS = {
 			"unready_old_host": "Este Kiro Crew é antigo demais. Atualize o Kiro Crew para uma versão com sites de navegador para apps (KiroCrew#38333, mais nova que v0.13.0-rc.3) e abra esta página de novo.",
 			"unready_not_approved": "Primeiro aprove os sites de música para o Mood Music. Você aprova uma vez, na página do app.",
 			"unready_browse_off": "Uma política deste computador desligou o navegador do Kiro Crew."
+		},
+		view: {
+			"title": "Navegador do Kiro Crew",
+			"operating": "Usando o navegador…",
+			"idle": "Seu parceiro não está usando o navegador agora.",
+			"show": "Mostrar",
+			"hide": "Ocultar",
+			"old_host": "Este Kiro Crew ainda não consegue mostrar o navegador aqui. Atualize o Kiro Crew para ver o parceiro escolher as músicas."
 		}
 	},
 	ru: {
@@ -1698,7 +1798,9 @@ var CATALOGS = {
 			"dropped": "Пропущено песен со ссылкой, которую нельзя воспроизвести: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
-			"tab_memory": "Память"
+			"tab_memory": "Память",
+			"error_old_host": "Этот Kiro Crew слишком старый и не может открыть скрытый чат напарника. Обновите Kiro Crew и откройте эту страницу снова.",
+			"error_hidden_refused": "Kiro Crew не открыл скрытый чат напарника. Проверьте на странице приложения, что «Музыка настроения» включена и ей доверяют."
 		},
 		memory: {
 			"add_label": "Скажите другу, что запомнить",
@@ -1811,6 +1913,14 @@ var CATALOGS = {
 			"unready_old_host": "Эта версия Kiro Crew слишком старая. Обновите Kiro Crew до версии с сайтами браузера для приложений (KiroCrew#38333, новее v0.13.0-rc.3) и откройте эту страницу снова.",
 			"unready_not_approved": "Сначала одобрите музыкальные сайты для «Музыки настроения». Это делается один раз, на странице приложения.",
 			"unready_browse_off": "Браузер Kiro Crew отключён политикой на этом компьютере."
+		},
+		view: {
+			"title": "Браузер Kiro Crew",
+			"operating": "Работает в браузере…",
+			"idle": "Сейчас напарник не пользуется браузером.",
+			"show": "Показать",
+			"hide": "Скрыть",
+			"old_host": "Этот Kiro Crew пока не может показать здесь браузер. Обновите Kiro Crew, чтобы видеть, как напарник выбирает песни."
 		}
 	},
 	"zh-CN": {
@@ -1861,7 +1971,9 @@ var CATALOGS = {
 			"dropped": "有 {{count}} 首歌的链接无法播放，已略过。",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
-			"tab_memory": "记忆"
+			"tab_memory": "记忆",
+			"error_old_host": "这个 Kiro Crew 版本太旧，打不开搭子的隐藏聊天。请更新 Kiro Crew，再打开这个页面。",
+			"error_hidden_refused": "Kiro Crew 没有打开搭子的隐藏聊天。请在应用页面确认情绪音乐已启用、已信任。"
 		},
 		memory: {
 			"add_label": "告诉搭子一件要记住的事",
@@ -1974,6 +2086,14 @@ var CATALOGS = {
 			"unready_old_host": "这个 Kiro Crew 版本太旧。请把 Kiro Crew 更新到支持应用浏览器网站的版本（含 KiroCrew#38333，比 v0.13.0-rc.3 新），再打开这个页面。",
 			"unready_not_approved": "请先为情绪音乐批准这几个音乐网站。只需在应用页面批准一次。",
 			"unready_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。"
+		},
+		view: {
+			"title": "Kiro Crew 的浏览器",
+			"operating": "正在操作 Browser…",
+			"idle": "搭子现在没在用浏览器。",
+			"show": "展开",
+			"hide": "收起",
+			"old_host": "这个 Kiro Crew 还不能在这里显示浏览器画面。更新 Kiro Crew 后就能看搭子选歌。"
 		}
 	}
 };
@@ -2015,14 +2135,22 @@ function t(key, vars) {
 }
 // src/api.ts
 var BASE = "/api/apps/mood-music";
-var DJ_AGENT = "mood-music-dj";
-/** The hidden chat's name. */
-var SLOT_NAME = "mood-music-buddy";
-/** The chat before hidden sessions: listed, used only when the host refuses the mode. */
-var LISTED_SLOT_NAME = "mood-music";
-/** The app id, which is the only mode Kiro Crew lets this app hide. */
-var HIDDEN_MODE = "mood-music";
-var MEMORY_MODE = "temporary";
+/** The backend's refusal code in a failed buddy call, or null for any other failure. */
+function buddyRefusal(e) {
+	const err = e;
+	if (!err || typeof err.body !== "string") return null;
+	try {
+		const code = JSON.parse(err.body).code;
+		return code === "old_host" || code === "hidden_refused" ? code : null;
+	} catch {
+		return null;
+	}
+}
+/** Rethrow a buddy refusal as its bare code, which the page shows in plain words. */
+function plainRefusal(e) {
+	const code = buddyRefusal(e);
+	throw code ? new Error(code) : e;
+}
 /** The grant cause in a refused approval, or null when it was refused for another reason. */
 function grantCause(e) {
 	const err = e;
@@ -2036,36 +2164,8 @@ function grantCause(e) {
 		return null;
 	}
 }
-/** Whether the host refused the hidden mode (`400 invalid_mode`): an older Kiro Crew, or no grant. */
-function modeRefused(e) {
-	const err = e;
-	if (!err || err.status !== 400 || typeof err.body !== "string") return false;
-	try {
-		return JSON.parse(err.body).code === "invalid_mode";
-	} catch {
-		return false;
-	}
-}
 function createMoodApi(api) {
-	let listed = false;
-	const openSlot = async () => {
-		if (!listed) try {
-			return await api.post("/api/chat/slots", {
-				name: SLOT_NAME,
-				agent: DJ_AGENT,
-				memory_mode: MEMORY_MODE,
-				mode: HIDDEN_MODE
-			});
-		} catch (e) {
-			if (!modeRefused(e)) throw e;
-			listed = true;
-		}
-		return api.post("/api/chat/slots", {
-			name: LISTED_SLOT_NAME,
-			agent: DJ_AGENT,
-			memory_mode: MEMORY_MODE
-		});
-	};
+	const openSlot = () => api.post(`${BASE}/buddy`).catch(plainRefusal);
 	return {
 		state: () => api.get(`${BASE}/state`),
 		addMoment: (mood) => api.post(`${BASE}/moments`, { mood }),
@@ -2091,17 +2191,9 @@ function createMoodApi(api) {
 			request_id: requestId
 		}),
 		stop: (key) => api.post(`/api/chat/slots/${encodeURIComponent(key)}/stop`),
-		/** Send one turn; a refusal rejects. Returns the slot key the turn went to. */
+		/** Send one turn through the backend; a refusal rejects. Returns the slot key the turn went to. */
 		ask: async (message) => {
-			const { key } = await openSlot();
-			const receipt = await api.post("/api/chat?ws=1", {
-				message,
-				slot: key,
-				agent: DJ_AGENT,
-				memory_mode: MEMORY_MODE
-			});
-			if (receipt && receipt.ok === false) throw new Error(receipt.error || "send_refused");
-			return key;
+			return (await api.post(`${BASE}/buddy/send`, { message }).catch(plainRefusal)).key;
 		}
 	};
 }
@@ -2149,6 +2241,10 @@ var MEDIA_POLL_MS = 1500;
 /** The host's hook when it has one; feature-checked, never the level alone. */
 function hostMediaHook() {
 	return (typeof sdk.APP_SDK_LEVEL === "number" ? sdk.APP_SDK_LEVEL : 0) >= 10 && typeof sdk.useBrowserMedia === "function" ? sdk.useBrowserMedia : void 0;
+}
+/** The host's live view when it has one; feature-checked, never the level alone. */
+function hostBrowserView() {
+	return (typeof sdk.APP_SDK_LEVEL === "number" ? sdk.APP_SDK_LEVEL : 0) >= 11 && typeof sdk.BrowserView === "function" ? sdk.BrowserView : void 0;
 }
 var noop = async () => void 0;
 var NO_MEDIA = {
@@ -2329,6 +2425,55 @@ function BrowserControls({ media, inTab, waiting, continuous, onAskPlay, onPause
 				children: t("browser.continuous_note")
 			})
 		]
+	});
+}
+// src/BrowserView.tsx
+function BrowserView({ open, onToggle, operating, live }) {
+	return /* @__PURE__ */ jsxs("section", {
+		"aria-label": t("view.title"),
+		className: "flex flex-col gap-2 rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-3",
+		"data-testid": "mood-browser-view",
+		children: [/* @__PURE__ */ jsxs("div", {
+			className: "flex items-center gap-2",
+			children: [
+				/* @__PURE__ */ jsx(MonitorPlay, {
+					size: 14,
+					"aria-hidden": "true",
+					className: "text-[var(--muted)]"
+				}),
+				/* @__PURE__ */ jsx("h3", {
+					className: "text-xs font-semibold text-[var(--text)]",
+					children: t("view.title")
+				}),
+				/* @__PURE__ */ jsx("p", {
+					role: "status",
+					className: `min-w-0 flex-1 truncate text-xs ${operating ? "font-semibold text-[var(--accent)]" : "text-[var(--muted)]"}`,
+					"data-testid": "mood-browser-view-status",
+					children: operating ? t("view.operating") : t("view.idle")
+				}),
+				/* @__PURE__ */ jsxs("button", {
+					type: "button",
+					"aria-expanded": open,
+					"aria-controls": "mood-browser-view-body",
+					onClick: () => onToggle(!open),
+					className: "inline-flex shrink-0 items-center gap-1 text-xs text-[var(--muted)] hover:text-[var(--text)]",
+					"data-testid": "mood-browser-view-toggle",
+					children: [/* @__PURE__ */ jsx(ChevronRight, {
+						size: 13,
+						"aria-hidden": "true",
+						className: open ? "rotate-90" : ""
+					}), open ? t("view.hide") : t("view.show")]
+				})
+			]
+		}), open && /* @__PURE__ */ jsx("div", {
+			id: "mood-browser-view-body",
+			"data-testid": "mood-browser-view-body",
+			children: live ?? /* @__PURE__ */ jsx("p", {
+				className: "text-xs text-[var(--muted)]",
+				"data-testid": "mood-browser-view-old-host",
+				children: t("view.old_host")
+			})
+		})]
 	});
 }
 // src/FullRecord.tsx
@@ -4344,6 +4489,8 @@ function MoodMusicPage() {
 	const queue = state?.queue ?? [];
 	const explore = state?.settings?.explore ?? "balanced";
 	const recordOpen = state?.settings?.record_open ?? false;
+	const viewOpen = state?.settings?.view_open ?? true;
+	const HostView = hostBrowserView();
 	const continuous = state?.settings?.continuous ?? false;
 	const onEndedRef = useRef(() => void 0);
 	const crew = useCrewBrowser(slotKey ?? "", !!browserPick, () => onEndedRef.current());
@@ -4751,7 +4898,7 @@ function MoodMusicPage() {
 			await ask(again, lastShownRef.current, []);
 		});
 	};
-	const errorText = error === null ? null : error === "unreadable" ? t("page.error_unreadable") : error === "all_dropped" ? t("chat.all_dropped", { count: droppedAll }) : t("page.error_generic", { code: error });
+	const errorText = error === null ? null : error === "unreadable" ? t("page.error_unreadable") : error === "old_host" ? t("page.error_old_host") : error === "hidden_refused" ? t("page.error_hidden_refused") : error === "all_dropped" ? t("chat.all_dropped", { count: droppedAll }) : t("page.error_generic", { code: error });
 	const working = busy || !!pending;
 	const moving = !reduceMotion && !motionPaused;
 	const status = pending || checking ? buddyStatus(slot, checking) ?? {
@@ -5160,6 +5307,15 @@ function MoodMusicPage() {
 								"data-testid": "mood-player-column",
 								children: [
 									!current && unready,
+									browserMode && slotKey && /* @__PURE__ */ jsx(BrowserView, {
+										open: viewOpen,
+										onToggle: (open) => saveSettings({ view_open: open }),
+										operating: status?.phase === "playing",
+										live: HostView ? /* @__PURE__ */ jsx(HostView, {
+											slot: slotKey,
+											"aria-label": t("view.title")
+										}) : null
+									}),
 									current ? /* @__PURE__ */ jsx(NowPlaying, {
 										pick: current,
 										stage: unready ?? /* @__PURE__ */ jsx(BrowserControls, {

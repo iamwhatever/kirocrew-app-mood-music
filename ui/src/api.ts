@@ -2,17 +2,13 @@
  * Mood Music clients, over the host's permission-scoped `AppApi`: the app's own
  * storage routes, and the one chat slot the page uses to talk to its DJ agent.
  *
- * The slot is named and owned by this app, and created with
- * `memory_mode: 'temporary'`, so feelings typed here are not written into
- * Kiro Crew memory: taste lives in the app's storage and is sent with each
- * request instead (`request.prompt.ts`). The slot is (re)opened before every
- * send, because a send to a missing slot would recreate it as a plain chat.
- *
- * It is also created with `mode: 'mood-music'` (`permissions.hiddenSessions`),
- * so the chat stays out of Kiro Crew's session lists. A chat keeps the mode it
- * was made with, so the hidden one has a new name ({@link SLOT_NAME}); the old
- * visible `mood-music` chat is left as it was. A host that refuses the mode
- * (older Kiro Crew, or the app not trusted) gets the old visible chat instead.
+ * The backend opens the slot through `ctx.chat_slots` (`backend/buddy.py`), so
+ * it carries this app's name: the host's live browser view, its media buttons
+ * and the approved `browserSites` all key off that name. It is opened hidden
+ * (`permissions.hiddenSessions`), out of Kiro Crew's session lists, and every
+ * turn goes through the backend too. A host too old to open a hidden chat for an
+ * app answers `old_host`, and the page says to update Kiro Crew; the chat is
+ * never opened visible instead.
  */
 import type { AppApi, AppApiError } from '@kirocrew/app-sdk'
 import type { Evidence, NewPick, PickArc, PickSource, PickTier } from './replyParse'
@@ -20,13 +16,29 @@ import type { ExploreLevel } from './request.prompt'
 
 const BASE = '/api/apps/mood-music'
 export const DJ_AGENT = 'mood-music-dj'
-/** The hidden chat's name. */
-export const SLOT_NAME = 'mood-music-buddy'
-/** The chat before hidden sessions: listed, used only when the host refuses the mode. */
-export const LISTED_SLOT_NAME = 'mood-music'
-/** The app id, which is the only mode Kiro Crew lets this app hide. */
-export const HIDDEN_MODE = 'mood-music'
-const MEMORY_MODE = 'temporary'
+/** The buddy's chat, opened by the backend (`backend/buddy.py` `BUDDY_KEY`). */
+export const SLOT_NAME = 'mood-music-dj'
+
+/** Why the backend could not open the buddy's chat: too old a host, or the host refused to hide it. */
+export type BuddyRefusal = 'old_host' | 'hidden_refused'
+
+/** The backend's refusal code in a failed buddy call, or null for any other failure. */
+export function buddyRefusal(e: unknown): BuddyRefusal | null {
+  const err = e as Partial<AppApiError> | null
+  if (!err || typeof err.body !== 'string') return null
+  try {
+    const code = (JSON.parse(err.body) as { code?: unknown }).code
+    return code === 'old_host' || code === 'hidden_refused' ? code : null
+  } catch {
+    return null
+  }
+}
+
+/** Rethrow a buddy refusal as its bare code, which the page shows in plain words. */
+function plainRefusal(e: unknown): never {
+  const code = buddyRefusal(e)
+  throw code ? new Error(code) : e
+}
 
 export type Verdict = 'liked' | 'skipped' | ''
 
@@ -102,6 +114,8 @@ export interface Settings {
   record_open: boolean
   /** When a song ends, the buddy plays the next one. */
   continuous?: boolean
+  /** The buddy's live browser box in the player column is open. Absent on an older backend. */
+  view_open?: boolean
 }
 
 export interface SlotMessage {
@@ -134,41 +148,10 @@ export function grantCause(e: unknown): GrantCause | 'other' | null {
   }
 }
 
-/** A send the gateway answered but refused (`{ok: false, error}` in a 2xx). */
-interface SendReceipt {
-  ok?: boolean
-  error?: string
-}
-
-/** Whether the host refused the hidden mode (`400 invalid_mode`): an older Kiro Crew, or no grant. */
-export function modeRefused(e: unknown): boolean {
-  const err = e as Partial<AppApiError> | null
-  if (!err || err.status !== 400 || typeof err.body !== 'string') return false
-  try {
-    return (JSON.parse(err.body) as { code?: unknown }).code === 'invalid_mode'
-  } catch {
-    return false
-  }
-}
-
 export type MoodApi = ReturnType<typeof createMoodApi>
 
 export function createMoodApi(api: AppApi) {
-  // Once the host refused the mode, this page stays on the listed chat.
-  let listed = false
-  const openSlot = async () => {
-    if (!listed) {
-      try {
-        return await api.post<{ key: string }>('/api/chat/slots', {
-          name: SLOT_NAME, agent: DJ_AGENT, memory_mode: MEMORY_MODE, mode: HIDDEN_MODE,
-        })
-      } catch (e) {
-        if (!modeRefused(e)) throw e
-        listed = true
-      }
-    }
-    return api.post<{ key: string }>('/api/chat/slots', { name: LISTED_SLOT_NAME, agent: DJ_AGENT, memory_mode: MEMORY_MODE })
-  }
+  const openSlot = () => api.post<{ key: string }>(`${BASE}/buddy`).catch(plainRefusal)
   return {
     state: () => api.get<MoodState>(`${BASE}/state`),
     addMoment: (mood: string) => api.post<Moment>(`${BASE}/moments`, { mood }),
@@ -198,14 +181,10 @@ export function createMoodApi(api: AppApi) {
     approve: (key: string, requestId: string, action: 'approved' | 'rejected') =>
       api.post(`/api/chat/slots/${encodeURIComponent(key)}/approve`, { action, request_id: requestId }),
     stop: (key: string) => api.post(`/api/chat/slots/${encodeURIComponent(key)}/stop`),
-    /** Send one turn; a refusal rejects. Returns the slot key the turn went to. */
+    /** Send one turn through the backend; a refusal rejects. Returns the slot key the turn went to. */
     ask: async (message: string): Promise<string> => {
-      const { key } = await openSlot()
-      const receipt = await api.post<SendReceipt | undefined>('/api/chat?ws=1', {
-        message, slot: key, agent: DJ_AGENT, memory_mode: MEMORY_MODE,
-      })
-      if (receipt && receipt.ok === false) throw new Error(receipt.error || 'send_refused')
-      return key
+      const receipt = await api.post<{ key: string }>(`${BASE}/buddy/send`, { message }).catch(plainRefusal)
+      return receipt.key
     },
   }
 }

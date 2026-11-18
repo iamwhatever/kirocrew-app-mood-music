@@ -46,7 +46,9 @@
     "dropped": "再生できないリンクのため除外した曲：{{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili",
-    "tab_memory": "メモリー"
+    "tab_memory": "メモリー",
+    "error_old_host": "この Kiro Crew は古いため、相棒の非表示チャットを開けません。Kiro Crew を更新してから、このページを開き直してください。",
+    "error_hidden_refused": "Kiro Crew が相棒の非表示チャットを開きませんでした。アプリのページで、ムードミュージックが有効で信頼済みか確認してください。"
   },
   "memory": {
     "add_label": "相棒に覚えておいてほしいことを伝える",
@@ -159,5 +161,13 @@
     "unready_old_host": "この Kiro Crew は古すぎます。アプリのブラウザサイトに対応した版（KiroCrew#38333 を含む、v0.13.0-rc.3 より新しい版）に更新して、このページを開き直してください。",
     "unready_not_approved": "先に Mood Music の音楽サイトを承認してください。アプリのページで一度だけ承認します。",
     "unready_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。"
+  },
+  "view": {
+    "title": "Kiro Crew のブラウザ",
+    "operating": "ブラウザを操作中…",
+    "idle": "相棒は今ブラウザを使っていません。",
+    "show": "表示",
+    "hide": "隠す",
+    "old_host": "この Kiro Crew ではまだここにブラウザを表示できません。Kiro Crew を更新すると、選曲の様子が見られます。"
   }
 }

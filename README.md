@@ -57,6 +57,14 @@ takes you there). Mood Music may only open bilibili and YouTube search and video
 pages. Continuous play works only while the Mood Music page is open: close it and the
 music stops when the current song ends.
 
+Above the player, **Kiro Crew's browser** shows the buddy's browser tab live, the same
+picture a chat shows under a browser step. The line beside it says **Using the
+browser…** while the buddy searches and opens the song. Choose **Take over** to use
+the tab yourself and **Hand back** when you are done; **Hide** folds the box away and
+the page remembers. This needs a Kiro Crew with the app browser view (KiroCrew#39246,
+#39018, #39020), **App browser access** on in **Settings → Feature Previews**, and
+**view** approved on the app's page. On an older Kiro Crew the box says to update.
+
 ![A song playing in Kiro Crew's browser at 1:23 of 5:36, with Pause, the progress bar, the volume and Continuous play on](docs/media/use-case-2-light.png)
 
 <sub>This picture and the one at the top were drawn from the page with made-up songs
@@ -154,7 +162,9 @@ Kiro Crew sidebar under the app's folder.
   Kiro Crew uses, so the buddy can pick. The buddy searches the public web. To check
   song link the buddy gives, the app asks `www.youtube.com/oembed` or
   `api.bilibili.com` about that one video, with no cookie. Songs play on YouTube or
-  bilibili in Kiro Crew's browser. Your moods are not saved into Kiro Crew's memory.
+  bilibili in Kiro Crew's browser. Since 0.2.6 the buddy's chat is opened by the app
+  with Kiro Crew's usual memory setting, so Kiro Crew's memory may learn from it as
+  from any of your chats (before 0.2.6 it was a temporary chat that wrote no memory).
 - **Crew Browser:** the buddy types and clicks in Kiro Crew's browser, which may be
   your own signed-in Chrome. Kiro Crew holds it to four kinds of page:
   `search.bilibili.com/all`, `www.bilibili.com/video/BV…`, `www.youtube.com/results`
@@ -164,11 +174,15 @@ Kiro Crew sidebar under the app's folder.
   example "open the search page, click the first matching video") in `state.json`,
   and sends them back to the buddy next time. If they fail, it forgets them and the
   buddy finds the way again.
-- **The buddy's chat:** it stays out of Kiro Crew's session lists (the app asks
-  for this at the trust prompt as hidden sessions). Open it with **Open in full
-  chat** on the page. A chat from a version before 0.2.3 is still listed. Mood
-  Music no longer uses it and never deletes it, so close or delete it yourself
-  when you like.
+- **The buddy's chat:** the app opens it itself (chat slots, at the trust prompt)
+  and keeps it out of Kiro Crew's session lists (hidden sessions). Open it with
+  **Open in full chat** on the page. Since 0.2.6 it is a new chat; the one from
+  0.2.3 to 0.2.5 and the listed one from before 0.2.3 are left as they were. Mood
+  Music no longer uses them and never deletes them, so close or delete them
+  yourself when you like. If Kiro Crew is too old to open a hidden chat for an app,
+  the page says to update it; it never opens a listed chat instead.
+- **The live browser view:** only you see it, on this page. The buddy cannot read
+  it, and the app asks for **view** only, never to read or act on the page itself.
 - **Turn it off:** **Apps → Library**, open the **⋯** menu on Mood Music, choose
   **Disable**. Your data is kept.
 - **Remove it:** the same menu, **Uninstall**. **Keep app data** is ticked by
@@ -209,16 +223,20 @@ No. It plays YouTube and bilibili songs in Kiro Crew's browser.
 
 | Path | What it is |
 |---|---|
-| `app.json` | The manifest: page, agent, skill, backend hook, `permissions.browserSites` |
+| `app.json` | The manifest: page, agent, skill, backend hook, `permissions.chatSlots`, `hiddenSessions`, `browserSites` and `browser: ["view"]` |
 | `agents/dj.json`, `skills/mood-music/` | The music buddy agent (`web_search` and `web_fetch`, both run without asking, and Kiro Crew's `browser` on the approved `permissions.browserSites` pages) and its reply contract; the page also sends the contract and a bounded memory summary with every request (`ui/src/request.prompt.ts`). It pins no model, so it runs on your default |
-| `backend/` | Routes (`hooks.routes`), the JSON store with memory, the link checks, and `verify.py` (the YouTube oEmbed / bilibili view lookups) |
+| `backend/` | Routes (`hooks.routes`), the buddy's hidden chat through `ctx.chat_slots` (`buddy.py`), the JSON store with memory, the link checks, and `verify.py` (the YouTube oEmbed / bilibili view lookups) |
 | `ui/src/`, `ui/dist/index.mjs` | The page, and its committed ESM bundle |
 | `ui/i18n/` | The app's strings in 12 languages |
 | `tests/`, `ui/tests/` | Backend and UI tests |
 
 The page frames nothing: songs play only in Kiro Crew's browser, on the four pages
 `permissions.browserSites` names, and the page's buttons reach that tab through
-`useBrowserMedia` (App Kit level 10). A pick names its site; a link is optional.
+`useBrowserMedia` (App Kit level 10). The live view is the host's `BrowserView`
+(level 11), shown only for the buddy's own chat, which the backend opens with
+`ctx.chat_slots.open(state, key, hidden=True)` so it carries the app's name; the
+media route, the approved sites and the view all key off that name. A pick names
+its site; a link is optional.
 A YouTube link keeps only its 11-character video id, which the page and the backend
 both check; a bilibili link must be `https` on exactly `www.bilibili.com`,
 `m.bilibili.com` or `b23.tv`.

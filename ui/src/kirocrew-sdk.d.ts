@@ -91,6 +91,19 @@ declare module '@kirocrew/app-sdk' {
     | ((sessionKey: string, options?: { pollMs?: number; onEnded?: (media: BrowserMediaState) => void }) => BrowserMedia)
     | undefined
 
+  /** The live view of one of the app's own chat slots, with take over and hand back
+   *  (level 11, `permissions.browser` `view`; read through a namespace import, `crewBrowser.ts`). */
+  export const BrowserView:
+    | import('react').ComponentType<{
+        slot: string
+        'aria-label': string
+        interactive?: boolean
+        onTakeover?: () => void
+        onHandBack?: (note?: string) => void
+        className?: string
+      }>
+    | undefined
+
   /** Navigate the dashboard to one of its own routes. */
   export function useNavigate(): (path: string) => void
 

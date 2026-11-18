@@ -130,6 +130,11 @@ export function ChatEmbed({ slotKey }: { slotKey: string }) {
   return createElement('div', { 'data-testid': 'chat-embed', 'data-slot': slotKey })
 }
 
+/** Stands in for the host's live browser view: names the slot it was given. */
+export function BrowserView({ slot, 'aria-label': label }: { slot: string; 'aria-label': string }) {
+  return createElement('div', { 'data-testid': 'host-browser-view', 'data-slot': slot, 'aria-label': label })
+}
+
 const unstubbed = () => Promise.reject(new Error('stub app-sdk: no API in this test'))
 
 export function useAppApi(): AppApi {

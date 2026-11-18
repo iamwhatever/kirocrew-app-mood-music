@@ -46,7 +46,9 @@
     "dropped": "Canciones omitidas por un enlace que no se puede reproducir: {{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili",
-    "tab_memory": "Memoria"
+    "tab_memory": "Memoria",
+    "error_old_host": "Este Kiro Crew es demasiado antiguo para abrir el chat oculto de tu compañero. Actualiza Kiro Crew y vuelve a abrir esta página.",
+    "error_hidden_refused": "Kiro Crew no abrió el chat oculto de tu compañero. Comprueba en la página de la app que Mood Music está activada y es de confianza."
   },
   "memory": {
     "add_label": "Dile a tu compañero algo que recordar",
@@ -159,5 +161,13 @@
     "unready_old_host": "Este Kiro Crew es demasiado antiguo. Actualiza Kiro Crew a una versión con sitios de navegador para apps (KiroCrew#38333, más nueva que v0.13.0-rc.3) y vuelve a abrir esta página.",
     "unready_not_approved": "Primero aprueba los sitios de música para Mood Music. Se aprueban una vez, en la página de la app.",
     "unready_browse_off": "Una política de este equipo tiene apagado el navegador de Kiro Crew."
+  },
+  "view": {
+    "title": "Navegador de Kiro Crew",
+    "operating": "Usando el navegador…",
+    "idle": "Tu compañero no está usando el navegador ahora.",
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "old_host": "Este Kiro Crew aún no puede mostrar su navegador aquí. Actualiza Kiro Crew para ver cómo tu compañero elige canciones."
   }
 }

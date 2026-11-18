@@ -46,7 +46,9 @@
     "dropped": "Songs left out because their link cannot play: {{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili",
-    "tab_memory": "Memory"
+    "tab_memory": "Memory",
+    "error_old_host": "This Kiro Crew is too old to open your buddy's hidden chat. Update Kiro Crew, then open this page again.",
+    "error_hidden_refused": "Kiro Crew would not open your buddy's hidden chat. Check that Mood Music is turned on and trusted, on the app's page."
   },
   "memory": {
     "add_label": "Tell your buddy something to remember",
@@ -159,5 +161,13 @@
     "unready_old_host": "This Kiro Crew is too old. Update Kiro Crew to a version with app browser sites (KiroCrew#38333, newer than v0.13.0-rc.3), then open this page again.",
     "unready_not_approved": "First approve the music sites for Mood Music. You approve them once, on the app's page.",
     "unready_browse_off": "Kiro Crew's browser is turned off by a policy on this computer."
+  },
+  "view": {
+    "title": "Kiro Crew's browser",
+    "operating": "Using the browser…",
+    "idle": "Your buddy is not using the browser right now.",
+    "show": "Show",
+    "hide": "Hide",
+    "old_host": "This Kiro Crew cannot show its browser here yet. Update Kiro Crew to watch your buddy pick songs."
   }
 }

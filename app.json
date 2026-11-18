@@ -1,6 +1,6 @@
 {
   "name": "mood-music",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "displayName": "Mood Music",
   "description": "Tell it how you feel, or name a song that moved you. A DJ agent finds songs with the same feeling and plays them on YouTube or bilibili in Kiro Crew's browser. Like or skip, and the next picks follow.",
   "author": "iamwhatever",
@@ -42,6 +42,7 @@
     ],
     "sessionApproval": true,
     "hiddenSessions": true,
+    "chatSlots": true,
     "storage": true,
     "network": true,
     "mcpTools": [
@@ -52,6 +53,9 @@
       "https://www.bilibili.com/video/BV*",
       "https://www.youtube.com/results",
       "https://www.youtube.com/watch"
+    ],
+    "browser": [
+      "view"
     ]
   },
   "agents": [
@@ -78,7 +82,8 @@
     "Find and play songs that match how you feel right now, and keep a history of the moments that moved you."
   ],
   "configuration": [
-    "Needs a Kiro Crew with app browser sites (newer than v0.13.0-rc.3). Approve the music sites once, on the app's page in Kiro Crew."
+    "Needs a Kiro Crew with app browser sites (newer than v0.13.0-rc.3). Approve the music sites once, on the app's page in Kiro Crew.",
+    "To watch the buddy's browser on this page, Kiro Crew also needs hidden app chats and the app browser view (KiroCrew#39246, #39018, #39020): turn on App browser access in Feature Previews, then approve \"view\" on the app's page."
   ],
   "screenshots": [
     "assets/screenshot-main.png"

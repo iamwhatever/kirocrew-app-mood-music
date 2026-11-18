@@ -50,7 +50,12 @@ ANCHOR_WINDOW = 30 * 86400
 MAX_ANCHORS = 100
 #: The page's own choices (design §0.3, §1.9), with their defaults.
 EXPLORE_LEVELS = ("familiar", "balanced", "explore")
-DEFAULT_SETTINGS = {"explore": "balanced", "record_open": False, "continuous": False}
+DEFAULT_SETTINGS = {
+    "explore": "balanced",
+    "record_open": False,
+    "continuous": False,
+    "view_open": True,
+}
 #: The sites the buddy plays on in Kiro Crew's browser, each with its own saved steps.
 PLAY_SITES = ("bilibili", "youtube")
 #: Saved steps per site: at most this many, each at most this long.
@@ -124,10 +129,9 @@ class MoodStore:
         saved = data.get("settings") if isinstance(data.get("settings"), dict) else {}
         if saved.get("explore") in EXPLORE_LEVELS:
             state["settings"]["explore"] = saved["explore"]
-        if isinstance(saved.get("record_open"), bool):
-            state["settings"]["record_open"] = saved["record_open"]
-        if isinstance(saved.get("continuous"), bool):
-            state["settings"]["continuous"] = saved["continuous"]
+        for flag in ("record_open", "continuous", "view_open"):
+            if isinstance(saved.get(flag), bool):
+                state["settings"][flag] = saved[flag]
         steps = data.get("play_steps") if isinstance(data.get("play_steps"), dict) else {}
         for site in PLAY_SITES:
             entry = steps.get(site)
