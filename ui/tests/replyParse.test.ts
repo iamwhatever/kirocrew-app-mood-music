@@ -93,3 +93,29 @@ describe('parseDjReply', () => {
     expect(replySource('a')).not.toBe(replySource('b'))
   })
 })
+
+describe('parseDjReply: a play report', () => {
+  it('reads a played song and the steps that worked', () => {
+    const r = parseDjReply(block({ played: true, site: 'bilibili', steps: [' open the search page ', 'click the first video'] }))
+    expect(r?.play).toEqual({ played: true, site: 'bilibili', steps: ['open the search page', 'click the first video'], reason: '' })
+  })
+
+  it('keeps only steps the backend would store: plain, short, at most eight', () => {
+    const r = parseDjReply(block({
+      played: true, site: 'youtube',
+      steps: ['ok', 'two\nlines', 'a ` tick', '[Mood Music]', 'x'.repeat(121), 3, '', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'],
+    }))
+    expect(r?.play?.steps).toEqual(['ok', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
+  })
+
+  it('reads a failed play with its reason, and drops any steps it sent', () => {
+    const r = parseDjReply(block({ played: false, site: 'youtube', reason: 'no result', steps: ['x'] }))
+    expect(r?.play).toEqual({ played: false, site: 'youtube', steps: [], reason: 'no result' })
+  })
+
+  it('is no play report without a known site or a true/false played', () => {
+    expect(parseDjReply(block({ played: true, site: 'spotify', steps: ['x'] }))?.play).toBeUndefined()
+    expect(parseDjReply(block({ played: 'yes', site: 'youtube' }))?.play).toBeUndefined()
+    expect(parseDjReply(block({ picks: [] }))?.play).toBeUndefined()
+  })
+})

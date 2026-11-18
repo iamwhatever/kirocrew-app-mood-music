@@ -30,7 +30,8 @@ def test_an_empty_store_reads_empty(tmp_path: Path) -> None:
         "feedback": [],
         "last_source": "",
         "memory": [],
-        "settings": {"explore": "balanced", "record_open": False, "player": "auto"},
+        "settings": {"explore": "balanced", "record_open": False, "player": "auto", "continuous": False},
+        "play_steps": {},
     }
 
 
@@ -40,6 +41,21 @@ def test_a_saved_player_is_read_back_and_a_bad_one_is_ignored(tmp_path: Path) ->
     assert _store(tmp_path).snapshot()["settings"]["player"] == "bilibili"
     (tmp_path / "state.json").write_text('{"settings": {"player": "spotify"}}', encoding="utf-8")
     assert _store(tmp_path).snapshot()["settings"]["player"] == "auto"
+
+
+def test_saved_steps_are_read_back_and_damaged_ones_are_ignored(tmp_path: Path) -> None:
+    s = _store(tmp_path)
+    s.set_play_steps("youtube", ["open the results page", "click the first video"])
+    assert _store(tmp_path).snapshot()["play_steps"] == {
+        "youtube": {"steps": ["open the results page", "click the first video"], "updated_at": 1000.0}
+    }
+    (tmp_path / "state.json").write_text(
+        '{"play_steps": {"youtube": {"steps": "click"}, "bilibili": {"steps": []}, "evil": {"steps": ["x"]}},'
+        ' "settings": {"continuous": "yes"}}',
+        encoding="utf-8",
+    )
+    snap = _store(tmp_path).snapshot()
+    assert snap["play_steps"] == {} and snap["settings"]["continuous"] is False
 
 
 def test_moments_are_newest_first_and_bounded(tmp_path: Path, monkeypatch) -> None:

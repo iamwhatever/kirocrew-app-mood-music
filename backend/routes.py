@@ -16,7 +16,9 @@ the access its manifest grant gives it.
   DELETE /memory/{id}       -> forget one item
   POST /memory/clear-stale  -> forget every "maybe stale" item
   POST /memory/used         -> mark items as used (keeps them fresh)
-  PUT  /settings            -> the explore level, the preferred player, and whether the full record is open
+  PUT  /settings            -> the explore level, the preferred player, continuous play, and whether the full record is open
+  PUT  /play-steps/{site}   -> keep the steps that just played a song in Kiro Crew's browser
+  DELETE /play-steps/{site} -> forget them after they failed, so the buddy finds the way again
 
 A pick's link is checked in ``links.py``: a YouTube pick is stored as its video
 id alone, a bilibili pick as an https URL on an exact bilibili host. A request
@@ -35,7 +37,20 @@ from typing import Any
 from aiohttp import web
 
 from . import _host, links, verify
-from .store import EXPLORE_LEVELS, MAX_QUEUE, MEMORY_KINDS, ORIGINS, PLAYERS, SONG_KINDS, VERDICTS, MemoryFull, MoodStore
+from .store import (
+    EXPLORE_LEVELS,
+    MAX_QUEUE,
+    MAX_STEP_CHARS,
+    MAX_STEPS,
+    MEMORY_KINDS,
+    ORIGINS,
+    PLAY_SITES,
+    PLAYERS,
+    SONG_KINDS,
+    VERDICTS,
+    MemoryFull,
+    MoodStore,
+)
 
 _MAX_MOOD = 200
 _MAX_NOTE = 1000
@@ -48,6 +63,9 @@ _ID_RE = re.compile(r"[0-9a-f]{32}")
 _MAX_NOTE_TEXT = 60
 _MAX_IDS = 100
 _TIERS = ("anchor", "explore", "deep")
+#: A control character, a code fence or a bracket in a step could fake a section of
+#: the request the step is sent back in, so a step holding one is refused.
+_STEP_BAD_RE = re.compile(r"[\x00-\x1f\x7f\u2028\u2029`\[\]]")
 _ARCS = ("stay", "turn", "lift")
 
 
@@ -254,12 +272,15 @@ async def _handle_set_queue(request: web.Request, ctx: Any) -> web.Response:
         return _bad_request(
             "mood_tags must be a short list of short strings", "invalid_field_type"
         )
+    append = body.get("append", False)
+    if not isinstance(append, bool):
+        return _bad_request("append must be true or false", "invalid_field_type")
     picks, err = await _checked_picks(body)
     if err is not None:
         return err
     queue = await asyncio.to_thread(
         lambda: _store(ctx).set_queue(
-            picks, source=source, moment_id=moment_id, mood_tags=mood_tags
+            picks, source=source, moment_id=moment_id, mood_tags=mood_tags, append=append
         )
     )
     return web.json_response({"queue": queue})
@@ -402,10 +423,55 @@ async def _handle_settings(request: web.Request, ctx: Any) -> web.Response:
         if body["player"] not in PLAYERS:
             return _bad_request("player is not one this app knows", "invalid_field_type")
         changes["player"] = body["player"]
-    if not changes or set(body) - {"explore", "record_open", "player"}:
-        return _bad_request("send explore, record_open and/or player only", "invalid_field_type")
+    if "continuous" in body:
+        if not isinstance(body["continuous"], bool):
+            return _bad_request("continuous must be true or false", "invalid_field_type")
+        changes["continuous"] = body["continuous"]
+    allowed = {"explore", "record_open", "player", "continuous"}
+    if not changes or set(body) - allowed:
+        return _bad_request(
+            "send explore, record_open, player and/or continuous only", "invalid_field_type"
+        )
     settings = await asyncio.to_thread(lambda: _store(ctx).set_settings(**changes))
     return web.json_response(settings)
+
+
+def _play_site(request: web.Request) -> str | None:
+    site = request.match_info["site"]
+    return site if site in PLAY_SITES else None
+
+
+async def _handle_set_steps(request: web.Request, ctx: Any) -> web.Response:
+    site = _play_site(request)
+    if site is None:
+        return _bad_request("site must be bilibili or youtube", "invalid_field_type")
+    body, err = await _json_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    raw = body.get("steps")
+    if not isinstance(raw, list) or not 0 < len(raw) <= MAX_STEPS or set(body) - {"steps"}:
+        return _bad_request(f"steps must be a list of 1 to {MAX_STEPS}", "invalid_field_type")
+    steps: list[str] = []
+    for step in raw:
+        if not isinstance(step, str) or _STEP_BAD_RE.search(step):
+            return _bad_request("a step must be one line of plain text", "invalid_field_type")
+        step = step.strip()
+        if not step or len(step) > MAX_STEP_CHARS:
+            return _bad_request(
+                f"a step must be 1 to {MAX_STEP_CHARS} characters", "field_too_long"
+            )
+        steps.append(step)
+    entry = await asyncio.to_thread(lambda: _store(ctx).set_play_steps(site, steps))
+    return web.json_response({"site": site, **entry})
+
+
+async def _handle_forget_steps(request: web.Request, ctx: Any) -> web.Response:
+    site = _play_site(request)
+    if site is None:
+        return _bad_request("site must be bilibili or youtube", "invalid_field_type")
+    gone = await asyncio.to_thread(lambda: _store(ctx).forget_play_steps(site))
+    return web.json_response({"site": site, "forgotten": gone})
 
 
 def register_routes(ctx: Any) -> list[_host.Route]:
@@ -436,4 +502,8 @@ def register_routes(ctx: Any) -> list[_host.Route]:
         route("POST", "/memory/clear-stale", _owner_only("clear_stale", _handle_clear_stale)),
         route("POST", "/memory/used", _owner_only("memory_used", _handle_memory_used)),
         route("PUT", "/settings", _owner_only("settings", _handle_settings)),
+        route("PUT", "/play-steps/{site}", _owner_only("set_play_steps", _handle_set_steps)),
+        route(
+            "DELETE", "/play-steps/{site}", _owner_only("forget_play_steps", _handle_forget_steps)
+        ),
     ]

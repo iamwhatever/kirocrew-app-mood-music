@@ -64,6 +64,36 @@ declare module '@kirocrew/app-sdk' {
       }>
     | undefined
 
+  /** The playing element of an app agent's browser tab (level 10). */
+  export interface BrowserMediaState {
+    readonly kind: 'video' | 'audio'
+    readonly paused: boolean
+    readonly ended: boolean
+    readonly currentTime: number
+    readonly duration: number | null
+    readonly volume: number
+    readonly muted: boolean
+  }
+
+  export interface BrowserMedia {
+    readonly media: BrowserMediaState | null
+    readonly error: string | null
+    readonly busy: boolean
+    play(): Promise<void>
+    pause(): Promise<void>
+    seek(seconds: number): Promise<void>
+    setVolume(volume: number): Promise<void>
+    refresh(): Promise<void>
+  }
+
+  /** Level 10, with `permissions.browserSites` (read through a namespace import, `crewBrowser.ts`). */
+  export const useBrowserMedia:
+    | ((sessionKey: string, options?: { pollMs?: number; onEnded?: (media: BrowserMediaState) => void }) => BrowserMedia)
+    | undefined
+
+  /** Navigate the dashboard to one of its own routes. */
+  export function useNavigate(): (path: string) => void
+
   // Level 1 (read through hostSdk.ts only).
   export const fmtCurrency:
     | ((value: number, currency?: string, options?: NumberOptions) => string)

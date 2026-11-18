@@ -126,7 +126,9 @@
     "explore_more": "もっと探索",
     "player": "プレーヤー",
     "player_auto": "自動",
-    "stay_only": "今日はこの気持ちのままでいたい"
+    "stay_only": "今日はこの気持ちのままでいたい",
+    "player_browser": "Crew ブラウザ",
+    "status_playing": "相棒が Kiro Crew のブラウザで曲を開いています…"
   },
   "card": {
     "arc_stay": "寄り添う",
@@ -143,5 +145,27 @@
     "known_done": "記録済み",
     "unverified": "未確認",
     "unverified_hint": "YouTube または bilibili にこの動画があるか確認できなかったため、再生できないかもしれません。"
+  },
+  "browser": {
+    "status_opening": "相棒が Kiro Crew のブラウザで開いています…",
+    "status_idle": "再生を押すと、相棒が Kiro Crew のブラウザでこの曲を開きます。",
+    "status_in_control": "ブラウザのタブを操作中です。戻すまでボタンは待機します。",
+    "status_no_media": "ブラウザのタブにまだプレーヤーがありません。",
+    "status_ended": "終わりました。",
+    "status_paused": "一時停止中。",
+    "play": "再生",
+    "pause": "一時停止",
+    "progress": "再生位置",
+    "volume": "音量",
+    "continuous": "連続再生",
+    "continuous_note": "連続再生はこのページを開いている間だけ有効です。閉じると、今の曲が終わったところで止まります。",
+    "not_played": "今回は再生できませんでした：{{reason}}",
+    "no_reason": "理由の説明なし",
+    "fallback_title": "Crew ブラウザはまだ使えないため、これまでどおりここで再生します",
+    "fallback_old_host": "この Kiro Crew は Crew ブラウザ再生に対応していません。Kiro Crew を更新してください。",
+    "fallback_not_approved": "先に Mood Music の音楽サイトを承認してください。アプリのページで一度だけ承認します。",
+    "fallback_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。",
+    "approve": "サイトを承認する",
+    "status_playing": "Kiro Crew のブラウザで再生中。"
   }
 }

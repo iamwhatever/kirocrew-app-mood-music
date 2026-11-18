@@ -21,8 +21,8 @@ exactly as a user sees it. It is driven by one file per app, `scenes.json`.
    - a free port on loopback only (`127.0.0.1` / `::1`);
    - for a scene marked `"live": true` (the chats), a **real model**: the
      gateway runs your own installed `kiro-cli` (from `PATH`, or `--kiro-cli` /
-     `KIROCREW_CAPTURE_KIRO_CLI`) with its existing sign-in, and the agent's
-     model stays `"auto"`. The harness checks `kiro-cli whoami` succeeds before
+     `KIROCREW_CAPTURE_KIRO_CLI`) with its existing sign-in, and the agent
+     pins no model, so it runs on that sign-in's default. The harness checks `kiro-cli whoami` succeeds before
      it captures anything, prints none of its output, and copies no credential.
      If kiro-cli is missing or not signed in, the run stops: there is no
      scripted fallback. The replies are that model's own, so they differ from

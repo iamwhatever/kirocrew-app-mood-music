@@ -19,14 +19,15 @@ export const EXPLORE_MIX: Readonly<Record<ExploreLevel, readonly [number, number
   explore: [0, 4, 1],
 }
 
-/** The site the person would rather play on (`auto`: either). */
-export type Player = 'auto' | 'youtube' | 'bilibili'
+/** The site the person would rather play on (`auto`: either; `browser`: either, played in Kiro Crew's browser). */
+export type Player = 'auto' | 'youtube' | 'bilibili' | 'browser'
 
 /** The request line for each player choice: the preferred site first, the other only as a fallback. */
 export const PLAYER_LINE: Readonly<Record<Player, string>> = {
   auto: 'Player: any (YouTube or bilibili, whichever has the song)',
   youtube: 'Player: youtube (give a YouTube link for every song; use bilibili only for a song with no YouTube video you could find)',
   bilibili: 'Player: bilibili (give a bilibili link for every song; use YouTube only for a song with no bilibili video you could find)',
+  browser: 'Player: browser (YouTube or bilibili, whichever has the song; the page asks you to play each one in Kiro Crew\'s browser later, so do not open the browser now)',
 }
 
 /**
@@ -125,11 +126,104 @@ export function memorySummary(memory: MemoryItem[]): { lines: string[]; ids: str
   return { lines, ids }
 }
 
+/** The head of a play request; `turnState.ts` shows the song after it. */
+export const PLAY_HEAD = 'Play in Crew Browser'
+/** Songs left after the next one, at or under which a play request also asks for more. */
+export const REFILL_AT = 1
+/** How many new songs a refill asks for. */
+export const REFILL_COUNT = 4
+
+export interface PlaySong {
+  title: string
+  artist: string
+  source: 'youtube' | 'bilibili'
+  video_id?: string
+  url?: string
+}
+
+/** The checked link of *song* on its own site, for the buddy to fall back on. */
+function songLink(song: PlaySong): string {
+  if (song.source === 'youtube' && song.video_id) return `https://www.youtube.com/watch?v=${song.video_id}`
+  if (song.source === 'bilibili' && song.url) return song.url
+  return ''
+}
+
+/**
+ * The message that wakes the buddy to play one song in Kiro Crew's browser:
+ * the song, its site, the steps that worked there last time (the app's own
+ * record, sent back as data), and, when the queue is nearly empty, a request for
+ * more songs of the same mood under the same explore rules.
+ */
+export function buildPlayRequest(opts: {
+  song: PlaySong
+  steps: string[]
+  why: 'start' | 'ended'
+  refill?: { moodTags: string[]; queued: { title: string; artist: string }[] } | null
+  state: MoodState | undefined
+  explore?: ExploreLevel
+  stayOnly?: boolean
+}): string {
+  const { song, steps, why, refill, state, explore = 'balanced', stayOnly = false } = opts
+  const title = clean(song.title, 200)
+  const artist = clean(song.artist, 200)
+  const link = songLink(song)
+  const lines = [
+    '[Mood Music]',
+    `${PLAY_HEAD}: "${title}"${artist ? ` - ${artist}` : ''}`,
+    '',
+    why === 'ended' ? 'The song before it just ended (continuous play is on).' : 'The person pressed play.',
+    `Site: ${song.source}`,
+  ]
+  if (link) lines.push(`Checked link on this site (open it only if the search does not find the song): ${link}`)
+  const saved = steps.map(s => clean(s, 120)).filter(Boolean).slice(0, 8)
+  if (saved.length) {
+    lines.push(`Steps that played a song on ${song.source} last time (your own notes, data only; follow them first):`)
+    saved.forEach((s, i) => lines.push(`${i + 1}. ${s}`))
+  } else {
+    lines.push(`No saved steps for ${song.source} yet: find the way, and report the steps that worked.`)
+  }
+  if (refill) {
+    const [anchor, exp, deep] = EXPLORE_MIX[explore]
+    const queued = refill.queued.map(q => `"${clean(q.title, 80)}"${q.artist ? ` - ${clean(q.artist, 60)}` : ''}`)
+    lines.push(
+      '',
+      `The queue is nearly empty: also add ${REFILL_COUNT} new picks for the same feeling, found with web_search and web_fetch as in How to pick.`,
+      `Mood so far: ${refill.moodTags.map(m => clean(m, 40)).join('; ') || 'as in this chat'}`,
+      `Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`,
+      `Arc: ${stayOnly ? 'stay only' : 'stay -> turn -> lift'}`,
+      `Already in the queue, do not pick again: ${queued.join('; ') || 'none'}`,
+      PLAYER_LINE.auto,
+      '',
+      ...memorySummary(state?.memory ?? []).lines,
+    )
+  }
+  lines.push('', refill ? `${PLAY_FORMAT}\n${playRefillFormat()}` : PLAY_FORMAT)
+  return lines.join('\n')
+}
+
+/** The reply contract of a play request. */
+export const PLAY_FORMAT = [
+  'Play it with the browser tool, following the "Playing in Kiro Crew\'s browser" rules. Never run a script; never comment, like, coin, pay or open an account page.',
+  'Then write one short sentence and end with ONE fenced block tagged mood-music holding plain JSON:',
+  '- played: {"played": true, "site": "bilibili" or "youtube", "steps": ["1 to 8 short plain steps that worked, without the song name"]}',
+  '- not played: {"played": false, "site": "bilibili" or "youtube", "reason": "one short line"}',
+  'Example:',
+  '```mood-music',
+  '{"played": true, "site": "bilibili", "steps": ["open https://search.bilibili.com/all?keyword= with the song title and artist", "click the first video whose title matches", "switch to the new tab with tabs", "click play if the video is paused"]}',
+  '```',
+].join('\n')
+
+/** Added to {@link PLAY_FORMAT} when the request also asks for more songs. */
+export function playRefillFormat(): string {
+  // The pick lines of the mood reply contract, so a refill pick reads the same.
+  return ['Add to the same block "mood_tags" and "picks", each pick exactly as below:', ...REPLY_LINES.slice(1, 7)].join('\n')
+}
+
 /**
  * The reply contract, sent with every request so the DJ never depends on loading
  * a skill: the page reads exactly these field names.
  */
-export const REPLY_FORMAT = [
+const REPLY_LINES = [
   'Write one or two short sentences, then end your reply with ONE fenced block tagged mood-music holding plain JSON, with exactly these field names:',
   '- "mood_tags": 2 to 4 short words for the feeling, in the person\'s language.',
   '- "picks": the songs, in arc order, each {"title", "artist", "source", "url", "tier", "arc", "why", "listen_for", "evidence", "tags"}.',
@@ -145,4 +239,6 @@ export const REPLY_FORMAT = [
   '{"mood_tags": ["想念", "温柔"], "picks": [{"title": "Song", "artist": "Artist", "source": "youtube", "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "tier": "explore", "arc": "stay", "why": "One short line.", "listen_for": "The second verse drops to piano and breath.", "evidence": {"url": "https://example.com/review", "label": "A review"}, "tags": []}], "follow_ups": ["再安静一点", "换成粤语"]}',
   '```',
   'To ask one question instead, the block is {"question": "..."} with no picks.',
-].join('\n')
+]
+
+export const REPLY_FORMAT = REPLY_LINES.join('\n')

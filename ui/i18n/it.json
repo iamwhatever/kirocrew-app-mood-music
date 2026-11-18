@@ -126,7 +126,9 @@
     "explore_more": "Esplora di più",
     "player": "Lettore",
     "player_auto": "Automatico",
-    "stay_only": "Oggi voglio solo restare in questa emozione"
+    "stay_only": "Oggi voglio solo restare in questa emozione",
+    "player_browser": "Browser di Crew",
+    "status_playing": "Il tuo compagno sta aprendo la canzone nel browser di Kiro Crew…"
   },
   "card": {
     "arc_stay": "Restare",
@@ -143,5 +145,27 @@
     "known_done": "Annotato",
     "unverified": "Non verificata",
     "unverified_hint": "Non è stato possibile chiedere a YouTube o bilibili se questo video esiste, quindi potrebbe non partire."
+  },
+  "browser": {
+    "status_opening": "Il tuo compagno la sta aprendo nel browser di Kiro Crew…",
+    "status_idle": "Premi play: il tuo compagno apre questa canzone nel browser di Kiro Crew.",
+    "status_in_control": "Stai usando la scheda del browser. I pulsanti aspettano che tu la restituisca.",
+    "status_no_media": "Nella scheda del browser non c’è ancora un player.",
+    "status_ended": "Finita.",
+    "status_paused": "In pausa.",
+    "play": "Riproduci",
+    "pause": "Pausa",
+    "progress": "Avanzamento",
+    "volume": "Volume",
+    "continuous": "Riproduzione continua",
+    "continuous_note": "La riproduzione continua funziona solo con questa pagina aperta. Se la chiudi, la musica si ferma alla fine della canzone in corso.",
+    "not_played": "Questa volta il tuo compagno non è riuscito a riprodurla: {{reason}}",
+    "no_reason": "nessun motivo indicato",
+    "fallback_title": "Il browser di Crew non è pronto, quindi le canzoni suonano qui come prima",
+    "fallback_old_host": "Questo Kiro Crew è troppo vecchio per il player del browser di Crew. Aggiorna Kiro Crew per usarlo.",
+    "fallback_not_approved": "Prima approva i siti musicali per Mood Music. Si approvano una volta, nella pagina dell’app.",
+    "fallback_browse_off": "Una regola di questo computer ha spento il browser di Kiro Crew.",
+    "approve": "Approva i siti",
+    "status_playing": "In riproduzione nel browser di Kiro Crew."
   }
 }

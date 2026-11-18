@@ -126,7 +126,9 @@
     "explore_more": "더 탐색",
     "player": "플레이어",
     "player_auto": "자동",
-    "stay_only": "오늘은 이 기분 그대로 있고 싶어"
+    "stay_only": "오늘은 이 기분 그대로 있고 싶어",
+    "player_browser": "Crew 브라우저",
+    "status_playing": "친구가 Kiro Crew 브라우저에서 노래를 여는 중이에요…"
   },
   "card": {
     "arc_stay": "곁에 머물기",
@@ -143,5 +145,27 @@
     "known_done": "기록함",
     "unverified": "확인 안 됨",
     "unverified_hint": "YouTube나 bilibili에 이 영상이 있는지 확인하지 못해서 재생되지 않을 수 있어요."
+  },
+  "browser": {
+    "status_opening": "친구가 Kiro Crew 브라우저에서 여는 중이에요…",
+    "status_idle": "재생을 누르면 친구가 Kiro Crew 브라우저에서 이 노래를 열어요.",
+    "status_in_control": "브라우저 탭을 직접 쓰는 중이에요. 돌려줄 때까지 버튼이 기다려요.",
+    "status_no_media": "브라우저 탭에 아직 플레이어가 없어요.",
+    "status_ended": "끝났어요.",
+    "status_paused": "일시정지됨.",
+    "play": "재생",
+    "pause": "일시정지",
+    "progress": "진행",
+    "volume": "음량",
+    "continuous": "연속 재생",
+    "continuous_note": "연속 재생은 이 페이지가 열려 있을 때만 돼요. 닫으면 지금 노래가 끝날 때 멈춰요.",
+    "not_played": "이번에는 재생하지 못했어요: {{reason}}",
+    "no_reason": "이유 없음",
+    "fallback_title": "Crew 브라우저를 아직 쓸 수 없어서 노래는 전처럼 여기서 재생돼요",
+    "fallback_old_host": "이 Kiro Crew는 Crew 브라우저 재생을 지원하기에 너무 오래됐어요. Kiro Crew를 업데이트하세요.",
+    "fallback_not_approved": "먼저 무드 뮤직의 음악 사이트를 승인하세요. 앱 페이지에서 한 번만 승인하면 돼요.",
+    "fallback_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요.",
+    "approve": "사이트 승인하기",
+    "status_playing": "Kiro Crew 브라우저에서 재생 중."
   }
 }

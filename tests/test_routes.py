@@ -240,17 +240,22 @@ def test_a_memory_full_of_the_persons_own_notes_answers_409(ctx, monkeypatch) ->
 
 
 def test_settings_keep_the_explore_level_and_the_record_state(ctx) -> None:
-    assert _call(ctx, "GET", "/state")[1]["settings"] == {"explore": "balanced", "record_open": False, "player": "auto"}
-    assert _call(ctx, "PUT", "/settings", {"explore": "familiar"})[1] == {"explore": "familiar", "record_open": False, "player": "auto"}
+    base = {"explore": "balanced", "record_open": False, "player": "auto", "continuous": False}
+    assert _call(ctx, "GET", "/state")[1]["settings"] == base
+    assert _call(ctx, "PUT", "/settings", {"explore": "familiar"})[1] == {**base, "explore": "familiar"}
     assert _call(ctx, "PUT", "/settings", {"record_open": True})[1]["record_open"] is True
     assert _call(ctx, "PUT", "/settings", {"player": "youtube"})[1]["player"] == "youtube"
-    assert _call(ctx, "GET", "/state")[1]["settings"] == {"explore": "familiar", "record_open": True, "player": "youtube"}
+    assert _call(ctx, "PUT", "/settings", {"player": "browser"})[1]["player"] == "browser"
+    assert _call(ctx, "PUT", "/settings", {"continuous": True})[1]["continuous"] is True
+    assert _call(ctx, "GET", "/state")[1]["settings"] == {
+        "explore": "familiar", "record_open": True, "player": "browser", "continuous": True,
+    }
 
 
 @pytest.mark.parametrize(
     "body",
     [{}, {"explore": "wild"}, {"record_open": "yes"}, {"player": "spotify"}, {"player": None},
-     {"explore": "balanced", "theme": "dark"}],
+     {"explore": "balanced", "theme": "dark"}, {"continuous": "on"}, {"continuous": 1}],
 )
 def test_bad_settings_are_refused(ctx, body) -> None:
     assert _call(ctx, "PUT", "/settings", body)[0] == 400
@@ -268,7 +273,58 @@ ROUTES = [
     ("POST", "/memory/clear-stale", None, "clear_stale"),
     ("POST", "/memory/used", {"ids": []}, "memory_used"),
     ("PUT", "/settings", {"explore": "explore"}, "settings"),
+    ("PUT", "/play-steps/bilibili", {"steps": ["open search"]}, "set_play_steps"),
+    ("DELETE", "/play-steps/bilibili", None, "forget_play_steps"),
 ]
+
+
+def test_a_refill_adds_after_the_queue_and_keeps_it_bounded(ctx) -> None:
+    _call(ctx, "POST", "/queue", {"source": "r1", "picks": [_yt(title=f"Old {i}") for i in range(10)]})
+    status, body = _call(
+        ctx, "POST", "/queue",
+        {"source": "r2", "append": True, "picks": [_yt(title=f"New {i}") for i in range(4)]},
+    )
+    assert status == 200 and [p["title"] for p in body["queue"]] == [f"New {i}" for i in range(4)]
+    titles = [p["title"] for p in _call(ctx, "GET", "/state")[1]["queue"]]
+    assert titles == [f"Old {i}" for i in range(2, 10)] + [f"New {i}" for i in range(4)]
+    assert _call(ctx, "POST", "/queue", {"source": "r3", "append": "yes", "picks": [_yt()]})[0] == 400
+
+
+def test_play_steps_are_kept_per_site_and_forgotten_after_a_failure(ctx) -> None:
+    steps = ["click the search box", "type the song and artist", "click the first video"]
+    status, body = _call(ctx, "PUT", "/play-steps/bilibili", {"steps": [f"  {s} " for s in steps]})
+    assert status == 200 and body["steps"] == steps
+    _call(ctx, "PUT", "/play-steps/youtube", {"steps": ["open the results page"]})
+    saved = _call(ctx, "GET", "/state")[1]["play_steps"]
+    assert saved["bilibili"]["steps"] == steps and saved["youtube"]["steps"] == ["open the results page"]
+    # A failed play: the steps go, and the next success writes the new way.
+    assert _call(ctx, "DELETE", "/play-steps/bilibili")[1] == {"site": "bilibili", "forgotten": True}
+    assert "bilibili" not in _call(ctx, "GET", "/state")[1]["play_steps"]
+    _call(ctx, "PUT", "/play-steps/bilibili", {"steps": ["open the search page for the song"]})
+    assert _call(ctx, "GET", "/state")[1]["play_steps"]["bilibili"]["steps"] == ["open the search page for the song"]
+    assert _call(ctx, "DELETE", "/play-steps/bilibili")[1]["forgotten"] is True
+    assert _call(ctx, "DELETE", "/play-steps/bilibili")[1]["forgotten"] is False
+
+
+@pytest.mark.parametrize(
+    ("path", "body"),
+    [
+        ("/play-steps/spotify", {"steps": ["x"]}),
+        ("/play-steps/bilibili", {"steps": []}),
+        ("/play-steps/bilibili", {"steps": "click"}),
+        ("/play-steps/bilibili", {"steps": ["x"] * 9}),
+        ("/play-steps/bilibili", {"steps": ["x" * 121]}),
+        ("/play-steps/bilibili", {"steps": ["   "]}),
+        ("/play-steps/bilibili", {"steps": [3]}),
+        ("/play-steps/bilibili", {"steps": ["line\nbreak"]}),
+        ("/play-steps/bilibili", {"steps": ["```"]}),
+        ("/play-steps/bilibili", {"steps": ["[Mood Music]"]}),
+        ("/play-steps/bilibili", {"steps": ["ok"], "extra": 1}),
+    ],
+)
+def test_bad_play_steps_are_refused(ctx, path, body) -> None:
+    assert _call(ctx, "PUT", path, body)[0] == 400
+    assert not _state_file(ctx).exists()
 
 
 @pytest.mark.parametrize(("method", "path", "body", "op"), ROUTES)

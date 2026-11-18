@@ -4,8 +4,10 @@
  * A YouTube pick plays in a sandboxed iframe on the privacy-enhanced embed host
  * (the origin `app.json` declares in `ui.frameSources`), its URL built from the
  * checked video id. A bilibili pick is a link that opens a new tab in the
- * person's own browser, re-checked before it is drawn.
+ * person's own browser, re-checked before it is drawn. With the Crew Browser
+ * player the page passes its own controls as `stage`, drawn in their place.
  */
+import type { ReactNode } from 'react'
 import { ExternalLink, Heart, SkipForward, Sparkles } from 'lucide-react'
 import { Btn } from '@kirocrew/app-sdk/ui'
 import { t } from './i18n'
@@ -13,16 +15,18 @@ import { CARD_STYLE } from './cardStyle'
 import type { QueuedPick } from './api'
 import { bilibiliUrl, validVideoId, youtubeEmbedUrl } from './links'
 
-export default function NowPlaying({ pick, autoplay, busy, onLike, onSkip, onMore }: {
+export default function NowPlaying({ pick, autoplay, busy, onLike, onSkip, onMore, stage }: {
   pick: QueuedPick
   autoplay: boolean
   busy: boolean
   onLike: () => void
   onSkip: () => void
   onMore: () => void
+  /** Drawn instead of the embed or the link (the Crew Browser controls). */
+  stage?: ReactNode
 }) {
-  const embed = pick.source === 'youtube' ? youtubeEmbedUrl(pick.video_id, autoplay) : null
-  const link = pick.source === 'bilibili' ? bilibiliUrl(pick.url) : null
+  const embed = !stage && pick.source === 'youtube' ? youtubeEmbedUrl(pick.video_id, autoplay) : null
+  const link = !stage && pick.source === 'bilibili' ? bilibiliUrl(pick.url) : null
   const liked = pick.feedback === 'liked'
 
   return (
@@ -35,6 +39,7 @@ export default function NowPlaying({ pick, autoplay, busy, onLike, onSkip, onMor
       <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)]">
         {t('page.now_playing')}
       </p>
+      {stage}
       {embed && (
         <div className="mt-3 w-full overflow-hidden rounded-xl bg-[var(--bg-elevated)]" style={{ aspectRatio: '16 / 9' }}>
           <iframe

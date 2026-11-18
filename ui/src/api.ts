@@ -93,6 +93,8 @@ export interface MoodState {
   last_source: string
   memory: MemoryItem[]
   settings: Settings
+  /** Per site, the steps that last played a song in Kiro Crew's browser. Absent on an older backend. */
+  play_steps?: Partial<Record<PickSource, { steps: string[]; updated_at: number }>>
 }
 
 export interface Settings {
@@ -100,6 +102,8 @@ export interface Settings {
   record_open: boolean
   /** The site the person would rather play on; the other is only a fallback. */
   player: Player
+  /** With the Crew Browser player: when a song ends, the buddy plays the next one. */
+  continuous?: boolean
 }
 
 export interface SlotMessage {
@@ -170,7 +174,7 @@ export function createMoodApi(api: AppApi) {
   return {
     state: () => api.get<MoodState>(`${BASE}/state`),
     addMoment: (mood: string) => api.post<Moment>(`${BASE}/moments`, { mood }),
-    setQueue: (body: { source: string; moment_id?: string; mood_tags: string[]; picks: NewPick[] }) =>
+    setQueue: (body: { source: string; moment_id?: string; mood_tags: string[]; picks: NewPick[]; append?: boolean }) =>
       api.post<{ queue: QueuedPick[] }>(`${BASE}/queue`, body),
     /** Look each pick up on YouTube / bilibili; only confirmed picks come back. */
     verifyPicks: (picks: NewPick[]) =>
@@ -178,6 +182,12 @@ export function createMoodApi(api: AppApi) {
     feedback: (pickId: string, verdict: Verdict) =>
       api.put<QueuedPick>(`${BASE}/queue/${encodeURIComponent(pickId)}/feedback`, { verdict }),
     setSettings: (patch: Partial<Settings>) => api.put<Settings>(`${BASE}/settings`, patch),
+    /** Keep the steps that just played a song on *site*. */
+    setPlaySteps: (site: PickSource, steps: string[]) =>
+      api.put<{ site: PickSource; steps: string[] }>(`${BASE}/play-steps/${site}`, { steps }),
+    /** Forget *site*'s steps after they failed, so the buddy finds the way again. */
+    forgetPlaySteps: (site: PickSource) =>
+      api.del<{ site: PickSource; forgotten: boolean }>(`${BASE}/play-steps/${site}`),
     addMemory: (item: NewMemory) => api.post<MemoryItem>(`${BASE}/memory`, item),
     updateMemory: (id: string, patch: { text?: string; pinned?: boolean }) =>
       api.put<MemoryItem>(`${BASE}/memory/${encodeURIComponent(id)}`, patch),

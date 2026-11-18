@@ -53,7 +53,21 @@ looks there first, and uses the other site only for a song it cannot find there.
 
 ![A bilibili song, Bloom by The Paper Kites, with an Open on bilibili button on the dark theme and the Fired up chip picked](docs/media/use-case-2-light.png)
 
-### 3. Look back at your moments
+### 3. Let the buddy play songs in Kiro Crew's browser
+
+Pick **Player: Crew Browser**. Press play on a song, and the buddy searches for it on
+bilibili or YouTube in Kiro Crew's own browser and opens the video. On a Mac that is
+your own Chrome, with your sign-ins and your sound. **Pause**, the progress bar and
+the volume act on that tab at once; they never wait for the buddy. Turn on
+**Continuous play**, and when a song ends the buddy plays the next one, adding songs
+for the same mood when the list runs low, until you press **Pause**.
+
+The first time, approve the music sites on the app's page (**Approve the sites**
+takes you there). Mood Music may only open bilibili and YouTube search and video
+pages. Continuous play works only while the Mood Music page is open: close it and the
+music stops when the current song ends.
+
+### 4. Look back at your moments
 
 Every mood you share is kept on the **Moments** tab, with the time and the songs it
 brought. It is a small diary of what you felt and what you listened to.
@@ -144,6 +158,15 @@ Kiro Crew sidebar under the app's folder.
   one video, with no cookie. YouTube songs load from `www.youtube-nocookie.com`, YouTube's
   privacy-enhanced player. bilibili songs open on bilibili in your own browser. Your
   moods are not saved into Kiro Crew's memory.
+- **Crew Browser:** the buddy types and clicks in Kiro Crew's browser, which may be
+  your own signed-in Chrome. Kiro Crew holds it to four kinds of page:
+  `search.bilibili.com/all`, `www.bilibili.com/video/BV…`, `www.youtube.com/results`
+  and `www.youtube.com/watch`. Its instructions forbid account pages, comments, likes,
+  coins and payments, but those are rules it follows, not a block Kiro Crew enforces
+  on those pages. Mood Music keeps, per site, the steps that last played a song (for
+  example "open the search page, click the first matching video") in `state.json`,
+  and sends them back to the buddy next time. If they fail, it forgets them and the
+  buddy finds the way again.
 - **The buddy's chat:** it stays out of Kiro Crew's session lists (the app asks
   for this at the trust prompt as hidden sessions). Open it with **Open in full
   chat** on the page. A chat from a version before 0.2.3 is still listed. Mood
@@ -174,6 +197,11 @@ Your Kiro Crew does not yet let apps show the YouTube player (fixed in v0.13.0-r
 Update Kiro Crew, or choose **Open on YouTube** under the player. The bilibili
 songs still open in your browser.
 
+**Crew Browser says it is not ready.**
+Your Kiro Crew is older than App Kit level 10, the sites are not approved yet (choose
+**Approve the sites**), or a policy turns Kiro Crew's browser off. Until then, songs
+play in the page and open on bilibili as before.
+
 **Can it play Spotify or Apple Music?**
 No. It plays YouTube songs on the page and opens bilibili songs in your browser.
 
@@ -184,7 +212,7 @@ No. It plays YouTube songs on the page and opens bilibili songs in your browser.
 | Path | What it is |
 |---|---|
 | `app.json` | The manifest: page, agent, skill, backend hook, `ui.frameSources` |
-| `agents/dj.json`, `skills/mood-music/` | The music buddy agent (`web_search` and `web_fetch` only, both run without asking) and its reply contract; the page also sends the contract and a bounded memory summary with every request (`ui/src/request.prompt.ts`) |
+| `agents/dj.json`, `skills/mood-music/` | The music buddy agent (`web_search` and `web_fetch`, both run without asking, and Kiro Crew's `browser` on the approved `permissions.browserSites` pages) and its reply contract; the page also sends the contract and a bounded memory summary with every request (`ui/src/request.prompt.ts`). It pins no model, so it runs on your default |
 | `backend/` | Routes (`hooks.routes`), the JSON store with memory, the link checks, and `verify.py` (the YouTube oEmbed / bilibili view lookups) |
 | `ui/src/`, `ui/dist/index.mjs` | The page, and its committed ESM bundle |
 | `ui/i18n/` | The app's strings in 12 languages |
