@@ -8,8 +8,8 @@
  */
 
 import { vi } from 'vitest'
-import { createElement, type KeyboardEvent } from 'react'
-import type { AppApi, ChatLaunchOptions, NumberOptions } from '@kirocrew/app-sdk'
+import { createElement, useEffect, useReducer, type KeyboardEvent } from 'react'
+import type { AppApi, BrowserMedia, BrowserMediaState, ChatLaunchOptions, NumberOptions } from '@kirocrew/app-sdk'
 
 let locale = 'en'
 
@@ -48,7 +48,82 @@ export function fmtCurrency(value: number, currency = 'USD', options?: NumberOpt
   return fmtNumber(value, { style: 'currency', currency, ...options })
 }
 
-export const APP_SDK_LEVEL = 1
+export const APP_SDK_LEVEL = 10
+
+export const stubNavigate = vi.fn<(path: string) => void>()
+
+export function useNavigate(): (path: string) => void {
+  return stubNavigate
+}
+
+type MediaFn = (value?: number) => Promise<void>
+
+/** What the stub `useBrowserMedia` answers, and what the page handed it. */
+export const stubMedia: {
+  media: BrowserMediaState | null
+  error: string | null
+  play: ReturnType<typeof vi.fn<MediaFn>>
+  pause: ReturnType<typeof vi.fn<MediaFn>>
+  seek: ReturnType<typeof vi.fn<MediaFn>>
+  setVolume: ReturnType<typeof vi.fn<MediaFn>>
+  refresh: ReturnType<typeof vi.fn<MediaFn>>
+  onEnded?: (media: BrowserMediaState) => void
+  sessionKey?: string
+  pollMs?: number
+} = {
+  media: null,
+  error: null,
+  play: vi.fn<MediaFn>(async () => undefined),
+  pause: vi.fn<MediaFn>(async () => undefined),
+  seek: vi.fn<MediaFn>(async () => undefined),
+  setVolume: vi.fn<MediaFn>(async () => undefined),
+  refresh: vi.fn<MediaFn>(async () => undefined),
+}
+
+export function resetStubMedia(): void {
+  stubNavigate.mockReset()
+  stubMedia.media = null
+  stubMedia.error = null
+  for (const k of ['play', 'pause', 'seek', 'setVolume', 'refresh'] as const) {
+    stubMedia[k] = vi.fn<MediaFn>(async () => undefined)
+  }
+  stubMedia.onEnded = undefined
+  stubMedia.sessionKey = undefined
+  stubMedia.pollMs = undefined
+}
+
+const mediaListeners = new Set<() => void>()
+
+/** Change what the tab reports, and repaint every page using the hook (a poll's answer). */
+export function setStubMedia(media: BrowserMediaState | null): void {
+  stubMedia.media = media
+  for (const listener of mediaListeners) listener()
+}
+
+/** The host's level-10 hook, answering from `stubMedia`. A test of an older host mocks this module. */
+export function useBrowserMedia(
+  sessionKey: string,
+  options: { pollMs?: number; onEnded?: (media: BrowserMediaState) => void } = {},
+): BrowserMedia {
+  const [, repaint] = useReducer((n: number) => n + 1, 0)
+  useEffect(() => {
+    mediaListeners.add(repaint)
+    return () => { mediaListeners.delete(repaint) }
+  }, [])
+  stubMedia.onEnded = options.onEnded
+  stubMedia.sessionKey = sessionKey
+  stubMedia.pollMs = options.pollMs
+  return {
+    media: stubMedia.media,
+    error: stubMedia.error,
+    busy: false,
+    play: () => stubMedia.play(),
+    pause: () => stubMedia.pause(),
+    seek: (s: number) => stubMedia.seek(s),
+    setVolume: (v: number) => stubMedia.setVolume(v),
+    refresh: () => stubMedia.refresh(),
+  }
+}
 
 /** Stands in for the host's native transcript: names the slot it was given. */
 export function ChatEmbed({ slotKey }: { slotKey: string }) {

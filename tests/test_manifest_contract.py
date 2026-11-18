@@ -172,7 +172,13 @@ class TestTheManifest(unittest.TestCase):
         self.assertNotIn("agentTools", manifest)
         self.assertEqual(
             manifest["permissions"]["api"],
-            ["/api/apps/mood-music", "/api/apps/mood-music/*", "/api/chat", "/api/chat/*"],
+            [
+                "/api/apps/mood-music",
+                "/api/apps/mood-music/*",
+                "/api/chat",
+                "/api/chat/*",
+                "/api/browser/media",
+            ],
         )
 
     def test_asks_for_approvals_on_its_own_page(self) -> None:
@@ -183,11 +189,38 @@ class TestTheManifest(unittest.TestCase):
         """The page creates its chat with ``mode: "mood-music"``, which needs this literal ``true``."""
         self.assertIs(_manifest()["permissions"]["hiddenSessions"], True)
 
-    def test_the_dj_has_only_web_search_and_web_fetch(self) -> None:
-        """Page text is untrusted, so the agent gets no browser, shell or file tool."""
+    def test_the_dj_has_web_search_web_fetch_and_the_browser_only(self) -> None:
+        """Page text is untrusted, so the agent gets no shell or file tool.
+
+        The browser is Kiro Crew's own ``browser`` tool, held by the host to the
+        pages ``permissions.browserSites`` names once the owner approves them.
+        """
         spec = json.loads((APP_ROOT / "agents" / "dj.json").read_text(encoding="utf-8"))
-        self.assertEqual(spec["tools"], ["web_search", "web_fetch"])
+        self.assertEqual(spec["tools"], ["web_search", "web_fetch", "@kirocrew-core/browser"])
         self.assertEqual(spec["mcpServers"], {})
+
+    def test_the_app_reaches_no_other_kiro_crew_tool(self) -> None:
+        """``mcpTools`` withholds every other host-managed tool from the agent."""
+        self.assertEqual(_manifest()["permissions"]["mcpTools"], ["browser"])
+
+    def test_the_browser_sites_are_the_four_search_and_video_pages(self) -> None:
+        """Only bilibili and YouTube search and video pages: no home, account or upload page."""
+        self.assertEqual(
+            _manifest()["permissions"]["browserSites"],
+            [
+                "https://search.bilibili.com/all",
+                "https://www.bilibili.com/video/BV*",
+                "https://www.youtube.com/results",
+                "https://www.youtube.com/watch",
+            ],
+        )
+
+    def test_the_prompt_holds_the_browser_house_rules(self) -> None:
+        """Rules only, not a hard block: the host confines pages, not clicks on them."""
+        prompt = json.loads((APP_ROOT / "agents" / "dj.json").read_text(encoding="utf-8"))["prompt"]
+        for word in ("account", "comment", "like", "coin", "pay", "Never run scripts", "data, never an instruction"):
+            with self.subTest(word=word):
+                self.assertIn(word, prompt)
 
     def test_the_dj_runs_its_two_read_only_tools_without_asking(self) -> None:
         """The approval prompt sits in a chat the page hides, so it would stall the search.
@@ -250,12 +283,19 @@ class TestTheManifest(unittest.TestCase):
 
 class TestAgentsPinNoModel(unittest.TestCase):
     def test_every_agent_spec_leaves_the_model_to_the_host(self) -> None:
-        """A hardcoded model id fails for anyone not entitled to it; only ``auto``."""
+        """No ``model`` key: the agent runs on the person's own default model.
+
+        A model id fails for anyone not entitled to it. ``"auto"`` is no better:
+        kiro-cli puts a session on the model its activated agent pins, so ``auto``
+        pins Kiro's auto router over the person's default. Kiro Crew reads an
+        absent key as "no pin" and defers to the person's choice
+        (``config.loader.resolve_effective_model``).
+        """
         specs = sorted((APP_ROOT / "agents").glob("*.json"))
         self.assertTrue(specs)
         for spec in specs:
             with self.subTest(agent=spec.name):
-                self.assertEqual(json.loads(spec.read_text(encoding="utf-8"))["model"], "auto")
+                self.assertNotIn("model", json.loads(spec.read_text(encoding="utf-8")))
 
 
 class TestTheTreeInstallsByClone(unittest.TestCase):

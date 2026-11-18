@@ -1,6 +1,6 @@
 {
   "name": "mood-music",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "displayName": "Mood Music",
   "description": "Tell it how you feel, or name a song that moved you. A DJ agent finds songs with the same feeling and plays them: YouTube inside the page, bilibili in a new browser tab. Like or skip, and the next picks follow.",
   "author": "iamwhatever",
@@ -37,12 +37,22 @@
       "/api/apps/mood-music",
       "/api/apps/mood-music/*",
       "/api/chat",
-      "/api/chat/*"
+      "/api/chat/*",
+      "/api/browser/media"
     ],
     "sessionApproval": true,
     "hiddenSessions": true,
     "storage": true,
-    "network": true
+    "network": true,
+    "mcpTools": [
+      "browser"
+    ],
+    "browserSites": [
+      "https://search.bilibili.com/all",
+      "https://www.bilibili.com/video/BV*",
+      "https://www.youtube.com/results",
+      "https://www.youtube.com/watch"
+    ]
   },
   "agents": [
     "agents/dj.json"

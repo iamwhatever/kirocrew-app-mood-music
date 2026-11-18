@@ -126,7 +126,9 @@
     "explore_more": "Explorar más",
     "player": "Reproductor",
     "player_auto": "Automático",
-    "stay_only": "Hoy solo quiero quedarme en este sentimiento"
+    "stay_only": "Hoy solo quiero quedarme en este sentimiento",
+    "player_browser": "Navegador de Crew",
+    "status_playing": "Tu compañero está abriendo la canción en el navegador de Kiro Crew…"
   },
   "card": {
     "arc_stay": "Acompañar",
@@ -143,5 +145,27 @@
     "known_done": "Anotado",
     "unverified": "Sin verificar",
     "unverified_hint": "No se pudo confirmar con YouTube o bilibili que este vídeo exista, así que quizá no se reproduzca."
+  },
+  "browser": {
+    "status_opening": "Tu compañero la está abriendo en el navegador de Kiro Crew…",
+    "status_idle": "Pulsa reproducir: tu compañero abre esta canción en el navegador de Kiro Crew.",
+    "status_in_control": "Estás usando la pestaña del navegador. Los botones esperan a que la devuelvas.",
+    "status_no_media": "La pestaña del navegador aún no tiene reproductor.",
+    "status_ended": "Terminó.",
+    "status_paused": "En pausa.",
+    "play": "Reproducir",
+    "pause": "Pausa",
+    "progress": "Progreso",
+    "volume": "Volumen",
+    "continuous": "Reproducción continua",
+    "continuous_note": "La reproducción continua solo funciona con esta página abierta. Si la cierras, la música se detiene al acabar la canción actual.",
+    "not_played": "Tu compañero no pudo reproducirla esta vez: {{reason}}",
+    "no_reason": "sin motivo",
+    "fallback_title": "El navegador de Crew aún no está listo, así que las canciones suenan aquí como antes",
+    "fallback_old_host": "Este Kiro Crew es demasiado antiguo para el reproductor del navegador de Crew. Actualiza Kiro Crew para usarlo.",
+    "fallback_not_approved": "Primero aprueba los sitios de música para Mood Music. Se aprueban una vez, en la página de la app.",
+    "fallback_browse_off": "Una política de este equipo tiene apagado el navegador de Kiro Crew.",
+    "approve": "Aprobar los sitios",
+    "status_playing": "Sonando en el navegador de Kiro Crew."
   }
 }

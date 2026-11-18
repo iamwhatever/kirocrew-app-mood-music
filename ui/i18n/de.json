@@ -126,7 +126,9 @@
     "explore_more": "Mehr entdecken",
     "player": "Player",
     "player_auto": "Automatisch",
-    "stay_only": "Heute einfach in diesem Gefühl bleiben"
+    "stay_only": "Heute einfach in diesem Gefühl bleiben",
+    "player_browser": "Crew-Browser",
+    "status_playing": "Dein Buddy öffnet den Song im Browser von Kiro Crew…"
   },
   "card": {
     "arc_stay": "Dabeibleiben",
@@ -143,5 +145,27 @@
     "known_done": "Notiert",
     "unverified": "Nicht geprüft",
     "unverified_hint": "YouTube oder bilibili konnte nicht gefragt werden, ob es dieses Video gibt; es spielt vielleicht nicht."
+  },
+  "browser": {
+    "status_opening": "Dein Buddy öffnet ihn im Browser von Kiro Crew…",
+    "status_idle": "Drück auf Abspielen: Dein Buddy öffnet diesen Song im Browser von Kiro Crew.",
+    "status_in_control": "Du nutzt gerade den Browser-Tab. Die Tasten warten, bis du ihn zurückgibst.",
+    "status_no_media": "Im Browser-Tab ist noch kein Player.",
+    "status_ended": "Zu Ende.",
+    "status_paused": "Pausiert.",
+    "play": "Abspielen",
+    "pause": "Pause",
+    "progress": "Fortschritt",
+    "volume": "Lautstärke",
+    "continuous": "Endlos abspielen",
+    "continuous_note": "Endlos abspielen geht nur, solange diese Seite offen ist. Schließt du sie, endet die Musik mit dem aktuellen Song.",
+    "not_played": "Dein Buddy konnte ihn diesmal nicht abspielen: {{reason}}",
+    "no_reason": "ohne Angabe eines Grundes",
+    "fallback_title": "Der Crew-Browser ist noch nicht bereit, darum laufen Songs wie bisher hier",
+    "fallback_old_host": "Dieses Kiro Crew ist zu alt für den Crew-Browser-Player. Aktualisiere Kiro Crew, um ihn zu nutzen.",
+    "fallback_not_approved": "Gib zuerst die Musikseiten für Mood Music frei. Das machst du einmal, auf der Seite der App.",
+    "fallback_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet.",
+    "approve": "Seiten freigeben",
+    "status_playing": "Läuft im Browser von Kiro Crew."
   }
 }

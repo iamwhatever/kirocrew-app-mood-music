@@ -48,6 +48,36 @@ export interface DjReply {
   remember: string
   /** The backdrop scene, only on a big mood shift; absent (or out of bounds) keeps the current one. */
   scene?: Scene
+  /** The answer to a play request, when the block is one. */
+  play?: PlayResult
+}
+
+/** What the buddy reports after a "Play in Crew Browser" request. */
+export interface PlayResult {
+  played: boolean
+  site: PickSource
+  /** The steps that worked, checked to the backend's limits; empty when not played. */
+  steps: string[]
+  reason: string
+}
+
+const MAX_STEPS = 8
+const MAX_STEP_CHARS = 120
+// The same refusal as the backend: a step goes back into a later request.
+// eslint-disable-next-line no-control-regex
+const STEP_BAD_RE = /[\u0000-\u001f\u007f\u2028\u2029`[\]]/
+
+function playResult(d: Record<string, unknown>): PlayResult | undefined {
+  if (typeof d.played !== 'boolean') return undefined
+  const site = oneOf(d.site, ['youtube', 'bilibili'] as const)
+  if (!site) return undefined
+  const raw = Array.isArray(d.steps) ? d.steps : []
+  const steps = raw
+    .filter((s): s is string => typeof s === 'string' && !STEP_BAD_RE.test(s))
+    .map(s => s.trim())
+    .filter(s => s.length > 0 && s.length <= MAX_STEP_CHARS)
+    .slice(0, MAX_STEPS)
+  return { played: d.played, site, steps: d.played ? steps : [], reason: text(d.reason, 200) }
 }
 
 const FENCE_RE = /```mood-music[^\n]*\n([\s\S]*?)```/g
@@ -137,6 +167,7 @@ export function parseDjReply(content: string): DjReply | null {
     followUps: tags(d.follow_ups, 40, 3),
     remember: text(d.remember, 60),
     ...sceneOf(d.scene),
+    ...(playResult(d) ? { play: playResult(d) } : {}),
   }
 }
 

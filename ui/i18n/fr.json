@@ -126,7 +126,9 @@
     "explore_more": "Plus de découvertes",
     "player": "Lecteur",
     "player_auto": "Auto",
-    "stay_only": "Aujourd’hui, rester dans cette émotion"
+    "stay_only": "Aujourd’hui, rester dans cette émotion",
+    "player_browser": "Navigateur Crew",
+    "status_playing": "Ton compagnon ouvre la chanson dans le navigateur de Kiro Crew…"
   },
   "card": {
     "arc_stay": "Rester avec",
@@ -143,5 +145,27 @@
     "known_done": "Noté",
     "unverified": "Non vérifiée",
     "unverified_hint": "Impossible de vérifier auprès de YouTube ou bilibili que cette vidéo existe : elle risque de ne pas se lire."
+  },
+  "browser": {
+    "status_opening": "Ton compagnon l’ouvre dans le navigateur de Kiro Crew…",
+    "status_idle": "Appuie sur lecture : ton compagnon ouvre cette chanson dans le navigateur de Kiro Crew.",
+    "status_in_control": "Tu utilises l’onglet du navigateur. Les boutons attendent que tu le rendes.",
+    "status_no_media": "L’onglet du navigateur n’a pas encore de lecteur.",
+    "status_ended": "Terminé.",
+    "status_paused": "En pause.",
+    "play": "Lecture",
+    "pause": "Pause",
+    "progress": "Progression",
+    "volume": "Volume",
+    "continuous": "Lecture continue",
+    "continuous_note": "La lecture continue ne marche que tant que cette page est ouverte. Ferme-la, et la musique s’arrête à la fin de la chanson en cours.",
+    "not_played": "Ton compagnon n’a pas pu la lancer cette fois : {{reason}}",
+    "no_reason": "sans raison donnée",
+    "fallback_title": "Le navigateur Crew n’est pas prêt, les chansons se lisent donc ici comme avant",
+    "fallback_old_host": "Ce Kiro Crew est trop ancien pour le lecteur du navigateur Crew. Mets Kiro Crew à jour pour l’utiliser.",
+    "fallback_not_approved": "Approuve d’abord les sites de musique pour Mood Music. Une seule fois, sur la page de l’app.",
+    "fallback_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew.",
+    "approve": "Approuver les sites",
+    "status_playing": "Lecture dans le navigateur de Kiro Crew."
   }
 }

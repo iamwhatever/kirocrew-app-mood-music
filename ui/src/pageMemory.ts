@@ -25,6 +25,8 @@ export interface SavedPending {
   memoryIds: string[]
   text: string
   stopped?: boolean
+  /** A play request to the buddy (Crew Browser): the song, its site, and whether it asked for more. */
+  play?: { pickId: string; site: 'youtube' | 'bilibili'; refill: boolean }
 }
 
 export interface PageView {
@@ -38,6 +40,10 @@ export interface PageView {
   slotKey: string | null
   scroll: number
   pending: SavedPending | null
+  /** The queued song the Crew Browser tab plays, as the buddy last reported. */
+  browserPick?: string | null
+  /** The song whose end already woke the buddy, so one ending wakes it once. */
+  endedFor?: string | null
 }
 
 const TABS: Tab[] = ['listen', 'moments', 'memory']
@@ -52,7 +58,15 @@ function readPending(v: unknown): SavedPending | null {
     memoryIds: Array.isArray(p.memoryIds) ? p.memoryIds.filter(i => typeof i === 'string').slice(0, 50).map(i => i.slice(0, 64)) : [],
     text: str(p.text, 300),
     stopped: p.stopped === true || undefined,
+    play: readPlay(p.play),
   }
+}
+
+function readPlay(v: unknown): SavedPending['play'] {
+  const p = v as Partial<NonNullable<SavedPending['play']>> | null
+  if (!p || typeof p !== 'object' || typeof p.pickId !== 'string') return undefined
+  if (p.site !== 'youtube' && p.site !== 'bilibili') return undefined
+  return { pickId: p.pickId.slice(0, 64), site: p.site, refill: p.refill === true }
 }
 
 /** The saved view, or null when there is none or it does not read. */
@@ -73,6 +87,8 @@ export function loadView(): Partial<PageView> | null {
       slotKey: typeof v.slotKey === 'string' ? v.slotKey.slice(0, 200) : null,
       scroll: typeof v.scroll === 'number' && v.scroll > 0 ? v.scroll : 0,
       pending: readPending(v.pending),
+      browserPick: typeof v.browserPick === 'string' ? v.browserPick.slice(0, 64) : null,
+      endedFor: typeof v.endedFor === 'string' ? v.endedFor.slice(0, 64) : null,
     }
   } catch {
     return null

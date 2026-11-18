@@ -50,9 +50,15 @@ ANCHOR_WINDOW = 30 * 86400
 MAX_ANCHORS = 100
 #: The page's own choices (design §0.3, §1.9), with their defaults.
 EXPLORE_LEVELS = ("familiar", "balanced", "explore")
-#: Which site the person would rather play on; ``auto`` takes either.
-PLAYERS = ("auto", "youtube", "bilibili")
-DEFAULT_SETTINGS = {"explore": "balanced", "record_open": False, "player": "auto"}
+#: Which site the person would rather play on; ``auto`` takes either. ``browser``
+#: plays in Kiro Crew's own browser, driven by the buddy.
+PLAYERS = ("auto", "youtube", "bilibili", "browser")
+DEFAULT_SETTINGS = {"explore": "balanced", "record_open": False, "player": "auto", "continuous": False}
+#: The sites the buddy plays on in Kiro Crew's browser, each with its own saved steps.
+PLAY_SITES = ("bilibili", "youtube")
+#: Saved steps per site: at most this many, each at most this long.
+MAX_STEPS = 8
+MAX_STEP_CHARS = 120
 
 
 class MemoryFull(Exception):
@@ -68,6 +74,7 @@ def _empty() -> dict[str, Any]:
         "memory": [],
         "anchors": [],
         "settings": dict(DEFAULT_SETTINGS),
+        "play_steps": {},
     }
 
 
@@ -124,6 +131,21 @@ class MoodStore:
             state["settings"]["record_open"] = saved["record_open"]
         if saved.get("player") in PLAYERS:
             state["settings"]["player"] = saved["player"]
+        if isinstance(saved.get("continuous"), bool):
+            state["settings"]["continuous"] = saved["continuous"]
+        steps = data.get("play_steps") if isinstance(data.get("play_steps"), dict) else {}
+        for site in PLAY_SITES:
+            entry = steps.get(site)
+            if (
+                isinstance(entry, dict)
+                and isinstance(entry.get("steps"), list)
+                and 0 < len(entry["steps"]) <= MAX_STEPS
+                and all(isinstance(t, str) and 0 < len(t) <= MAX_STEP_CHARS for t in entry["steps"])
+            ):
+                state["play_steps"][site] = {
+                    "steps": list(entry["steps"]),
+                    "updated_at": entry.get("updated_at") if isinstance(entry.get("updated_at"), (int, float)) else 0,
+                }
         if not isinstance(data.get("memory"), list):
             # A file from before memory: its likes and skips become memory items.
             for f in reversed(state["feedback"]):
@@ -162,6 +184,25 @@ class MoodStore:
         state["memory"] = [{**m, "stale": self._stale(m, now)} for m in state["memory"]]
         state.pop("anchors", None)
         return state
+
+    def set_play_steps(self, site: str, steps: list[str]) -> dict[str, Any]:
+        """Keep the steps that just played a song on *site*, replacing older ones."""
+        entry = {"steps": list(steps), "updated_at": self._now()}
+        with self._lock:
+            state = self._read()
+            state["play_steps"][site] = entry
+            self._write(state)
+        return entry
+
+    def forget_play_steps(self, site: str) -> bool:
+        """Drop *site*'s steps after they failed, so the buddy finds the way again."""
+        with self._lock:
+            state = self._read()
+            if site not in state["play_steps"]:
+                return False
+            del state["play_steps"][site]
+            self._write(state)
+        return True
 
     def set_settings(self, **changes: Any) -> dict[str, Any]:
         """Store the page's choices; callers pass only checked values."""
@@ -343,17 +384,21 @@ class MoodStore:
         source: str,
         moment_id: str = "",
         mood_tags: list[str] | None = None,
+        append: bool = False,
     ) -> list[dict[str, Any]]:
-        """Replace the queue with the agent's new picks.
+        """Replace the queue with the agent's new picks, or add them at its end.
 
         *source* names the reply the picks came from, so the page never queues
         the same reply twice. When *moment_id* names a moment, the picks and
-        the mood tags are attached to it for the Moments tab.
+        the mood tags are attached to it for the Moments tab. With *append* (a
+        refill while songs play on), the new picks go after the old ones and the
+        oldest leave first once the queue is full. The return is always the new
+        picks alone.
         """
         queue = [{**pick, "id": uuid.uuid4().hex, "feedback": ""} for pick in picks[:MAX_QUEUE]]
         with self._lock:
             state = self._read()
-            state["queue"] = queue
+            state["queue"] = [*state["queue"], *queue][-MAX_QUEUE:] if append else queue
             state["last_source"] = source
             now = self._now()
             anchors = [{"title": p["title"], "artist": p.get("artist", ""), "at": now}

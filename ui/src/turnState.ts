@@ -10,7 +10,7 @@
 import type { SlotData, SlotMessage } from './api'
 import { replyText } from './replyParse'
 
-export type Phase = 'thinking' | 'searching' | 'reading' | 'writing' | 'checking'
+export type Phase = 'thinking' | 'searching' | 'reading' | 'writing' | 'checking' | 'playing'
 
 export interface BuddyStatus {
   phase: Phase
@@ -26,7 +26,7 @@ export interface Line {
 }
 
 /** The heads `request.prompt.ts` writes on the line after `[Mood Music]`. */
-const HEADS = ['Mood', 'Answer to your question', 'More like this song', 'Follow-up']
+const HEADS = ['Mood', 'Answer to your question', 'More like this song', 'Follow-up', 'Play in Crew Browser']
 
 const msgs = (slot: SlotData | undefined): SlotMessage[] => slot?.messages ?? []
 
@@ -41,6 +41,7 @@ function currentTurn(slot: SlotData | undefined): SlotMessage[] {
 const toolOf = (m: SlotMessage) => {
   const name = (m.meta as { tool_name?: unknown } | undefined)?.tool_name
   const text = `${typeof name === 'string' ? name : ''} ${m.content ?? ''}`.toLowerCase()
+  if (/browser/.test(text)) return 'browser'
   if (/web_fetch|fetch/.test(text)) return 'web_fetch'
   if (/web_search|search/.test(text)) return 'web_search'
   return text.trim() ? 'other' : ''
@@ -92,6 +93,7 @@ export function buddyStatus(slot: SlotData | undefined, checking: boolean): Budd
   if (last?.role === 'streaming' && last.content?.trim()) return { phase: 'writing', searches, pages }
   const tool = last?.role === 'tool' ? toolOf(last) : ''
   if (tool === 'web_fetch') return { phase: 'reading', searches, pages }
+  if (tool === 'browser') return { phase: 'playing', searches, pages }
   if (tool) return { phase: 'searching', searches, pages }
   return { phase: 'thinking', searches, pages }
 }

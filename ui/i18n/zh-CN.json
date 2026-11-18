@@ -126,7 +126,9 @@
     "explore_more": "多探索",
     "player": "播放器",
     "player_auto": "自动",
-    "stay_only": "今天只想待在这个情绪里"
+    "stay_only": "今天只想待在这个情绪里",
+    "player_browser": "Crew 浏览器",
+    "status_playing": "搭子正在 Kiro Crew 的浏览器里打开这首歌…"
   },
   "card": {
     "arc_stay": "陪着",
@@ -143,5 +145,27 @@
     "known_done": "记下了",
     "unverified": "未验证",
     "unverified_hint": "这次没能向 YouTube 或 bilibili 确认这个视频，可能放不了。"
+  },
+  "browser": {
+    "status_opening": "搭子正在 Kiro Crew 的浏览器里打开它…",
+    "status_idle": "点播放：搭子会在 Kiro Crew 的浏览器里打开这首歌。",
+    "status_in_control": "你正在用这个浏览器标签页。等你交还后，按钮才会生效。",
+    "status_no_media": "浏览器标签页里还没有播放器。",
+    "status_ended": "放完了。",
+    "status_paused": "已暂停。",
+    "status_playing": "正在 Kiro Crew 的浏览器里播放。",
+    "play": "播放",
+    "pause": "暂停",
+    "progress": "进度",
+    "volume": "音量",
+    "continuous": "连续播放",
+    "continuous_note": "连续播放只在这个页面开着时有效。关掉页面后，这首放完就停。",
+    "not_played": "搭子这次没能放出来：{{reason}}",
+    "no_reason": "没有说明原因",
+    "fallback_title": "Crew 浏览器还不能用，歌曲照旧在这里播放",
+    "fallback_old_host": "这个 Kiro Crew 版本太旧，不支持 Crew 浏览器播放。请先更新 Kiro Crew。",
+    "fallback_not_approved": "请先为情绪音乐批准这几个音乐网站。只需在应用页面批准一次。",
+    "fallback_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。",
+    "approve": "去批准网站"
   }
 }
