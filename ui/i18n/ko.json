@@ -46,7 +46,9 @@
     "dropped": "재생할 수 없는 링크라 제외한 곡: {{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili",
-    "tab_memory": "기억"
+    "tab_memory": "기억",
+    "error_old_host": "이 Kiro Crew는 너무 오래되어 친구의 숨김 채팅을 열 수 없어요. Kiro Crew를 업데이트한 뒤 이 페이지를 다시 여세요.",
+    "error_hidden_refused": "Kiro Crew가 친구의 숨김 채팅을 열지 않았어요. 앱 페이지에서 무드 뮤직이 켜져 있고 신뢰됨인지 확인하세요."
   },
   "memory": {
     "add_label": "단짝에게 기억할 것을 알려 주세요",
@@ -159,5 +161,13 @@
     "unready_old_host": "이 Kiro Crew는 너무 오래됐어요. 앱 브라우저 사이트를 지원하는 버전(KiroCrew#38333 포함, v0.13.0-rc.3보다 새 버전)으로 업데이트한 뒤 이 페이지를 다시 여세요.",
     "unready_not_approved": "먼저 무드 뮤직의 음악 사이트를 승인하세요. 앱 페이지에서 한 번만 승인하면 돼요.",
     "unready_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요."
+  },
+  "view": {
+    "title": "Kiro Crew 브라우저",
+    "operating": "브라우저 사용 중…",
+    "idle": "지금은 친구가 브라우저를 쓰고 있지 않아요.",
+    "show": "보기",
+    "hide": "숨기기",
+    "old_host": "이 Kiro Crew는 아직 여기에 브라우저를 보여 줄 수 없어요. Kiro Crew를 업데이트하면 선곡하는 모습을 볼 수 있어요."
   }
 }

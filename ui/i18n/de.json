@@ -46,7 +46,9 @@
     "dropped": "Ausgelassene Songs mit nicht abspielbarem Link: {{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili",
-    "tab_memory": "Erinnerung"
+    "tab_memory": "Erinnerung",
+    "error_old_host": "Dieses Kiro Crew ist zu alt, um den versteckten Chat deines Buddys zu öffnen. Aktualisiere Kiro Crew und öffne diese Seite erneut.",
+    "error_hidden_refused": "Kiro Crew hat den versteckten Chat deines Buddys nicht geöffnet. Prüfe auf der App-Seite, ob Mood Music eingeschaltet und vertrauenswürdig ist."
   },
   "memory": {
     "add_label": "Sag deinem Buddy, was er sich merken soll",
@@ -159,5 +161,13 @@
     "unready_old_host": "Dieses Kiro Crew ist zu alt. Aktualisiere Kiro Crew auf eine Version mit App-Browserseiten (KiroCrew#38333, neuer als v0.13.0-rc.3) und öffne diese Seite dann erneut.",
     "unready_not_approved": "Gib zuerst die Musikseiten für Mood Music frei. Das machst du einmal, auf der Seite der App.",
     "unready_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet."
+  },
+  "view": {
+    "title": "Browser von Kiro Crew",
+    "operating": "Bedient den Browser…",
+    "idle": "Dein Buddy nutzt den Browser gerade nicht.",
+    "show": "Anzeigen",
+    "hide": "Ausblenden",
+    "old_host": "Dieses Kiro Crew kann den Browser hier noch nicht zeigen. Aktualisiere Kiro Crew, um zuzusehen, wie dein Buddy Songs wählt."
   }
 }

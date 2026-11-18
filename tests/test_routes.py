@@ -250,13 +250,14 @@ def test_a_memory_full_of_the_persons_own_notes_answers_409(ctx, monkeypatch) ->
 
 
 def test_settings_keep_the_explore_level_and_the_record_state(ctx) -> None:
-    base = {"explore": "balanced", "record_open": False, "continuous": False}
+    base = {"explore": "balanced", "record_open": False, "continuous": False, "view_open": True}
     assert _call(ctx, "GET", "/state")[1]["settings"] == base
     assert _call(ctx, "PUT", "/settings", {"explore": "familiar"})[1] == {**base, "explore": "familiar"}
     assert _call(ctx, "PUT", "/settings", {"record_open": True})[1]["record_open"] is True
     assert _call(ctx, "PUT", "/settings", {"continuous": True})[1]["continuous"] is True
+    assert _call(ctx, "PUT", "/settings", {"view_open": False})[1]["view_open"] is False
     assert _call(ctx, "GET", "/state")[1]["settings"] == {
-        "explore": "familiar", "record_open": True, "continuous": True,
+        "explore": "familiar", "record_open": True, "continuous": True, "view_open": False,
     }
 
 
@@ -264,7 +265,8 @@ def test_settings_keep_the_explore_level_and_the_record_state(ctx) -> None:
     "body",
     [{}, {"explore": "wild"}, {"record_open": "yes"}, {"player": "browser"},
      {"explore": "balanced", "player": "youtube"},
-     {"explore": "balanced", "theme": "dark"}, {"continuous": "on"}, {"continuous": 1}],
+     {"explore": "balanced", "theme": "dark"}, {"continuous": "on"}, {"continuous": 1},
+     {"view_open": "no"}, {"view_open": 0}],
 )
 def test_bad_settings_are_refused(ctx, body) -> None:
     assert _call(ctx, "PUT", "/settings", body)[0] == 400

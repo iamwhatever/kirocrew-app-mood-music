@@ -11,41 +11,31 @@ function fakeApi(post: (path: string, body?: unknown) => unknown): AppApi {
 }
 
 describe('createMoodApi', () => {
-  it('reopens its hidden temporary slot, then sends to it as the DJ agent', async () => {
-    const api = fakeApi(path => (path === '/api/chat/slots' ? { key: 'mood-music-buddy' } : { ok: true }))
-    await expect(createMoodApi(api).ask('[Mood Music] calm')).resolves.toBe('mood-music-buddy')
-    expect(api.post).toHaveBeenNthCalledWith(1, '/api/chat/slots', {
-      name: 'mood-music-buddy', agent: 'mood-music-dj', memory_mode: 'temporary', mode: 'mood-music',
-    })
-    expect(api.post).toHaveBeenNthCalledWith(2, '/api/chat?ws=1', {
-      message: '[Mood Music] calm', slot: 'mood-music-buddy', agent: 'mood-music-dj', memory_mode: 'temporary',
-    })
+  const refused = (status: number, code: string) => Object.assign(new Error(`API ${status}`), { status, body: JSON.stringify({ code }) })
+
+  it("opens the buddy's chat through the app's backend, never the chat route", async () => {
+    const api = fakeApi(() => ({ key: 'mood-music-dj' }))
+    await expect(createMoodApi(api).openSlot()).resolves.toEqual({ key: 'mood-music-dj' })
+    expect(api.post).toHaveBeenCalledWith('/api/apps/mood-music/buddy')
   })
 
-  it('falls back to the old listed chat when the host refuses the mode, and stays there', async () => {
-    const refusal = Object.assign(new Error('invalid mode'), { status: 400, body: JSON.stringify({ code: 'invalid_mode' }) })
-    const api = fakeApi((path, body) => {
-      if (path !== '/api/chat/slots') return { ok: true }
-      if ((body as { mode?: string }).mode) throw refusal
-      return { key: 'mood-music' }
-    })
-    const mood = createMoodApi(api)
-    await expect(mood.openSlot()).resolves.toEqual({ key: 'mood-music' })
-    expect(api.post).toHaveBeenNthCalledWith(2, '/api/chat/slots', { name: 'mood-music', agent: 'mood-music-dj', memory_mode: 'temporary' })
-    await mood.openSlot()
-    expect(api.post).toHaveBeenCalledTimes(3)
-  })
-
-  it('does not hide another failure behind the fallback', async () => {
-    const other = Object.assign(new Error('nope'), { status: 403, body: JSON.stringify({ code: 'forbidden' }) })
-    const api = fakeApi(() => { throw other })
-    await expect(createMoodApi(api).openSlot()).rejects.toBe(other)
+  it('sends one turn through the backend and answers the key it went to', async () => {
+    const api = fakeApi(() => ({ ok: true, key: 'mood-music-dj', queued: false }))
+    await expect(createMoodApi(api).ask('[Mood Music] calm')).resolves.toBe('mood-music-dj')
     expect(api.post).toHaveBeenCalledTimes(1)
+    expect(api.post).toHaveBeenCalledWith('/api/apps/mood-music/buddy/send', { message: '[Mood Music] calm' })
   })
 
-  it('rejects a send the gateway refused inside a 2xx', async () => {
-    const api = fakeApi(path => (path === '/api/chat/slots' ? { key: 'k' } : { ok: false, error: 'busy' }))
-    await expect(createMoodApi(api).ask('x')).rejects.toThrow('busy')
+  it.each(['old_host', 'hidden_refused'])('turns a %s refusal into its bare code', async code => {
+    const api = fakeApi(() => { throw refused(code === 'old_host' ? 409 : 403, code) })
+    await expect(createMoodApi(api).openSlot()).rejects.toThrow(new Error(code))
+    await expect(createMoodApi(api).ask('x')).rejects.toThrow(new Error(code))
+  })
+
+  it('passes any other failure through unchanged', async () => {
+    const other = refused(403, 'owner_only')
+    const api = fakeApi(() => { throw other })
+    await expect(createMoodApi(api).ask('x')).rejects.toBe(other)
   })
 })
 

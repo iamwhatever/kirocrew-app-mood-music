@@ -19,6 +19,8 @@ the access its manifest grant gives it.
   PUT  /settings            -> the explore level, continuous play, and whether the full record is open
   PUT  /play-steps/{site}   -> keep the steps that just played a song in Kiro Crew's browser
   DELETE /play-steps/{site} -> forget them after they failed, so the buddy finds the way again
+  POST /buddy               -> open the buddy's hidden chat through ``ctx.chat_slots`` (``buddy.py``)
+  POST /buddy/send          -> send the buddy one turn there
 
 A pick names the site the buddy plays it on (``source``). Its link is optional:
 the buddy finds the song by searching that site in Kiro Crew's browser when it
@@ -39,7 +41,7 @@ from typing import Any
 
 from aiohttp import web
 
-from . import _host, links, verify
+from . import _host, buddy, links, verify
 from .store import (
     EXPLORE_LEVELS,
     MAX_QUEUE,
@@ -425,17 +427,16 @@ async def _handle_settings(request: web.Request, ctx: Any) -> web.Response:
         if body["explore"] not in EXPLORE_LEVELS:
             return _bad_request("explore is not a level this app knows", "invalid_field_type")
         changes["explore"] = body["explore"]
-    if "record_open" in body:
-        if not isinstance(body["record_open"], bool):
-            return _bad_request("record_open must be true or false", "invalid_field_type")
-        changes["record_open"] = body["record_open"]
-    if "continuous" in body:
-        if not isinstance(body["continuous"], bool):
-            return _bad_request("continuous must be true or false", "invalid_field_type")
-        changes["continuous"] = body["continuous"]
-    allowed = {"explore", "record_open", "continuous"}
+    for flag in ("record_open", "continuous", "view_open"):
+        if flag in body:
+            if not isinstance(body[flag], bool):
+                return _bad_request(f"{flag} must be true or false", "invalid_field_type")
+            changes[flag] = body[flag]
+    allowed = {"explore", "record_open", "continuous", "view_open"}
     if not changes or set(body) - allowed:
-        return _bad_request("send explore, record_open and/or continuous only", "invalid_field_type")
+        return _bad_request(
+            "send explore, record_open, continuous and/or view_open only", "invalid_field_type"
+        )
     settings = await asyncio.to_thread(lambda: _store(ctx).set_settings(**changes))
     return web.json_response(settings)
 
@@ -510,4 +511,6 @@ def register_routes(ctx: Any) -> list[_host.Route]:
         route(
             "DELETE", "/play-steps/{site}", _owner_only("forget_play_steps", _handle_forget_steps)
         ),
+        route("POST", "/buddy", _owner_only("open_buddy", buddy.handle_open)),
+        route("POST", "/buddy/send", _owner_only("send_buddy", buddy.handle_send)),
     ]

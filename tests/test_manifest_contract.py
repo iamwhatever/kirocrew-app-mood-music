@@ -180,8 +180,17 @@ class TestTheManifest(unittest.TestCase):
         self.assertIs(_manifest()["permissions"]["sessionApproval"], True)
 
     def test_keeps_its_buddy_chat_out_of_the_session_lists(self) -> None:
-        """The page creates its chat with ``mode: "mood-music"``, which needs this literal ``true``."""
+        """The backend opens its chat with ``ctx.chat_slots.open(..., hidden=True)``.
+
+        That needs ``hiddenSessions`` as the literal ``true``, and ``chatSlots`` for
+        ``ctx.chat_slots`` to exist at all.
+        """
         self.assertIs(_manifest()["permissions"]["hiddenSessions"], True)
+        self.assertIs(_manifest()["permissions"]["chatSlots"], True)
+
+    def test_the_page_may_only_watch_the_buddy_browser(self) -> None:
+        """``view`` shows the live picture of the app's own chat; never ``read`` or ``act``."""
+        self.assertEqual(_manifest()["permissions"]["browser"], ["view"])
 
     def test_the_dj_has_web_search_web_fetch_and_the_browser_only(self) -> None:
         """Page text is untrusted, so the agent gets no shell or file tool.
