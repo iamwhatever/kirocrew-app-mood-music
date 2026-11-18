@@ -1,16 +1,16 @@
 {
   "manifest": {
     "display_name": "ムードミュージック",
-    "description": "今の気持ちや、心を動かされた曲を伝えてください。DJ エージェントが同じ気分の曲を探して再生します。YouTube はページ内で、bilibili はブラウザの新しいタブで開きます。いいね・スキップすると次の選曲に反映されます。",
+    "description": "今の気持ちや、心を動かされた曲を伝えてください。DJ エージェントが同じ気分の曲を探し、Kiro Crew のブラウザで YouTube か bilibili を使って再生します。いいね・スキップすると次の選曲に反映されます。",
     "page_label": "ムードミュージック",
     "highlight_1": "気持ちや心に響いた曲を伝えると、同じ気分の曲をもっと探します",
     "highlight_2": "どの曲にも、その気分に合う理由が添えられます",
-    "highlight_3": "YouTube はプライバシー強化モードの埋め込みでページ内再生",
-    "highlight_4": "bilibili の曲はご自身のブラウザの新しいタブで開き、エージェントがアカウントに触れることはありません",
+    "highlight_3": "曲は Kiro Crew のブラウザで音付きで再生。ページで再生・一時停止・音量を操作できます",
+    "highlight_4": "エージェントが開くのは bilibili と YouTube の検索ページと動画ページだけ。ログイン、コメント、いいね、支払いはしません",
     "highlight_5": "いいね・スキップが次の選曲に使われます",
     "highlight_6": "背景と動きが気分に合わせて変わります（ライト・ダーク対応）",
     "use_case_1": "今の気持ちに合う曲を探して再生し、心に残った瞬間を記録します。",
-    "configuration_1": "アカウントは不要です。YouTube はページ内で再生、bilibili はご自身のブラウザで開きます（ログインは任意）。"
+    "configuration_1": "アプリのブラウザサイトに対応した Kiro Crew（v0.13.0-rc.3 より新しい版）が必要です。Kiro Crew のアプリページで音楽サイトを一度承認してください。"
   },
   "page": {
     "title": "ムードミュージック",
@@ -34,13 +34,8 @@
     "liked": "いいね済み",
     "skip": "スキップ",
     "more": "似た曲をもっと",
-    "open_bilibili": "bilibili で開く",
-    "bilibili_note": "ご自身のブラウザの新しいタブで開きます。",
-    "open_youtube": "YouTube で開く",
-    "youtube_blank": "プレーヤーが空白、または Error 153 の場合は Kiro Crew を更新するか、YouTube で開いてください。",
     "queue": "次の曲",
     "play": "{{title}} を再生",
-    "player_title": "YouTube プレーヤー：{{title}}",
     "pause_motion": "背景の動きを一時停止",
     "play_motion": "背景の動きを再生",
     "moments_empty_title": "まだモーメントはありません",
@@ -124,10 +119,7 @@
     "explore_familiar": "なじみ多め",
     "explore_balanced": "バランス",
     "explore_more": "もっと探索",
-    "player": "プレーヤー",
-    "player_auto": "自動",
     "stay_only": "今日はこの気持ちのままでいたい",
-    "player_browser": "Crew ブラウザ",
     "status_playing": "相棒が Kiro Crew のブラウザで曲を開いています…"
   },
   "card": {
@@ -161,11 +153,11 @@
     "continuous_note": "連続再生はこのページを開いている間だけ有効です。閉じると、今の曲が終わったところで止まります。",
     "not_played": "今回は再生できませんでした：{{reason}}",
     "no_reason": "理由の説明なし",
-    "fallback_title": "Crew ブラウザはまだ使えないため、これまでどおりここで再生します",
-    "fallback_old_host": "この Kiro Crew は Crew ブラウザ再生に対応していません。Kiro Crew を更新してください。",
-    "fallback_not_approved": "先に Mood Music の音楽サイトを承認してください。アプリのページで一度だけ承認します。",
-    "fallback_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。",
     "approve": "サイトを承認する",
-    "status_playing": "Kiro Crew のブラウザで再生中。"
+    "status_playing": "Kiro Crew のブラウザで再生中。",
+    "unready_title": "まだ Kiro Crew のブラウザで曲を再生できません",
+    "unready_old_host": "この Kiro Crew は古すぎます。アプリのブラウザサイトに対応した版（KiroCrew#38333 を含む、v0.13.0-rc.3 より新しい版）に更新して、このページを開き直してください。",
+    "unready_not_approved": "先に Mood Music の音楽サイトを承認してください。アプリのページで一度だけ承認します。",
+    "unready_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。"
   }
 }

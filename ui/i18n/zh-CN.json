@@ -1,16 +1,16 @@
 {
   "manifest": {
     "display_name": "情绪音乐",
-    "description": "说说你的心情，或说出一首打动你的歌。DJ 助手会找来感觉相同的歌并播放：YouTube 在页面里播放，bilibili 在浏览器新标签页打开。点喜欢或跳过，下次推荐会跟着变。",
+    "description": "说说你的心情，或说出一首打动你的歌。DJ 助手会找来感觉相同的歌，在 Kiro Crew 的浏览器里用 YouTube 或 bilibili 播放。点喜欢或跳过，下次推荐会跟着变。",
     "page_label": "情绪音乐",
     "highlight_1": "说出心情，或说出一首打动你的歌，它会找来更多感觉相同的歌",
     "highlight_2": "每首歌都会说明为什么适合这份心情",
-    "highlight_3": "YouTube 通过隐私增强的嵌入方式在页面里播放",
-    "highlight_4": "bilibili 的歌在你自己浏览器的新标签页打开，助手从不碰你的账号",
+    "highlight_3": "歌在 Kiro Crew 的浏览器里播放，有声音；页面上有播放、暂停和音量",
+    "highlight_4": "助手只打开 bilibili 和 YouTube 的搜索页和视频页，从不登录、评论、点赞或付款",
     "highlight_5": "喜欢或跳过一首歌，下次推荐会用上",
     "highlight_6": "背景和动效随心情变化，亮色暗色都适用",
     "use_case_1": "找到并播放符合你此刻心情的歌，并记下打动你的那些时刻。",
-    "configuration_1": "不需要账号。YouTube 在页面里播放；bilibili 在你自己的浏览器打开，登录与否由你决定。"
+    "configuration_1": "需要支持应用浏览器网站的 Kiro Crew（比 v0.13.0-rc.3 新）。在 Kiro Crew 的应用页面批准一次音乐网站即可。"
   },
   "page": {
     "title": "情绪音乐",
@@ -34,13 +34,8 @@
     "liked": "已喜欢",
     "skip": "跳过",
     "more": "更多类似的",
-    "open_bilibili": "在 bilibili 打开",
-    "bilibili_note": "在你自己浏览器的新标签页打开。",
-    "open_youtube": "在 YouTube 打开",
-    "youtube_blank": "播放器空白或显示 Error 153？请更新 Kiro Crew，或在 YouTube 打开。",
     "queue": "接下来",
     "play": "播放 {{title}}",
-    "player_title": "YouTube 播放器：{{title}}",
     "pause_motion": "暂停背景动效",
     "play_motion": "播放背景动效",
     "moments_empty_title": "还没有时刻",
@@ -124,10 +119,7 @@
     "explore_familiar": "熟悉一点",
     "explore_balanced": "平衡",
     "explore_more": "多探索",
-    "player": "播放器",
-    "player_auto": "自动",
     "stay_only": "今天只想待在这个情绪里",
-    "player_browser": "Crew 浏览器",
     "status_playing": "搭子正在 Kiro Crew 的浏览器里打开这首歌…"
   },
   "card": {
@@ -162,10 +154,10 @@
     "continuous_note": "连续播放只在这个页面开着时有效。关掉页面后，这首放完就停。",
     "not_played": "搭子这次没能放出来：{{reason}}",
     "no_reason": "没有说明原因",
-    "fallback_title": "Crew 浏览器还不能用，歌曲照旧在这里播放",
-    "fallback_old_host": "这个 Kiro Crew 版本太旧，不支持 Crew 浏览器播放。请先更新 Kiro Crew。",
-    "fallback_not_approved": "请先为情绪音乐批准这几个音乐网站。只需在应用页面批准一次。",
-    "fallback_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。",
-    "approve": "去批准网站"
+    "approve": "去批准网站",
+    "unready_title": "歌还不能在 Kiro Crew 的浏览器里播放",
+    "unready_old_host": "这个 Kiro Crew 版本太旧。请把 Kiro Crew 更新到支持应用浏览器网站的版本（含 KiroCrew#38333，比 v0.13.0-rc.3 新），再打开这个页面。",
+    "unready_not_approved": "请先为情绪音乐批准这几个音乐网站。只需在应用页面批准一次。",
+    "unready_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。"
   }
 }

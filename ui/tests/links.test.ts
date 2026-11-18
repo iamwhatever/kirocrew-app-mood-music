@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bilibiliUrl, validVideoId, youtubeEmbedUrl, youtubeVideoId } from '../src/links'
+import { bilibiliUrl, validVideoId, youtubeVideoId } from '../src/links'
 
 const ID = 'dQw4w9WgXcQ'
 
@@ -25,13 +25,6 @@ describe('mood-music links', () => {
     ]) {
       expect(youtubeVideoId(url)).toBeNull()
     }
-  })
-
-  it('builds the embed URL only on the nocookie host, from a checked id', () => {
-    expect(youtubeEmbedUrl(ID, false)).toBe(`https://www.youtube-nocookie.com/embed/${ID}?rel=0`)
-    expect(youtubeEmbedUrl(ID, true)).toBe(`https://www.youtube-nocookie.com/embed/${ID}?rel=0&autoplay=1`)
-    expect(youtubeEmbedUrl(`${ID}/../x`, true)).toBeNull()
-    expect(youtubeEmbedUrl(ID + 'Q', true)).toBeNull()
   })
 
   it('keeps an https bilibili link on an exact host and refuses the rest', () => {

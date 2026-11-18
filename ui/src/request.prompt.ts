@@ -19,16 +19,15 @@ export const EXPLORE_MIX: Readonly<Record<ExploreLevel, readonly [number, number
   explore: [0, 4, 1],
 }
 
-/** The site the person would rather play on (`auto`: either; `browser`: either, played in Kiro Crew's browser). */
-export type Player = 'auto' | 'youtube' | 'bilibili' | 'browser'
-
-/** The request line for each player choice: the preferred site first, the other only as a fallback. */
-export const PLAYER_LINE: Readonly<Record<Player, string>> = {
-  auto: 'Player: any (YouTube or bilibili, whichever has the song)',
-  youtube: 'Player: youtube (give a YouTube link for every song; use bilibili only for a song with no YouTube video you could find)',
-  bilibili: 'Player: bilibili (give a bilibili link for every song; use YouTube only for a song with no bilibili video you could find)',
-  browser: 'Player: browser (YouTube or bilibili, whichever has the song; the page asks you to play each one in Kiro Crew\'s browser later, so do not open the browser now)',
-}
+/**
+ * How songs are played: always in Kiro Crew's browser, found there by searching
+ * the pick's site when the person presses play. So a pick needs its site, and a
+ * link only when the buddy already has one.
+ */
+export const PLAYER_LINE =
+  'Player: Kiro Crew\'s browser. Give every pick the site that has it ("source": "youtube" or "bilibili"). ' +
+  'A "url" is optional: add it only when you already have the exact video link, and do not spend searches hunting for links. ' +
+  'The page asks you to play each song later, by searching its site in the browser, so do not open the browser now.'
 
 /**
  * The message the page sends the DJ. The taste summary is the app's own record
@@ -40,9 +39,8 @@ export function buildRequest(opts: {
   state: MoodState | undefined
   explore?: ExploreLevel
   stayOnly?: boolean
-  player?: Player
 }): string {
-  const { kind, text, state, explore = 'balanced', stayOnly = false, player = 'auto' } = opts
+  const { kind, text, state, explore = 'balanced', stayOnly = false } = opts
   const head = { mood: 'Mood', answer: 'Answer to your question', more: 'More like this song', follow: 'Follow-up' }[kind]
   const [anchor, exp, deep] = EXPLORE_MIX[explore]
   return [
@@ -51,7 +49,7 @@ export function buildRequest(opts: {
     '',
     `Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`,
     `Arc: ${stayOnly ? 'stay only' : 'stay -> turn -> lift'}`,
-    PLAYER_LINE[player] ?? PLAYER_LINE.auto,
+    PLAYER_LINE,
     '',
     ...memorySummary(state?.memory ?? []).lines,
     '',
@@ -192,7 +190,7 @@ export function buildPlayRequest(opts: {
       `Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`,
       `Arc: ${stayOnly ? 'stay only' : 'stay -> turn -> lift'}`,
       `Already in the queue, do not pick again: ${queued.join('; ') || 'none'}`,
-      PLAYER_LINE.auto,
+      PLAYER_LINE,
       '',
       ...memorySummary(state?.memory ?? []).lines,
     )
@@ -227,7 +225,7 @@ const REPLY_LINES = [
   'Write one or two short sentences, then end your reply with ONE fenced block tagged mood-music holding plain JSON, with exactly these field names:',
   '- "mood_tags": 2 to 4 short words for the feeling, in the person\'s language.',
   '- "picks": the songs, in arc order, each {"title", "artist", "source", "url", "tier", "arc", "why", "listen_for", "evidence", "tags"}.',
-  '- "source" is "youtube" or "bilibili". A youtube "url" is https://www.youtube.com/watch?v=<11-char id> or https://youtu.be/<id>; a bilibili "url" is https://www.bilibili.com/video/<BV id>.',
+  '- "source" is "youtube" or "bilibili". "url" is optional; when you give one, a youtube "url" is https://www.youtube.com/watch?v=<11-char id> or https://youtu.be/<id>, and a bilibili "url" is https://www.bilibili.com/video/<BV id>.',
   '- "tier" is "anchor", "explore" or "deep". "arc" is "stay", "turn" or "lift".',
   '- "why": why this song now, one line. "listen_for": one line on something to hear in it.',
   '- "evidence" (explore and deep): {"url": a page you opened this turn that praises it, "label": what that page is}.',

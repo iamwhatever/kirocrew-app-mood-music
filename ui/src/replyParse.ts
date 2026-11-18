@@ -125,11 +125,16 @@ function pick(raw: unknown): NewPick | null {
   if (ev) base.evidence = ev
   // `platform` is a spelling the model has used for `source`; the checks are the same.
   const source = r.source ?? r.platform
+  // No link is fine: the buddy finds the song by searching its site when it plays.
+  // A link that is there must pass, or the pick is dropped.
+  const noLink = (r.url === undefined || r.url === null || r.url === '') && r.video_id === undefined
   if (source === 'youtube') {
+    if (noLink) return { ...base, source: 'youtube' }
     const id = r.video_id !== undefined ? validVideoId(r.video_id) : youtubeVideoId(r.url)
     return id ? { ...base, source: 'youtube', video_id: id } : null
   }
   if (source === 'bilibili') {
+    if (noLink) return { ...base, source: 'bilibili' }
     const url = bilibiliUrl(r.url)
     return url ? { ...base, source: 'bilibili', url } : null
   }

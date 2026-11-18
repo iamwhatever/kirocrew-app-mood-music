@@ -13,13 +13,14 @@
  * `mood-music` block is read (`replyParse.ts`), every pick is looked up by the
  * backend (`/verify-picks`), and only what passed is queued and drawn.
  *
- * With the Crew Browser player (`crewBrowser.ts`), a play goes to the buddy as
- * one request: it opens the song in Kiro Crew's browser and reports the steps
- * that worked, which the app keeps per site and sends back next time. Pause,
- * seek and volume go straight to the tab. With continuous play on, a song's end
- * (read by this page's poll) wakes the buddy once for the next song, and asks
- * for more when the queue runs low. A host without the seam, or sites the owner
- * has not approved, fall back to the embed and the link, with a note.
+ * Songs play only in Kiro Crew's browser (`crewBrowser.ts`). A play goes to
+ * the buddy as one request: it finds the song on its site in Kiro Crew's
+ * browser and reports the steps that worked, which the app keeps per site and
+ * sends back next time. Pause, seek and volume go straight to the tab. With
+ * continuous play on, a song's end (read by this page's poll) wakes the buddy
+ * once for the next song, and asks for more when the queue runs low. A host
+ * without the seam, sites the owner has not approved, or a policy that turns the
+ * browser off, show a note with what to do, and the play button stays off.
  *
  * Anything that needs the person shows here with a button (design §1.8): a
  * tool approval (allow once / don't), a missing chat-control grant, a failed
@@ -41,7 +42,7 @@ import MomentsTab from './MomentsTab'
 import MoodBackdrop from './MoodBackdrop'
 import { MOOD_KEYS, moodLookFor, presetScene, type MoodKey, type MoodLook, type Scene } from './moods'
 import NowPlaying from './NowPlaying'
-import { REFILL_AT, buildPlayRequest, buildRequest, memorySummary, type ExploreLevel, type Player } from './request.prompt'
+import { REFILL_AT, buildPlayRequest, buildRequest, memorySummary, type ExploreLevel } from './request.prompt'
 import { parseDjReply, replySource, type DjReply } from './replyParse'
 import { usePrefersReducedMotion } from './reducedMotion'
 import { CARD_STYLE } from './cardStyle'
@@ -59,8 +60,6 @@ export const POLL_MS = 1000
 export const STUCK_MS = 2 * 60_000
 /** Failed reads for this long: the page says it cannot reach Kiro Crew. */
 export const OFFLINE_MS = 10_000
-/** Played this long, a song counts as known (design §0.6). */
-export const KNOWN_AFTER_MS = 30_000
 
 /** A turn out to the buddy. `memoryIds`: memory items the request carried, marked used if its picks land. */
 type Pending = SavedPending
@@ -137,7 +136,6 @@ export default function MoodMusicPage() {
   // The backdrop scene: a chip's preset, or the one the buddy chose on a big mood shift.
   const [scene, setScene] = useState<Scene>(saved?.scene ?? presetScene('neutral'))
   const [currentId, setCurrentId] = useState<string | null>(saved?.currentId ?? null)
-  const [autoplay, setAutoplay] = useState(false)
   const [motionPaused, setMotionPaused] = useState(false)
   const [pending, setPending] = useState<Pending | null>(null)
   const [checking, setChecking] = useState(false)
@@ -227,15 +225,16 @@ export default function MoodMusicPage() {
 
   const queue = state?.queue ?? []
   const explore: ExploreLevel = state?.settings?.explore ?? 'balanced'
-  const player: Player = state?.settings?.player ?? 'auto'
   const recordOpen = state?.settings?.record_open ?? false
   const continuous = state?.settings?.continuous ?? false
-  // The Crew Browser player: chosen, and playable here (new enough host, approved sites).
-  const browserOn = player === 'browser'
+  // The Crew Browser player. Polled while the tab holds a song; read once otherwise,
+  // which is how the page learns whether it can play here at all.
   const onEndedRef = useRef<() => void>(() => undefined)
-  const crew = useCrewBrowser(slotKey ?? '', browserOn, () => onEndedRef.current())
+  const crew = useCrewBrowser(slotKey ?? '', !!browserPick, () => onEndedRef.current())
   const browserReady = readiness(crew)
-  const browserMode = browserOn && browserReady === 'ready'
+  // `unknown` (no answer about this chat yet) still lets a play go out: the buddy
+  // then says what went wrong, so nothing waits in silence.
+  const browserMode = browserReady === 'ready' || browserReady === 'unknown'
 
   const saveSettings = (patch: Partial<NonNullable<MoodState['settings']>>) => {
     setState(s => (s ? { ...s, settings: { ...s.settings, ...patch } } : s))
@@ -313,7 +312,7 @@ export default function MoodMusicPage() {
         setState(s => (s ? { ...s, moments: [moment, ...s.moments] } : s))
       }
       const { ids } = memorySummary(state?.memory ?? [])
-      await ask(buildRequest({ kind, text: words, state, explore, stayOnly, player }), words, ids)
+      await ask(buildRequest({ kind, text: words, state, explore, stayOnly }), words, ids)
     })
   }
 
@@ -440,7 +439,6 @@ export default function MoodMusicPage() {
         queueMemoryRef.current = pending.memoryIds
         setState(await moodApi.state())
         setCurrentId(next[0]?.id ?? null)
-        setAutoplay(false)
       } catch (e) {
         setError(errMessage(e) || 'unknown')
       } finally {
@@ -460,6 +458,12 @@ export default function MoodMusicPage() {
     const result = parsed?.play
     if (result?.played) {
       setBrowserPick(play.pickId)
+      // A song the buddy started counts as heard (design §0.6): not an explore pick again.
+      const heard = queue.find(p => p.id === play.pickId)
+      if (heard && !knownSongs.has(songKey(heard.title, heard.artist))) {
+        markKnown(heard, 'app')
+        markUsed()
+      }
       // A fresh start of a song lets its next ending wake the buddy again.
       if (endedForRef.current === play.pickId) { endedForRef.current = null; setEndedFor(null) }
       if (result.steps.length) void moodApi.setPlaySteps(play.site, result.steps).then(refresh).catch(() => undefined)
@@ -497,7 +501,6 @@ export default function MoodMusicPage() {
       if (verdict === 'skipped') {
         const rest = queue.filter(p => p.id !== updated.id && p.feedback !== 'skipped')
         setCurrentId(rest[0]?.id ?? null)
-        setAutoplay(true)
         if (browserMode && rest[0]) {
           stoppedRef.current = false
           await askPlay(rest[0], 'start')
@@ -514,7 +517,6 @@ export default function MoodMusicPage() {
 
   const playPick = (pick: QueuedPick) => {
     setCurrentId(pick.id)
-    setAutoplay(true)
     if (browserMode && !pending && !busy) {
       stoppedRef.current = false
       void run(() => askPlay(pick, 'start'))
@@ -542,10 +544,10 @@ export default function MoodMusicPage() {
   }
   onEndedRef.current = onEnded
 
-  // The media route answers only for an open chat, so choosing the Crew Browser
-  // opens it: the page can then tell whether the sites are approved.
+  // The media route answers only for an open chat, so the page opens it: it can
+  // then tell whether the sites are approved, before the first song.
   useEffect(() => {
-    if (!browserOn || !restored || slotRef.current) return
+    if (!restored || slotRef.current) return
     let live = true
     moodApi.openSlot().then(({ key }) => {
       if (!live || slotRef.current) return
@@ -553,7 +555,7 @@ export default function MoodMusicPage() {
       setSlotKey(key)
     }).catch(() => undefined)
     return () => { live = false }
-  }, [browserOn, restored, moodApi])
+  }, [restored, moodApi])
 
   const pauseBrowser = () => {
     stoppedRef.current = true
@@ -572,19 +574,6 @@ export default function MoodMusicPage() {
     stoppedRef.current = false
     void run(() => askPlay(current, 'start'))
   }
-
-  // A YouTube song that stays on the player for 30 s after the person pressed
-  // play counts as heard. shortcut: the embed's own play/pause state is not
-  // read (that needs the IFrame API's postMessage channel); upgrade if a pause
-  // should stop the clock.
-  useEffect(() => {
-    if (!current || !autoplay || current.source !== 'youtube' || browserMode) return
-    if (knownSongs.has(songKey(current.title, current.artist))) return
-    const pick = current
-    const timer = setTimeout(() => { markKnown(pick, 'app'); markUsed() }, KNOWN_AFTER_MS)
-    return () => clearTimeout(timer)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current?.id, autoplay])
 
   const approve = (id: string, action: 'approved' | 'rejected') => {
     const key = slotRef.current
@@ -632,6 +621,19 @@ export default function MoodMusicPage() {
   const lastParsed = !pending && lastBuddy?.reply ? parseDjReply(lastBuddy.reply) : null
   const showYou = pending && pending.text && !(lines.length && lines[lines.length - 1].who === 'you' && lines[lines.length - 1].text === pending.text)
   const remember = lastParsed?.remember && lastParsed.remember !== dismissedRemember ? lastParsed.remember : ''
+  // Why songs cannot play here yet, with what to do; drawn in the player's place.
+  const unready = browserMode ? null : (
+    <Banner
+      testId="mood-browser-unready"
+      title={t('browser.unready_title')}
+      body={t(`browser.unready_${browserReady}`)}
+      icon={<ShieldCheck size={14} aria-hidden="true" />}
+    >
+      {browserReady === 'not_approved' && (
+        <Btn primary onClick={() => navigate(APPROVE_PATH)}>{t('browser.approve')}</Btn>
+      )}
+    </Banner>
+  )
 
   return (
     <div className="mm-root relative flex h-full flex-col overflow-hidden" data-testid="mood-music-page">
@@ -703,20 +705,6 @@ export default function MoodMusicPage() {
                   >
                     {t('chat.stay_only')}
                   </button>
-                </div>
-                <div className="flex flex-wrap items-center gap-2" data-testid="mood-player-choice">
-                  <span className="text-xs text-[var(--muted)]">{t('chat.player')}</span>
-                  <SegmentedControl<Player>
-                    ariaLabel={t('chat.player')}
-                    value={player}
-                    onChange={v => saveSettings({ player: v })}
-                    segments={[
-                      { key: 'auto', label: t('chat.player_auto') },
-                      { key: 'youtube', label: t('page.source_youtube') },
-                      { key: 'bilibili', label: t('page.source_bilibili') },
-                      { key: 'browser', label: t('chat.player_browser') },
-                    ]}
-                  />
                 </div>
                 <div role="group" aria-label={t('page.mood_chips')} className="flex flex-wrap gap-2">
                   {MOOD_KEYS.map(key => (
@@ -894,23 +882,11 @@ export default function MoodMusicPage() {
               </div>
 
               <div className="mm-player flex min-w-0 flex-col gap-4" data-testid="mood-player-column">
-                {browserOn && browserReady !== 'ready' && browserReady !== 'unknown' && (
-                  <Banner
-                    testId="mood-browser-fallback"
-                    title={t('browser.fallback_title')}
-                    body={t(`browser.fallback_${browserReady}`)}
-                    icon={<ShieldCheck size={14} aria-hidden="true" />}
-                  >
-                    {browserReady === 'not_approved' && (
-                      <Btn primary onClick={() => navigate(APPROVE_PATH)}>{t('browser.approve')}</Btn>
-                    )}
-                  </Banner>
-                )}
+                {!current && unready}
                 {current ? (
                   <NowPlaying
                     pick={current}
-                    autoplay={autoplay}
-                    stage={browserMode ? (
+                    stage={unready ?? (
                       <BrowserControls
                         media={crew}
                         inTab={browserPick === current.id}
@@ -921,7 +897,7 @@ export default function MoodMusicPage() {
                         onPlay={resumeBrowser}
                         onContinuous={setContinuous}
                       />
-                    ) : undefined}
+                    )}
                     busy={working}
                     onLike={() => giveFeedback(current, current.feedback === 'liked' ? '' : 'liked')}
                     onSkip={() => giveFeedback(current, 'skipped')}

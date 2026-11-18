@@ -2,7 +2,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/media/hero-dark.png">
-  <img src="docs/media/hero-light.png" alt="The Mood Music page with the Missing someone chip picked, a player for Holocene by Bon Iver with a line on why it fits, and four songs under Up next">
+  <img src="docs/media/hero-light.png" alt="The Mood Music page with the Missing someone chip picked, 苏州河 by 薛凯琪 playing in Kiro Crew's browser with Pause, progress, volume and Continuous play, and four songs under Up next">
 </picture>
 
 **Say how you feel, and hear songs that feel the same.**
@@ -16,9 +16,9 @@ Mood Music adds a **Mood Music** page to Kiro Crew. You tell your music buddy ho
 you feel, or name a song that moved you. The buddy searches reviews and lists for
 good songs most people have not heard yet, says why each one fits and what to listen
 for, and orders them from staying with the feeling to lifting it a little. You see
-what it is doing while it works. Every link is checked before it is shown. YouTube
-songs play right on the page; bilibili songs open in a new tab of your own browser.
-A **Memory** tab shows what the buddy knows about your taste, and you decide what
+what it is doing while it works. Songs play in Kiro Crew's own browser: press play,
+and the buddy finds the song on YouTube or bilibili there and starts it. A
+**Memory** tab shows what the buddy knows about your taste, and you decide what
 stays.
 
 **Get started:** open **Apps → Discover**, find **Mood Music**, choose **Install**,
@@ -42,32 +42,28 @@ it fits, and more songs wait under **Up next**. Click **Like** on the ones that 
 
 ![The Missing someone chip is picked, Holocene is playing and marked Liked, and three more songs wait under Up next](docs/media/use-case-1-light.png)
 
-### 2. Open a bilibili pick in your own browser
+### 2. Let the buddy play songs in Kiro Crew's browser
 
-Some picks live on bilibili. Mood Music shows **Open on bilibili**, and the song
-opens in a new tab of your own browser, signed in or not, as you prefer. Click
-**More like this** to get songs close to the one you are hearing. Rather play on one
-site? Pick **Player: YouTube** or **bilibili** above the mood chips. The buddy then
-looks there first, and uses the other site only for a song it cannot find there.
-**Auto** takes either.
-
-![A bilibili song, Bloom by The Paper Kites, with an Open on bilibili button on the dark theme and the Fired up chip picked](docs/media/use-case-2-light.png)
-
-### 3. Let the buddy play songs in Kiro Crew's browser
-
-Pick **Player: Crew Browser**. Press play on a song, and the buddy searches for it on
-bilibili or YouTube in Kiro Crew's own browser and opens the video. On a Mac that is
-your own Chrome, with your sign-ins and your sound. **Pause**, the progress bar and
-the volume act on that tab at once; they never wait for the buddy. Turn on
-**Continuous play**, and when a song ends the buddy plays the next one, adding songs
-for the same mood when the list runs low, until you press **Pause**.
+Press play on a song, and the buddy searches for it on bilibili or YouTube in Kiro
+Crew's own browser and opens the video. On a Mac that is your own Chrome, with your
+sign-ins and your sound. **Pause**, the progress bar and the volume act on that tab
+at once; they never wait for the buddy. Turn on **Continuous play**, and when a song
+ends the buddy plays the next one, adding songs for the same mood when the list runs
+low, until you press **Pause**. Click **More like this** to get songs close to the
+one you are hearing.
 
 The first time, approve the music sites on the app's page (**Approve the sites**
 takes you there). Mood Music may only open bilibili and YouTube search and video
 pages. Continuous play works only while the Mood Music page is open: close it and the
 music stops when the current song ends.
 
-### 4. Look back at your moments
+![A song playing in Kiro Crew's browser at 1:23 of 5:36, with Pause, the progress bar, the volume and Continuous play on](docs/media/use-case-2-light.png)
+
+<sub>This picture and the one at the top were drawn from the page with made-up songs
+and a made-up browser tab state (playing, 1:23 of 5:36); no real browser tab or model
+was used.</sub>
+
+### 3. Look back at your moments
 
 Every mood you share is kept on the **Moments** tab, with the time and the songs it
 brought. It is a small diary of what you felt and what you listened to.
@@ -87,9 +83,10 @@ The background colour and its slow drift follow the mood, in light and dark:
 [Watch the walkthrough as a video (MP4)](docs/media/walkthrough.mp4).
 
 <sub>Recorded from the Mood Music page drawn with Kiro Crew's own dashboard styles on
-made-up demo data. No AI model was connected: the DJ's reply was written for this
-demo, so a real reply will differ, and the wait for it is shortened. The YouTube
-player is shown as a stand-in frame.</sub>
+made-up demo data, before version 0.2.5. No AI model was connected: the DJ's reply was
+written for this demo, so a real reply will differ, and the wait for it is shortened.
+The recording still shows the old in-page player and bilibili link; since 0.2.5 songs
+play only in Kiro Crew's browser.</sub>
 
 ## Install
 
@@ -108,9 +105,10 @@ player is shown as a stand-in frame.</sub>
    in **Apps → Library**.
 
 Kiro Crew must already be able to chat: if ordinary chats work, this works. No music
-account or key is needed. Playing YouTube songs inside the page needs a Kiro Crew
-that lets apps declare the video player they show; on an older Kiro Crew the player
-area stays blank, and the bilibili links and everything else still work.
+account or key is needed. Playing songs needs a Kiro Crew that lets apps name the
+browser pages their agent may open (KiroCrew#38333, newer than v0.13.0-rc.3). On an
+older Kiro Crew the page says so in the player's place and offers no play button;
+finding songs, Moments and Memory still work.
 
 ## First run
 
@@ -154,10 +152,9 @@ Kiro Crew sidebar under the app's folder.
 - **What leaves your computer:** your mood text and a short summary of your memory
   (your notes, songs you liked, skipped or know, recent moods) go to the AI model
   Kiro Crew uses, so the buddy can pick. The buddy searches the public web. To check
-  each song, the app asks `www.youtube.com/oembed` or `api.bilibili.com` about that
-  one video, with no cookie. YouTube songs load from `www.youtube-nocookie.com`, YouTube's
-  privacy-enhanced player. bilibili songs open on bilibili in your own browser. Your
-  moods are not saved into Kiro Crew's memory.
+  song link the buddy gives, the app asks `www.youtube.com/oembed` or
+  `api.bilibili.com` about that one video, with no cookie. Songs play on YouTube or
+  bilibili in Kiro Crew's browser. Your moods are not saved into Kiro Crew's memory.
 - **Crew Browser:** the buddy types and clicks in Kiro Crew's browser, which may be
   your own signed-in Chrome. Kiro Crew holds it to four kinds of page:
   `search.bilibili.com/all`, `www.bilibili.com/video/BV…`, `www.youtube.com/results`
@@ -187,23 +184,24 @@ Nothing moved for two minutes. Choose **Wait a bit more**, or **Stop and start
 over**. Check that an ordinary chat in Kiro Crew still answers.
 
 **A message says some songs were left out, or none of them could play.**
-The app asks YouTube or bilibili about every song before showing it, and drops one
-that they say does not exist or whose title does not match. When they cannot be
-asked (for example, bilibili refuses the check from some networks, or the check
-times out), the song stays and its card says **Not verified**. Try another direction.
+When the buddy gives a song's link, the app asks YouTube or bilibili about it before
+showing the song, and drops one that they say does not exist or whose title does not
+match. When they cannot be asked (for example, bilibili refuses the check from some
+networks, or the check times out), the song stays and its card says **Not verified**.
+A song with no link is kept: the buddy finds it on its site when you press play. Try
+another direction.
 
-**The player area is blank, or shows Error 153.**
-Your Kiro Crew does not yet let apps show the YouTube player (fixed in v0.13.0-rc.2).
-Update Kiro Crew, or choose **Open on YouTube** under the player. The bilibili
-songs still open in your browser.
+**The player says "Songs cannot play in Kiro Crew's browser yet".**
+The note says why. Your Kiro Crew is too old (update it to a version newer than
+v0.13.0-rc.3 that includes KiroCrew#38333, then open the page again), the sites are
+not approved yet (choose **Approve the sites**), or a policy turns Kiro Crew's
+browser off. There is no play button until then.
 
-**Crew Browser says it is not ready.**
-Your Kiro Crew is older than App Kit level 10, the sites are not approved yet (choose
-**Approve the sites**), or a policy turns Kiro Crew's browser off. Until then, songs
-play in the page and open on bilibili as before.
+**The buddy says it could not play a song.**
+Its reason shows under the chat. Press play again: it finds the way afresh.
 
 **Can it play Spotify or Apple Music?**
-No. It plays YouTube songs on the page and opens bilibili songs in your browser.
+No. It plays YouTube and bilibili songs in Kiro Crew's browser.
 
 ## Development
 
@@ -211,19 +209,19 @@ No. It plays YouTube songs on the page and opens bilibili songs in your browser.
 
 | Path | What it is |
 |---|---|
-| `app.json` | The manifest: page, agent, skill, backend hook, `ui.frameSources` |
+| `app.json` | The manifest: page, agent, skill, backend hook, `permissions.browserSites` |
 | `agents/dj.json`, `skills/mood-music/` | The music buddy agent (`web_search` and `web_fetch`, both run without asking, and Kiro Crew's `browser` on the approved `permissions.browserSites` pages) and its reply contract; the page also sends the contract and a bounded memory summary with every request (`ui/src/request.prompt.ts`). It pins no model, so it runs on your default |
 | `backend/` | Routes (`hooks.routes`), the JSON store with memory, the link checks, and `verify.py` (the YouTube oEmbed / bilibili view lookups) |
 | `ui/src/`, `ui/dist/index.mjs` | The page, and its committed ESM bundle |
 | `ui/i18n/` | The app's strings in 12 languages |
 | `tests/`, `ui/tests/` | Backend and UI tests |
 
-The page plays YouTube in a sandboxed iframe on
-`https://www.youtube-nocookie.com/embed/<id>`, built from an 11-character video id
-the page and the backend both check. `ui.frameSources` declares that one origin; a
-Kiro Crew with the app frame-source seam adds it to the dashboard's `frame-src` while
-the app is enabled and trusted. bilibili links must be `https` on exactly
-`www.bilibili.com`, `m.bilibili.com` or `b23.tv`.
+The page frames nothing: songs play only in Kiro Crew's browser, on the four pages
+`permissions.browserSites` names, and the page's buttons reach that tab through
+`useBrowserMedia` (App Kit level 10). A pick names its site; a link is optional.
+A YouTube link keeps only its 11-character video id, which the page and the backend
+both check; a bilibili link must be `https` on exactly `www.bilibili.com`,
+`m.bilibili.com` or `b23.tv`.
 
 ### Install from a clone
 

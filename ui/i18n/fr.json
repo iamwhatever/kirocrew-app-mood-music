@@ -1,16 +1,16 @@
 {
   "manifest": {
     "display_name": "Mood Music",
-    "description": "Dis-lui ce que tu ressens, ou cite une chanson qui t’a ému. Un agent DJ trouve des chansons qui portent la même émotion et les joue : YouTube dans la page, bilibili dans un nouvel onglet du navigateur. J’aime ou Passer, et les choix suivants s’adaptent.",
+    "description": "Dis-lui ce que tu ressens, ou cite une chanson qui t’a ému. Un agent DJ trouve des chansons qui portent la même émotion et les joue sur YouTube ou bilibili dans le navigateur de Kiro Crew. J’aime ou Passer, et les choix suivants s’adaptent.",
     "page_label": "Mood Music",
     "highlight_1": "Dis ce que tu ressens, ou cite une chanson qui t’a ému : il en trouve d’autres avec la même émotion",
     "highlight_2": "Chaque choix dit pourquoi il correspond à ton humeur",
-    "highlight_3": "YouTube se lit dans la page via l’intégration à confidentialité renforcée",
-    "highlight_4": "Les chansons bilibili s’ouvrent dans un nouvel onglet de ton propre navigateur ; l’agent ne touche jamais ton compte",
+    "highlight_3": "Les chansons se lisent dans le navigateur de Kiro Crew, avec le son ; la page a lecture, pause et volume",
+    "highlight_4": "L’agent n’ouvre que les pages de recherche et de vidéo de bilibili et YouTube, et ne se connecte, ne commente, n’aime ni ne paie jamais",
     "highlight_5": "J’aime ou Passer sert aux choix suivants",
     "highlight_6": "Le fond et le mouvement suivent l’humeur, en clair comme en sombre",
     "use_case_1": "Trouver et écouter des chansons qui correspondent à ce que tu ressens maintenant, et garder les moments qui t’ont ému.",
-    "configuration_1": "Aucun compte n’est nécessaire. YouTube se lit dans la page ; bilibili s’ouvre dans ton propre navigateur, connecté ou non, comme tu veux."
+    "configuration_1": "Nécessite un Kiro Crew avec les sites de navigateur pour apps (plus récent que v0.13.0-rc.3). Approuve les sites de musique une fois, sur la page de l’app dans Kiro Crew."
   },
   "page": {
     "title": "Mood Music",
@@ -34,13 +34,8 @@
     "liked": "Aimé",
     "skip": "Passer",
     "more": "Plus dans ce genre",
-    "open_bilibili": "Ouvrir sur bilibili",
-    "bilibili_note": "S’ouvre dans un nouvel onglet de ton propre navigateur.",
-    "open_youtube": "Ouvrir sur YouTube",
-    "youtube_blank": "Lecteur vide ou Error 153 ? Mets Kiro Crew à jour, ou ouvre-le sur YouTube.",
     "queue": "À suivre",
     "play": "Lire {{title}}",
-    "player_title": "Lecteur YouTube : {{title}}",
     "pause_motion": "Mettre en pause le mouvement du fond",
     "play_motion": "Relancer le mouvement du fond",
     "moments_empty_title": "Aucun moment pour l’instant",
@@ -124,10 +119,7 @@
     "explore_familiar": "Plus familier",
     "explore_balanced": "Équilibré",
     "explore_more": "Plus de découvertes",
-    "player": "Lecteur",
-    "player_auto": "Auto",
     "stay_only": "Aujourd’hui, rester dans cette émotion",
-    "player_browser": "Navigateur Crew",
     "status_playing": "Ton compagnon ouvre la chanson dans le navigateur de Kiro Crew…"
   },
   "card": {
@@ -161,11 +153,11 @@
     "continuous_note": "La lecture continue ne marche que tant que cette page est ouverte. Ferme-la, et la musique s’arrête à la fin de la chanson en cours.",
     "not_played": "Ton compagnon n’a pas pu la lancer cette fois : {{reason}}",
     "no_reason": "sans raison donnée",
-    "fallback_title": "Le navigateur Crew n’est pas prêt, les chansons se lisent donc ici comme avant",
-    "fallback_old_host": "Ce Kiro Crew est trop ancien pour le lecteur du navigateur Crew. Mets Kiro Crew à jour pour l’utiliser.",
-    "fallback_not_approved": "Approuve d’abord les sites de musique pour Mood Music. Une seule fois, sur la page de l’app.",
-    "fallback_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew.",
     "approve": "Approuver les sites",
-    "status_playing": "Lecture dans le navigateur de Kiro Crew."
+    "status_playing": "Lecture dans le navigateur de Kiro Crew.",
+    "unready_title": "Les chansons ne peuvent pas encore se lire dans le navigateur de Kiro Crew",
+    "unready_old_host": "Ce Kiro Crew est trop ancien. Mets Kiro Crew à jour vers une version avec les sites de navigateur pour apps (KiroCrew#38333, plus récente que v0.13.0-rc.3), puis rouvre cette page.",
+    "unready_not_approved": "Approuve d’abord les sites de musique pour Mood Music. Une seule fois, sur la page de l’app.",
+    "unready_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew."
   }
 }

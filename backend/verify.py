@@ -12,6 +12,9 @@ Three outcomes:
   400 / 401 / 404; bilibili HTTP 404 or a ``code`` in :data:`BILIBILI_GONE`), or
   it answers with a title that does not match. The pick is dropped.
 * **Confirmed**: the host answers and the title matches. The pick is kept.
+* **No link**: the pick names only its site; the buddy finds it there by
+  searching in Kiro Crew's browser when it is played. Nothing is looked up and
+  the pick is kept.
 * **Unchecked**: the lookup could not say either way (rate limit, HTTP 412,
   another status, a timeout, a network error, a body that is not the answer,
   a ``b23.tv`` short link with no BV id to look up). The pick is kept and
@@ -119,7 +122,7 @@ def same_song(a: tuple[str, str], b: tuple[str, str]) -> bool:
 
 def lookup_url(pick: dict[str, Any]) -> str | None:
     """The one URL that checks *pick*, or ``None`` when it cannot be checked."""
-    if pick.get("source") == "youtube":
+    if pick.get("source") == "youtube" and pick.get("video_id"):
         watch = f"https://www.youtube.com/watch?v={pick['video_id']}"
         return f"{YOUTUBE_OEMBED}?url={quote(watch, safe='')}&format=json"
     if pick.get("source") == "bilibili":
@@ -157,6 +160,9 @@ def _verdict(pick: dict[str, Any], status: int, answer: Any) -> str:
 
 async def _check(pick: dict[str, Any], fetch: Fetch, gate: asyncio.Semaphore) -> str:
     """``"ok"``, a drop reason (``"not_found"``, ``"title_mismatch"``), or ``"unchecked:<why>"``."""
+    if not pick.get("video_id") and not pick.get("url"):
+        # No link to check: the buddy searches the site for it when it plays.
+        return "ok"
     url = lookup_url(pick)
     if url is None:
         return "unchecked:no_lookup"

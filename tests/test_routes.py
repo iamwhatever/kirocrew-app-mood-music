@@ -108,6 +108,16 @@ def test_a_pick_keeps_its_tier_arc_listen_for_and_evidence(ctx) -> None:
     assert not {"tier", "arc", "listen_for", "evidence", "unverified"} & plain.keys()
 
 
+@pytest.mark.parametrize("source", ["youtube", "bilibili"])
+def test_a_pick_with_no_link_is_stored_by_its_site(ctx, source) -> None:
+    pick = {"title": "Song", "artist": "A", "why": "fits", "source": source, "url": ""}
+    status, body = _call(ctx, "POST", "/queue", {"source": "r1", "picks": [pick]})
+    assert status == 200
+    (stored,) = body["queue"]
+    assert stored["source"] == source
+    assert not {"url", "video_id"} & stored.keys()
+
+
 @pytest.mark.parametrize(
     ("pick", "code"),
     [
@@ -240,21 +250,20 @@ def test_a_memory_full_of_the_persons_own_notes_answers_409(ctx, monkeypatch) ->
 
 
 def test_settings_keep_the_explore_level_and_the_record_state(ctx) -> None:
-    base = {"explore": "balanced", "record_open": False, "player": "auto", "continuous": False}
+    base = {"explore": "balanced", "record_open": False, "continuous": False}
     assert _call(ctx, "GET", "/state")[1]["settings"] == base
     assert _call(ctx, "PUT", "/settings", {"explore": "familiar"})[1] == {**base, "explore": "familiar"}
     assert _call(ctx, "PUT", "/settings", {"record_open": True})[1]["record_open"] is True
-    assert _call(ctx, "PUT", "/settings", {"player": "youtube"})[1]["player"] == "youtube"
-    assert _call(ctx, "PUT", "/settings", {"player": "browser"})[1]["player"] == "browser"
     assert _call(ctx, "PUT", "/settings", {"continuous": True})[1]["continuous"] is True
     assert _call(ctx, "GET", "/state")[1]["settings"] == {
-        "explore": "familiar", "record_open": True, "player": "browser", "continuous": True,
+        "explore": "familiar", "record_open": True, "continuous": True,
     }
 
 
 @pytest.mark.parametrize(
     "body",
-    [{}, {"explore": "wild"}, {"record_open": "yes"}, {"player": "spotify"}, {"player": None},
+    [{}, {"explore": "wild"}, {"record_open": "yes"}, {"player": "browser"},
+     {"explore": "balanced", "player": "youtube"},
      {"explore": "balanced", "theme": "dark"}, {"continuous": "on"}, {"continuous": 1}],
 )
 def test_bad_settings_are_refused(ctx, body) -> None:

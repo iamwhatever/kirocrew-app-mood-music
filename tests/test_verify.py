@@ -84,6 +84,12 @@ class TestTitleMatch:
 
 
 class TestVerifyPicks:
+    def test_a_pick_with_no_link_is_kept_unflagged_and_nothing_is_fetched(self) -> None:
+        fetch, calls = _fetch({})
+        bare = [{"title": "苏州河", "artist": "薛凯琪", "source": s} for s in ("youtube", "bilibili")]
+        kept, dropped = _run(bare, fetch)
+        assert kept == bare and dropped == {} and calls == []
+
     def test_a_confirmed_pick_is_kept_and_the_rest_are_counted(self) -> None:
         fetch, calls = _fetch({verify.YOUTUBE_OEMBED: OEMBED_OK, verify.BILIBILI_VIEW: BILI_OK})
         kept, dropped = _run([_yt(), _bili()], fetch)
