@@ -32,7 +32,7 @@ import { Headphones, MessageCircleQuestion, Play, Send, ShieldCheck, Square, Tri
 import { useAppApi, useChatLauncher, useNavigate } from '@kirocrew/app-sdk'
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from '@kirocrew/app-sdk/ui'
 import { t } from './i18n'
-import { createMoodApi, grantCause, latestReply, type GrantCause, type MoodState, type QueuedPick, type Verdict } from './api'
+import { createMoodApi, grantCause, latestReply, replyMark, sameReply, type GrantCause, type MoodState, type QueuedPick, type Verdict } from './api'
 import Banner from './Banner'
 import BrowserControls from './BrowserControls'
 import BrowserView from './BrowserView'
@@ -208,7 +208,7 @@ export default function MoodMusicPage() {
         // chat (the listed one, before the move to the hidden chat) is not read here.
         if (out && (!saved?.slotKey || saved.slotKey === key)) {
           const source = replySource(latestReply(read))
-          if (!read || read.running || turnError(read) || (source !== out.baseline && source !== s.last_source)) {
+          if (!read || read.running || turnError(read) || (!sameReply(out.baseline, read) && source !== s.last_source)) {
             momentRef.current = out.momentId
             setPending(out)
           }
@@ -279,7 +279,7 @@ export default function MoodMusicPage() {
     const key = await moodApi.ask(message)
     slotRef.current = key
     setSlotKey(key)
-    setPending({ momentId: momentRef.current, baseline: replySource(latestReply(before)), memoryIds, text: shown, ...(play ? { play } : {}) })
+    setPending({ momentId: momentRef.current, baseline: replyMark(before), memoryIds, text: shown, ...(play ? { play } : {}) })
   }, [moodApi])
   const pendingRef = useRef(pending)
   pendingRef.current = pending
@@ -424,12 +424,14 @@ export default function MoodMusicPage() {
       const reply = latestReply(read)
       const source = replySource(reply)
       const failed = turnError(read)
-      if (!failed && (!reply || source === pending.baseline) && !pending.stopped) return
+      // A NEW reply ends the turn, even one word for word like the last.
+      const fresh = !!reply && !sameReply(pending.baseline, read)
+      if (!failed && !fresh && !pending.stopped) return
       live = false
       setPending(null)
       setStuck(false)
       if (pending.stopped) { setNotice(t('chat.stopped')); return }
-      if (failed && source === pending.baseline) { setTurnFailed(failed); return }
+      if (failed && !fresh) { setTurnFailed(failed); return }
       const parsed = parseDjReply(reply)
       if (pending.play) { await afterPlay(pending.play, parsed, source); return }
       if (!parsed) { setError('unreadable'); return }

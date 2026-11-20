@@ -272,6 +272,27 @@ describe('Crew Browser player', () => {
     expect(asks()).toHaveLength(2)
   })
 
+  it('keeps playing when the buddy answers two plays word for word the same', async () => {
+    const same = { played: true, site: 'youtube', steps: ['open the results page'] }
+    await open()
+    const first = await playAndAnswer(same)
+    await songEnds()
+    expect(asks()).toHaveLength(2)
+    // The slot keeps its history: the second reply is new, though its text is the first one's.
+    const history = (n: number) => replyTo(asks()[0], same).messages!.concat(
+      ...asks().slice(1, n).map(a => replyTo(a, same).messages!),
+    )
+    expect(asks()[0]).toBe(first)
+    api.getSlot.mockResolvedValue({ running: false, messages: history(2) })
+    await flush(POLL_MS)
+    await flush()
+    // The turn ended: the next ending wakes the buddy for the song after.
+    await act(async () => { setStubMedia(PLAYING) })
+    await songEnds()
+    expect(asks()).toHaveLength(3)
+    expect(asks()[2]).toContain('Play in Crew Browser: "Song 3" - Artist 3')
+  })
+
   it('a page opened again does not wake the buddy for an ending it already woke it for', async () => {
     await open()
     await playAndAnswer({ played: true, site: 'youtube', steps: ['x'] })

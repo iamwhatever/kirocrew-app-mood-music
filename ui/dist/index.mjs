@@ -2349,6 +2349,459 @@ function t(key, vars) {
 	}
 	return key;
 }
+// src/links.ts
+/**
+* The two song links Mood Music plays, and nothing else.
+*
+* Mirrors `backend/links.py`: the page drops a pick the backend would refuse,
+* so one bad link from the agent loses only that song. A YouTube pick keeps
+* only its 11-character video id; a bilibili pick must be https on an exact
+* bilibili host. Links are optional: the buddy finds a song by searching its
+* site in Kiro Crew's browser.
+*/
+var VIDEO_ID_RE = /^[A-Za-z0-9_-]{11}$/;
+var BILIBILI_HOSTS = /* @__PURE__ */ new Set([
+	"www.bilibili.com",
+	"m.bilibili.com",
+	"b23.tv"
+]);
+var YOUTUBE_WATCH_HOSTS = /* @__PURE__ */ new Set([
+	"www.youtube.com",
+	"youtube.com",
+	"m.youtube.com",
+	"music.youtube.com"
+]);
+var MAX_URL = 2048;
+function validVideoId(value) {
+	return typeof value === "string" && VIDEO_ID_RE.test(value) ? value : null;
+}
+/** A plain https URL: no user info, no port, no character a browser reads differently. */
+function parseHttps(raw) {
+	if (typeof raw !== "string" || raw.length > MAX_URL) return null;
+	if (/[\\\u0000-\u0020\u007f]/.test(raw)) return null;
+	let url;
+	try {
+		url = new URL(raw);
+	} catch {
+		return null;
+	}
+	if (url.protocol !== "https:" || url.username || url.password || url.port) return null;
+	return url;
+}
+/** The video id a YouTube watch or share link names, or null. */
+function youtubeVideoId(raw) {
+	const url = parseHttps(raw);
+	if (!url) return null;
+	if (url.hostname === "youtu.be") return validVideoId(url.pathname.slice(1));
+	if (YOUTUBE_WATCH_HOSTS.has(url.hostname) && url.pathname === "/watch") {
+		const ids = url.searchParams.getAll("v");
+		return ids.length === 1 ? validVideoId(ids[0]) : null;
+	}
+	return null;
+}
+/** The link rebuilt from its parts when it is an https bilibili link, else null. */
+function bilibiliUrl(raw) {
+	const url = parseHttps(raw);
+	if (!url || !BILIBILI_HOSTS.has(url.hostname)) return null;
+	return `https://${url.hostname}${url.pathname}${url.search}`;
+}
+/** A page the DJ cites as evidence: any plain https URL, rebuilt from its parts; else null. */
+function evidenceUrl(raw) {
+	const url = parseHttps(raw);
+	return url ? url.href : null;
+}
+// src/moods.ts
+/**
+* The mood chips, and the scene the page's backdrop paints.
+*
+* A scene is bounded parameters only: two or three hues, a saturation and a
+* lightness band, a strength, a motion speed, one pattern from a fixed set, and
+* an arc hint. The DJ may send one in its reply (`replyParse.ts`), so
+* {@link parseScene} treats it as untrusted: anything outside these bounds is
+* dropped whole and the page keeps the scene it has. No CSS, HTML or URL from
+* the model ever reaches the page; `MoodBackdrop` builds every style from
+* these numbers and names.
+*
+* The backdrop never paints a hue straight: it mixes each one into the theme's
+* own `--bg`, so the same scene reads soft on a light theme and deep on a dark
+* one, and text keeps the theme's `--text` contrast.
+*/
+var MOOD_KEYS = [
+	"calm",
+	"sad",
+	"happy",
+	"missing",
+	"fired"
+];
+var PATTERNS = [
+	"glows",
+	"waves",
+	"particles",
+	"aurora"
+];
+var MOTIONS = [
+	"slow",
+	"medium",
+	"lively"
+];
+var SATURATIONS = [
+	"soft",
+	"medium",
+	"vivid"
+];
+var LIGHTNESSES = [
+	"deep",
+	"medium",
+	"bright"
+];
+var SCENE_ARCS = [
+	"stay",
+	"turn",
+	"lift"
+];
+/** Strength 0-1 maps onto this much colour in `--bg`, in percent: always visible, never loud. */
+var MIX_RANGE = [24, 58];
+function mixPercent(strength) {
+	return Math.round(MIX_RANGE[0] + (MIX_RANGE[1] - MIX_RANGE[0]) * clamp01(strength));
+}
+var PRESETS = {
+	calm: {
+		hues: [
+			178,
+			196,
+			150
+		],
+		saturation: "medium",
+		lightness: "medium",
+		strength: .55,
+		motion: "slow",
+		pattern: "waves",
+		arc: "stay"
+	},
+	sad: {
+		hues: [
+			222,
+			244,
+			205
+		],
+		saturation: "medium",
+		lightness: "deep",
+		strength: .6,
+		motion: "slow",
+		pattern: "glows",
+		arc: "stay"
+	},
+	happy: {
+		hues: [
+			44,
+			18,
+			335
+		],
+		saturation: "vivid",
+		lightness: "bright",
+		strength: .7,
+		motion: "lively",
+		pattern: "particles",
+		arc: "stay"
+	},
+	missing: {
+		hues: [
+			338,
+			20,
+			268
+		],
+		saturation: "medium",
+		lightness: "medium",
+		strength: .6,
+		motion: "slow",
+		pattern: "aurora",
+		arc: "stay"
+	},
+	fired: {
+		hues: [
+			6,
+			28,
+			350
+		],
+		saturation: "vivid",
+		lightness: "medium",
+		strength: .8,
+		motion: "lively",
+		pattern: "glows",
+		arc: "stay"
+	},
+	neutral: {
+		hues: [212, 240],
+		saturation: "soft",
+		lightness: "medium",
+		strength: .25,
+		motion: "medium",
+		pattern: "glows",
+		arc: "stay"
+	}
+};
+function isMoodKey(value) {
+	return typeof value === "string" && MOOD_KEYS.includes(value);
+}
+/** The preset scene for a chip; anything else (an unknown chip, free text) is the neutral one. */
+function presetScene(look) {
+	const key = isMoodKey(look) ? look : "neutral";
+	const p = PRESETS[key];
+	return {
+		...p,
+		hues: [...p.hues],
+		source: key
+	};
+}
+function clamp01(n) {
+	return Math.min(1, Math.max(0, n));
+}
+function oneOf$1(value, allowed, fallback) {
+	if (value === void 0) return fallback;
+	return allowed.includes(value) ? value : null;
+}
+/**
+* A scene from untrusted input (the DJ's block, or the saved page view), or
+* null when it does not fit the bounds. Hues must be two or three finite
+* numbers and are wrapped into 0-359; strength is clamped to 0-1; every name
+* must be one of its fixed set (an absent one takes the middle value). Unknown
+* fields are ignored.
+*/
+function parseScene(raw) {
+	if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+	const r = raw;
+	if (!Array.isArray(r.hues) || r.hues.length < 2 || r.hues.length > 3) return null;
+	if (!r.hues.every((h) => typeof h === "number" && Number.isFinite(h))) return null;
+	const hues = r.hues.map((h) => (Math.round(h) % 360 + 360) % 360);
+	if (r.strength !== void 0 && (typeof r.strength !== "number" || !Number.isFinite(r.strength))) return null;
+	const saturation = oneOf$1(r.saturation, SATURATIONS, "medium");
+	const lightness = oneOf$1(r.lightness, LIGHTNESSES, "medium");
+	const motion = oneOf$1(r.motion, MOTIONS, "medium");
+	const pattern = oneOf$1(r.pattern, PATTERNS, "glows");
+	const arc = oneOf$1(r.arc, SCENE_ARCS, "stay");
+	if (!saturation || !lightness || !motion || !pattern || !arc) return null;
+	return {
+		hues,
+		saturation,
+		lightness,
+		strength: typeof r.strength === "number" ? clamp01(r.strength) : .6,
+		motion,
+		pattern,
+		arc,
+		source: r.source === "dj" || r.source === "neutral" || isMoodKey(r.source) ? r.source : "dj"
+	};
+}
+/** Words that place free text, or the agent's mood tags, on one of the chips. */
+var WORDS = {
+	calm: [
+		"平静",
+		"安静",
+		"放松",
+		"calm",
+		"peaceful",
+		"relaxed",
+		"chill"
+	],
+	sad: [
+		"难过",
+		"伤心",
+		"悲伤",
+		"失落",
+		"sad",
+		"down",
+		"heartbroken",
+		"blue"
+	],
+	happy: [
+		"开心",
+		"快乐",
+		"高兴",
+		"愉快",
+		"happy",
+		"joy",
+		"cheerful"
+	],
+	missing: [
+		"想念",
+		"思念",
+		"怀念",
+		"miss",
+		"missing",
+		"nostalgic",
+		"longing"
+	],
+	fired: [
+		"燃",
+		"热血",
+		"激动",
+		"兴奋",
+		"hype",
+		"pumped",
+		"energetic"
+	]
+};
+/** The chip a mood text or tag list reads as, or neutral when none fits. */
+function moodLookFor(texts) {
+	const hay = texts.join(" ").toLowerCase();
+	if (!hay.trim()) return "neutral";
+	for (const key of MOOD_KEYS) if (WORDS[key].some((w) => hay.includes(w))) return key;
+	return "neutral";
+}
+// src/replyParse.ts
+/**
+* Read the DJ agent's `mood-music` block out of a reply.
+*
+* The agent found its links on web pages, so the block is untrusted: each pick
+* is checked here with `links.ts` and reduced to the fields the page draws, a
+* bad pick is dropped, and lengths are cut to the backend's limits. Text is only
+* ever rendered as React text, never as HTML.
+*/
+var MAX_STEPS = 8;
+var MAX_STEP_CHARS = 120;
+var STEP_BAD_RE = /[\u0000-\u001f\u007f\u2028\u2029`[\]]/;
+function playResult(d) {
+	if (typeof d.played !== "boolean") return void 0;
+	const site = oneOf(d.site, ["youtube", "bilibili"]);
+	if (!site) return void 0;
+	const steps = (Array.isArray(d.steps) ? d.steps : []).filter((s) => typeof s === "string" && !STEP_BAD_RE.test(s)).map((s) => s.trim()).filter((s) => s.length > 0 && s.length <= MAX_STEP_CHARS).slice(0, MAX_STEPS);
+	return {
+		played: d.played,
+		site,
+		steps: d.played ? steps : [],
+		reason: text(d.reason, 200)
+	};
+}
+var FENCE_RE = /```mood-music[^\n]*\n([\s\S]*?)```/g;
+var ANY_FENCE_RE = /```[\s\S]*?(```|$)/g;
+var MAX_PICKS = 12;
+var TIERS = [
+	"anchor",
+	"explore",
+	"deep"
+];
+var ARCS = [
+	"stay",
+	"turn",
+	"lift"
+];
+function text(value, limit) {
+	return typeof value === "string" ? value.trim().slice(0, limit) : "";
+}
+function tags(value, limit = 40, count = 8) {
+	if (!Array.isArray(value)) return [];
+	return value.filter((t) => typeof t === "string" && t.trim().length > 0).map((t) => t.trim().slice(0, limit)).slice(0, count);
+}
+function oneOf(value, allowed) {
+	return allowed.includes(value) ? value : void 0;
+}
+function evidence(raw) {
+	if (!raw || typeof raw !== "object") return void 0;
+	const r = raw;
+	const url = evidenceUrl(r.url);
+	return url ? {
+		url,
+		label: text(r.label, 200)
+	} : void 0;
+}
+function pick(raw) {
+	if (!raw || typeof raw !== "object") return null;
+	const r = raw;
+	const title = text(r.title, 200);
+	if (!title) return null;
+	const base = {
+		title,
+		artist: text(r.artist, 200),
+		why: text(r.why, 400),
+		tags: tags(r.tags)
+	};
+	const tier = oneOf(r.tier, TIERS);
+	const arc = oneOf(r.arc, ARCS);
+	const listenFor = text(r.listen_for, 400);
+	const ev = evidence(r.evidence);
+	if (tier) base.tier = tier;
+	if (arc) base.arc = arc;
+	if (listenFor) base.listen_for = listenFor;
+	if (ev) base.evidence = ev;
+	const source = r.source ?? r.platform;
+	const noLink = (r.url === void 0 || r.url === null || r.url === "") && r.video_id === void 0;
+	if (source === "youtube") {
+		if (noLink) return {
+			...base,
+			source: "youtube"
+		};
+		const id = r.video_id !== void 0 ? validVideoId(r.video_id) : youtubeVideoId(r.url);
+		return id ? {
+			...base,
+			source: "youtube",
+			video_id: id
+		} : null;
+	}
+	if (source === "bilibili") {
+		if (noLink) return {
+			...base,
+			source: "bilibili"
+		};
+		const url = bilibiliUrl(r.url);
+		return url ? {
+			...base,
+			source: "bilibili",
+			url
+		} : null;
+	}
+	return null;
+}
+/** Picks in arc order (stay, turn, lift), a pick with no arc after them; ties keep their order. */
+function byArc(picks) {
+	const rank = (p) => p.arc ? ARCS.indexOf(p.arc) : ARCS.length;
+	if (!picks.some((p) => p.arc)) return picks;
+	return picks.map((p, i) => [p, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(([p]) => p);
+}
+/** The LAST `mood-music` block in *content*, or null when there is none that parses. */
+function parseDjReply(content) {
+	const blocks = [...content.matchAll(FENCE_RE)];
+	const last = blocks[blocks.length - 1];
+	if (!last) return null;
+	let data;
+	try {
+		data = JSON.parse(last[1]);
+	} catch {
+		return null;
+	}
+	if (!data || typeof data !== "object" || Array.isArray(data)) return null;
+	const d = data;
+	const rawPicks = Array.isArray(d.picks) ? d.picks.slice(0, MAX_PICKS) : [];
+	const picks = rawPicks.map(pick).filter((p) => p !== null);
+	return {
+		text: replyText(content),
+		question: text(d.question, 300),
+		moodTags: tags(d.mood_tags ?? d.moods),
+		picks: byArc(picks),
+		dropped: rawPicks.length - picks.length,
+		followUps: tags(d.follow_ups, 40, 3),
+		remember: text(d.remember, 60),
+		...sceneOf(d.scene),
+		...playResult(d) ? { play: playResult(d) } : {}
+	};
+}
+/** `{scene}` when the block's scene fits the bounds, else nothing: the page keeps its scene. */
+function sceneOf(raw) {
+	if (raw === void 0) return {};
+	const scene = parseScene(raw);
+	return scene ? { scene: {
+		...scene,
+		source: "dj"
+	} } : {};
+}
+/** The reply's prose: every fenced block removed, cut to a short paragraph. */
+function replyText(content) {
+	return content.replace(ANY_FENCE_RE, "").replace(/\s+/g, " ").trim().slice(0, 300);
+}
+/** A short stable id for a reply, so the page queues each reply once. */
+function replySource(content) {
+	let h = 0;
+	for (let i = 0; i < content.length; i++) h = (h << 5) - h + content.charCodeAt(i) | 0;
+	return `r${(h >>> 0).toString(36)}-${content.length}`;
+}
 // src/api.ts
 var BASE = "/api/apps/mood-music";
 /** The backend's refusal code in a failed buddy call, or null for any other failure. */
@@ -2412,6 +2865,22 @@ function createMoodApi(api) {
 			return (await api.post(`${BASE}/buddy/send`, { message }).catch(plainRefusal)).key;
 		}
 	};
+}
+/**
+* Which reply is the slot's newest: how many replies the slot holds and the
+* newest one's text, or '' with none. A new reply word for word like the last
+* one still changes it, because the count grows. The slot read carries the
+* whole history (no `limit`), so the count only grows.
+*/
+function replyMark(slot) {
+	let n = 0;
+	for (const m of slot?.messages ?? []) if (m.role === "assistant" && typeof m.content === "string" && m.content.trim()) n++;
+	return n ? `${n}:${replySource(latestReply(slot))}` : "";
+}
+/** Whether the slot's newest reply is still the one *baseline* named when the turn went out. */
+function sameReply(baseline, slot) {
+	if (baseline && !baseline.includes(":")) return replySource(latestReply(slot)) === baseline;
+	return replyMark(slot) === baseline;
 }
 /** The newest assistant reply in a slot, or ''. */
 function latestReply(slot) {
@@ -3137,243 +3606,6 @@ function MomentsTab({ moments }) {
 		}, m.id))
 	});
 }
-// src/moods.ts
-/**
-* The mood chips, and the scene the page's backdrop paints.
-*
-* A scene is bounded parameters only: two or three hues, a saturation and a
-* lightness band, a strength, a motion speed, one pattern from a fixed set, and
-* an arc hint. The DJ may send one in its reply (`replyParse.ts`), so
-* {@link parseScene} treats it as untrusted: anything outside these bounds is
-* dropped whole and the page keeps the scene it has. No CSS, HTML or URL from
-* the model ever reaches the page; `MoodBackdrop` builds every style from
-* these numbers and names.
-*
-* The backdrop never paints a hue straight: it mixes each one into the theme's
-* own `--bg`, so the same scene reads soft on a light theme and deep on a dark
-* one, and text keeps the theme's `--text` contrast.
-*/
-var MOOD_KEYS = [
-	"calm",
-	"sad",
-	"happy",
-	"missing",
-	"fired"
-];
-var PATTERNS = [
-	"glows",
-	"waves",
-	"particles",
-	"aurora"
-];
-var MOTIONS = [
-	"slow",
-	"medium",
-	"lively"
-];
-var SATURATIONS = [
-	"soft",
-	"medium",
-	"vivid"
-];
-var LIGHTNESSES = [
-	"deep",
-	"medium",
-	"bright"
-];
-var SCENE_ARCS = [
-	"stay",
-	"turn",
-	"lift"
-];
-/** Strength 0-1 maps onto this much colour in `--bg`, in percent: always visible, never loud. */
-var MIX_RANGE = [24, 58];
-function mixPercent(strength) {
-	return Math.round(MIX_RANGE[0] + (MIX_RANGE[1] - MIX_RANGE[0]) * clamp01(strength));
-}
-var PRESETS = {
-	calm: {
-		hues: [
-			178,
-			196,
-			150
-		],
-		saturation: "medium",
-		lightness: "medium",
-		strength: .55,
-		motion: "slow",
-		pattern: "waves",
-		arc: "stay"
-	},
-	sad: {
-		hues: [
-			222,
-			244,
-			205
-		],
-		saturation: "medium",
-		lightness: "deep",
-		strength: .6,
-		motion: "slow",
-		pattern: "glows",
-		arc: "stay"
-	},
-	happy: {
-		hues: [
-			44,
-			18,
-			335
-		],
-		saturation: "vivid",
-		lightness: "bright",
-		strength: .7,
-		motion: "lively",
-		pattern: "particles",
-		arc: "stay"
-	},
-	missing: {
-		hues: [
-			338,
-			20,
-			268
-		],
-		saturation: "medium",
-		lightness: "medium",
-		strength: .6,
-		motion: "slow",
-		pattern: "aurora",
-		arc: "stay"
-	},
-	fired: {
-		hues: [
-			6,
-			28,
-			350
-		],
-		saturation: "vivid",
-		lightness: "medium",
-		strength: .8,
-		motion: "lively",
-		pattern: "glows",
-		arc: "stay"
-	},
-	neutral: {
-		hues: [212, 240],
-		saturation: "soft",
-		lightness: "medium",
-		strength: .25,
-		motion: "medium",
-		pattern: "glows",
-		arc: "stay"
-	}
-};
-function isMoodKey(value) {
-	return typeof value === "string" && MOOD_KEYS.includes(value);
-}
-/** The preset scene for a chip; anything else (an unknown chip, free text) is the neutral one. */
-function presetScene(look) {
-	const key = isMoodKey(look) ? look : "neutral";
-	const p = PRESETS[key];
-	return {
-		...p,
-		hues: [...p.hues],
-		source: key
-	};
-}
-function clamp01(n) {
-	return Math.min(1, Math.max(0, n));
-}
-function oneOf$1(value, allowed, fallback) {
-	if (value === void 0) return fallback;
-	return allowed.includes(value) ? value : null;
-}
-/**
-* A scene from untrusted input (the DJ's block, or the saved page view), or
-* null when it does not fit the bounds. Hues must be two or three finite
-* numbers and are wrapped into 0-359; strength is clamped to 0-1; every name
-* must be one of its fixed set (an absent one takes the middle value). Unknown
-* fields are ignored.
-*/
-function parseScene(raw) {
-	if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
-	const r = raw;
-	if (!Array.isArray(r.hues) || r.hues.length < 2 || r.hues.length > 3) return null;
-	if (!r.hues.every((h) => typeof h === "number" && Number.isFinite(h))) return null;
-	const hues = r.hues.map((h) => (Math.round(h) % 360 + 360) % 360);
-	if (r.strength !== void 0 && (typeof r.strength !== "number" || !Number.isFinite(r.strength))) return null;
-	const saturation = oneOf$1(r.saturation, SATURATIONS, "medium");
-	const lightness = oneOf$1(r.lightness, LIGHTNESSES, "medium");
-	const motion = oneOf$1(r.motion, MOTIONS, "medium");
-	const pattern = oneOf$1(r.pattern, PATTERNS, "glows");
-	const arc = oneOf$1(r.arc, SCENE_ARCS, "stay");
-	if (!saturation || !lightness || !motion || !pattern || !arc) return null;
-	return {
-		hues,
-		saturation,
-		lightness,
-		strength: typeof r.strength === "number" ? clamp01(r.strength) : .6,
-		motion,
-		pattern,
-		arc,
-		source: r.source === "dj" || r.source === "neutral" || isMoodKey(r.source) ? r.source : "dj"
-	};
-}
-/** Words that place free text, or the agent's mood tags, on one of the chips. */
-var WORDS = {
-	calm: [
-		"平静",
-		"安静",
-		"放松",
-		"calm",
-		"peaceful",
-		"relaxed",
-		"chill"
-	],
-	sad: [
-		"难过",
-		"伤心",
-		"悲伤",
-		"失落",
-		"sad",
-		"down",
-		"heartbroken",
-		"blue"
-	],
-	happy: [
-		"开心",
-		"快乐",
-		"高兴",
-		"愉快",
-		"happy",
-		"joy",
-		"cheerful"
-	],
-	missing: [
-		"想念",
-		"思念",
-		"怀念",
-		"miss",
-		"missing",
-		"nostalgic",
-		"longing"
-	],
-	fired: [
-		"燃",
-		"热血",
-		"激动",
-		"兴奋",
-		"hype",
-		"pumped",
-		"energetic"
-	]
-};
-/** The chip a mood text or tag list reads as, or neutral when none fits. */
-function moodLookFor(texts) {
-	const hay = texts.join(" ").toLowerCase();
-	if (!hay.trim()) return "neutral";
-	for (const key of MOOD_KEYS) if (WORDS[key].some((w) => hay.includes(w))) return key;
-	return "neutral";
-}
 // src/MoodBackdrop.tsx
 /**
 * The page's mood backdrop: one scene (`moods.ts`) painted behind the content.
@@ -3989,222 +4221,6 @@ var REPLY_LINES = [
 	"To ask one question instead, the block is {\"question\": \"...\"} with no picks."
 ];
 var REPLY_FORMAT = REPLY_LINES.join("\n");
-// src/links.ts
-/**
-* The two song links Mood Music plays, and nothing else.
-*
-* Mirrors `backend/links.py`: the page drops a pick the backend would refuse,
-* so one bad link from the agent loses only that song. A YouTube pick keeps
-* only its 11-character video id; a bilibili pick must be https on an exact
-* bilibili host. Links are optional: the buddy finds a song by searching its
-* site in Kiro Crew's browser.
-*/
-var VIDEO_ID_RE = /^[A-Za-z0-9_-]{11}$/;
-var BILIBILI_HOSTS = /* @__PURE__ */ new Set([
-	"www.bilibili.com",
-	"m.bilibili.com",
-	"b23.tv"
-]);
-var YOUTUBE_WATCH_HOSTS = /* @__PURE__ */ new Set([
-	"www.youtube.com",
-	"youtube.com",
-	"m.youtube.com",
-	"music.youtube.com"
-]);
-var MAX_URL = 2048;
-function validVideoId(value) {
-	return typeof value === "string" && VIDEO_ID_RE.test(value) ? value : null;
-}
-/** A plain https URL: no user info, no port, no character a browser reads differently. */
-function parseHttps(raw) {
-	if (typeof raw !== "string" || raw.length > MAX_URL) return null;
-	if (/[\\\u0000-\u0020\u007f]/.test(raw)) return null;
-	let url;
-	try {
-		url = new URL(raw);
-	} catch {
-		return null;
-	}
-	if (url.protocol !== "https:" || url.username || url.password || url.port) return null;
-	return url;
-}
-/** The video id a YouTube watch or share link names, or null. */
-function youtubeVideoId(raw) {
-	const url = parseHttps(raw);
-	if (!url) return null;
-	if (url.hostname === "youtu.be") return validVideoId(url.pathname.slice(1));
-	if (YOUTUBE_WATCH_HOSTS.has(url.hostname) && url.pathname === "/watch") {
-		const ids = url.searchParams.getAll("v");
-		return ids.length === 1 ? validVideoId(ids[0]) : null;
-	}
-	return null;
-}
-/** The link rebuilt from its parts when it is an https bilibili link, else null. */
-function bilibiliUrl(raw) {
-	const url = parseHttps(raw);
-	if (!url || !BILIBILI_HOSTS.has(url.hostname)) return null;
-	return `https://${url.hostname}${url.pathname}${url.search}`;
-}
-/** A page the DJ cites as evidence: any plain https URL, rebuilt from its parts; else null. */
-function evidenceUrl(raw) {
-	const url = parseHttps(raw);
-	return url ? url.href : null;
-}
-// src/replyParse.ts
-/**
-* Read the DJ agent's `mood-music` block out of a reply.
-*
-* The agent found its links on web pages, so the block is untrusted: each pick
-* is checked here with `links.ts` and reduced to the fields the page draws, a
-* bad pick is dropped, and lengths are cut to the backend's limits. Text is only
-* ever rendered as React text, never as HTML.
-*/
-var MAX_STEPS = 8;
-var MAX_STEP_CHARS = 120;
-var STEP_BAD_RE = /[\u0000-\u001f\u007f\u2028\u2029`[\]]/;
-function playResult(d) {
-	if (typeof d.played !== "boolean") return void 0;
-	const site = oneOf(d.site, ["youtube", "bilibili"]);
-	if (!site) return void 0;
-	const steps = (Array.isArray(d.steps) ? d.steps : []).filter((s) => typeof s === "string" && !STEP_BAD_RE.test(s)).map((s) => s.trim()).filter((s) => s.length > 0 && s.length <= MAX_STEP_CHARS).slice(0, MAX_STEPS);
-	return {
-		played: d.played,
-		site,
-		steps: d.played ? steps : [],
-		reason: text(d.reason, 200)
-	};
-}
-var FENCE_RE = /```mood-music[^\n]*\n([\s\S]*?)```/g;
-var ANY_FENCE_RE = /```[\s\S]*?(```|$)/g;
-var MAX_PICKS = 12;
-var TIERS = [
-	"anchor",
-	"explore",
-	"deep"
-];
-var ARCS = [
-	"stay",
-	"turn",
-	"lift"
-];
-function text(value, limit) {
-	return typeof value === "string" ? value.trim().slice(0, limit) : "";
-}
-function tags(value, limit = 40, count = 8) {
-	if (!Array.isArray(value)) return [];
-	return value.filter((t) => typeof t === "string" && t.trim().length > 0).map((t) => t.trim().slice(0, limit)).slice(0, count);
-}
-function oneOf(value, allowed) {
-	return allowed.includes(value) ? value : void 0;
-}
-function evidence(raw) {
-	if (!raw || typeof raw !== "object") return void 0;
-	const r = raw;
-	const url = evidenceUrl(r.url);
-	return url ? {
-		url,
-		label: text(r.label, 200)
-	} : void 0;
-}
-function pick(raw) {
-	if (!raw || typeof raw !== "object") return null;
-	const r = raw;
-	const title = text(r.title, 200);
-	if (!title) return null;
-	const base = {
-		title,
-		artist: text(r.artist, 200),
-		why: text(r.why, 400),
-		tags: tags(r.tags)
-	};
-	const tier = oneOf(r.tier, TIERS);
-	const arc = oneOf(r.arc, ARCS);
-	const listenFor = text(r.listen_for, 400);
-	const ev = evidence(r.evidence);
-	if (tier) base.tier = tier;
-	if (arc) base.arc = arc;
-	if (listenFor) base.listen_for = listenFor;
-	if (ev) base.evidence = ev;
-	const source = r.source ?? r.platform;
-	const noLink = (r.url === void 0 || r.url === null || r.url === "") && r.video_id === void 0;
-	if (source === "youtube") {
-		if (noLink) return {
-			...base,
-			source: "youtube"
-		};
-		const id = r.video_id !== void 0 ? validVideoId(r.video_id) : youtubeVideoId(r.url);
-		return id ? {
-			...base,
-			source: "youtube",
-			video_id: id
-		} : null;
-	}
-	if (source === "bilibili") {
-		if (noLink) return {
-			...base,
-			source: "bilibili"
-		};
-		const url = bilibiliUrl(r.url);
-		return url ? {
-			...base,
-			source: "bilibili",
-			url
-		} : null;
-	}
-	return null;
-}
-/** Picks in arc order (stay, turn, lift), a pick with no arc after them; ties keep their order. */
-function byArc(picks) {
-	const rank = (p) => p.arc ? ARCS.indexOf(p.arc) : ARCS.length;
-	if (!picks.some((p) => p.arc)) return picks;
-	return picks.map((p, i) => [p, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(([p]) => p);
-}
-/** The LAST `mood-music` block in *content*, or null when there is none that parses. */
-function parseDjReply(content) {
-	const blocks = [...content.matchAll(FENCE_RE)];
-	const last = blocks[blocks.length - 1];
-	if (!last) return null;
-	let data;
-	try {
-		data = JSON.parse(last[1]);
-	} catch {
-		return null;
-	}
-	if (!data || typeof data !== "object" || Array.isArray(data)) return null;
-	const d = data;
-	const rawPicks = Array.isArray(d.picks) ? d.picks.slice(0, MAX_PICKS) : [];
-	const picks = rawPicks.map(pick).filter((p) => p !== null);
-	return {
-		text: replyText(content),
-		question: text(d.question, 300),
-		moodTags: tags(d.mood_tags ?? d.moods),
-		picks: byArc(picks),
-		dropped: rawPicks.length - picks.length,
-		followUps: tags(d.follow_ups, 40, 3),
-		remember: text(d.remember, 60),
-		...sceneOf(d.scene),
-		...playResult(d) ? { play: playResult(d) } : {}
-	};
-}
-/** `{scene}` when the block's scene fits the bounds, else nothing: the page keeps its scene. */
-function sceneOf(raw) {
-	if (raw === void 0) return {};
-	const scene = parseScene(raw);
-	return scene ? { scene: {
-		...scene,
-		source: "dj"
-	} } : {};
-}
-/** The reply's prose: every fenced block removed, cut to a short paragraph. */
-function replyText(content) {
-	return content.replace(ANY_FENCE_RE, "").replace(/\s+/g, " ").trim().slice(0, 300);
-}
-/** A short stable id for a reply, so the page queues each reply once. */
-function replySource(content) {
-	let h = 0;
-	for (let i = 0; i < content.length; i++) h = (h << 5) - h + content.charCodeAt(i) | 0;
-	return `r${(h >>> 0).toString(36)}-${content.length}`;
-}
 // src/reducedMotion.ts
 var QUERY = "(prefers-reduced-motion: reduce)";
 /** Whether the person asked for reduced motion, following later changes. */
@@ -4772,7 +4788,7 @@ function MoodMusicPage() {
 				setSlot(read);
 				if (out && (!saved?.slotKey || saved.slotKey === key)) {
 					const source = replySource(latestReply(read));
-					if (!read || read.running || turnError(read) || source !== out.baseline && source !== s.last_source) {
+					if (!read || read.running || turnError(read) || !sameReply(out.baseline, read) && source !== s.last_source) {
 						momentRef.current = out.momentId;
 						setPending(out);
 					}
@@ -4863,7 +4879,7 @@ function MoodMusicPage() {
 		setSlotKey(key);
 		setPending({
 			momentId: momentRef.current,
-			baseline: replySource(latestReply(before)),
+			baseline: replyMark(before),
 			memoryIds,
 			text: shown,
 			...play ? { play } : {}
@@ -5015,7 +5031,8 @@ function MoodMusicPage() {
 			const reply = latestReply(read);
 			const source = replySource(reply);
 			const failed = turnError(read);
-			if (!failed && (!reply || source === pending.baseline) && !pending.stopped) return;
+			const fresh = !!reply && !sameReply(pending.baseline, read);
+			if (!failed && !fresh && !pending.stopped) return;
 			live = false;
 			setPending(null);
 			setStuck(false);
@@ -5023,7 +5040,7 @@ function MoodMusicPage() {
 				setNotice(t("chat.stopped"));
 				return;
 			}
-			if (failed && source === pending.baseline) {
+			if (failed && !fresh) {
 				setTurnFailed(failed);
 				return;
 			}

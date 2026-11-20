@@ -11,7 +11,7 @@
  * never opened visible instead.
  */
 import type { AppApi, AppApiError } from '@kirocrew/app-sdk'
-import type { Evidence, NewPick, PickArc, PickSource, PickTier } from './replyParse'
+import { replySource, type Evidence, type NewPick, type PickArc, type PickSource, type PickTier } from './replyParse'
 import type { ExploreLevel } from './request.prompt'
 
 const BASE = '/api/apps/mood-music'
@@ -188,6 +188,27 @@ export function createMoodApi(api: AppApi) {
       return receipt.key
     },
   }
+}
+
+/**
+ * Which reply is the slot's newest: how many replies the slot holds and the
+ * newest one's text, or '' with none. A new reply word for word like the last
+ * one still changes it, because the count grows. The slot read carries the
+ * whole history (no `limit`), so the count only grows.
+ */
+export function replyMark(slot: SlotData | undefined): string {
+  let n = 0
+  for (const m of slot?.messages ?? []) {
+    if (m.role === 'assistant' && typeof m.content === 'string' && m.content.trim()) n++
+  }
+  return n ? `${n}:${replySource(latestReply(slot))}` : ''
+}
+
+/** Whether the slot's newest reply is still the one *baseline* named when the turn went out. */
+export function sameReply(baseline: string, slot: SlotData | undefined): boolean {
+  // A page saved by 0.2.6 named the reply by its text alone.
+  if (baseline && !baseline.includes(':')) return replySource(latestReply(slot)) === baseline
+  return replyMark(slot) === baseline
 }
 
 /** The newest assistant reply in a slot, or ''. */

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { AppApi } from '@kirocrew/app-sdk'
-import { createMoodApi, grantCause, latestReply } from '../src/api'
+import { createMoodApi, grantCause, latestReply, replyMark, sameReply } from '../src/api'
+import { replySource } from '../src/replyParse'
 import { CATALOGS } from '../src/i18n'
 
 function fakeApi(post: (path: string, body?: unknown) => unknown): AppApi {
@@ -65,5 +66,23 @@ describe('catalogs', () => {
       Object.entries(o).flatMap(([k, v]) => (typeof v === 'string' ? [p + k] : keys(v, `${p}${k}.`)))
     const en = keys(CATALOGS.en).sort()
     for (const [lang, cat] of Object.entries(CATALOGS)) expect(keys(cat).sort(), lang).toEqual(en)
+  })
+})
+
+describe('replyMark', () => {
+  const said = (text: string) => ({ role: 'assistant', content: text })
+  it('changes with a new reply even when its text is the same as the last', () => {
+    const one = { messages: [{ role: 'user', content: 'a' }, said('Same.')] }
+    const two = { messages: [...one.messages, { role: 'user', content: 'b' }, said('Same.')] }
+    expect(replyMark(one)).not.toBe(replyMark(two))
+    expect(sameReply(replyMark(one), two)).toBe(false)
+    expect(sameReply(replyMark(two), two)).toBe(true)
+    expect(replyMark({ messages: [] })).toBe('')
+  })
+
+  it('reads a baseline a 0.2.6 page saved, which named the reply by its text', () => {
+    const slot = { messages: [said('Old.')] }
+    expect(sameReply(replySource('Old.'), slot)).toBe(true)
+    expect(sameReply(replySource('Other.'), slot)).toBe(false)
   })
 })
