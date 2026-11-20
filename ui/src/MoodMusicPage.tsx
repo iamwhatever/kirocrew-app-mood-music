@@ -236,7 +236,7 @@ export default function MoodMusicPage() {
   const viewOpen = state?.settings?.view_open ?? true
   // The host's live view of the buddy's tab (level 11); absent on an older host.
   const HostView = hostBrowserView()
-  const continuous = state?.settings?.continuous ?? false
+  const continuous = state?.settings?.continuous ?? true
   // The Crew Browser player. Polled from the first play request on, so the page
   // sees the song in the tab even when the buddy's reply could not be read; read
   // once otherwise, which is how the page learns whether it can play here at all.

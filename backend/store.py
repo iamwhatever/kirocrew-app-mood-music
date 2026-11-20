@@ -53,7 +53,7 @@ EXPLORE_LEVELS = ("familiar", "balanced", "explore")
 DEFAULT_SETTINGS = {
     "explore": "balanced",
     "record_open": False,
-    "continuous": False,
+    "continuous": True,
     "view_open": True,
 }
 #: The sites the buddy plays on in Kiro Crew's browser, each with its own saved steps.
@@ -129,9 +129,16 @@ class MoodStore:
         saved = data.get("settings") if isinstance(data.get("settings"), dict) else {}
         if saved.get("explore") in EXPLORE_LEVELS:
             state["settings"]["explore"] = saved["explore"]
-        for flag in ("record_open", "continuous", "view_open"):
+        for flag in ("record_open", "view_open"):
             if isinstance(saved.get(flag), bool):
                 state["settings"][flag] = saved[flag]
+        # Continuous play is on unless the person turned it off. Up to 0.2.6 the
+        # file kept the old default (off) for everyone, so a stored ``false`` is
+        # read only once it is the person's own choice (``continuous_choice``).
+        choice = data.get("continuous_choice")
+        if isinstance(choice, bool):
+            state["continuous_choice"] = choice
+            state["settings"]["continuous"] = choice
         steps = data.get("play_steps") if isinstance(data.get("play_steps"), dict) else {}
         for site in PLAY_SITES:
             entry = steps.get(site)
@@ -182,6 +189,7 @@ class MoodStore:
         now = self._now()
         state["memory"] = [{**m, "stale": self._stale(m, now)} for m in state["memory"]]
         state.pop("anchors", None)
+        state.pop("continuous_choice", None)
         return state
 
     def set_play_steps(self, site: str, steps: list[str]) -> dict[str, Any]:
@@ -208,6 +216,8 @@ class MoodStore:
         with self._lock:
             state = self._read()
             state["settings"].update(changes)
+            if "continuous" in changes:
+                state["continuous_choice"] = changes["continuous"]
             self._write(state)
             return dict(state["settings"])
 

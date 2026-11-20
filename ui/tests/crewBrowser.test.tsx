@@ -402,6 +402,19 @@ describe('Crew Browser player', () => {
     expect(screen.getByTestId('mood-browser-unready')).toHaveTextContent(t('browser.unready_old_host'))
   })
 
+  it('has continuous play on when the backend sends no choice, and keeps a turn-off', async () => {
+    api.state.mockResolvedValue({ ...state(), settings: { explore: 'balanced', record_open: false } })
+    await open()
+    const toggle = screen.getByTestId('mood-continuous')
+    expect(toggle).toHaveAttribute('aria-pressed', 'true')
+    await playAndAnswer({ played: true, site: 'youtube', steps: ['x'] })
+    await songEnds()
+    expect(asks()).toHaveLength(2)
+    fireEvent.click(toggle)
+    expect(api.setSettings).toHaveBeenCalledWith({ continuous: false })
+    expect(screen.getByTestId('mood-continuous')).toHaveAttribute('aria-pressed', 'false')
+  })
+
   it('says on the page that continuous play stops with the page closed', async () => {
     await open()
     expect(screen.getByTestId('mood-continuous-note')).toHaveTextContent(t('browser.continuous_note'))

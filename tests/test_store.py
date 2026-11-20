@@ -31,7 +31,7 @@ def test_an_empty_store_reads_empty(tmp_path: Path) -> None:
         "last_source": "",
         "memory": [],
         "settings": {
-            "explore": "balanced", "record_open": False, "continuous": False, "view_open": True,
+            "explore": "balanced", "record_open": False, "continuous": True, "view_open": True,
         },
         "play_steps": {},
     }
@@ -40,7 +40,7 @@ def test_an_empty_store_reads_empty(tmp_path: Path) -> None:
 def test_a_player_saved_by_an_older_version_is_dropped(tmp_path: Path) -> None:
     (tmp_path / "state.json").write_text('{"settings": {"player": "youtube", "explore": "familiar"}}', encoding="utf-8")
     assert _store(tmp_path).snapshot()["settings"] == {
-        "explore": "familiar", "record_open": False, "continuous": False, "view_open": True,
+        "explore": "familiar", "record_open": False, "continuous": True, "view_open": True,
     }
 
 
@@ -63,7 +63,32 @@ def test_saved_steps_are_read_back_and_damaged_ones_are_ignored(tmp_path: Path) 
         encoding="utf-8",
     )
     snap = _store(tmp_path).snapshot()
-    assert snap["play_steps"] == {} and snap["settings"]["continuous"] is False
+    assert snap["play_steps"] == {} and snap["settings"]["continuous"] is True
+
+
+def test_continuous_play_is_on_by_default_and_the_persons_choice_is_kept(tmp_path: Path) -> None:
+    assert _store(tmp_path).snapshot()["settings"]["continuous"] is True
+    _store(tmp_path).set_settings(continuous=False)
+    assert _store(tmp_path).snapshot()["settings"]["continuous"] is False
+    # Another write keeps the choice.
+    _store(tmp_path).set_settings(explore="familiar")
+    snap = _store(tmp_path).snapshot()
+    assert snap["settings"]["continuous"] is False and "continuous_choice" not in snap
+    _store(tmp_path).set_settings(continuous=True)
+    assert _store(tmp_path).snapshot()["settings"]["continuous"] is True
+
+
+def test_the_old_default_off_saved_by_0_2_6_does_not_turn_continuous_play_off(tmp_path: Path) -> None:
+    # 0.2.6 wrote every setting, so "off" here is the old default, not a choice.
+    (tmp_path / "state.json").write_text(
+        '{"settings": {"explore": "balanced", "record_open": false, "continuous": false, "view_open": true}}',
+        encoding="utf-8",
+    )
+    assert _store(tmp_path).snapshot()["settings"]["continuous"] is True
+    (tmp_path / "state.json").write_text(
+        '{"settings": {"continuous": true}, "continuous_choice": false}', encoding="utf-8"
+    )
+    assert _store(tmp_path).snapshot()["settings"]["continuous"] is False
 
 
 def test_moments_are_newest_first_and_bounded(tmp_path: Path, monkeypatch) -> None:

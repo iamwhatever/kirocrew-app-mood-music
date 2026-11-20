@@ -4825,7 +4825,7 @@ function MoodMusicPage() {
 	const recordOpen = state?.settings?.record_open ?? false;
 	const viewOpen = state?.settings?.view_open ?? true;
 	const HostView = hostBrowserView();
-	const continuous = state?.settings?.continuous ?? false;
+	const continuous = state?.settings?.continuous ?? true;
 	const onEndedRef = useRef(() => void 0);
 	const crew = useCrewBrowser(slotKey ?? "", !!browserPick || !!pending?.play, () => onEndedRef.current());
 	const crewMediaRef = useRef(crew.media);
