@@ -98,6 +98,8 @@ declare module '@kirocrew/app-sdk' {
         slot: string
         'aria-label': string
         interactive?: boolean
+        /** Keep showing the tab after a turn ends while it is still open (newer hosts; others ignore it). */
+        stayLive?: boolean
         onTakeover?: () => void
         onHandBack?: (note?: string) => void
         className?: string

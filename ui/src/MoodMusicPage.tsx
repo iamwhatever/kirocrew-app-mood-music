@@ -239,6 +239,9 @@ export default function MoodMusicPage() {
   const recordOpen = state?.settings?.record_open ?? false
   const viewOpen = state?.settings?.view_open ?? true
   // The host's live view of the buddy's tab (level 11); absent on an older host.
+  // `stayLive`: when a turn ends with the tab still open, the host streams it
+  // again instead of folding to a "Show live page" button, so the person keeps
+  // watching the song play. A host without the prop ignores it and folds.
   const HostView = hostBrowserView()
   const continuous = state?.settings?.continuous ?? true
   // The Crew Browser player. Polled from the first play request on, so the page
@@ -919,7 +922,7 @@ export default function MoodMusicPage() {
                     open={viewOpen}
                     onToggle={open => saveSettings({ view_open: open })}
                     operating={status?.phase === 'playing'}
-                    live={HostView ? <HostView slot={slotKey} aria-label={t('view.title')} /> : null}
+                    live={HostView ? <HostView slot={slotKey} aria-label={t('view.title')} stayLive /> : null}
                   />
                 )}
                 <div className="mm-deck" data-testid="mood-deck">

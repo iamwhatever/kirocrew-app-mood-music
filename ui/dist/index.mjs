@@ -5672,7 +5672,8 @@ function MoodMusicPage() {
 										operating: status?.phase === "playing",
 										live: HostView ? /* @__PURE__ */ jsx(HostView, {
 											slot: slotKey,
-											"aria-label": t("view.title")
+											"aria-label": t("view.title"),
+											stayLive: true
 										}) : null
 									}),
 									/* @__PURE__ */ jsxs("div", {
