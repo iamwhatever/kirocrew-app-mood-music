@@ -125,12 +125,79 @@ describe('Crew Browser player', () => {
     expect(screen.queryByTestId('mood-bilibili-link')).toBeNull()
   })
 
-  it('reads the tab of the buddy chat once, and polls it once a song plays there', async () => {
+  it('reads the tab of the buddy chat once, and polls it from the first play request on', async () => {
     await open()
     expect(stubMedia.sessionKey).toBe('dashboard:mood-music-buddy')
     expect(stubMedia.pollMs).toBe(0)
-    await playAndAnswer({ played: true, site: 'youtube', steps: ['x'] })
+    fireEvent.click(screen.getByTestId('mood-browser-play'))
+    await flush()
+    // Polled while the buddy opens it, so the song is seen even if its reply is not read.
     expect(stubMedia.pollMs).toBeGreaterThan(0)
+    const asked = api.ask.mock.calls[0][0] as string
+    api.getSlot.mockResolvedValue(replyTo(asked, { played: true, site: 'youtube', steps: ['x'] }))
+    await flush(POLL_MS)
+    await flush()
+    expect(stubMedia.pollMs).toBeGreaterThan(0)
+  })
+
+  it('play and pause go to the tab at once, never to the buddy, and a read in flight does not block them', async () => {
+    await open()
+    await playAndAnswer({ played: true, site: 'youtube', steps: ['x'] })
+    await act(async () => { setStubMedia(PLAYING) })
+    const before = api.ask.mock.calls.length
+    stubMedia.busy = true
+    await act(async () => { setStubMedia({ ...PLAYING }) })
+    const pause = screen.getByTestId('mood-browser-pause')
+    expect(pause).not.toBeDisabled()
+    fireEvent.click(pause)
+    expect(stubMedia.pause).toHaveBeenCalledTimes(1)
+    // The button shows the new state before the tab answers.
+    expect(screen.getByTestId('mood-browser-status')).toHaveTextContent(t('browser.status_paused'))
+    const play = screen.getByTestId('mood-browser-play')
+    expect(play).not.toBeDisabled()
+    fireEvent.click(play)
+    expect(stubMedia.play).toHaveBeenCalledTimes(1)
+    expect(screen.getByTestId('mood-browser-status')).toHaveTextContent(t('browser.status_playing'))
+    await flush(POLL_MS)
+    expect(api.ask.mock.calls.length).toBe(before)
+  })
+
+  it('reaches the song in the tab even when the buddy’s reply could not be read', async () => {
+    await open()
+    fireEvent.click(screen.getByTestId('mood-browser-play'))
+    await flush()
+    const asked = api.ask.mock.calls[0][0] as string
+    // The tab plays while the turn runs; the reply has no block the page can read.
+    await act(async () => { setStubMedia(PLAYING) })
+    api.getSlot.mockResolvedValue({ running: false, messages: [{ role: 'user', content: asked }, { role: 'assistant', content: 'Playing now.' }] })
+    await flush(POLL_MS)
+    await flush()
+    expect(api.forgetPlaySteps).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByTestId('mood-browser-pause'))
+    expect(stubMedia.pause).toHaveBeenCalledTimes(1)
+    expect(asks()).toHaveLength(1)
+  })
+
+  it('plays an ended song again from the start in the tab, without the buddy', async () => {
+    api.state.mockResolvedValue(state({ continuous: false }))
+    await open()
+    await playAndAnswer({ played: true, site: 'youtube', steps: ['x'] })
+    await songEnds()
+    fireEvent.click(screen.getByTestId('mood-browser-play'))
+    await flush()
+    expect(stubMedia.seek).toHaveBeenCalledWith(0)
+    expect(stubMedia.play).toHaveBeenCalledTimes(1)
+    expect(asks()).toHaveLength(1)
+  })
+
+  it('sends only "Find and play" to the buddy, when the tab has no song', async () => {
+    await open()
+    const find = screen.getByTestId('mood-browser-play')
+    expect(find).toHaveTextContent(t('browser.find_play'))
+    fireEvent.click(find)
+    await flush()
+    expect(asks()).toHaveLength(1)
+    expect(stubMedia.play).not.toHaveBeenCalled()
   })
 
   it('opens the buddy chat on a first visit, so it can tell whether songs can play', async () => {

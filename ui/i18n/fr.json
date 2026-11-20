@@ -142,7 +142,7 @@
   },
   "browser": {
     "status_opening": "Ton compagnon l’ouvre dans le navigateur de Kiro Crew…",
-    "status_idle": "Appuie sur lecture : ton compagnon ouvre cette chanson dans le navigateur de Kiro Crew.",
+    "status_idle": "Rien ne joue encore. « Trouver et lire » demande à ton compagnon d'ouvrir ce morceau dans le navigateur de Kiro Crew.",
     "status_in_control": "Tu utilises l’onglet du navigateur. Les boutons attendent que tu le rendes.",
     "status_no_media": "L’onglet du navigateur n’a pas encore de lecteur.",
     "status_ended": "Terminé.",
@@ -160,7 +160,8 @@
     "unready_title": "Les chansons ne peuvent pas encore se lire dans le navigateur de Kiro Crew",
     "unready_old_host": "Ce Kiro Crew est trop ancien. Mets Kiro Crew à jour vers une version avec les sites de navigateur pour apps (KiroCrew#38333, plus récente que v0.13.0-rc.3), puis rouvre cette page.",
     "unready_not_approved": "Approuve d’abord les sites de musique pour Mood Music. Une seule fois, sur la page de l’app.",
-    "unready_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew."
+    "unready_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew.",
+    "find_play": "Trouver et lire"
   },
   "view": {
     "title": "Navigateur de Kiro Crew",

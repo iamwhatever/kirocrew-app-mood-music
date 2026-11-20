@@ -142,7 +142,7 @@
   },
   "browser": {
     "status_opening": "搭子正在 Kiro Crew 的浏览器里打开它…",
-    "status_idle": "点播放：搭子会在 Kiro Crew 的浏览器里打开这首歌。",
+    "status_idle": "还没有在放歌。点“查找并播放”，搭子会在 Kiro Crew 的浏览器里打开这首歌。",
     "status_in_control": "你正在用这个浏览器标签页。等你交还后，按钮才会生效。",
     "status_no_media": "浏览器标签页里还没有播放器。",
     "status_ended": "放完了。",
@@ -160,7 +160,8 @@
     "unready_title": "歌还不能在 Kiro Crew 的浏览器里播放",
     "unready_old_host": "这个 Kiro Crew 版本太旧。请把 Kiro Crew 更新到支持应用浏览器网站的版本（含 KiroCrew#38333，比 v0.13.0-rc.3 新），再打开这个页面。",
     "unready_not_approved": "请先为情绪音乐批准这几个音乐网站。只需在应用页面批准一次。",
-    "unready_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。"
+    "unready_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。",
+    "find_play": "查找并播放"
   },
   "view": {
     "title": "Kiro Crew 的浏览器",

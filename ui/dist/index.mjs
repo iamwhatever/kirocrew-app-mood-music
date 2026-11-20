@@ -1,7 +1,7 @@
 import * as sdk from "@kirocrew/app-sdk";
 import { activeLocale, fmtDateTime, useAppApi, useChatLauncher, useLanguageGeneration, useNavigate } from "@kirocrew/app-sdk";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Brain, Check, ChevronRight, ExternalLink, Headphones, Heart, MessageCircleQuestion, MonitorPlay, Music, Pause, Pin, PinOff, Play, Repeat, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Volume2, Waves, WifiOff } from "lucide-react";
+import { Brain, Check, ChevronRight, ExternalLink, Headphones, Heart, MessageCircleQuestion, MonitorPlay, Music, Pause, Pin, PinOff, Play, Repeat, Search, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Volume2, Waves, WifiOff } from "lucide-react";
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from "@kirocrew/app-sdk/ui";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 // src/i18n.ts
@@ -164,7 +164,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "আপনার সঙ্গী এটি Kiro Crew-এর ব্রাউজারে খুলছে…",
-			"status_idle": "চালান চাপুন: আপনার সঙ্গী গানটি Kiro Crew-এর ব্রাউজারে খুলবে।",
+			"status_idle": "এখনও কিছু চলছে না। \"খুঁজে চালাও\" চাপলে আপনার বন্ধু Kiro Crew-এর ব্রাউজারে গানটি খুলবে।",
 			"status_in_control": "আপনি ব্রাউজার ট্যাবটি ব্যবহার করছেন। ফেরত না দেওয়া পর্যন্ত বোতামগুলো অপেক্ষা করবে।",
 			"status_no_media": "ব্রাউজার ট্যাবে এখনো কোনো প্লেয়ার নেই।",
 			"status_ended": "শেষ হয়েছে।",
@@ -182,7 +182,8 @@ var CATALOGS = {
 			"unready_title": "গান এখনো Kiro Crew-এর ব্রাউজারে বাজতে পারছে না",
 			"unready_old_host": "এই Kiro Crew খুব পুরোনো। অ্যাপ ব্রাউজার সাইট সমর্থিত সংস্করণে (KiroCrew#38333 সহ, v0.13.0-rc.3-এর চেয়ে নতুন) Kiro Crew আপডেট করুন, তারপর এই পেজ আবার খুলুন।",
 			"unready_not_approved": "আগে মুড মিউজিকের জন্য গানের সাইটগুলো অনুমোদন করুন। অ্যাপের পেজে একবার অনুমোদন করলেই হবে।",
-			"unready_browse_off": "এই কম্পিউটারের একটি নীতি Kiro Crew-এর ব্রাউজার বন্ধ রেখেছে।"
+			"unready_browse_off": "এই কম্পিউটারের একটি নীতি Kiro Crew-এর ব্রাউজার বন্ধ রেখেছে।",
+			"find_play": "খুঁজে চালাও"
 		},
 		view: {
 			"title": "Kiro Crew-এর ব্রাউজার",
@@ -354,7 +355,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "Dein Buddy öffnet ihn im Browser von Kiro Crew…",
-			"status_idle": "Drück auf Abspielen: Dein Buddy öffnet diesen Song im Browser von Kiro Crew.",
+			"status_idle": "Noch läuft nichts. „Suchen und abspielen“ bittet deinen Buddy, das Lied in Kiro Crews Browser zu öffnen.",
 			"status_in_control": "Du nutzt gerade den Browser-Tab. Die Tasten warten, bis du ihn zurückgibst.",
 			"status_no_media": "Im Browser-Tab ist noch kein Player.",
 			"status_ended": "Zu Ende.",
@@ -372,7 +373,8 @@ var CATALOGS = {
 			"unready_title": "Songs können noch nicht im Browser von Kiro Crew laufen",
 			"unready_old_host": "Dieses Kiro Crew ist zu alt. Aktualisiere Kiro Crew auf eine Version mit App-Browserseiten (KiroCrew#38333, neuer als v0.13.0-rc.3) und öffne diese Seite dann erneut.",
 			"unready_not_approved": "Gib zuerst die Musikseiten für Mood Music frei. Das machst du einmal, auf der Seite der App.",
-			"unready_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet."
+			"unready_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet.",
+			"find_play": "Suchen und abspielen"
 		},
 		view: {
 			"title": "Browser von Kiro Crew",
@@ -544,7 +546,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "Your buddy is opening it in Kiro Crew's browser…",
-			"status_idle": "Press play: your buddy opens this song in Kiro Crew's browser.",
+			"status_idle": "Nothing plays yet. \"Find and play\" asks your buddy to open this song in Kiro Crew's browser.",
 			"status_in_control": "You are using the browser tab. The buttons wait until you hand it back.",
 			"status_no_media": "The browser tab has no player yet.",
 			"status_ended": "Ended.",
@@ -562,7 +564,8 @@ var CATALOGS = {
 			"unready_title": "Songs cannot play in Kiro Crew's browser yet",
 			"unready_old_host": "This Kiro Crew is too old. Update Kiro Crew to a version with app browser sites (KiroCrew#38333, newer than v0.13.0-rc.3), then open this page again.",
 			"unready_not_approved": "First approve the music sites for Mood Music. You approve them once, on the app's page.",
-			"unready_browse_off": "Kiro Crew's browser is turned off by a policy on this computer."
+			"unready_browse_off": "Kiro Crew's browser is turned off by a policy on this computer.",
+			"find_play": "Find and play"
 		},
 		view: {
 			"title": "Kiro Crew's browser",
@@ -734,7 +737,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "Tu compañero la está abriendo en el navegador de Kiro Crew…",
-			"status_idle": "Pulsa reproducir: tu compañero abre esta canción en el navegador de Kiro Crew.",
+			"status_idle": "Aún no suena nada. «Buscar y reproducir» pide a tu compañero que abra esta canción en el navegador de Kiro Crew.",
 			"status_in_control": "Estás usando la pestaña del navegador. Los botones esperan a que la devuelvas.",
 			"status_no_media": "La pestaña del navegador aún no tiene reproductor.",
 			"status_ended": "Terminó.",
@@ -752,7 +755,8 @@ var CATALOGS = {
 			"unready_title": "Las canciones aún no pueden sonar en el navegador de Kiro Crew",
 			"unready_old_host": "Este Kiro Crew es demasiado antiguo. Actualiza Kiro Crew a una versión con sitios de navegador para apps (KiroCrew#38333, más nueva que v0.13.0-rc.3) y vuelve a abrir esta página.",
 			"unready_not_approved": "Primero aprueba los sitios de música para Mood Music. Se aprueban una vez, en la página de la app.",
-			"unready_browse_off": "Una política de este equipo tiene apagado el navegador de Kiro Crew."
+			"unready_browse_off": "Una política de este equipo tiene apagado el navegador de Kiro Crew.",
+			"find_play": "Buscar y reproducir"
 		},
 		view: {
 			"title": "Navegador de Kiro Crew",
@@ -924,7 +928,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "Ton compagnon l’ouvre dans le navigateur de Kiro Crew…",
-			"status_idle": "Appuie sur lecture : ton compagnon ouvre cette chanson dans le navigateur de Kiro Crew.",
+			"status_idle": "Rien ne joue encore. « Trouver et lire » demande à ton compagnon d'ouvrir ce morceau dans le navigateur de Kiro Crew.",
 			"status_in_control": "Tu utilises l’onglet du navigateur. Les boutons attendent que tu le rendes.",
 			"status_no_media": "L’onglet du navigateur n’a pas encore de lecteur.",
 			"status_ended": "Terminé.",
@@ -942,7 +946,8 @@ var CATALOGS = {
 			"unready_title": "Les chansons ne peuvent pas encore se lire dans le navigateur de Kiro Crew",
 			"unready_old_host": "Ce Kiro Crew est trop ancien. Mets Kiro Crew à jour vers une version avec les sites de navigateur pour apps (KiroCrew#38333, plus récente que v0.13.0-rc.3), puis rouvre cette page.",
 			"unready_not_approved": "Approuve d’abord les sites de musique pour Mood Music. Une seule fois, sur la page de l’app.",
-			"unready_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew."
+			"unready_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew.",
+			"find_play": "Trouver et lire"
 		},
 		view: {
 			"title": "Navigateur de Kiro Crew",
@@ -1114,7 +1119,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "आपका साथी इसे Kiro Crew के ब्राउज़र में खोल रहा है…",
-			"status_idle": "चलाएँ दबाइए: आपका साथी यह गाना Kiro Crew के ब्राउज़र में खोलेगा।",
+			"status_idle": "अभी कुछ नहीं चल रहा। \"ढूँढकर चलाएँ\" दबाने पर आपका साथी यह गाना Kiro Crew के ब्राउज़र में खोलेगा।",
 			"status_in_control": "आप ब्राउज़र टैब इस्तेमाल कर रहे हैं। वापस देने तक बटन रुके रहेंगे।",
 			"status_no_media": "ब्राउज़र टैब में अभी कोई प्लेयर नहीं है।",
 			"status_ended": "ख़त्म हुआ।",
@@ -1132,7 +1137,8 @@ var CATALOGS = {
 			"unready_title": "गाने अभी Kiro Crew के ब्राउज़र में नहीं चल सकते",
 			"unready_old_host": "यह Kiro Crew बहुत पुराना है। Kiro Crew को ऐप ब्राउज़र साइटों वाले संस्करण (KiroCrew#38333 सहित, v0.13.0-rc.3 से नया) में अपडेट करें, फिर यह पेज दोबारा खोलें।",
 			"unready_not_approved": "पहले मूड म्यूज़िक के लिए संगीत साइटों को मंज़ूरी दें। ऐप के पेज पर एक बार मंज़ूरी देनी होती है।",
-			"unready_browse_off": "इस कंप्यूटर की एक नीति ने Kiro Crew का ब्राउज़र बंद कर रखा है।"
+			"unready_browse_off": "इस कंप्यूटर की एक नीति ने Kiro Crew का ब्राउज़र बंद कर रखा है।",
+			"find_play": "ढूँढकर चलाएँ"
 		},
 		view: {
 			"title": "Kiro Crew का ब्राउज़र",
@@ -1304,7 +1310,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "Il tuo compagno la sta aprendo nel browser di Kiro Crew…",
-			"status_idle": "Premi play: il tuo compagno apre questa canzone nel browser di Kiro Crew.",
+			"status_idle": "Non suona ancora niente. «Trova e riproduci» chiede al tuo amico di aprire questa canzone nel browser di Kiro Crew.",
 			"status_in_control": "Stai usando la scheda del browser. I pulsanti aspettano che tu la restituisca.",
 			"status_no_media": "Nella scheda del browser non c’è ancora un player.",
 			"status_ended": "Finita.",
@@ -1322,7 +1328,8 @@ var CATALOGS = {
 			"unready_title": "Le canzoni non possono ancora suonare nel browser di Kiro Crew",
 			"unready_old_host": "Questo Kiro Crew è troppo vecchio. Aggiorna Kiro Crew a una versione con i siti del browser per le app (KiroCrew#38333, più recente di v0.13.0-rc.3), poi riapri questa pagina.",
 			"unready_not_approved": "Prima approva i siti musicali per Mood Music. Si approvano una volta, nella pagina dell’app.",
-			"unready_browse_off": "Una regola di questo computer ha spento il browser di Kiro Crew."
+			"unready_browse_off": "Una regola di questo computer ha spento il browser di Kiro Crew.",
+			"find_play": "Trova e riproduci"
 		},
 		view: {
 			"title": "Browser di Kiro Crew",
@@ -1494,7 +1501,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "相棒が Kiro Crew のブラウザで開いています…",
-			"status_idle": "再生を押すと、相棒が Kiro Crew のブラウザでこの曲を開きます。",
+			"status_idle": "まだ何も再生していません。「探して再生」で相棒が Kiro Crew のブラウザでこの曲を開きます。",
 			"status_in_control": "ブラウザのタブを操作中です。戻すまでボタンは待機します。",
 			"status_no_media": "ブラウザのタブにまだプレーヤーがありません。",
 			"status_ended": "終わりました。",
@@ -1512,7 +1519,8 @@ var CATALOGS = {
 			"unready_title": "まだ Kiro Crew のブラウザで曲を再生できません",
 			"unready_old_host": "この Kiro Crew は古すぎます。アプリのブラウザサイトに対応した版（KiroCrew#38333 を含む、v0.13.0-rc.3 より新しい版）に更新して、このページを開き直してください。",
 			"unready_not_approved": "先に Mood Music の音楽サイトを承認してください。アプリのページで一度だけ承認します。",
-			"unready_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。"
+			"unready_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。",
+			"find_play": "探して再生"
 		},
 		view: {
 			"title": "Kiro Crew のブラウザ",
@@ -1684,7 +1692,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "친구가 Kiro Crew 브라우저에서 여는 중이에요…",
-			"status_idle": "재생을 누르면 친구가 Kiro Crew 브라우저에서 이 노래를 열어요.",
+			"status_idle": "아직 재생 중인 곡이 없어요. \"찾아서 재생\"을 누르면 버디가 Kiro Crew 브라우저에서 이 곡을 엽니다.",
 			"status_in_control": "브라우저 탭을 직접 쓰는 중이에요. 돌려줄 때까지 버튼이 기다려요.",
 			"status_no_media": "브라우저 탭에 아직 플레이어가 없어요.",
 			"status_ended": "끝났어요.",
@@ -1702,7 +1710,8 @@ var CATALOGS = {
 			"unready_title": "아직 Kiro Crew 브라우저에서 노래를 재생할 수 없어요",
 			"unready_old_host": "이 Kiro Crew는 너무 오래됐어요. 앱 브라우저 사이트를 지원하는 버전(KiroCrew#38333 포함, v0.13.0-rc.3보다 새 버전)으로 업데이트한 뒤 이 페이지를 다시 여세요.",
 			"unready_not_approved": "먼저 무드 뮤직의 음악 사이트를 승인하세요. 앱 페이지에서 한 번만 승인하면 돼요.",
-			"unready_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요."
+			"unready_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요.",
+			"find_play": "찾아서 재생"
 		},
 		view: {
 			"title": "Kiro Crew 브라우저",
@@ -1874,7 +1883,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "Seu parceiro está abrindo no navegador do Kiro Crew…",
-			"status_idle": "Toque em reproduzir: seu parceiro abre esta música no navegador do Kiro Crew.",
+			"status_idle": "Nada está tocando ainda. \"Encontrar e tocar\" pede ao seu parceiro que abra esta música no navegador do Kiro Crew.",
 			"status_in_control": "Você está usando a aba do navegador. Os botões esperam até você devolvê-la.",
 			"status_no_media": "A aba do navegador ainda não tem player.",
 			"status_ended": "Terminou.",
@@ -1892,7 +1901,8 @@ var CATALOGS = {
 			"unready_title": "As músicas ainda não podem tocar no navegador do Kiro Crew",
 			"unready_old_host": "Este Kiro Crew é antigo demais. Atualize o Kiro Crew para uma versão com sites de navegador para apps (KiroCrew#38333, mais nova que v0.13.0-rc.3) e abra esta página de novo.",
 			"unready_not_approved": "Primeiro aprove os sites de música para o Mood Music. Você aprova uma vez, na página do app.",
-			"unready_browse_off": "Uma política deste computador desligou o navegador do Kiro Crew."
+			"unready_browse_off": "Uma política deste computador desligou o navegador do Kiro Crew.",
+			"find_play": "Encontrar e tocar"
 		},
 		view: {
 			"title": "Navegador do Kiro Crew",
@@ -2064,7 +2074,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "Ваш напарник открывает её в браузере Kiro Crew…",
-			"status_idle": "Нажмите «Играть»: напарник откроет эту песню в браузере Kiro Crew.",
+			"status_idle": "Пока ничего не играет. «Найти и включить» попросит приятеля открыть эту песню в браузере Kiro Crew.",
 			"status_in_control": "Вы сейчас работаете во вкладке браузера. Кнопки подождут, пока вы её вернёте.",
 			"status_no_media": "Во вкладке браузера пока нет плеера.",
 			"status_ended": "Закончилась.",
@@ -2082,7 +2092,8 @@ var CATALOGS = {
 			"unready_title": "Песни пока не могут играть в браузере Kiro Crew",
 			"unready_old_host": "Эта версия Kiro Crew слишком старая. Обновите Kiro Crew до версии с сайтами браузера для приложений (KiroCrew#38333, новее v0.13.0-rc.3) и откройте эту страницу снова.",
 			"unready_not_approved": "Сначала одобрите музыкальные сайты для «Музыки настроения». Это делается один раз, на странице приложения.",
-			"unready_browse_off": "Браузер Kiro Crew отключён политикой на этом компьютере."
+			"unready_browse_off": "Браузер Kiro Crew отключён политикой на этом компьютере.",
+			"find_play": "Найти и включить"
 		},
 		view: {
 			"title": "Браузер Kiro Crew",
@@ -2254,7 +2265,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "搭子正在 Kiro Crew 的浏览器里打开它…",
-			"status_idle": "点播放：搭子会在 Kiro Crew 的浏览器里打开这首歌。",
+			"status_idle": "还没有在放歌。点“查找并播放”，搭子会在 Kiro Crew 的浏览器里打开这首歌。",
 			"status_in_control": "你正在用这个浏览器标签页。等你交还后，按钮才会生效。",
 			"status_no_media": "浏览器标签页里还没有播放器。",
 			"status_ended": "放完了。",
@@ -2272,7 +2283,8 @@ var CATALOGS = {
 			"unready_title": "歌还不能在 Kiro Crew 的浏览器里播放",
 			"unready_old_host": "这个 Kiro Crew 版本太旧。请把 Kiro Crew 更新到支持应用浏览器网站的版本（含 KiroCrew#38333，比 v0.13.0-rc.3 新），再打开这个页面。",
 			"unready_not_approved": "请先为情绪音乐批准这几个音乐网站。只需在应用页面批准一次。",
-			"unready_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。"
+			"unready_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。",
+			"find_play": "查找并播放"
 		},
 		view: {
 			"title": "Kiro Crew 的浏览器",
@@ -2499,25 +2511,42 @@ function clock(seconds) {
 /**
 * The Crew Browser player's buttons: play / pause, a progress bar and volume.
 *
-* They act on the tab the buddy opened, straight through the host's media route
-* (`crewBrowser.ts`), never through the buddy. Only starting a song the tab is
-* not playing yet goes to the buddy (`onAskPlay`), because finding and opening
-* it is the buddy's job.
+* They act on whatever the buddy's tab is playing, straight through the host's
+* media route (`crewBrowser.ts`, `POST /api/browser/media`), never through the
+* buddy, so they answer at once: the button shows the new state as soon as it
+* is pressed, and the tab's answer confirms it. A read in flight (the page's
+* poll) never blocks a press. Only a tab with no song in it sends the play
+* button to the buddy (`onAskPlay`, labelled "Find and play"), because finding
+* and opening a song is the buddy's job.
 *
 * Continuous play lives here too, with a plain note that it needs this page
 * open: the end of a song is read by this page's poll, so with the page closed
 * nothing notices it and the next song does not start.
 */
-function BrowserControls({ media, inTab, waiting, continuous, onAskPlay, onPause, onPlay, onContinuous }) {
-	const state = inTab ? media.media : null;
+function BrowserControls({ media, waiting, continuous, onAskPlay, onPause, onPlay, onReplay, onContinuous }) {
+	const state = media.media;
 	const duration = state?.duration ?? null;
 	const [seekDraft, setSeekDraft] = useState(null);
 	const [volDraft, setVolDraft] = useState(null);
+	const [want, setWant] = useState(null);
+	useEffect(() => {
+		setWant(null);
+	}, [state]);
 	useEffect(() => {
 		setVolDraft(null);
 	}, [state?.volume]);
-	const playing = !!state && !state.paused && !state.ended;
-	const status = waiting && !inTab ? t("browser.status_opening") : !inTab ? t("browser.status_idle") : media.error === "user_in_control" ? t("browser.status_in_control") : !state ? t("browser.status_no_media") : state.ended ? t("browser.status_ended") : state.paused ? t("browser.status_paused") : t("browser.status_playing");
+	const ended = !!state?.ended && want !== "play";
+	const playing = want ? want === "play" : !!state && !state.paused && !state.ended;
+	const status = !state ? media.error === "user_in_control" ? t("browser.status_in_control") : waiting ? t("browser.status_opening") : t("browser.status_idle") : media.error === "user_in_control" ? t("browser.status_in_control") : ended ? t("browser.status_ended") : playing ? t("browser.status_playing") : t("browser.status_paused");
+	const pause = () => {
+		setWant("pause");
+		onPause();
+	};
+	const play = () => {
+		setWant("play");
+		if (state?.ended) onReplay();
+		else onPlay();
+	};
 	const commitSeek = () => {
 		if (seekDraft !== null) media.seek(seekDraft);
 		setSeekDraft(null);
@@ -2539,9 +2568,17 @@ function BrowserControls({ media, inTab, waiting, continuous, onAskPlay, onPause
 			/* @__PURE__ */ jsxs("div", {
 				className: "flex items-center gap-2",
 				children: [
-					playing ? /* @__PURE__ */ jsxs(Btn, {
-						onClick: onPause,
-						disabled: media.busy,
+					!state ? /* @__PURE__ */ jsxs(Btn, {
+						primary: true,
+						onClick: onAskPlay,
+						disabled: waiting,
+						"data-testid": "mood-browser-play",
+						children: [/* @__PURE__ */ jsx(Search, {
+							size: 14,
+							"aria-hidden": "true"
+						}), t("browser.find_play")]
+					}) : playing ? /* @__PURE__ */ jsxs(Btn, {
+						onClick: pause,
 						"aria-label": t("browser.pause"),
 						"data-testid": "mood-browser-pause",
 						children: [/* @__PURE__ */ jsx(Pause, {
@@ -2550,8 +2587,7 @@ function BrowserControls({ media, inTab, waiting, continuous, onAskPlay, onPause
 						}), t("browser.pause")]
 					}) : /* @__PURE__ */ jsxs(Btn, {
 						primary: true,
-						onClick: inTab && state && !state.ended ? onPlay : onAskPlay,
-						disabled: media.busy || waiting && !inTab,
+						onClick: play,
 						"aria-label": t("browser.play"),
 						"data-testid": "mood-browser-play",
 						children: [/* @__PURE__ */ jsx(Play, {
@@ -4788,7 +4824,9 @@ function MoodMusicPage() {
 	const HostView = hostBrowserView();
 	const continuous = state?.settings?.continuous ?? false;
 	const onEndedRef = useRef(() => void 0);
-	const crew = useCrewBrowser(slotKey ?? "", !!browserPick, () => onEndedRef.current());
+	const crew = useCrewBrowser(slotKey ?? "", !!browserPick || !!pending?.play, () => onEndedRef.current());
+	const crewMediaRef = useRef(crew.media);
+	crewMediaRef.current = crew.media;
 	const browserReady = readiness(crew);
 	const browserMode = browserReady === "ready" || browserReady === "unknown";
 	const saveSettings = (patch) => {
@@ -5039,10 +5077,11 @@ function MoodMusicPage() {
 	*/
 	async function afterPlay(play, parsed, source) {
 		const result = parsed?.play;
-		if (result?.played) {
+		const inTabNow = !result && !!crewMediaRef.current && !crewMediaRef.current.ended;
+		if (result?.played || inTabNow) {
 			setBrowserPick(play.pickId);
 			const heard = queue.find((p) => p.id === play.pickId);
-			if (heard && !knownSongs.has(songKey(heard.title, heard.artist))) {
+			if (result?.played && heard && !knownSongs.has(songKey(heard.title, heard.artist))) {
 				markKnown(heard, "app");
 				markUsed();
 			}
@@ -5050,7 +5089,7 @@ function MoodMusicPage() {
 				endedForRef.current = null;
 				setEndedFor(null);
 			}
-			if (result.steps.length) moodApi.setPlaySteps(play.site, result.steps).then(refresh).catch(() => void 0);
+			if (result?.steps.length) moodApi.setPlaySteps(play.site, result.steps).then(refresh).catch(() => void 0);
 		} else {
 			moodApi.forgetPlaySteps(play.site).then(refresh).catch(() => void 0);
 			setNotice(t("browser.not_played", { reason: result?.reason || t("browser.no_reason") }));
@@ -5149,6 +5188,12 @@ function MoodMusicPage() {
 	const resumeBrowser = () => {
 		stoppedRef.current = false;
 		crew.play();
+	};
+	const replayBrowser = () => {
+		stoppedRef.current = false;
+		endedForRef.current = null;
+		setEndedFor(null);
+		crew.seek(0).then(() => crew.play());
 	};
 	const setContinuous = (on) => {
 		if (on) stoppedRef.current = false;
@@ -5630,12 +5675,12 @@ function MoodMusicPage() {
 											pick: current,
 											stage: unready ?? /* @__PURE__ */ jsx(BrowserControls, {
 												media: crew,
-												inTab: browserPick === current.id,
 												waiting: working,
 												continuous,
 												onAskPlay: askPlayCurrent,
 												onPause: pauseBrowser,
 												onPlay: resumeBrowser,
+												onReplay: replayBrowser,
 												onContinuous: setContinuous
 											}),
 											busy: working,

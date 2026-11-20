@@ -142,7 +142,7 @@
   },
   "browser": {
     "status_opening": "Il tuo compagno la sta aprendo nel browser di Kiro Crew…",
-    "status_idle": "Premi play: il tuo compagno apre questa canzone nel browser di Kiro Crew.",
+    "status_idle": "Non suona ancora niente. «Trova e riproduci» chiede al tuo amico di aprire questa canzone nel browser di Kiro Crew.",
     "status_in_control": "Stai usando la scheda del browser. I pulsanti aspettano che tu la restituisca.",
     "status_no_media": "Nella scheda del browser non c’è ancora un player.",
     "status_ended": "Finita.",
@@ -160,7 +160,8 @@
     "unready_title": "Le canzoni non possono ancora suonare nel browser di Kiro Crew",
     "unready_old_host": "Questo Kiro Crew è troppo vecchio. Aggiorna Kiro Crew a una versione con i siti del browser per le app (KiroCrew#38333, più recente di v0.13.0-rc.3), poi riapri questa pagina.",
     "unready_not_approved": "Prima approva i siti musicali per Mood Music. Si approvano una volta, nella pagina dell’app.",
-    "unready_browse_off": "Una regola di questo computer ha spento il browser di Kiro Crew."
+    "unready_browse_off": "Una regola di questo computer ha spento il browser di Kiro Crew.",
+    "find_play": "Trova e riproduci"
   },
   "view": {
     "title": "Browser di Kiro Crew",

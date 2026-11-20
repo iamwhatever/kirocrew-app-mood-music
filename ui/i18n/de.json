@@ -142,7 +142,7 @@
   },
   "browser": {
     "status_opening": "Dein Buddy öffnet ihn im Browser von Kiro Crew…",
-    "status_idle": "Drück auf Abspielen: Dein Buddy öffnet diesen Song im Browser von Kiro Crew.",
+    "status_idle": "Noch läuft nichts. „Suchen und abspielen“ bittet deinen Buddy, das Lied in Kiro Crews Browser zu öffnen.",
     "status_in_control": "Du nutzt gerade den Browser-Tab. Die Tasten warten, bis du ihn zurückgibst.",
     "status_no_media": "Im Browser-Tab ist noch kein Player.",
     "status_ended": "Zu Ende.",
@@ -160,7 +160,8 @@
     "unready_title": "Songs können noch nicht im Browser von Kiro Crew laufen",
     "unready_old_host": "Dieses Kiro Crew ist zu alt. Aktualisiere Kiro Crew auf eine Version mit App-Browserseiten (KiroCrew#38333, neuer als v0.13.0-rc.3) und öffne diese Seite dann erneut.",
     "unready_not_approved": "Gib zuerst die Musikseiten für Mood Music frei. Das machst du einmal, auf der Seite der App.",
-    "unready_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet."
+    "unready_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet.",
+    "find_play": "Suchen und abspielen"
   },
   "view": {
     "title": "Browser von Kiro Crew",

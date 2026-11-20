@@ -237,10 +237,13 @@ export default function MoodMusicPage() {
   // The host's live view of the buddy's tab (level 11); absent on an older host.
   const HostView = hostBrowserView()
   const continuous = state?.settings?.continuous ?? false
-  // The Crew Browser player. Polled while the tab holds a song; read once otherwise,
-  // which is how the page learns whether it can play here at all.
+  // The Crew Browser player. Polled from the first play request on, so the page
+  // sees the song in the tab even when the buddy's reply could not be read; read
+  // once otherwise, which is how the page learns whether it can play here at all.
   const onEndedRef = useRef<() => void>(() => undefined)
-  const crew = useCrewBrowser(slotKey ?? '', !!browserPick, () => onEndedRef.current())
+  const crew = useCrewBrowser(slotKey ?? '', !!browserPick || !!pending?.play, () => onEndedRef.current())
+  const crewMediaRef = useRef(crew.media)
+  crewMediaRef.current = crew.media
   const browserReady = readiness(crew)
   // `unknown` (no answer about this chat yet) still lets a play go out: the buddy
   // then says what went wrong, so nothing waits in silence.
@@ -466,17 +469,20 @@ export default function MoodMusicPage() {
    */
   async function afterPlay(play: NonNullable<Pending['play']>, parsed: DjReply | null, source: string) {
     const result = parsed?.play
-    if (result?.played) {
+    // No readable answer, but the tab now plays: the song is there all the same,
+    // so the buttons reach it. Its steps are not known, so none are kept.
+    const inTabNow = !result && !!crewMediaRef.current && !crewMediaRef.current.ended
+    if (result?.played || inTabNow) {
       setBrowserPick(play.pickId)
       // A song the buddy started counts as heard (design §0.6): not an explore pick again.
       const heard = queue.find(p => p.id === play.pickId)
-      if (heard && !knownSongs.has(songKey(heard.title, heard.artist))) {
+      if (result?.played && heard && !knownSongs.has(songKey(heard.title, heard.artist))) {
         markKnown(heard, 'app')
         markUsed()
       }
       // A fresh start of a song lets its next ending wake the buddy again.
       if (endedForRef.current === play.pickId) { endedForRef.current = null; setEndedFor(null) }
-      if (result.steps.length) void moodApi.setPlaySteps(play.site, result.steps).then(refresh).catch(() => undefined)
+      if (result?.steps.length) void moodApi.setPlaySteps(play.site, result.steps).then(refresh).catch(() => undefined)
     } else {
       void moodApi.forgetPlaySteps(play.site).then(refresh).catch(() => undefined)
       setNotice(t('browser.not_played', { reason: result?.reason || t('browser.no_reason') }))
@@ -574,6 +580,13 @@ export default function MoodMusicPage() {
   const resumeBrowser = () => {
     stoppedRef.current = false
     void crew.play()
+  }
+  const replayBrowser = () => {
+    stoppedRef.current = false
+    // A fresh start of the song in the tab lets its next ending wake the buddy again.
+    endedForRef.current = null
+    setEndedFor(null)
+    void crew.seek(0).then(() => crew.play())
   }
   const setContinuous = (on: boolean) => {
     if (on) stoppedRef.current = false
@@ -912,12 +925,12 @@ export default function MoodMusicPage() {
                       stage={unready ?? (
                         <BrowserControls
                           media={crew}
-                          inTab={browserPick === current.id}
                           waiting={working}
                           continuous={continuous}
                           onAskPlay={askPlayCurrent}
                           onPause={pauseBrowser}
                           onPlay={resumeBrowser}
+                          onReplay={replayBrowser}
                           onContinuous={setContinuous}
                         />
                       )}
