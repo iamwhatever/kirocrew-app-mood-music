@@ -62,6 +62,8 @@ type MediaFn = (value?: number) => Promise<void>
 export const stubMedia: {
   media: BrowserMediaState | null
   error: string | null
+  /** A read in flight, as the host's hook reports it. */
+  busy: boolean
   play: ReturnType<typeof vi.fn<MediaFn>>
   pause: ReturnType<typeof vi.fn<MediaFn>>
   seek: ReturnType<typeof vi.fn<MediaFn>>
@@ -73,6 +75,7 @@ export const stubMedia: {
 } = {
   media: null,
   error: null,
+  busy: false,
   play: vi.fn<MediaFn>(async () => undefined),
   pause: vi.fn<MediaFn>(async () => undefined),
   seek: vi.fn<MediaFn>(async () => undefined),
@@ -84,6 +87,7 @@ export function resetStubMedia(): void {
   stubNavigate.mockReset()
   stubMedia.media = null
   stubMedia.error = null
+  stubMedia.busy = false
   for (const k of ['play', 'pause', 'seek', 'setVolume', 'refresh'] as const) {
     stubMedia[k] = vi.fn<MediaFn>(async () => undefined)
   }
@@ -116,7 +120,7 @@ export function useBrowserMedia(
   return {
     media: stubMedia.media,
     error: stubMedia.error,
-    busy: false,
+    busy: stubMedia.busy,
     play: () => stubMedia.play(),
     pause: () => stubMedia.pause(),
     seek: (s: number) => stubMedia.seek(s),
@@ -131,8 +135,8 @@ export function ChatEmbed({ slotKey }: { slotKey: string }) {
 }
 
 /** Stands in for the host's live browser view: names the slot it was given. */
-export function BrowserView({ slot, 'aria-label': label }: { slot: string; 'aria-label': string }) {
-  return createElement('div', { 'data-testid': 'host-browser-view', 'data-slot': slot, 'aria-label': label })
+export function BrowserView({ slot, 'aria-label': label, stayLive }: { slot: string; 'aria-label': string; stayLive?: boolean }) {
+  return createElement('div', { 'data-testid': 'host-browser-view', 'data-slot': slot, 'aria-label': label, 'data-stay-live': stayLive ? 'true' : 'false' })
 }
 
 const unstubbed = () => Promise.reject(new Error('stub app-sdk: no API in this test'))

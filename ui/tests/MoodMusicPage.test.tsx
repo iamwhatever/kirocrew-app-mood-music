@@ -80,6 +80,48 @@ afterEach(() => {
 })
 
 describe('MoodMusicPage', () => {
+  it('always shows what the buddy did, in plain words, with the full record closed', async () => {
+    const steps: SlotData = {
+      running: false,
+      messages: [
+        USER,
+        { role: 'tool', content: '🔧 web_search', meta: { input: '{"query": "苏州河 被低估"}' } },
+        { role: 'tool', content: '🔧 web_search', meta: { input: '{"query": "x"}' } },
+        { role: 'tool', content: '🔧 Fetch URL', meta: { input: '{"url": "https://example.com/review"}' } },
+        { role: 'tool', content: '🔧 browser', meta: { input: '{"op": "navigate", "args": {"url": "https://www.youtube.com/results?search_query=x"}}' } },
+        { role: 'assistant', content: block({ mood_tags: ['想念'], picks: [] }) },
+      ],
+    }
+    api.state.mockResolvedValue({ ...EMPTY, last_source: 'r0' })
+    api.getSlot.mockResolvedValue(steps)
+    render(<MoodMusicPage />)
+    await flush()
+    await flush()
+    const chat = screen.getByTestId('mood-chat')
+    const list = within(chat).getByTestId('mood-steps')
+    expect(list).toHaveTextContent(tr('steps.times', { step: tr('steps.search'), count: 2 }))
+    expect(list).toHaveTextContent(tr('steps.read'))
+    expect(list).toHaveTextContent(tr('steps.open'))
+    expect(within(chat).getByText(/听起来是安静地想/)).toBeInTheDocument()
+    // No tool name, search word or address reaches the conversation.
+    for (const raw of ['web_search', 'Fetch URL', 'browser', '苏州河', 'example.com', 'youtube.com']) {
+      expect(chat.textContent).not.toContain(raw)
+    }
+    // The raw record stays closed, and the conversation does not depend on it.
+    expect(screen.queryByTestId('chat-embed')).toBeNull()
+  })
+
+  it('shows the running turn’s steps under its status', async () => {
+    await start()
+    api.getSlot.mockResolvedValue(running(
+      { role: 'tool', content: '🔧 browser', meta: { input: '{"op": "navigate"}' } },
+      { role: 'tool', content: '🔧 browser', meta: { input: '{"op": "click"}' } },
+    ))
+    await flush(POLL_MS)
+    expect(screen.getByTestId('mood-live-steps')).toHaveTextContent(tr('steps.open'))
+    expect(screen.getByTestId('mood-live-steps')).toHaveTextContent(tr('steps.click'))
+  })
+
   it('cannot send an empty mood', async () => {
     render(<MoodMusicPage />)
     await flush()

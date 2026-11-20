@@ -142,7 +142,7 @@
   },
   "browser": {
     "status_opening": "Tu compañero la está abriendo en el navegador de Kiro Crew…",
-    "status_idle": "Pulsa reproducir: tu compañero abre esta canción en el navegador de Kiro Crew.",
+    "status_idle": "Aún no suena nada. «Buscar y reproducir» pide a tu compañero que abra esta canción en el navegador de Kiro Crew.",
     "status_in_control": "Estás usando la pestaña del navegador. Los botones esperan a que la devuelvas.",
     "status_no_media": "La pestaña del navegador aún no tiene reproductor.",
     "status_ended": "Terminó.",
@@ -160,7 +160,8 @@
     "unready_title": "Las canciones aún no pueden sonar en el navegador de Kiro Crew",
     "unready_old_host": "Este Kiro Crew es demasiado antiguo. Actualiza Kiro Crew a una versión con sitios de navegador para apps (KiroCrew#38333, más nueva que v0.13.0-rc.3) y vuelve a abrir esta página.",
     "unready_not_approved": "Primero aprueba los sitios de música para Mood Music. Se aprueban una vez, en la página de la app.",
-    "unready_browse_off": "Una política de este equipo tiene apagado el navegador de Kiro Crew."
+    "unready_browse_off": "Una política de este equipo tiene apagado el navegador de Kiro Crew.",
+    "find_play": "Buscar y reproducir"
   },
   "view": {
     "title": "Navegador de Kiro Crew",
@@ -169,5 +170,22 @@
     "show": "Mostrar",
     "hide": "Ocultar",
     "old_host": "Este Kiro Crew aún no puede mostrar su navegador aquí. Actualiza Kiro Crew para ver cómo tu compañero elige canciones."
+  },
+  "steps": {
+    "label": "Lo que hizo tu compañero",
+    "times": "{{step}} × {{count}}",
+    "search": "Buscó en la web",
+    "read": "Leyó una página",
+    "open": "Abrió una página",
+    "click": "Hizo clic",
+    "type": "Escribió",
+    "look": "Miró la página",
+    "scroll": "Se desplazó",
+    "wait": "Esperó a la página",
+    "back": "Volvió atrás",
+    "tab": "Cambió de pestaña",
+    "key": "Pulsó una tecla",
+    "browser": "Usó el navegador",
+    "other": "Hizo un paso"
   }
 }

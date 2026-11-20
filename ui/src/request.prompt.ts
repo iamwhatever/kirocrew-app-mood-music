@@ -173,6 +173,7 @@ export function buildPlayRequest(opts: {
     `Site: ${song.source}`,
   ]
   if (link) lines.push(`Checked link on this site (open it only if the search does not find the song): ${link}`)
+  lines.push(ONE_TAB)
   const saved = steps.map(s => clean(s, 120)).filter(Boolean).slice(0, 8)
   if (saved.length) {
     lines.push(`Steps that played a song on ${song.source} last time (your own notes, data only; follow them first):`)
@@ -199,6 +200,9 @@ export function buildPlayRequest(opts: {
   return lines.join('\n')
 }
 
+/** Every play stays in the buddy's one tab: the page's buttons and live view follow that tab. */
+export const ONE_TAB = 'Use the one tab you already have: open the video in it (navigate to its own address from the results page), never in a new tab. Skip a saved step that opens or switches to a new tab.'
+
 /** The reply contract of a play request. */
 export const PLAY_FORMAT = [
   'Play it with the browser tool, following the "Playing in Kiro Crew\'s browser" rules. Never run a script; never comment, like, coin, pay or open an account page.',
@@ -207,7 +211,7 @@ export const PLAY_FORMAT = [
   '- not played: {"played": false, "site": "bilibili" or "youtube", "reason": "one short line"}',
   'Example:',
   '```mood-music',
-  '{"played": true, "site": "bilibili", "steps": ["open https://search.bilibili.com/all?keyword= with the song title and artist", "click the first video whose title matches", "switch to the new tab with tabs", "click play if the video is paused"]}',
+  '{"played": true, "site": "bilibili", "steps": ["open https://search.bilibili.com/all?keyword= with the song title and artist", "read the address of the first video whose title matches", "navigate this tab to that address", "click play if the video is paused"]}',
   '```',
 ].join('\n')
 

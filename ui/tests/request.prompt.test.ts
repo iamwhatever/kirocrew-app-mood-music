@@ -145,3 +145,19 @@ describe('buildPlayRequest', () => {
     expect(msg).toContain('Taste so far')
   })
 })
+
+describe('buildPlayRequest keeps to one tab', () => {
+  it('asks the buddy to open the video in the tab it has, never a new one', () => {
+    const msg = buildPlayRequest({
+      song: { title: 'Song', artist: 'A', source: 'bilibili' },
+      steps: ['click the first video whose title matches', 'switch to the new tab with tabs'],
+      why: 'start',
+      state: undefined,
+    })
+    expect(msg).toContain('Use the one tab you already have')
+    expect(msg).toContain('Skip a saved step that opens or switches to a new tab.')
+    // The example the buddy copies its steps from no longer switches tabs.
+    expect(PLAY_FORMAT).not.toContain('new tab')
+    expect(PLAY_FORMAT).toContain('navigate this tab to that address')
+  })
+})

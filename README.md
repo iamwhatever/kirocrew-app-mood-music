@@ -44,13 +44,15 @@ it fits, and more songs wait under **Up next**. Click **Like** on the ones that 
 
 ### 2. Let the buddy play songs in Kiro Crew's browser
 
-Press play on a song, and the buddy searches for it on bilibili or YouTube in Kiro
-Crew's own browser and opens the video. On a Mac that is your own Chrome, with your
-sign-ins and your sound. **Pause**, the progress bar and the volume act on that tab
-at once; they never wait for the buddy. Turn on **Continuous play**, and when a song
-ends the buddy plays the next one, adding songs for the same mood when the list runs
-low, until you press **Pause**. Click **More like this** to get songs close to the
-one you are hearing.
+Choose **Find and play** (or a song's play button), and the buddy searches for it on
+bilibili or YouTube in Kiro Crew's own browser and opens the video. That is the same
+browser your chats use; on a Mac it is your own Chrome, with your sign-ins and your
+sound. The buddy plays every song in one tab of its own. **Play**, **Pause**, the
+progress bar and the volume act on that tab at once; they never wait for the buddy.
+**Continuous play** is on from the start: when a song ends the buddy plays the next
+one, adding songs for the same mood when the list runs low, until you press
+**Pause**. Turn it off and the page remembers. Click **More like this** to get songs
+close to the one you are hearing.
 
 The first time, approve the music sites on the app's page (**Approve the sites**
 takes you there). Mood Music may only open bilibili and YouTube search and video
@@ -61,7 +63,9 @@ Above the player, **Kiro Crew's browser** shows the buddy's browser tab live, th
 picture a chat shows under a browser step. The line beside it says **Using the
 browser…** while the buddy searches and opens the song. Choose **Take over** to use
 the tab yourself and **Hand back** when you are done; **Hide** folds the box away and
-the page remembers. This needs a Kiro Crew with the app browser view (KiroCrew#39246,
+the page remembers. The box keeps showing the tab after the buddy finishes, on a
+Kiro Crew whose browser view can stay live; an older one shows **Show live page**
+instead, and one click streams the tab again. This needs a Kiro Crew with the app browser view (KiroCrew#39246,
 #39018, #39020), **App browser access** on in **Settings → Feature Previews**, and
 **view** approved on the app's page. On an older Kiro Crew the box says to update.
 
@@ -122,8 +126,9 @@ finding songs, Moments and Memory still work.
 
 The page opens with a short hello from the buddy and an empty player. Type a
 feeling or a song name in the box and choose **Send**, or click one of the mood
-chips: a chip starts the search by itself. The conversation is also listed in the
-Kiro Crew sidebar under the app's folder.
+chips: a chip starts the search by itself. On a wide window the chat is on the left,
+and the browser, the player and **Up next** are on the right. The conversation stays
+on this page; it is not listed in Kiro Crew's sessions.
 
 ## How to use it
 
@@ -134,11 +139,13 @@ Kiro Crew sidebar under the app's folder.
 3. Type how you feel, or a song that moved you, and choose **Send**, or click a mood
    chip such as **Calm** or **Missing someone**. A line under the chat says what the
    buddy is doing: thinking, searching, reading reviews, writing, or checking that
-   each song plays. **Stop** cancels it.
+   each song plays, with its steps in plain words (for example "Searched the web ×
+   3 · Read a page"). Each reply keeps its steps. **Stop** cancels it.
 4. Each song card says why it is here, what to listen for and who praised it. Choose
    **Play**, the heart to like it, skip, or **I know it**. Tap a suggestion under the
    reply to keep talking, or **Remember: ...** to save a preference the buddy heard.
-5. Click any song under **Up next** to play it now.
+5. **Up next** lists every song with its artist and why it was picked; the one
+   playing says **Now playing**. Click any song to play it now.
 6. Open **Memory** to see your own notes and the songs and moods the app recorded.
    Add, edit, pin or delete any of them; **Clear everything out of date** removes
    what the app recorded and has not used for 90 days. What you wrote yourself is
@@ -171,7 +178,7 @@ Kiro Crew sidebar under the app's folder.
   and `www.youtube.com/watch`. Its instructions forbid account pages, comments, likes,
   coins and payments, but those are rules it follows, not a block Kiro Crew enforces
   on those pages. Mood Music keeps, per site, the steps that last played a song (for
-  example "open the search page, click the first matching video") in `state.json`,
+  example "open the search page, open the matching video in the same tab") in `state.json`,
   and sends them back to the buddy next time. If they fail, it forgets them and the
   buddy finds the way again.
 - **The buddy's chat:** the app opens it itself (chat slots, at the trust prompt)

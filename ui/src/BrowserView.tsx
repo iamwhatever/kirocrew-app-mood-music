@@ -51,7 +51,7 @@ export default function BrowserView({ open, onToggle, operating, live }: {
         </button>
       </div>
       {open && (
-        <div id="mood-browser-view-body" data-testid="mood-browser-view-body">
+        <div id="mood-browser-view-body" className={live ? 'mm-view-body' : undefined} data-testid="mood-browser-view-body">
           {live ?? <p className="text-xs text-[var(--muted)]" data-testid="mood-browser-view-old-host">{t('view.old_host')}</p>}
         </div>
       )}

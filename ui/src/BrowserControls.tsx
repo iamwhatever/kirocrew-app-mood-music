@@ -1,49 +1,63 @@
 /**
  * The Crew Browser player's buttons: play / pause, a progress bar and volume.
  *
- * They act on the tab the buddy opened, straight through the host's media route
- * (`crewBrowser.ts`), never through the buddy. Only starting a song the tab is
- * not playing yet goes to the buddy (`onAskPlay`), because finding and opening
- * it is the buddy's job.
+ * They act on whatever the buddy's tab is playing, straight through the host's
+ * media route (`crewBrowser.ts`, `POST /api/browser/media`), never through the
+ * buddy, so they answer at once: the button shows the new state as soon as it
+ * is pressed, and the tab's answer confirms it. A read in flight (the page's
+ * poll) never blocks a press. Only a tab with no song in it sends the play
+ * button to the buddy (`onAskPlay`, labelled "Find and play"), because finding
+ * and opening a song is the buddy's job.
  *
  * Continuous play lives here too, with a plain note that it needs this page
  * open: the end of a song is read by this page's poll, so with the page closed
  * nothing notices it and the next song does not start.
  */
 import { useEffect, useState } from 'react'
-import { Pause, Play, Repeat, Volume2 } from 'lucide-react'
+import { Pause, Play, Repeat, Search, Volume2 } from 'lucide-react'
 import { Btn } from '@kirocrew/app-sdk/ui'
 import type { BrowserMedia } from '@kirocrew/app-sdk'
 import { t } from './i18n'
 import { clock } from './crewBrowser'
 
-export default function BrowserControls({ media, inTab, waiting, continuous, onAskPlay, onPause, onPlay, onContinuous }: {
+export default function BrowserControls({ media, waiting, continuous, onAskPlay, onPause, onPlay, onReplay, onContinuous }: {
   media: BrowserMedia
-  /** The tab plays this song (the buddy said it opened it). */
-  inTab: boolean
   /** A turn is out to the buddy. */
   waiting: boolean
   continuous: boolean
+  /** The tab has no song: ask the buddy to find and open one. */
   onAskPlay: () => void
   onPause: () => void
   onPlay: () => void
+  /** The tab's song ended: play it again from the start. */
+  onReplay: () => void
   onContinuous: (on: boolean) => void
 }) {
-  const state = inTab ? media.media : null
+  const state = media.media
   const duration = state?.duration ?? null
   const [seekDraft, setSeekDraft] = useState<number | null>(null)
   const [volDraft, setVolDraft] = useState<number | null>(null)
-  // A new answer from the tab replaces whatever was being dragged once it lands.
+  // What the person just pressed, shown until the tab's next answer lands.
+  const [want, setWant] = useState<'play' | 'pause' | null>(null)
+  // A new answer from the tab replaces whatever was pressed or dragged.
+  useEffect(() => { setWant(null) }, [state])
   useEffect(() => { setVolDraft(null) }, [state?.volume])
 
-  const playing = !!state && !state.paused && !state.ended
-  const status = waiting && !inTab ? t('browser.status_opening')
-    : !inTab ? t('browser.status_idle')
-      : media.error === 'user_in_control' ? t('browser.status_in_control')
-        : !state ? t('browser.status_no_media')
-          : state.ended ? t('browser.status_ended')
-            : state.paused ? t('browser.status_paused')
-              : t('browser.status_playing')
+  const ended = !!state?.ended && want !== 'play'
+  const playing = want ? want === 'play' : !!state && !state.paused && !state.ended
+  const status = !state
+    ? (media.error === 'user_in_control' ? t('browser.status_in_control')
+      : waiting ? t('browser.status_opening') : t('browser.status_idle'))
+    : media.error === 'user_in_control' ? t('browser.status_in_control')
+      : ended ? t('browser.status_ended')
+        : playing ? t('browser.status_playing')
+          : t('browser.status_paused')
+  const pause = () => { setWant('pause'); onPause() }
+  const play = () => {
+    setWant('play')
+    if (state?.ended) onReplay()
+    else onPlay()
+  }
   const commitSeek = () => {
     if (seekDraft !== null) void media.seek(seekDraft)
     setSeekDraft(null)
@@ -57,19 +71,18 @@ export default function BrowserControls({ media, inTab, waiting, continuous, onA
     <div className="mt-3 flex flex-col gap-2 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] p-3" data-testid="mood-browser-controls">
       <p className="text-xs text-[var(--muted)]" role="status" data-testid="mood-browser-status">{status}</p>
       <div className="flex items-center gap-2">
-        {playing ? (
-          <Btn onClick={onPause} disabled={media.busy} aria-label={t('browser.pause')} data-testid="mood-browser-pause">
+        {!state ? (
+          <Btn primary onClick={onAskPlay} disabled={waiting} data-testid="mood-browser-play">
+            <Search size={14} aria-hidden="true" />
+            {t('browser.find_play')}
+          </Btn>
+        ) : playing ? (
+          <Btn onClick={pause} aria-label={t('browser.pause')} data-testid="mood-browser-pause">
             <Pause size={14} aria-hidden="true" />
             {t('browser.pause')}
           </Btn>
         ) : (
-          <Btn
-            primary
-            onClick={inTab && state && !state.ended ? onPlay : onAskPlay}
-            disabled={media.busy || (waiting && !inTab)}
-            aria-label={t('browser.play')}
-            data-testid="mood-browser-play"
-          >
+          <Btn primary onClick={play} aria-label={t('browser.play')} data-testid="mood-browser-play">
             <Play size={14} aria-hidden="true" />
             {t('browser.play')}
           </Btn>

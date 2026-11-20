@@ -142,7 +142,7 @@
   },
   "browser": {
     "status_opening": "친구가 Kiro Crew 브라우저에서 여는 중이에요…",
-    "status_idle": "재생을 누르면 친구가 Kiro Crew 브라우저에서 이 노래를 열어요.",
+    "status_idle": "아직 재생 중인 곡이 없어요. \"찾아서 재생\"을 누르면 버디가 Kiro Crew 브라우저에서 이 곡을 엽니다.",
     "status_in_control": "브라우저 탭을 직접 쓰는 중이에요. 돌려줄 때까지 버튼이 기다려요.",
     "status_no_media": "브라우저 탭에 아직 플레이어가 없어요.",
     "status_ended": "끝났어요.",
@@ -160,7 +160,8 @@
     "unready_title": "아직 Kiro Crew 브라우저에서 노래를 재생할 수 없어요",
     "unready_old_host": "이 Kiro Crew는 너무 오래됐어요. 앱 브라우저 사이트를 지원하는 버전(KiroCrew#38333 포함, v0.13.0-rc.3보다 새 버전)으로 업데이트한 뒤 이 페이지를 다시 여세요.",
     "unready_not_approved": "먼저 무드 뮤직의 음악 사이트를 승인하세요. 앱 페이지에서 한 번만 승인하면 돼요.",
-    "unready_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요."
+    "unready_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요.",
+    "find_play": "찾아서 재생"
   },
   "view": {
     "title": "Kiro Crew 브라우저",
@@ -169,5 +170,22 @@
     "show": "보기",
     "hide": "숨기기",
     "old_host": "이 Kiro Crew는 아직 여기에 브라우저를 보여 줄 수 없어요. Kiro Crew를 업데이트하면 선곡하는 모습을 볼 수 있어요."
+  },
+  "steps": {
+    "label": "버디가 한 일",
+    "times": "{{step}} × {{count}}",
+    "search": "웹 검색",
+    "read": "페이지 읽기",
+    "open": "페이지 열기",
+    "click": "클릭",
+    "type": "입력",
+    "look": "페이지 확인",
+    "scroll": "스크롤",
+    "wait": "페이지 대기",
+    "back": "뒤로 가기",
+    "tab": "탭 전환",
+    "key": "키 누르기",
+    "browser": "브라우저 사용",
+    "other": "작업 수행"
   }
 }

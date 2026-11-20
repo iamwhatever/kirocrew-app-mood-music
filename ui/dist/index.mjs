@@ -1,7 +1,7 @@
 import * as sdk from "@kirocrew/app-sdk";
 import { activeLocale, fmtDateTime, useAppApi, useChatLauncher, useLanguageGeneration, useNavigate } from "@kirocrew/app-sdk";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Brain, Check, ChevronRight, ExternalLink, Headphones, Heart, MessageCircleQuestion, MonitorPlay, Music, Pause, Pin, PinOff, Play, Repeat, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Volume2, Waves, WifiOff } from "lucide-react";
+import { Brain, Check, ChevronRight, ExternalLink, Headphones, Heart, MessageCircleQuestion, MonitorPlay, Music, Pause, Pin, PinOff, Play, Repeat, Search, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Volume2, Waves, WifiOff } from "lucide-react";
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from "@kirocrew/app-sdk/ui";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 // src/i18n.ts
@@ -164,7 +164,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "আপনার সঙ্গী এটি Kiro Crew-এর ব্রাউজারে খুলছে…",
-			"status_idle": "চালান চাপুন: আপনার সঙ্গী গানটি Kiro Crew-এর ব্রাউজারে খুলবে।",
+			"status_idle": "এখনও কিছু চলছে না। \"খুঁজে চালাও\" চাপলে আপনার বন্ধু Kiro Crew-এর ব্রাউজারে গানটি খুলবে।",
 			"status_in_control": "আপনি ব্রাউজার ট্যাবটি ব্যবহার করছেন। ফেরত না দেওয়া পর্যন্ত বোতামগুলো অপেক্ষা করবে।",
 			"status_no_media": "ব্রাউজার ট্যাবে এখনো কোনো প্লেয়ার নেই।",
 			"status_ended": "শেষ হয়েছে।",
@@ -182,7 +182,8 @@ var CATALOGS = {
 			"unready_title": "গান এখনো Kiro Crew-এর ব্রাউজারে বাজতে পারছে না",
 			"unready_old_host": "এই Kiro Crew খুব পুরোনো। অ্যাপ ব্রাউজার সাইট সমর্থিত সংস্করণে (KiroCrew#38333 সহ, v0.13.0-rc.3-এর চেয়ে নতুন) Kiro Crew আপডেট করুন, তারপর এই পেজ আবার খুলুন।",
 			"unready_not_approved": "আগে মুড মিউজিকের জন্য গানের সাইটগুলো অনুমোদন করুন। অ্যাপের পেজে একবার অনুমোদন করলেই হবে।",
-			"unready_browse_off": "এই কম্পিউটারের একটি নীতি Kiro Crew-এর ব্রাউজার বন্ধ রেখেছে।"
+			"unready_browse_off": "এই কম্পিউটারের একটি নীতি Kiro Crew-এর ব্রাউজার বন্ধ রেখেছে।",
+			"find_play": "খুঁজে চালাও"
 		},
 		view: {
 			"title": "Kiro Crew-এর ব্রাউজার",
@@ -191,6 +192,23 @@ var CATALOGS = {
 			"show": "দেখান",
 			"hide": "লুকান",
 			"old_host": "এই Kiro Crew এখনো এখানে ব্রাউজার দেখাতে পারে না। Kiro Crew আপডেট করলে সঙ্গীকে গান বাছতে দেখতে পাবেন।"
+		},
+		steps: {
+			"label": "আপনার বন্ধু যা করেছে",
+			"times": "{{step}} × {{count}}",
+			"search": "ওয়েবে খুঁজেছে",
+			"read": "একটি পাতা পড়েছে",
+			"open": "একটি পাতা খুলেছে",
+			"click": "ক্লিক করেছে",
+			"type": "টাইপ করেছে",
+			"look": "পাতাটি দেখেছে",
+			"scroll": "স্ক্রল করেছে",
+			"wait": "পাতার জন্য অপেক্ষা করেছে",
+			"back": "পিছনে গেছে",
+			"tab": "ট্যাব বদলেছে",
+			"key": "একটি কী চেপেছে",
+			"browser": "ব্রাউজার ব্যবহার করেছে",
+			"other": "একটি ধাপ করেছে"
 		}
 	},
 	de: {
@@ -337,7 +355,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "Dein Buddy öffnet ihn im Browser von Kiro Crew…",
-			"status_idle": "Drück auf Abspielen: Dein Buddy öffnet diesen Song im Browser von Kiro Crew.",
+			"status_idle": "Noch läuft nichts. „Suchen und abspielen“ bittet deinen Buddy, das Lied in Kiro Crews Browser zu öffnen.",
 			"status_in_control": "Du nutzt gerade den Browser-Tab. Die Tasten warten, bis du ihn zurückgibst.",
 			"status_no_media": "Im Browser-Tab ist noch kein Player.",
 			"status_ended": "Zu Ende.",
@@ -355,7 +373,8 @@ var CATALOGS = {
 			"unready_title": "Songs können noch nicht im Browser von Kiro Crew laufen",
 			"unready_old_host": "Dieses Kiro Crew ist zu alt. Aktualisiere Kiro Crew auf eine Version mit App-Browserseiten (KiroCrew#38333, neuer als v0.13.0-rc.3) und öffne diese Seite dann erneut.",
 			"unready_not_approved": "Gib zuerst die Musikseiten für Mood Music frei. Das machst du einmal, auf der Seite der App.",
-			"unready_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet."
+			"unready_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet.",
+			"find_play": "Suchen und abspielen"
 		},
 		view: {
 			"title": "Browser von Kiro Crew",
@@ -364,6 +383,23 @@ var CATALOGS = {
 			"show": "Anzeigen",
 			"hide": "Ausblenden",
 			"old_host": "Dieses Kiro Crew kann den Browser hier noch nicht zeigen. Aktualisiere Kiro Crew, um zuzusehen, wie dein Buddy Songs wählt."
+		},
+		steps: {
+			"label": "Was dein Buddy getan hat",
+			"times": "{{step}} × {{count}}",
+			"search": "Im Web gesucht",
+			"read": "Eine Seite gelesen",
+			"open": "Eine Seite geöffnet",
+			"click": "Geklickt",
+			"type": "Getippt",
+			"look": "Die Seite angesehen",
+			"scroll": "Gescrollt",
+			"wait": "Auf die Seite gewartet",
+			"back": "Zurückgegangen",
+			"tab": "Tab gewechselt",
+			"key": "Eine Taste gedrückt",
+			"browser": "Den Browser benutzt",
+			"other": "Einen Schritt gemacht"
 		}
 	},
 	en: {
@@ -510,7 +546,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "Your buddy is opening it in Kiro Crew's browser…",
-			"status_idle": "Press play: your buddy opens this song in Kiro Crew's browser.",
+			"status_idle": "Nothing plays yet. \"Find and play\" asks your buddy to open this song in Kiro Crew's browser.",
 			"status_in_control": "You are using the browser tab. The buttons wait until you hand it back.",
 			"status_no_media": "The browser tab has no player yet.",
 			"status_ended": "Ended.",
@@ -528,7 +564,8 @@ var CATALOGS = {
 			"unready_title": "Songs cannot play in Kiro Crew's browser yet",
 			"unready_old_host": "This Kiro Crew is too old. Update Kiro Crew to a version with app browser sites (KiroCrew#38333, newer than v0.13.0-rc.3), then open this page again.",
 			"unready_not_approved": "First approve the music sites for Mood Music. You approve them once, on the app's page.",
-			"unready_browse_off": "Kiro Crew's browser is turned off by a policy on this computer."
+			"unready_browse_off": "Kiro Crew's browser is turned off by a policy on this computer.",
+			"find_play": "Find and play"
 		},
 		view: {
 			"title": "Kiro Crew's browser",
@@ -537,6 +574,23 @@ var CATALOGS = {
 			"show": "Show",
 			"hide": "Hide",
 			"old_host": "This Kiro Crew cannot show its browser here yet. Update Kiro Crew to watch your buddy pick songs."
+		},
+		steps: {
+			"label": "What your buddy did",
+			"times": "{{step}} × {{count}}",
+			"search": "Searched the web",
+			"read": "Read a page",
+			"open": "Opened a page",
+			"click": "Clicked",
+			"type": "Typed",
+			"look": "Looked at the page",
+			"scroll": "Scrolled",
+			"wait": "Waited for the page",
+			"back": "Went back",
+			"tab": "Switched tabs",
+			"key": "Pressed a key",
+			"browser": "Used the browser",
+			"other": "Did a step"
 		}
 	},
 	es: {
@@ -683,7 +737,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "Tu compañero la está abriendo en el navegador de Kiro Crew…",
-			"status_idle": "Pulsa reproducir: tu compañero abre esta canción en el navegador de Kiro Crew.",
+			"status_idle": "Aún no suena nada. «Buscar y reproducir» pide a tu compañero que abra esta canción en el navegador de Kiro Crew.",
 			"status_in_control": "Estás usando la pestaña del navegador. Los botones esperan a que la devuelvas.",
 			"status_no_media": "La pestaña del navegador aún no tiene reproductor.",
 			"status_ended": "Terminó.",
@@ -701,7 +755,8 @@ var CATALOGS = {
 			"unready_title": "Las canciones aún no pueden sonar en el navegador de Kiro Crew",
 			"unready_old_host": "Este Kiro Crew es demasiado antiguo. Actualiza Kiro Crew a una versión con sitios de navegador para apps (KiroCrew#38333, más nueva que v0.13.0-rc.3) y vuelve a abrir esta página.",
 			"unready_not_approved": "Primero aprueba los sitios de música para Mood Music. Se aprueban una vez, en la página de la app.",
-			"unready_browse_off": "Una política de este equipo tiene apagado el navegador de Kiro Crew."
+			"unready_browse_off": "Una política de este equipo tiene apagado el navegador de Kiro Crew.",
+			"find_play": "Buscar y reproducir"
 		},
 		view: {
 			"title": "Navegador de Kiro Crew",
@@ -710,6 +765,23 @@ var CATALOGS = {
 			"show": "Mostrar",
 			"hide": "Ocultar",
 			"old_host": "Este Kiro Crew aún no puede mostrar su navegador aquí. Actualiza Kiro Crew para ver cómo tu compañero elige canciones."
+		},
+		steps: {
+			"label": "Lo que hizo tu compañero",
+			"times": "{{step}} × {{count}}",
+			"search": "Buscó en la web",
+			"read": "Leyó una página",
+			"open": "Abrió una página",
+			"click": "Hizo clic",
+			"type": "Escribió",
+			"look": "Miró la página",
+			"scroll": "Se desplazó",
+			"wait": "Esperó a la página",
+			"back": "Volvió atrás",
+			"tab": "Cambió de pestaña",
+			"key": "Pulsó una tecla",
+			"browser": "Usó el navegador",
+			"other": "Hizo un paso"
 		}
 	},
 	fr: {
@@ -856,7 +928,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "Ton compagnon l’ouvre dans le navigateur de Kiro Crew…",
-			"status_idle": "Appuie sur lecture : ton compagnon ouvre cette chanson dans le navigateur de Kiro Crew.",
+			"status_idle": "Rien ne joue encore. « Trouver et lire » demande à ton compagnon d'ouvrir ce morceau dans le navigateur de Kiro Crew.",
 			"status_in_control": "Tu utilises l’onglet du navigateur. Les boutons attendent que tu le rendes.",
 			"status_no_media": "L’onglet du navigateur n’a pas encore de lecteur.",
 			"status_ended": "Terminé.",
@@ -874,7 +946,8 @@ var CATALOGS = {
 			"unready_title": "Les chansons ne peuvent pas encore se lire dans le navigateur de Kiro Crew",
 			"unready_old_host": "Ce Kiro Crew est trop ancien. Mets Kiro Crew à jour vers une version avec les sites de navigateur pour apps (KiroCrew#38333, plus récente que v0.13.0-rc.3), puis rouvre cette page.",
 			"unready_not_approved": "Approuve d’abord les sites de musique pour Mood Music. Une seule fois, sur la page de l’app.",
-			"unready_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew."
+			"unready_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew.",
+			"find_play": "Trouver et lire"
 		},
 		view: {
 			"title": "Navigateur de Kiro Crew",
@@ -883,6 +956,23 @@ var CATALOGS = {
 			"show": "Afficher",
 			"hide": "Masquer",
 			"old_host": "Ce Kiro Crew ne peut pas encore afficher son navigateur ici. Mets à jour Kiro Crew pour voir ton compagnon choisir les chansons."
+		},
+		steps: {
+			"label": "Ce qu'a fait ton compagnon",
+			"times": "{{step}} × {{count}}",
+			"search": "A cherché sur le web",
+			"read": "A lu une page",
+			"open": "A ouvert une page",
+			"click": "A cliqué",
+			"type": "A tapé",
+			"look": "A regardé la page",
+			"scroll": "A fait défiler",
+			"wait": "A attendu la page",
+			"back": "Est revenu en arrière",
+			"tab": "A changé d'onglet",
+			"key": "A appuyé sur une touche",
+			"browser": "A utilisé le navigateur",
+			"other": "A fait une étape"
 		}
 	},
 	hi: {
@@ -1029,7 +1119,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "आपका साथी इसे Kiro Crew के ब्राउज़र में खोल रहा है…",
-			"status_idle": "चलाएँ दबाइए: आपका साथी यह गाना Kiro Crew के ब्राउज़र में खोलेगा।",
+			"status_idle": "अभी कुछ नहीं चल रहा। \"ढूँढकर चलाएँ\" दबाने पर आपका साथी यह गाना Kiro Crew के ब्राउज़र में खोलेगा।",
 			"status_in_control": "आप ब्राउज़र टैब इस्तेमाल कर रहे हैं। वापस देने तक बटन रुके रहेंगे।",
 			"status_no_media": "ब्राउज़र टैब में अभी कोई प्लेयर नहीं है।",
 			"status_ended": "ख़त्म हुआ।",
@@ -1047,7 +1137,8 @@ var CATALOGS = {
 			"unready_title": "गाने अभी Kiro Crew के ब्राउज़र में नहीं चल सकते",
 			"unready_old_host": "यह Kiro Crew बहुत पुराना है। Kiro Crew को ऐप ब्राउज़र साइटों वाले संस्करण (KiroCrew#38333 सहित, v0.13.0-rc.3 से नया) में अपडेट करें, फिर यह पेज दोबारा खोलें।",
 			"unready_not_approved": "पहले मूड म्यूज़िक के लिए संगीत साइटों को मंज़ूरी दें। ऐप के पेज पर एक बार मंज़ूरी देनी होती है।",
-			"unready_browse_off": "इस कंप्यूटर की एक नीति ने Kiro Crew का ब्राउज़र बंद कर रखा है।"
+			"unready_browse_off": "इस कंप्यूटर की एक नीति ने Kiro Crew का ब्राउज़र बंद कर रखा है।",
+			"find_play": "ढूँढकर चलाएँ"
 		},
 		view: {
 			"title": "Kiro Crew का ब्राउज़र",
@@ -1056,6 +1147,23 @@ var CATALOGS = {
 			"show": "दिखाएँ",
 			"hide": "छिपाएँ",
 			"old_host": "यह Kiro Crew अभी यहाँ ब्राउज़र नहीं दिखा सकता। Kiro Crew अपडेट करें, फिर साथी को गाने चुनते देख पाएँगे।"
+		},
+		steps: {
+			"label": "आपके साथी ने क्या किया",
+			"times": "{{step}} × {{count}}",
+			"search": "वेब पर खोजा",
+			"read": "एक पेज पढ़ा",
+			"open": "एक पेज खोला",
+			"click": "क्लिक किया",
+			"type": "टाइप किया",
+			"look": "पेज देखा",
+			"scroll": "स्क्रॉल किया",
+			"wait": "पेज का इंतज़ार किया",
+			"back": "पीछे गया",
+			"tab": "टैब बदला",
+			"key": "एक कुंजी दबाई",
+			"browser": "ब्राउज़र इस्तेमाल किया",
+			"other": "एक कदम उठाया"
 		}
 	},
 	it: {
@@ -1202,7 +1310,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "Il tuo compagno la sta aprendo nel browser di Kiro Crew…",
-			"status_idle": "Premi play: il tuo compagno apre questa canzone nel browser di Kiro Crew.",
+			"status_idle": "Non suona ancora niente. «Trova e riproduci» chiede al tuo amico di aprire questa canzone nel browser di Kiro Crew.",
 			"status_in_control": "Stai usando la scheda del browser. I pulsanti aspettano che tu la restituisca.",
 			"status_no_media": "Nella scheda del browser non c’è ancora un player.",
 			"status_ended": "Finita.",
@@ -1220,7 +1328,8 @@ var CATALOGS = {
 			"unready_title": "Le canzoni non possono ancora suonare nel browser di Kiro Crew",
 			"unready_old_host": "Questo Kiro Crew è troppo vecchio. Aggiorna Kiro Crew a una versione con i siti del browser per le app (KiroCrew#38333, più recente di v0.13.0-rc.3), poi riapri questa pagina.",
 			"unready_not_approved": "Prima approva i siti musicali per Mood Music. Si approvano una volta, nella pagina dell’app.",
-			"unready_browse_off": "Una regola di questo computer ha spento il browser di Kiro Crew."
+			"unready_browse_off": "Una regola di questo computer ha spento il browser di Kiro Crew.",
+			"find_play": "Trova e riproduci"
 		},
 		view: {
 			"title": "Browser di Kiro Crew",
@@ -1229,6 +1338,23 @@ var CATALOGS = {
 			"show": "Mostra",
 			"hide": "Nascondi",
 			"old_host": "Questo Kiro Crew non può ancora mostrare qui il suo browser. Aggiorna Kiro Crew per vedere il compagno scegliere le canzoni."
+		},
+		steps: {
+			"label": "Cosa ha fatto il tuo amico",
+			"times": "{{step}} × {{count}}",
+			"search": "Ha cercato sul web",
+			"read": "Ha letto una pagina",
+			"open": "Ha aperto una pagina",
+			"click": "Ha cliccato",
+			"type": "Ha digitato",
+			"look": "Ha guardato la pagina",
+			"scroll": "Ha scorso",
+			"wait": "Ha atteso la pagina",
+			"back": "È tornato indietro",
+			"tab": "Ha cambiato scheda",
+			"key": "Ha premuto un tasto",
+			"browser": "Ha usato il browser",
+			"other": "Ha fatto un passo"
 		}
 	},
 	ja: {
@@ -1375,7 +1501,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "相棒が Kiro Crew のブラウザで開いています…",
-			"status_idle": "再生を押すと、相棒が Kiro Crew のブラウザでこの曲を開きます。",
+			"status_idle": "まだ何も再生していません。「探して再生」で相棒が Kiro Crew のブラウザでこの曲を開きます。",
 			"status_in_control": "ブラウザのタブを操作中です。戻すまでボタンは待機します。",
 			"status_no_media": "ブラウザのタブにまだプレーヤーがありません。",
 			"status_ended": "終わりました。",
@@ -1393,7 +1519,8 @@ var CATALOGS = {
 			"unready_title": "まだ Kiro Crew のブラウザで曲を再生できません",
 			"unready_old_host": "この Kiro Crew は古すぎます。アプリのブラウザサイトに対応した版（KiroCrew#38333 を含む、v0.13.0-rc.3 より新しい版）に更新して、このページを開き直してください。",
 			"unready_not_approved": "先に Mood Music の音楽サイトを承認してください。アプリのページで一度だけ承認します。",
-			"unready_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。"
+			"unready_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。",
+			"find_play": "探して再生"
 		},
 		view: {
 			"title": "Kiro Crew のブラウザ",
@@ -1402,6 +1529,23 @@ var CATALOGS = {
 			"show": "表示",
 			"hide": "隠す",
 			"old_host": "この Kiro Crew ではまだここにブラウザを表示できません。Kiro Crew を更新すると、選曲の様子が見られます。"
+		},
+		steps: {
+			"label": "相棒がしたこと",
+			"times": "{{step}} × {{count}}",
+			"search": "ウェブを検索",
+			"read": "ページを読んだ",
+			"open": "ページを開いた",
+			"click": "クリック",
+			"type": "入力",
+			"look": "ページを確認",
+			"scroll": "スクロール",
+			"wait": "ページを待った",
+			"back": "戻った",
+			"tab": "タブを切り替え",
+			"key": "キーを押した",
+			"browser": "ブラウザを使用",
+			"other": "作業した"
 		}
 	},
 	ko: {
@@ -1548,7 +1692,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "친구가 Kiro Crew 브라우저에서 여는 중이에요…",
-			"status_idle": "재생을 누르면 친구가 Kiro Crew 브라우저에서 이 노래를 열어요.",
+			"status_idle": "아직 재생 중인 곡이 없어요. \"찾아서 재생\"을 누르면 버디가 Kiro Crew 브라우저에서 이 곡을 엽니다.",
 			"status_in_control": "브라우저 탭을 직접 쓰는 중이에요. 돌려줄 때까지 버튼이 기다려요.",
 			"status_no_media": "브라우저 탭에 아직 플레이어가 없어요.",
 			"status_ended": "끝났어요.",
@@ -1566,7 +1710,8 @@ var CATALOGS = {
 			"unready_title": "아직 Kiro Crew 브라우저에서 노래를 재생할 수 없어요",
 			"unready_old_host": "이 Kiro Crew는 너무 오래됐어요. 앱 브라우저 사이트를 지원하는 버전(KiroCrew#38333 포함, v0.13.0-rc.3보다 새 버전)으로 업데이트한 뒤 이 페이지를 다시 여세요.",
 			"unready_not_approved": "먼저 무드 뮤직의 음악 사이트를 승인하세요. 앱 페이지에서 한 번만 승인하면 돼요.",
-			"unready_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요."
+			"unready_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요.",
+			"find_play": "찾아서 재생"
 		},
 		view: {
 			"title": "Kiro Crew 브라우저",
@@ -1575,6 +1720,23 @@ var CATALOGS = {
 			"show": "보기",
 			"hide": "숨기기",
 			"old_host": "이 Kiro Crew는 아직 여기에 브라우저를 보여 줄 수 없어요. Kiro Crew를 업데이트하면 선곡하는 모습을 볼 수 있어요."
+		},
+		steps: {
+			"label": "버디가 한 일",
+			"times": "{{step}} × {{count}}",
+			"search": "웹 검색",
+			"read": "페이지 읽기",
+			"open": "페이지 열기",
+			"click": "클릭",
+			"type": "입력",
+			"look": "페이지 확인",
+			"scroll": "스크롤",
+			"wait": "페이지 대기",
+			"back": "뒤로 가기",
+			"tab": "탭 전환",
+			"key": "키 누르기",
+			"browser": "브라우저 사용",
+			"other": "작업 수행"
 		}
 	},
 	pt: {
@@ -1721,7 +1883,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "Seu parceiro está abrindo no navegador do Kiro Crew…",
-			"status_idle": "Toque em reproduzir: seu parceiro abre esta música no navegador do Kiro Crew.",
+			"status_idle": "Nada está tocando ainda. \"Encontrar e tocar\" pede ao seu parceiro que abra esta música no navegador do Kiro Crew.",
 			"status_in_control": "Você está usando a aba do navegador. Os botões esperam até você devolvê-la.",
 			"status_no_media": "A aba do navegador ainda não tem player.",
 			"status_ended": "Terminou.",
@@ -1739,7 +1901,8 @@ var CATALOGS = {
 			"unready_title": "As músicas ainda não podem tocar no navegador do Kiro Crew",
 			"unready_old_host": "Este Kiro Crew é antigo demais. Atualize o Kiro Crew para uma versão com sites de navegador para apps (KiroCrew#38333, mais nova que v0.13.0-rc.3) e abra esta página de novo.",
 			"unready_not_approved": "Primeiro aprove os sites de música para o Mood Music. Você aprova uma vez, na página do app.",
-			"unready_browse_off": "Uma política deste computador desligou o navegador do Kiro Crew."
+			"unready_browse_off": "Uma política deste computador desligou o navegador do Kiro Crew.",
+			"find_play": "Encontrar e tocar"
 		},
 		view: {
 			"title": "Navegador do Kiro Crew",
@@ -1748,6 +1911,23 @@ var CATALOGS = {
 			"show": "Mostrar",
 			"hide": "Ocultar",
 			"old_host": "Este Kiro Crew ainda não consegue mostrar o navegador aqui. Atualize o Kiro Crew para ver o parceiro escolher as músicas."
+		},
+		steps: {
+			"label": "O que seu parceiro fez",
+			"times": "{{step}} × {{count}}",
+			"search": "Pesquisou na web",
+			"read": "Leu uma página",
+			"open": "Abriu uma página",
+			"click": "Clicou",
+			"type": "Digitou",
+			"look": "Olhou a página",
+			"scroll": "Rolou a página",
+			"wait": "Esperou a página",
+			"back": "Voltou",
+			"tab": "Trocou de aba",
+			"key": "Apertou uma tecla",
+			"browser": "Usou o navegador",
+			"other": "Fez uma etapa"
 		}
 	},
 	ru: {
@@ -1894,7 +2074,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "Ваш напарник открывает её в браузере Kiro Crew…",
-			"status_idle": "Нажмите «Играть»: напарник откроет эту песню в браузере Kiro Crew.",
+			"status_idle": "Пока ничего не играет. «Найти и включить» попросит приятеля открыть эту песню в браузере Kiro Crew.",
 			"status_in_control": "Вы сейчас работаете во вкладке браузера. Кнопки подождут, пока вы её вернёте.",
 			"status_no_media": "Во вкладке браузера пока нет плеера.",
 			"status_ended": "Закончилась.",
@@ -1912,7 +2092,8 @@ var CATALOGS = {
 			"unready_title": "Песни пока не могут играть в браузере Kiro Crew",
 			"unready_old_host": "Эта версия Kiro Crew слишком старая. Обновите Kiro Crew до версии с сайтами браузера для приложений (KiroCrew#38333, новее v0.13.0-rc.3) и откройте эту страницу снова.",
 			"unready_not_approved": "Сначала одобрите музыкальные сайты для «Музыки настроения». Это делается один раз, на странице приложения.",
-			"unready_browse_off": "Браузер Kiro Crew отключён политикой на этом компьютере."
+			"unready_browse_off": "Браузер Kiro Crew отключён политикой на этом компьютере.",
+			"find_play": "Найти и включить"
 		},
 		view: {
 			"title": "Браузер Kiro Crew",
@@ -1921,6 +2102,23 @@ var CATALOGS = {
 			"show": "Показать",
 			"hide": "Скрыть",
 			"old_host": "Этот Kiro Crew пока не может показать здесь браузер. Обновите Kiro Crew, чтобы видеть, как напарник выбирает песни."
+		},
+		steps: {
+			"label": "Что сделал ваш приятель",
+			"times": "{{step}} × {{count}}",
+			"search": "Искал в интернете",
+			"read": "Прочитал страницу",
+			"open": "Открыл страницу",
+			"click": "Нажал",
+			"type": "Ввёл текст",
+			"look": "Посмотрел страницу",
+			"scroll": "Прокрутил",
+			"wait": "Ждал страницу",
+			"back": "Вернулся назад",
+			"tab": "Переключил вкладку",
+			"key": "Нажал клавишу",
+			"browser": "Пользовался браузером",
+			"other": "Сделал шаг"
 		}
 	},
 	"zh-CN": {
@@ -2067,7 +2265,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "搭子正在 Kiro Crew 的浏览器里打开它…",
-			"status_idle": "点播放：搭子会在 Kiro Crew 的浏览器里打开这首歌。",
+			"status_idle": "还没有在放歌。点“查找并播放”，搭子会在 Kiro Crew 的浏览器里打开这首歌。",
 			"status_in_control": "你正在用这个浏览器标签页。等你交还后，按钮才会生效。",
 			"status_no_media": "浏览器标签页里还没有播放器。",
 			"status_ended": "放完了。",
@@ -2085,7 +2283,8 @@ var CATALOGS = {
 			"unready_title": "歌还不能在 Kiro Crew 的浏览器里播放",
 			"unready_old_host": "这个 Kiro Crew 版本太旧。请把 Kiro Crew 更新到支持应用浏览器网站的版本（含 KiroCrew#38333，比 v0.13.0-rc.3 新），再打开这个页面。",
 			"unready_not_approved": "请先为情绪音乐批准这几个音乐网站。只需在应用页面批准一次。",
-			"unready_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。"
+			"unready_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。",
+			"find_play": "查找并播放"
 		},
 		view: {
 			"title": "Kiro Crew 的浏览器",
@@ -2094,6 +2293,23 @@ var CATALOGS = {
 			"show": "展开",
 			"hide": "收起",
 			"old_host": "这个 Kiro Crew 还不能在这里显示浏览器画面。更新 Kiro Crew 后就能看搭子选歌。"
+		},
+		steps: {
+			"label": "搭子做了什么",
+			"times": "{{step}} × {{count}}",
+			"search": "搜索网页",
+			"read": "阅读网页",
+			"open": "打开页面",
+			"click": "点击",
+			"type": "输入",
+			"look": "查看页面",
+			"scroll": "滚动",
+			"wait": "等待页面",
+			"back": "返回",
+			"tab": "切换标签页",
+			"key": "按键",
+			"browser": "使用浏览器",
+			"other": "执行一步"
 		}
 	}
 };
@@ -2132,6 +2348,459 @@ function t(key, vars) {
 		if (text !== void 0) return text.replace(PLACEHOLDER, (whole, name) => vars && own(vars, name) ? String(vars[name]) : whole);
 	}
 	return key;
+}
+// src/links.ts
+/**
+* The two song links Mood Music plays, and nothing else.
+*
+* Mirrors `backend/links.py`: the page drops a pick the backend would refuse,
+* so one bad link from the agent loses only that song. A YouTube pick keeps
+* only its 11-character video id; a bilibili pick must be https on an exact
+* bilibili host. Links are optional: the buddy finds a song by searching its
+* site in Kiro Crew's browser.
+*/
+var VIDEO_ID_RE = /^[A-Za-z0-9_-]{11}$/;
+var BILIBILI_HOSTS = /* @__PURE__ */ new Set([
+	"www.bilibili.com",
+	"m.bilibili.com",
+	"b23.tv"
+]);
+var YOUTUBE_WATCH_HOSTS = /* @__PURE__ */ new Set([
+	"www.youtube.com",
+	"youtube.com",
+	"m.youtube.com",
+	"music.youtube.com"
+]);
+var MAX_URL = 2048;
+function validVideoId(value) {
+	return typeof value === "string" && VIDEO_ID_RE.test(value) ? value : null;
+}
+/** A plain https URL: no user info, no port, no character a browser reads differently. */
+function parseHttps(raw) {
+	if (typeof raw !== "string" || raw.length > MAX_URL) return null;
+	if (/[\\\u0000-\u0020\u007f]/.test(raw)) return null;
+	let url;
+	try {
+		url = new URL(raw);
+	} catch {
+		return null;
+	}
+	if (url.protocol !== "https:" || url.username || url.password || url.port) return null;
+	return url;
+}
+/** The video id a YouTube watch or share link names, or null. */
+function youtubeVideoId(raw) {
+	const url = parseHttps(raw);
+	if (!url) return null;
+	if (url.hostname === "youtu.be") return validVideoId(url.pathname.slice(1));
+	if (YOUTUBE_WATCH_HOSTS.has(url.hostname) && url.pathname === "/watch") {
+		const ids = url.searchParams.getAll("v");
+		return ids.length === 1 ? validVideoId(ids[0]) : null;
+	}
+	return null;
+}
+/** The link rebuilt from its parts when it is an https bilibili link, else null. */
+function bilibiliUrl(raw) {
+	const url = parseHttps(raw);
+	if (!url || !BILIBILI_HOSTS.has(url.hostname)) return null;
+	return `https://${url.hostname}${url.pathname}${url.search}`;
+}
+/** A page the DJ cites as evidence: any plain https URL, rebuilt from its parts; else null. */
+function evidenceUrl(raw) {
+	const url = parseHttps(raw);
+	return url ? url.href : null;
+}
+// src/moods.ts
+/**
+* The mood chips, and the scene the page's backdrop paints.
+*
+* A scene is bounded parameters only: two or three hues, a saturation and a
+* lightness band, a strength, a motion speed, one pattern from a fixed set, and
+* an arc hint. The DJ may send one in its reply (`replyParse.ts`), so
+* {@link parseScene} treats it as untrusted: anything outside these bounds is
+* dropped whole and the page keeps the scene it has. No CSS, HTML or URL from
+* the model ever reaches the page; `MoodBackdrop` builds every style from
+* these numbers and names.
+*
+* The backdrop never paints a hue straight: it mixes each one into the theme's
+* own `--bg`, so the same scene reads soft on a light theme and deep on a dark
+* one, and text keeps the theme's `--text` contrast.
+*/
+var MOOD_KEYS = [
+	"calm",
+	"sad",
+	"happy",
+	"missing",
+	"fired"
+];
+var PATTERNS = [
+	"glows",
+	"waves",
+	"particles",
+	"aurora"
+];
+var MOTIONS = [
+	"slow",
+	"medium",
+	"lively"
+];
+var SATURATIONS = [
+	"soft",
+	"medium",
+	"vivid"
+];
+var LIGHTNESSES = [
+	"deep",
+	"medium",
+	"bright"
+];
+var SCENE_ARCS = [
+	"stay",
+	"turn",
+	"lift"
+];
+/** Strength 0-1 maps onto this much colour in `--bg`, in percent: always visible, never loud. */
+var MIX_RANGE = [24, 58];
+function mixPercent(strength) {
+	return Math.round(MIX_RANGE[0] + (MIX_RANGE[1] - MIX_RANGE[0]) * clamp01(strength));
+}
+var PRESETS = {
+	calm: {
+		hues: [
+			178,
+			196,
+			150
+		],
+		saturation: "medium",
+		lightness: "medium",
+		strength: .55,
+		motion: "slow",
+		pattern: "waves",
+		arc: "stay"
+	},
+	sad: {
+		hues: [
+			222,
+			244,
+			205
+		],
+		saturation: "medium",
+		lightness: "deep",
+		strength: .6,
+		motion: "slow",
+		pattern: "glows",
+		arc: "stay"
+	},
+	happy: {
+		hues: [
+			44,
+			18,
+			335
+		],
+		saturation: "vivid",
+		lightness: "bright",
+		strength: .7,
+		motion: "lively",
+		pattern: "particles",
+		arc: "stay"
+	},
+	missing: {
+		hues: [
+			338,
+			20,
+			268
+		],
+		saturation: "medium",
+		lightness: "medium",
+		strength: .6,
+		motion: "slow",
+		pattern: "aurora",
+		arc: "stay"
+	},
+	fired: {
+		hues: [
+			6,
+			28,
+			350
+		],
+		saturation: "vivid",
+		lightness: "medium",
+		strength: .8,
+		motion: "lively",
+		pattern: "glows",
+		arc: "stay"
+	},
+	neutral: {
+		hues: [212, 240],
+		saturation: "soft",
+		lightness: "medium",
+		strength: .25,
+		motion: "medium",
+		pattern: "glows",
+		arc: "stay"
+	}
+};
+function isMoodKey(value) {
+	return typeof value === "string" && MOOD_KEYS.includes(value);
+}
+/** The preset scene for a chip; anything else (an unknown chip, free text) is the neutral one. */
+function presetScene(look) {
+	const key = isMoodKey(look) ? look : "neutral";
+	const p = PRESETS[key];
+	return {
+		...p,
+		hues: [...p.hues],
+		source: key
+	};
+}
+function clamp01(n) {
+	return Math.min(1, Math.max(0, n));
+}
+function oneOf$1(value, allowed, fallback) {
+	if (value === void 0) return fallback;
+	return allowed.includes(value) ? value : null;
+}
+/**
+* A scene from untrusted input (the DJ's block, or the saved page view), or
+* null when it does not fit the bounds. Hues must be two or three finite
+* numbers and are wrapped into 0-359; strength is clamped to 0-1; every name
+* must be one of its fixed set (an absent one takes the middle value). Unknown
+* fields are ignored.
+*/
+function parseScene(raw) {
+	if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+	const r = raw;
+	if (!Array.isArray(r.hues) || r.hues.length < 2 || r.hues.length > 3) return null;
+	if (!r.hues.every((h) => typeof h === "number" && Number.isFinite(h))) return null;
+	const hues = r.hues.map((h) => (Math.round(h) % 360 + 360) % 360);
+	if (r.strength !== void 0 && (typeof r.strength !== "number" || !Number.isFinite(r.strength))) return null;
+	const saturation = oneOf$1(r.saturation, SATURATIONS, "medium");
+	const lightness = oneOf$1(r.lightness, LIGHTNESSES, "medium");
+	const motion = oneOf$1(r.motion, MOTIONS, "medium");
+	const pattern = oneOf$1(r.pattern, PATTERNS, "glows");
+	const arc = oneOf$1(r.arc, SCENE_ARCS, "stay");
+	if (!saturation || !lightness || !motion || !pattern || !arc) return null;
+	return {
+		hues,
+		saturation,
+		lightness,
+		strength: typeof r.strength === "number" ? clamp01(r.strength) : .6,
+		motion,
+		pattern,
+		arc,
+		source: r.source === "dj" || r.source === "neutral" || isMoodKey(r.source) ? r.source : "dj"
+	};
+}
+/** Words that place free text, or the agent's mood tags, on one of the chips. */
+var WORDS = {
+	calm: [
+		"平静",
+		"安静",
+		"放松",
+		"calm",
+		"peaceful",
+		"relaxed",
+		"chill"
+	],
+	sad: [
+		"难过",
+		"伤心",
+		"悲伤",
+		"失落",
+		"sad",
+		"down",
+		"heartbroken",
+		"blue"
+	],
+	happy: [
+		"开心",
+		"快乐",
+		"高兴",
+		"愉快",
+		"happy",
+		"joy",
+		"cheerful"
+	],
+	missing: [
+		"想念",
+		"思念",
+		"怀念",
+		"miss",
+		"missing",
+		"nostalgic",
+		"longing"
+	],
+	fired: [
+		"燃",
+		"热血",
+		"激动",
+		"兴奋",
+		"hype",
+		"pumped",
+		"energetic"
+	]
+};
+/** The chip a mood text or tag list reads as, or neutral when none fits. */
+function moodLookFor(texts) {
+	const hay = texts.join(" ").toLowerCase();
+	if (!hay.trim()) return "neutral";
+	for (const key of MOOD_KEYS) if (WORDS[key].some((w) => hay.includes(w))) return key;
+	return "neutral";
+}
+// src/replyParse.ts
+/**
+* Read the DJ agent's `mood-music` block out of a reply.
+*
+* The agent found its links on web pages, so the block is untrusted: each pick
+* is checked here with `links.ts` and reduced to the fields the page draws, a
+* bad pick is dropped, and lengths are cut to the backend's limits. Text is only
+* ever rendered as React text, never as HTML.
+*/
+var MAX_STEPS = 8;
+var MAX_STEP_CHARS = 120;
+var STEP_BAD_RE = /[\u0000-\u001f\u007f\u2028\u2029`[\]]/;
+function playResult(d) {
+	if (typeof d.played !== "boolean") return void 0;
+	const site = oneOf(d.site, ["youtube", "bilibili"]);
+	if (!site) return void 0;
+	const steps = (Array.isArray(d.steps) ? d.steps : []).filter((s) => typeof s === "string" && !STEP_BAD_RE.test(s)).map((s) => s.trim()).filter((s) => s.length > 0 && s.length <= MAX_STEP_CHARS).slice(0, MAX_STEPS);
+	return {
+		played: d.played,
+		site,
+		steps: d.played ? steps : [],
+		reason: text(d.reason, 200)
+	};
+}
+var FENCE_RE = /```mood-music[^\n]*\n([\s\S]*?)```/g;
+var ANY_FENCE_RE = /```[\s\S]*?(```|$)/g;
+var MAX_PICKS = 12;
+var TIERS = [
+	"anchor",
+	"explore",
+	"deep"
+];
+var ARCS = [
+	"stay",
+	"turn",
+	"lift"
+];
+function text(value, limit) {
+	return typeof value === "string" ? value.trim().slice(0, limit) : "";
+}
+function tags(value, limit = 40, count = 8) {
+	if (!Array.isArray(value)) return [];
+	return value.filter((t) => typeof t === "string" && t.trim().length > 0).map((t) => t.trim().slice(0, limit)).slice(0, count);
+}
+function oneOf(value, allowed) {
+	return allowed.includes(value) ? value : void 0;
+}
+function evidence(raw) {
+	if (!raw || typeof raw !== "object") return void 0;
+	const r = raw;
+	const url = evidenceUrl(r.url);
+	return url ? {
+		url,
+		label: text(r.label, 200)
+	} : void 0;
+}
+function pick(raw) {
+	if (!raw || typeof raw !== "object") return null;
+	const r = raw;
+	const title = text(r.title, 200);
+	if (!title) return null;
+	const base = {
+		title,
+		artist: text(r.artist, 200),
+		why: text(r.why, 400),
+		tags: tags(r.tags)
+	};
+	const tier = oneOf(r.tier, TIERS);
+	const arc = oneOf(r.arc, ARCS);
+	const listenFor = text(r.listen_for, 400);
+	const ev = evidence(r.evidence);
+	if (tier) base.tier = tier;
+	if (arc) base.arc = arc;
+	if (listenFor) base.listen_for = listenFor;
+	if (ev) base.evidence = ev;
+	const source = r.source ?? r.platform;
+	const noLink = (r.url === void 0 || r.url === null || r.url === "") && r.video_id === void 0;
+	if (source === "youtube") {
+		if (noLink) return {
+			...base,
+			source: "youtube"
+		};
+		const id = r.video_id !== void 0 ? validVideoId(r.video_id) : youtubeVideoId(r.url);
+		return id ? {
+			...base,
+			source: "youtube",
+			video_id: id
+		} : null;
+	}
+	if (source === "bilibili") {
+		if (noLink) return {
+			...base,
+			source: "bilibili"
+		};
+		const url = bilibiliUrl(r.url);
+		return url ? {
+			...base,
+			source: "bilibili",
+			url
+		} : null;
+	}
+	return null;
+}
+/** Picks in arc order (stay, turn, lift), a pick with no arc after them; ties keep their order. */
+function byArc(picks) {
+	const rank = (p) => p.arc ? ARCS.indexOf(p.arc) : ARCS.length;
+	if (!picks.some((p) => p.arc)) return picks;
+	return picks.map((p, i) => [p, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(([p]) => p);
+}
+/** The LAST `mood-music` block in *content*, or null when there is none that parses. */
+function parseDjReply(content) {
+	const blocks = [...content.matchAll(FENCE_RE)];
+	const last = blocks[blocks.length - 1];
+	if (!last) return null;
+	let data;
+	try {
+		data = JSON.parse(last[1]);
+	} catch {
+		return null;
+	}
+	if (!data || typeof data !== "object" || Array.isArray(data)) return null;
+	const d = data;
+	const rawPicks = Array.isArray(d.picks) ? d.picks.slice(0, MAX_PICKS) : [];
+	const picks = rawPicks.map(pick).filter((p) => p !== null);
+	return {
+		text: replyText(content),
+		question: text(d.question, 300),
+		moodTags: tags(d.mood_tags ?? d.moods),
+		picks: byArc(picks),
+		dropped: rawPicks.length - picks.length,
+		followUps: tags(d.follow_ups, 40, 3),
+		remember: text(d.remember, 60),
+		...sceneOf(d.scene),
+		...playResult(d) ? { play: playResult(d) } : {}
+	};
+}
+/** `{scene}` when the block's scene fits the bounds, else nothing: the page keeps its scene. */
+function sceneOf(raw) {
+	if (raw === void 0) return {};
+	const scene = parseScene(raw);
+	return scene ? { scene: {
+		...scene,
+		source: "dj"
+	} } : {};
+}
+/** The reply's prose: every fenced block removed, cut to a short paragraph. */
+function replyText(content) {
+	return content.replace(ANY_FENCE_RE, "").replace(/\s+/g, " ").trim().slice(0, 300);
+}
+/** A short stable id for a reply, so the page queues each reply once. */
+function replySource(content) {
+	let h = 0;
+	for (let i = 0; i < content.length; i++) h = (h << 5) - h + content.charCodeAt(i) | 0;
+	return `r${(h >>> 0).toString(36)}-${content.length}`;
 }
 // src/api.ts
 var BASE = "/api/apps/mood-music";
@@ -2196,6 +2865,22 @@ function createMoodApi(api) {
 			return (await api.post(`${BASE}/buddy/send`, { message }).catch(plainRefusal)).key;
 		}
 	};
+}
+/**
+* Which reply is the slot's newest: how many replies the slot holds and the
+* newest one's text, or '' with none. A new reply word for word like the last
+* one still changes it, because the count grows. The slot read carries the
+* whole history (no `limit`), so the count only grows.
+*/
+function replyMark(slot) {
+	let n = 0;
+	for (const m of slot?.messages ?? []) if (m.role === "assistant" && typeof m.content === "string" && m.content.trim()) n++;
+	return n ? `${n}:${replySource(latestReply(slot))}` : "";
+}
+/** Whether the slot's newest reply is still the one *baseline* named when the turn went out. */
+function sameReply(baseline, slot) {
+	if (baseline && !baseline.includes(":")) return replySource(latestReply(slot)) === baseline;
+	return replyMark(slot) === baseline;
 }
 /** The newest assistant reply in a slot, or ''. */
 function latestReply(slot) {
@@ -2295,25 +2980,42 @@ function clock(seconds) {
 /**
 * The Crew Browser player's buttons: play / pause, a progress bar and volume.
 *
-* They act on the tab the buddy opened, straight through the host's media route
-* (`crewBrowser.ts`), never through the buddy. Only starting a song the tab is
-* not playing yet goes to the buddy (`onAskPlay`), because finding and opening
-* it is the buddy's job.
+* They act on whatever the buddy's tab is playing, straight through the host's
+* media route (`crewBrowser.ts`, `POST /api/browser/media`), never through the
+* buddy, so they answer at once: the button shows the new state as soon as it
+* is pressed, and the tab's answer confirms it. A read in flight (the page's
+* poll) never blocks a press. Only a tab with no song in it sends the play
+* button to the buddy (`onAskPlay`, labelled "Find and play"), because finding
+* and opening a song is the buddy's job.
 *
 * Continuous play lives here too, with a plain note that it needs this page
 * open: the end of a song is read by this page's poll, so with the page closed
 * nothing notices it and the next song does not start.
 */
-function BrowserControls({ media, inTab, waiting, continuous, onAskPlay, onPause, onPlay, onContinuous }) {
-	const state = inTab ? media.media : null;
+function BrowserControls({ media, waiting, continuous, onAskPlay, onPause, onPlay, onReplay, onContinuous }) {
+	const state = media.media;
 	const duration = state?.duration ?? null;
 	const [seekDraft, setSeekDraft] = useState(null);
 	const [volDraft, setVolDraft] = useState(null);
+	const [want, setWant] = useState(null);
+	useEffect(() => {
+		setWant(null);
+	}, [state]);
 	useEffect(() => {
 		setVolDraft(null);
 	}, [state?.volume]);
-	const playing = !!state && !state.paused && !state.ended;
-	const status = waiting && !inTab ? t("browser.status_opening") : !inTab ? t("browser.status_idle") : media.error === "user_in_control" ? t("browser.status_in_control") : !state ? t("browser.status_no_media") : state.ended ? t("browser.status_ended") : state.paused ? t("browser.status_paused") : t("browser.status_playing");
+	const ended = !!state?.ended && want !== "play";
+	const playing = want ? want === "play" : !!state && !state.paused && !state.ended;
+	const status = !state ? media.error === "user_in_control" ? t("browser.status_in_control") : waiting ? t("browser.status_opening") : t("browser.status_idle") : media.error === "user_in_control" ? t("browser.status_in_control") : ended ? t("browser.status_ended") : playing ? t("browser.status_playing") : t("browser.status_paused");
+	const pause = () => {
+		setWant("pause");
+		onPause();
+	};
+	const play = () => {
+		setWant("play");
+		if (state?.ended) onReplay();
+		else onPlay();
+	};
 	const commitSeek = () => {
 		if (seekDraft !== null) media.seek(seekDraft);
 		setSeekDraft(null);
@@ -2335,9 +3037,17 @@ function BrowserControls({ media, inTab, waiting, continuous, onAskPlay, onPause
 			/* @__PURE__ */ jsxs("div", {
 				className: "flex items-center gap-2",
 				children: [
-					playing ? /* @__PURE__ */ jsxs(Btn, {
-						onClick: onPause,
-						disabled: media.busy,
+					!state ? /* @__PURE__ */ jsxs(Btn, {
+						primary: true,
+						onClick: onAskPlay,
+						disabled: waiting,
+						"data-testid": "mood-browser-play",
+						children: [/* @__PURE__ */ jsx(Search, {
+							size: 14,
+							"aria-hidden": "true"
+						}), t("browser.find_play")]
+					}) : playing ? /* @__PURE__ */ jsxs(Btn, {
+						onClick: pause,
 						"aria-label": t("browser.pause"),
 						"data-testid": "mood-browser-pause",
 						children: [/* @__PURE__ */ jsx(Pause, {
@@ -2346,8 +3056,7 @@ function BrowserControls({ media, inTab, waiting, continuous, onAskPlay, onPause
 						}), t("browser.pause")]
 					}) : /* @__PURE__ */ jsxs(Btn, {
 						primary: true,
-						onClick: inTab && state && !state.ended ? onPlay : onAskPlay,
-						disabled: media.busy || waiting && !inTab,
+						onClick: play,
 						"aria-label": t("browser.play"),
 						"data-testid": "mood-browser-play",
 						children: [/* @__PURE__ */ jsx(Play, {
@@ -2467,6 +3176,7 @@ function BrowserView({ open, onToggle, operating, live }) {
 			]
 		}), open && /* @__PURE__ */ jsx("div", {
 			id: "mood-browser-view-body",
+			className: live ? "mm-view-body" : void 0,
 			"data-testid": "mood-browser-view-body",
 			children: live ?? /* @__PURE__ */ jsx("p", {
 				className: "text-xs text-[var(--muted)]",
@@ -2474,6 +3184,30 @@ function BrowserView({ open, onToggle, operating, live }) {
 				children: t("view.old_host")
 			})
 		})]
+	});
+}
+// src/BuddySteps.tsx
+/**
+* What the buddy did in a turn, in plain words ("Searched the web × 3 · Read a
+* page · Opened a page · Clicked"), under its reply or under the live status.
+* Never a tool name, a search word or an address: those stay in the full record.
+*/
+function BuddySteps({ steps, testId }) {
+	if (!steps.length) return null;
+	return /* @__PURE__ */ jsx("ol", {
+		"aria-label": t("steps.label"),
+		className: "mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[var(--muted)]",
+		"data-testid": testId,
+		children: steps.map((s, i) => /* @__PURE__ */ jsxs("li", {
+			className: "inline-flex items-center gap-1.5",
+			children: [i > 0 && /* @__PURE__ */ jsx("span", {
+				"aria-hidden": "true",
+				children: "·"
+			}), /* @__PURE__ */ jsx("span", { children: s.count > 1 ? t("steps.times", {
+				step: t(`steps.${s.kind}`),
+				count: s.count
+			}) : t(`steps.${s.kind}`) })]
+		}, i))
 	});
 }
 // src/FullRecord.tsx
@@ -2871,243 +3605,6 @@ function MomentsTab({ moments }) {
 			]
 		}, m.id))
 	});
-}
-// src/moods.ts
-/**
-* The mood chips, and the scene the page's backdrop paints.
-*
-* A scene is bounded parameters only: two or three hues, a saturation and a
-* lightness band, a strength, a motion speed, one pattern from a fixed set, and
-* an arc hint. The DJ may send one in its reply (`replyParse.ts`), so
-* {@link parseScene} treats it as untrusted: anything outside these bounds is
-* dropped whole and the page keeps the scene it has. No CSS, HTML or URL from
-* the model ever reaches the page; `MoodBackdrop` builds every style from
-* these numbers and names.
-*
-* The backdrop never paints a hue straight: it mixes each one into the theme's
-* own `--bg`, so the same scene reads soft on a light theme and deep on a dark
-* one, and text keeps the theme's `--text` contrast.
-*/
-var MOOD_KEYS = [
-	"calm",
-	"sad",
-	"happy",
-	"missing",
-	"fired"
-];
-var PATTERNS = [
-	"glows",
-	"waves",
-	"particles",
-	"aurora"
-];
-var MOTIONS = [
-	"slow",
-	"medium",
-	"lively"
-];
-var SATURATIONS = [
-	"soft",
-	"medium",
-	"vivid"
-];
-var LIGHTNESSES = [
-	"deep",
-	"medium",
-	"bright"
-];
-var SCENE_ARCS = [
-	"stay",
-	"turn",
-	"lift"
-];
-/** Strength 0-1 maps onto this much colour in `--bg`, in percent: always visible, never loud. */
-var MIX_RANGE = [24, 58];
-function mixPercent(strength) {
-	return Math.round(MIX_RANGE[0] + (MIX_RANGE[1] - MIX_RANGE[0]) * clamp01(strength));
-}
-var PRESETS = {
-	calm: {
-		hues: [
-			178,
-			196,
-			150
-		],
-		saturation: "medium",
-		lightness: "medium",
-		strength: .55,
-		motion: "slow",
-		pattern: "waves",
-		arc: "stay"
-	},
-	sad: {
-		hues: [
-			222,
-			244,
-			205
-		],
-		saturation: "medium",
-		lightness: "deep",
-		strength: .6,
-		motion: "slow",
-		pattern: "glows",
-		arc: "stay"
-	},
-	happy: {
-		hues: [
-			44,
-			18,
-			335
-		],
-		saturation: "vivid",
-		lightness: "bright",
-		strength: .7,
-		motion: "lively",
-		pattern: "particles",
-		arc: "stay"
-	},
-	missing: {
-		hues: [
-			338,
-			20,
-			268
-		],
-		saturation: "medium",
-		lightness: "medium",
-		strength: .6,
-		motion: "slow",
-		pattern: "aurora",
-		arc: "stay"
-	},
-	fired: {
-		hues: [
-			6,
-			28,
-			350
-		],
-		saturation: "vivid",
-		lightness: "medium",
-		strength: .8,
-		motion: "lively",
-		pattern: "glows",
-		arc: "stay"
-	},
-	neutral: {
-		hues: [212, 240],
-		saturation: "soft",
-		lightness: "medium",
-		strength: .25,
-		motion: "medium",
-		pattern: "glows",
-		arc: "stay"
-	}
-};
-function isMoodKey(value) {
-	return typeof value === "string" && MOOD_KEYS.includes(value);
-}
-/** The preset scene for a chip; anything else (an unknown chip, free text) is the neutral one. */
-function presetScene(look) {
-	const key = isMoodKey(look) ? look : "neutral";
-	const p = PRESETS[key];
-	return {
-		...p,
-		hues: [...p.hues],
-		source: key
-	};
-}
-function clamp01(n) {
-	return Math.min(1, Math.max(0, n));
-}
-function oneOf$1(value, allowed, fallback) {
-	if (value === void 0) return fallback;
-	return allowed.includes(value) ? value : null;
-}
-/**
-* A scene from untrusted input (the DJ's block, or the saved page view), or
-* null when it does not fit the bounds. Hues must be two or three finite
-* numbers and are wrapped into 0-359; strength is clamped to 0-1; every name
-* must be one of its fixed set (an absent one takes the middle value). Unknown
-* fields are ignored.
-*/
-function parseScene(raw) {
-	if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
-	const r = raw;
-	if (!Array.isArray(r.hues) || r.hues.length < 2 || r.hues.length > 3) return null;
-	if (!r.hues.every((h) => typeof h === "number" && Number.isFinite(h))) return null;
-	const hues = r.hues.map((h) => (Math.round(h) % 360 + 360) % 360);
-	if (r.strength !== void 0 && (typeof r.strength !== "number" || !Number.isFinite(r.strength))) return null;
-	const saturation = oneOf$1(r.saturation, SATURATIONS, "medium");
-	const lightness = oneOf$1(r.lightness, LIGHTNESSES, "medium");
-	const motion = oneOf$1(r.motion, MOTIONS, "medium");
-	const pattern = oneOf$1(r.pattern, PATTERNS, "glows");
-	const arc = oneOf$1(r.arc, SCENE_ARCS, "stay");
-	if (!saturation || !lightness || !motion || !pattern || !arc) return null;
-	return {
-		hues,
-		saturation,
-		lightness,
-		strength: typeof r.strength === "number" ? clamp01(r.strength) : .6,
-		motion,
-		pattern,
-		arc,
-		source: r.source === "dj" || r.source === "neutral" || isMoodKey(r.source) ? r.source : "dj"
-	};
-}
-/** Words that place free text, or the agent's mood tags, on one of the chips. */
-var WORDS = {
-	calm: [
-		"平静",
-		"安静",
-		"放松",
-		"calm",
-		"peaceful",
-		"relaxed",
-		"chill"
-	],
-	sad: [
-		"难过",
-		"伤心",
-		"悲伤",
-		"失落",
-		"sad",
-		"down",
-		"heartbroken",
-		"blue"
-	],
-	happy: [
-		"开心",
-		"快乐",
-		"高兴",
-		"愉快",
-		"happy",
-		"joy",
-		"cheerful"
-	],
-	missing: [
-		"想念",
-		"思念",
-		"怀念",
-		"miss",
-		"missing",
-		"nostalgic",
-		"longing"
-	],
-	fired: [
-		"燃",
-		"热血",
-		"激动",
-		"兴奋",
-		"hype",
-		"pumped",
-		"energetic"
-	]
-};
-/** The chip a mood text or tag list reads as, or neutral when none fits. */
-function moodLookFor(texts) {
-	const hay = texts.join(" ").toLowerCase();
-	if (!hay.trim()) return "neutral";
-	for (const key of MOOD_KEYS) if (WORDS[key].some((w) => hay.includes(w))) return key;
-	return "neutral";
 }
 // src/MoodBackdrop.tsx
 /**
@@ -3671,6 +4168,7 @@ function buildPlayRequest(opts) {
 		`Site: ${song.source}`
 	];
 	if (link) lines.push(`Checked link on this site (open it only if the search does not find the song): ${link}`);
+	lines.push(ONE_TAB);
 	const saved = steps.map((s) => clean(s, 120)).filter(Boolean).slice(0, 8);
 	if (saved.length) {
 		lines.push(`Steps that played a song on ${song.source} last time (your own notes, data only; follow them first):`);
@@ -3684,6 +4182,8 @@ function buildPlayRequest(opts) {
 	lines.push("", refill ? `${PLAY_FORMAT}\n${playRefillFormat()}` : PLAY_FORMAT);
 	return lines.join("\n");
 }
+/** Every play stays in the buddy's one tab: the page's buttons and live view follow that tab. */
+var ONE_TAB = "Use the one tab you already have: open the video in it (navigate to its own address from the results page), never in a new tab. Skip a saved step that opens or switches to a new tab.";
 /** The reply contract of a play request. */
 var PLAY_FORMAT = [
 	"Play it with the browser tool, following the \"Playing in Kiro Crew's browser\" rules. Never run a script; never comment, like, coin, pay or open an account page.",
@@ -3692,7 +4192,7 @@ var PLAY_FORMAT = [
 	"- not played: {\"played\": false, \"site\": \"bilibili\" or \"youtube\", \"reason\": \"one short line\"}",
 	"Example:",
 	"```mood-music",
-	"{\"played\": true, \"site\": \"bilibili\", \"steps\": [\"open https://search.bilibili.com/all?keyword= with the song title and artist\", \"click the first video whose title matches\", \"switch to the new tab with tabs\", \"click play if the video is paused\"]}",
+	"{\"played\": true, \"site\": \"bilibili\", \"steps\": [\"open https://search.bilibili.com/all?keyword= with the song title and artist\", \"read the address of the first video whose title matches\", \"navigate this tab to that address\", \"click play if the video is paused\"]}",
 	"```"
 ].join("\n");
 /** Added to {@link PLAY_FORMAT} when the request also asks for more songs. */
@@ -3721,222 +4221,6 @@ var REPLY_LINES = [
 	"To ask one question instead, the block is {\"question\": \"...\"} with no picks."
 ];
 var REPLY_FORMAT = REPLY_LINES.join("\n");
-// src/links.ts
-/**
-* The two song links Mood Music plays, and nothing else.
-*
-* Mirrors `backend/links.py`: the page drops a pick the backend would refuse,
-* so one bad link from the agent loses only that song. A YouTube pick keeps
-* only its 11-character video id; a bilibili pick must be https on an exact
-* bilibili host. Links are optional: the buddy finds a song by searching its
-* site in Kiro Crew's browser.
-*/
-var VIDEO_ID_RE = /^[A-Za-z0-9_-]{11}$/;
-var BILIBILI_HOSTS = /* @__PURE__ */ new Set([
-	"www.bilibili.com",
-	"m.bilibili.com",
-	"b23.tv"
-]);
-var YOUTUBE_WATCH_HOSTS = /* @__PURE__ */ new Set([
-	"www.youtube.com",
-	"youtube.com",
-	"m.youtube.com",
-	"music.youtube.com"
-]);
-var MAX_URL = 2048;
-function validVideoId(value) {
-	return typeof value === "string" && VIDEO_ID_RE.test(value) ? value : null;
-}
-/** A plain https URL: no user info, no port, no character a browser reads differently. */
-function parseHttps(raw) {
-	if (typeof raw !== "string" || raw.length > MAX_URL) return null;
-	if (/[\\\u0000-\u0020\u007f]/.test(raw)) return null;
-	let url;
-	try {
-		url = new URL(raw);
-	} catch {
-		return null;
-	}
-	if (url.protocol !== "https:" || url.username || url.password || url.port) return null;
-	return url;
-}
-/** The video id a YouTube watch or share link names, or null. */
-function youtubeVideoId(raw) {
-	const url = parseHttps(raw);
-	if (!url) return null;
-	if (url.hostname === "youtu.be") return validVideoId(url.pathname.slice(1));
-	if (YOUTUBE_WATCH_HOSTS.has(url.hostname) && url.pathname === "/watch") {
-		const ids = url.searchParams.getAll("v");
-		return ids.length === 1 ? validVideoId(ids[0]) : null;
-	}
-	return null;
-}
-/** The link rebuilt from its parts when it is an https bilibili link, else null. */
-function bilibiliUrl(raw) {
-	const url = parseHttps(raw);
-	if (!url || !BILIBILI_HOSTS.has(url.hostname)) return null;
-	return `https://${url.hostname}${url.pathname}${url.search}`;
-}
-/** A page the DJ cites as evidence: any plain https URL, rebuilt from its parts; else null. */
-function evidenceUrl(raw) {
-	const url = parseHttps(raw);
-	return url ? url.href : null;
-}
-// src/replyParse.ts
-/**
-* Read the DJ agent's `mood-music` block out of a reply.
-*
-* The agent found its links on web pages, so the block is untrusted: each pick
-* is checked here with `links.ts` and reduced to the fields the page draws, a
-* bad pick is dropped, and lengths are cut to the backend's limits. Text is only
-* ever rendered as React text, never as HTML.
-*/
-var MAX_STEPS = 8;
-var MAX_STEP_CHARS = 120;
-var STEP_BAD_RE = /[\u0000-\u001f\u007f\u2028\u2029`[\]]/;
-function playResult(d) {
-	if (typeof d.played !== "boolean") return void 0;
-	const site = oneOf(d.site, ["youtube", "bilibili"]);
-	if (!site) return void 0;
-	const steps = (Array.isArray(d.steps) ? d.steps : []).filter((s) => typeof s === "string" && !STEP_BAD_RE.test(s)).map((s) => s.trim()).filter((s) => s.length > 0 && s.length <= MAX_STEP_CHARS).slice(0, MAX_STEPS);
-	return {
-		played: d.played,
-		site,
-		steps: d.played ? steps : [],
-		reason: text(d.reason, 200)
-	};
-}
-var FENCE_RE = /```mood-music[^\n]*\n([\s\S]*?)```/g;
-var ANY_FENCE_RE = /```[\s\S]*?(```|$)/g;
-var MAX_PICKS = 12;
-var TIERS = [
-	"anchor",
-	"explore",
-	"deep"
-];
-var ARCS = [
-	"stay",
-	"turn",
-	"lift"
-];
-function text(value, limit) {
-	return typeof value === "string" ? value.trim().slice(0, limit) : "";
-}
-function tags(value, limit = 40, count = 8) {
-	if (!Array.isArray(value)) return [];
-	return value.filter((t) => typeof t === "string" && t.trim().length > 0).map((t) => t.trim().slice(0, limit)).slice(0, count);
-}
-function oneOf(value, allowed) {
-	return allowed.includes(value) ? value : void 0;
-}
-function evidence(raw) {
-	if (!raw || typeof raw !== "object") return void 0;
-	const r = raw;
-	const url = evidenceUrl(r.url);
-	return url ? {
-		url,
-		label: text(r.label, 200)
-	} : void 0;
-}
-function pick(raw) {
-	if (!raw || typeof raw !== "object") return null;
-	const r = raw;
-	const title = text(r.title, 200);
-	if (!title) return null;
-	const base = {
-		title,
-		artist: text(r.artist, 200),
-		why: text(r.why, 400),
-		tags: tags(r.tags)
-	};
-	const tier = oneOf(r.tier, TIERS);
-	const arc = oneOf(r.arc, ARCS);
-	const listenFor = text(r.listen_for, 400);
-	const ev = evidence(r.evidence);
-	if (tier) base.tier = tier;
-	if (arc) base.arc = arc;
-	if (listenFor) base.listen_for = listenFor;
-	if (ev) base.evidence = ev;
-	const source = r.source ?? r.platform;
-	const noLink = (r.url === void 0 || r.url === null || r.url === "") && r.video_id === void 0;
-	if (source === "youtube") {
-		if (noLink) return {
-			...base,
-			source: "youtube"
-		};
-		const id = r.video_id !== void 0 ? validVideoId(r.video_id) : youtubeVideoId(r.url);
-		return id ? {
-			...base,
-			source: "youtube",
-			video_id: id
-		} : null;
-	}
-	if (source === "bilibili") {
-		if (noLink) return {
-			...base,
-			source: "bilibili"
-		};
-		const url = bilibiliUrl(r.url);
-		return url ? {
-			...base,
-			source: "bilibili",
-			url
-		} : null;
-	}
-	return null;
-}
-/** Picks in arc order (stay, turn, lift), a pick with no arc after them; ties keep their order. */
-function byArc(picks) {
-	const rank = (p) => p.arc ? ARCS.indexOf(p.arc) : ARCS.length;
-	if (!picks.some((p) => p.arc)) return picks;
-	return picks.map((p, i) => [p, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(([p]) => p);
-}
-/** The LAST `mood-music` block in *content*, or null when there is none that parses. */
-function parseDjReply(content) {
-	const blocks = [...content.matchAll(FENCE_RE)];
-	const last = blocks[blocks.length - 1];
-	if (!last) return null;
-	let data;
-	try {
-		data = JSON.parse(last[1]);
-	} catch {
-		return null;
-	}
-	if (!data || typeof data !== "object" || Array.isArray(data)) return null;
-	const d = data;
-	const rawPicks = Array.isArray(d.picks) ? d.picks.slice(0, MAX_PICKS) : [];
-	const picks = rawPicks.map(pick).filter((p) => p !== null);
-	return {
-		text: replyText(content),
-		question: text(d.question, 300),
-		moodTags: tags(d.mood_tags ?? d.moods),
-		picks: byArc(picks),
-		dropped: rawPicks.length - picks.length,
-		followUps: tags(d.follow_ups, 40, 3),
-		remember: text(d.remember, 60),
-		...sceneOf(d.scene),
-		...playResult(d) ? { play: playResult(d) } : {}
-	};
-}
-/** `{scene}` when the block's scene fits the bounds, else nothing: the page keeps its scene. */
-function sceneOf(raw) {
-	if (raw === void 0) return {};
-	const scene = parseScene(raw);
-	return scene ? { scene: {
-		...scene,
-		source: "dj"
-	} } : {};
-}
-/** The reply's prose: every fenced block removed, cut to a short paragraph. */
-function replyText(content) {
-	return content.replace(ANY_FENCE_RE, "").replace(/\s+/g, " ").trim().slice(0, 300);
-}
-/** A short stable id for a reply, so the page queues each reply once. */
-function replySource(content) {
-	let h = 0;
-	for (let i = 0; i < content.length; i++) h = (h << 5) - h + content.charCodeAt(i) | 0;
-	return `r${(h >>> 0).toString(36)}-${content.length}`;
-}
 // src/reducedMotion.ts
 var QUERY = "(prefers-reduced-motion: reduce)";
 /** Whether the person asked for reduced motion, following later changes. */
@@ -4102,6 +4386,61 @@ var toolOf = (m) => {
 	if (/web_search|search/.test(text)) return "web_search";
 	return text.trim() ? "other" : "";
 };
+/** The browser tool's ops, as the step the person sees. */
+var BROWSER_OPS = {
+	navigate: "open",
+	click: "click",
+	type: "type",
+	snapshot: "look",
+	screenshot: "look",
+	scroll: "scroll",
+	wait_for: "wait",
+	back: "back",
+	tabs: "tab",
+	press_key: "key"
+};
+/** The `op` a browser call's input names: an object, or the JSON text a row carries. */
+function browserOp(m) {
+	const meta = m.meta ?? {};
+	for (const raw of [meta.input, meta.tool_input]) {
+		let input = raw;
+		if (typeof input === "string") try {
+			input = JSON.parse(input);
+		} catch {
+			continue;
+		}
+		const op = input?.op;
+		if (typeof op === "string") return op;
+	}
+	return "";
+}
+function stepOf(m) {
+	const tool = toolOf(m);
+	if (tool === "web_search") return "search";
+	if (tool === "web_fetch") return "read";
+	if (tool === "browser") return BROWSER_OPS[browserOp(m)] ?? "browser";
+	return tool ? "other" : null;
+}
+/** The tool rows of *rows* as steps, a run of one kind folded into one with its count. */
+function stepsOf(rows) {
+	const out = [];
+	for (const m of rows) {
+		if (m.role !== "tool") continue;
+		const kind = stepOf(m);
+		if (!kind) continue;
+		const last = out[out.length - 1];
+		if (last?.kind === kind) last.count += 1;
+		else out.push({
+			kind,
+			count: 1
+		});
+	}
+	return out;
+}
+/** What the running turn has done so far. */
+function liveSteps(slot) {
+	return slot?.running ? stepsOf(currentTurn(slot)) : [];
+}
 /** The person's own words in a request the page sent; other text is shown as typed. */
 function personText(content) {
 	const lines = content.split("\n");
@@ -4120,15 +4459,22 @@ function conversation(slot) {
 	const out = [];
 	const all = msgs(slot);
 	let last = null;
+	let turn = [];
 	const flush = () => {
 		if (last?.content) out.push({
 			who: "buddy",
 			text: replyText(last.content),
-			reply: last.content
+			reply: last.content,
+			steps: stepsOf(turn)
 		});
 		last = null;
+		turn = [];
 	};
 	for (const m of all) {
+		if (m.role === "tool") {
+			turn.push(m);
+			continue;
+		}
 		if (typeof m.content !== "string" || !m.content.trim()) continue;
 		if (m.role === "user") {
 			flush();
@@ -4330,23 +4676,35 @@ var MOOD_LABELS = {
 };
 var moodLabel = (key) => t(MOOD_LABELS[key]);
 /**
-* The Listen tab's two columns. Wide enough for both, the page itself stops
-* scrolling: the chat column scrolls on its own, and the player stays in view
-* with "Up next" scrolling under it. Narrower, it is one column and the page
-* scrolls as before. A container query, so it follows the page's own width
-* (the Crew sidebar takes part of the window), not the window's.
+* The Listen tab uses the page's whole width. Wide enough, it is two columns:
+* the chat on the left, and on the right the buddy's browser on top with the
+* player and the queue under it. Each column scrolls on its own and the page
+* itself does not. On a wide right column the player and the queue sit side by
+* side. Narrower, it is one column and the page scrolls. Container queries, so
+* the layout follows the page's own width (the Crew sidebar takes part of the
+* window), not the window's.
 */
 var SPLIT_CSS = `
 .mm-root { container-type: inline-size; }
-.mm-listen { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
-@container (min-width: 760px) {
+.mm-listen { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); align-items: start; width: 100%; max-width: 1760px; margin: 0 auto; }
+.mm-player { container-type: inline-size; }
+.mm-deck { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
+/* The live view: tall enough to watch, short enough to leave the player and queue in view. */
+.mm-view-body { display: flex; flex-direction: column; height: clamp(14rem, 42vh, 30rem); }
+.mm-view-body > * { flex: 1; min-height: 0; }
+/* The queue: real height with its own scroll, and rows that wrap rather than cut off. */
+.mm-queue-list { min-height: 12rem; max-height: 32rem; overflow-y: auto; overscroll-behavior: contain; padding-right: 0.25rem; }
+.mm-queue-num { flex: none; width: 1.25rem; padding-top: 0.125rem; display: inline-flex; justify-content: center; }
+.mm-clamp2 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+@container (min-width: 860px) {
   div.mm-scroll.mm-split { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
-  .mm-split > .mm-listen { flex: 1; min-height: 0; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; width: 100%; }
+  .mm-split > .mm-listen { flex: 1; min-height: 0; grid-template-columns: minmax(320px, 5fr) minmax(0, 7fr); align-items: stretch; }
   /* No scroll anchoring: rows drawn in after a return must not push the restored position. */
   .mm-col { min-height: 0; overflow-y: auto; overflow-anchor: none; padding-bottom: 1.5rem; }
-  .mm-player { min-height: 0; overflow: hidden; padding-bottom: 1.5rem; }
-  .mm-player > .mm-upnext { flex: 1; min-height: 0; display: flex; flex-direction: column; }
-  .mm-upnext > ul { flex: 1; min-height: 0; overflow-y: auto; }
+  .mm-player { min-height: 0; overflow-y: auto; overflow-anchor: none; padding-bottom: 1.5rem; }
+}
+@container (min-width: 720px) {
+  .mm-deck { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }
 `;
 var songKey = (title = "", artist = "") => `${title.trim().toLowerCase()}|${artist.trim().toLowerCase()}`;
@@ -4430,7 +4788,7 @@ function MoodMusicPage() {
 				setSlot(read);
 				if (out && (!saved?.slotKey || saved.slotKey === key)) {
 					const source = replySource(latestReply(read));
-					if (!read || read.running || turnError(read) || source !== out.baseline && source !== s.last_source) {
+					if (!read || read.running || turnError(read) || !sameReply(out.baseline, read) && source !== s.last_source) {
 						momentRef.current = out.momentId;
 						setPending(out);
 					}
@@ -4491,9 +4849,11 @@ function MoodMusicPage() {
 	const recordOpen = state?.settings?.record_open ?? false;
 	const viewOpen = state?.settings?.view_open ?? true;
 	const HostView = hostBrowserView();
-	const continuous = state?.settings?.continuous ?? false;
+	const continuous = state?.settings?.continuous ?? true;
 	const onEndedRef = useRef(() => void 0);
-	const crew = useCrewBrowser(slotKey ?? "", !!browserPick, () => onEndedRef.current());
+	const crew = useCrewBrowser(slotKey ?? "", !!browserPick || !!pending?.play, () => onEndedRef.current());
+	const crewMediaRef = useRef(crew.media);
+	crewMediaRef.current = crew.media;
 	const browserReady = readiness(crew);
 	const browserMode = browserReady === "ready" || browserReady === "unknown";
 	const saveSettings = (patch) => {
@@ -4519,7 +4879,7 @@ function MoodMusicPage() {
 		setSlotKey(key);
 		setPending({
 			momentId: momentRef.current,
-			baseline: replySource(latestReply(before)),
+			baseline: replyMark(before),
 			memoryIds,
 			text: shown,
 			...play ? { play } : {}
@@ -4671,7 +5031,8 @@ function MoodMusicPage() {
 			const reply = latestReply(read);
 			const source = replySource(reply);
 			const failed = turnError(read);
-			if (!failed && (!reply || source === pending.baseline) && !pending.stopped) return;
+			const fresh = !!reply && !sameReply(pending.baseline, read);
+			if (!failed && !fresh && !pending.stopped) return;
 			live = false;
 			setPending(null);
 			setStuck(false);
@@ -4679,7 +5040,7 @@ function MoodMusicPage() {
 				setNotice(t("chat.stopped"));
 				return;
 			}
-			if (failed && source === pending.baseline) {
+			if (failed && !fresh) {
 				setTurnFailed(failed);
 				return;
 			}
@@ -4744,10 +5105,11 @@ function MoodMusicPage() {
 	*/
 	async function afterPlay(play, parsed, source) {
 		const result = parsed?.play;
-		if (result?.played) {
+		const inTabNow = !result && !!crewMediaRef.current && !crewMediaRef.current.ended;
+		if (result?.played || inTabNow) {
 			setBrowserPick(play.pickId);
 			const heard = queue.find((p) => p.id === play.pickId);
-			if (heard && !knownSongs.has(songKey(heard.title, heard.artist))) {
+			if (result?.played && heard && !knownSongs.has(songKey(heard.title, heard.artist))) {
 				markKnown(heard, "app");
 				markUsed();
 			}
@@ -4755,7 +5117,7 @@ function MoodMusicPage() {
 				endedForRef.current = null;
 				setEndedFor(null);
 			}
-			if (result.steps.length) moodApi.setPlaySteps(play.site, result.steps).then(refresh).catch(() => void 0);
+			if (result?.steps.length) moodApi.setPlaySteps(play.site, result.steps).then(refresh).catch(() => void 0);
 		} else {
 			moodApi.forgetPlaySteps(play.site).then(refresh).catch(() => void 0);
 			setNotice(t("browser.not_played", { reason: result?.reason || t("browser.no_reason") }));
@@ -4854,6 +5216,12 @@ function MoodMusicPage() {
 	const resumeBrowser = () => {
 		stoppedRef.current = false;
 		crew.play();
+	};
+	const replayBrowser = () => {
+		stoppedRef.current = false;
+		endedForRef.current = null;
+		setEndedFor(null);
+		crew.seek(0).then(() => crew.play());
 	};
 	const setContinuous = (on) => {
 		if (on) stoppedRef.current = false;
@@ -4989,7 +5357,8 @@ function MoodMusicPage() {
 							className: "mx-auto max-w-5xl",
 							children: /* @__PURE__ */ jsx(MomentsTab, { moments: state?.moments ?? [] })
 						}) : /* @__PURE__ */ jsxs("div", {
-							className: "mm-listen mx-auto max-w-5xl",
+							className: "mm-listen",
+							"data-testid": "mood-listen",
 							children: [/* @__PURE__ */ jsxs("div", {
 								ref: chatColRef,
 								onScroll: onScrolled,
@@ -5065,26 +5434,33 @@ function MoodMusicPage() {
 											}, i) : /* @__PURE__ */ jsxs("div", {
 												className: "max-w-[95%] rounded-2xl border border-[var(--border)] px-3 py-2",
 												style: CARD_STYLE,
-												children: [/* @__PURE__ */ jsxs("p", {
-													className: "text-sm text-[var(--text)]",
-													children: [/* @__PURE__ */ jsx("span", {
-														className: "mr-1 font-semibold text-[var(--accent)]",
-														children: t("chat.buddy")
-													}), line.text]
-												}), line === lastBuddy && line.reply && replySource(line.reply) === state?.last_source && queue.length > 0 && /* @__PURE__ */ jsx("div", {
-													className: "mt-2 grid gap-2",
-													"data-testid": "mood-cards",
-													children: queue.map((p) => /* @__PURE__ */ jsx(SongCard, {
-														pick: p,
-														playing: current?.id === p.id,
-														known: knownSongs.has(songKey(p.title, p.artist)),
-														busy: working,
-														onPlay: () => playPick(p),
-														onLike: () => giveFeedback(p, p.feedback === "liked" ? "" : "liked"),
-														onSkip: () => giveFeedback(p, "skipped"),
-														onKnown: () => markKnown(p, "user")
-													}, p.id))
-												})]
+												children: [
+													/* @__PURE__ */ jsxs("p", {
+														className: "text-sm text-[var(--text)]",
+														children: [/* @__PURE__ */ jsx("span", {
+															className: "mr-1 font-semibold text-[var(--accent)]",
+															children: t("chat.buddy")
+														}), line.text]
+													}),
+													/* @__PURE__ */ jsx(BuddySteps, {
+														steps: line.steps ?? [],
+														testId: "mood-steps"
+													}),
+													line === lastBuddy && line.reply && replySource(line.reply) === state?.last_source && queue.length > 0 && /* @__PURE__ */ jsx("div", {
+														className: "mt-2 grid gap-2",
+														"data-testid": "mood-cards",
+														children: queue.map((p) => /* @__PURE__ */ jsx(SongCard, {
+															pick: p,
+															playing: current?.id === p.id,
+															known: knownSongs.has(songKey(p.title, p.artist)),
+															busy: working,
+															onPlay: () => playPick(p),
+															onLike: () => giveFeedback(p, p.feedback === "liked" ? "" : "liked"),
+															onSkip: () => giveFeedback(p, "skipped"),
+															onKnown: () => markKnown(p, "user")
+														}, p.id))
+													})
+												]
 											}, i)),
 											showYou && /* @__PURE__ */ jsx("p", {
 												className: "self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]",
@@ -5099,6 +5475,10 @@ function MoodMusicPage() {
 													"aria-hidden": "true",
 													className: reduceMotion ? "" : "animate-pulse"
 												}), statusText(status)]
+											}),
+											status && /* @__PURE__ */ jsx(BuddySteps, {
+												steps: liveSteps(slot),
+												testId: "mood-live-steps"
 											})
 										]
 									}),
@@ -5313,61 +5693,98 @@ function MoodMusicPage() {
 										operating: status?.phase === "playing",
 										live: HostView ? /* @__PURE__ */ jsx(HostView, {
 											slot: slotKey,
-											"aria-label": t("view.title")
+											"aria-label": t("view.title"),
+											stayLive: true
 										}) : null
 									}),
-									current ? /* @__PURE__ */ jsx(NowPlaying, {
-										pick: current,
-										stage: unready ?? /* @__PURE__ */ jsx(BrowserControls, {
-											media: crew,
-											inTab: browserPick === current.id,
-											waiting: working,
-											continuous,
-											onAskPlay: askPlayCurrent,
-											onPause: pauseBrowser,
-											onPlay: resumeBrowser,
-											onContinuous: setContinuous
-										}),
-										busy: working,
-										onLike: () => giveFeedback(current, current.feedback === "liked" ? "" : "liked"),
-										onSkip: () => giveFeedback(current, "skipped"),
-										onMore: () => moreLike(current)
-									}) : /* @__PURE__ */ jsx(EmptyState, {
-										icon: /* @__PURE__ */ jsx(Play, { size: 28 }),
-										title: t("page.empty_title"),
-										subtitle: t("page.empty_body")
-									}),
-									queue.length > 1 && /* @__PURE__ */ jsxs("section", {
-										"aria-label": t("page.queue"),
-										className: "mm-upnext",
-										children: [/* @__PURE__ */ jsx("h3", {
-											className: "mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]",
-											children: t("page.queue")
-										}), /* @__PURE__ */ jsx("ul", {
-											className: "flex flex-col gap-1.5",
-											"data-testid": "mood-queue",
-											tabIndex: 0,
+									/* @__PURE__ */ jsxs("div", {
+										className: "mm-deck",
+										"data-testid": "mood-deck",
+										children: [current ? /* @__PURE__ */ jsx(NowPlaying, {
+											pick: current,
+											stage: unready ?? /* @__PURE__ */ jsx(BrowserControls, {
+												media: crew,
+												waiting: working,
+												continuous,
+												onAskPlay: askPlayCurrent,
+												onPause: pauseBrowser,
+												onPlay: resumeBrowser,
+												onReplay: replayBrowser,
+												onContinuous: setContinuous
+											}),
+											busy: working,
+											onLike: () => giveFeedback(current, current.feedback === "liked" ? "" : "liked"),
+											onSkip: () => giveFeedback(current, "skipped"),
+											onMore: () => moreLike(current)
+										}) : /* @__PURE__ */ jsx(EmptyState, {
+											icon: /* @__PURE__ */ jsx(Play, { size: 28 }),
+											title: t("page.empty_title"),
+											subtitle: t("page.empty_body")
+										}), queue.length > 0 && /* @__PURE__ */ jsxs("section", {
 											"aria-label": t("page.queue"),
-											children: queue.map((p) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("button", {
-												type: "button",
-												onClick: () => playPick(p),
-												"aria-current": current?.id === p.id ? "true" : void 0,
-												className: `flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition-colors ${current?.id === p.id ? "border-[var(--accent)] bg-[var(--accent-subtle)]" : "border-[var(--border)] hover:bg-[var(--bg-hover)]"} ${p.feedback === "skipped" ? "opacity-50" : ""}`,
-												style: current?.id === p.id ? void 0 : CARD_STYLE,
-												children: [/* @__PURE__ */ jsxs("span", {
-													className: "min-w-0 flex-1",
-													children: [/* @__PURE__ */ jsx("span", {
-														className: "block truncate text-sm text-[var(--text)]",
-														children: p.title
-													}), /* @__PURE__ */ jsx("span", {
-														className: "block truncate text-xs text-[var(--muted)]",
-														children: p.artist
-													})]
-												}), /* @__PURE__ */ jsx("span", {
-													className: "shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
-													children: p.source === "youtube" ? t("page.source_youtube") : t("page.source_bilibili")
+											className: "mm-upnext flex min-w-0 flex-col",
+											"data-testid": "mood-queue-section",
+											children: [/* @__PURE__ */ jsxs("h3", {
+												className: "mb-2 flex items-baseline gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]",
+												children: [t("page.queue"), /* @__PURE__ */ jsx("span", {
+													className: "font-normal tabular-nums",
+													"data-testid": "mood-queue-count",
+													children: queue.length
 												})]
-											}) }, p.id))
+											}), /* @__PURE__ */ jsx("ul", {
+												className: "mm-queue-list flex flex-col gap-2",
+												"data-testid": "mood-queue",
+												tabIndex: 0,
+												"aria-label": t("page.queue"),
+												children: queue.map((p, i) => {
+													const now = current?.id === p.id;
+													return /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("button", {
+														type: "button",
+														onClick: () => playPick(p),
+														"aria-current": now ? "true" : void 0,
+														className: `flex w-full items-start gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors ${now ? "border-[var(--accent)] bg-[var(--accent-subtle)]" : "border-[var(--border)] hover:bg-[var(--bg-hover)]"} ${p.feedback === "skipped" ? "opacity-50" : ""}`,
+														style: now ? void 0 : CARD_STYLE,
+														"data-testid": "mood-queue-row",
+														children: [
+															/* @__PURE__ */ jsx("span", {
+																className: `mm-queue-num text-xs tabular-nums ${now ? "text-[var(--accent)]" : "text-[var(--muted)]"}`,
+																"aria-hidden": "true",
+																children: now ? /* @__PURE__ */ jsx(Volume2, { size: 14 }) : i + 1
+															}),
+															/* @__PURE__ */ jsxs("span", {
+																className: "min-w-0 flex-1",
+																children: [
+																	now && /* @__PURE__ */ jsx("span", {
+																		className: "block text-[11px] font-semibold uppercase tracking-wide text-[var(--accent)]",
+																		"data-testid": "mood-queue-now",
+																		children: t("page.now_playing")
+																	}),
+																	/* @__PURE__ */ jsx("span", {
+																		className: "mm-clamp2 text-sm font-semibold leading-snug text-[var(--text)]",
+																		children: p.title
+																	}),
+																	p.artist && /* @__PURE__ */ jsx("span", {
+																		className: "block text-xs text-[var(--muted)]",
+																		children: p.artist
+																	}),
+																	p.why && /* @__PURE__ */ jsxs("span", {
+																		className: "mm-clamp2 mt-1 text-xs leading-relaxed text-[var(--text)]",
+																		"data-testid": "mood-queue-why",
+																		children: [/* @__PURE__ */ jsxs("span", {
+																			className: "sr-only",
+																			children: [t("page.why"), ": "]
+																		}), p.why]
+																	})
+																]
+															}),
+															/* @__PURE__ */ jsx("span", {
+																className: "shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
+																children: p.source === "youtube" ? t("page.source_youtube") : t("page.source_bilibili")
+															})
+														]
+													}) }, p.id);
+												})
+											})]
 										})]
 									})
 								]

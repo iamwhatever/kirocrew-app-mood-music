@@ -124,6 +124,27 @@ describe('the page', () => {
     expect(screen.queryByTestId('mood-browser-view-old-host')).toBeNull()
   })
 
+  it('asks the host to keep the tab showing after the turn ends, and keeps the box open', async () => {
+    host.level = 11
+    // A played song is marked heard and its steps kept.
+    api.addMemory.mockResolvedValue({})
+    api.setPlaySteps.mockResolvedValue({})
+    await open()
+    expect(screen.getByTestId('host-browser-view').getAttribute('data-stay-live')).toBe('true')
+    fireEvent.click(screen.getByTestId('mood-browser-play'))
+    await flush()
+    const asked = api.ask.mock.calls[0][0] as string
+    api.getSlot.mockResolvedValue({
+      running: false,
+      messages: [{ role: 'user', content: asked }, { role: 'assistant', content: '放上了。\n```mood-music\n{"played": true, "site": "youtube", "steps": ["x"]}\n```' }],
+    })
+    await flush(POLL_MS)
+    await flush()
+    // The turn is over and the song plays: the page still shows the view, asking it to stay live.
+    expect(screen.getByTestId('mood-browser-view-body')).toBeTruthy()
+    expect(screen.getByTestId('host-browser-view').getAttribute('data-stay-live')).toBe('true')
+  })
+
   it('says to update Kiro Crew on a level-10 host, with no live view', async () => {
     await open()
     expect(screen.queryByTestId('host-browser-view')).toBeNull()

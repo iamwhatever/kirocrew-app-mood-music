@@ -225,6 +225,17 @@ class TestTheManifest(unittest.TestCase):
             with self.subTest(word=word):
                 self.assertIn(word, prompt)
 
+    def test_the_dj_plays_every_song_in_its_one_tab(self) -> None:
+        """A results click that opens a new tab would leave one tab per song behind.
+
+        The page's buttons and its live view follow the buddy's tab, so the buddy
+        opens each video in the tab it already has.
+        """
+        prompt = json.loads((APP_ROOT / "agents" / "dj.json").read_text(encoding="utf-8"))["prompt"]
+        self.assertIn("Keep to ONE tab, the one you already have: never open a new tab.", prompt)
+        self.assertIn("navigate to it in the same tab", prompt)
+        self.assertNotIn("If a click opens the video in a new tab, switch to that tab", prompt)
+
     def test_the_dj_runs_its_two_read_only_tools_without_asking(self) -> None:
         """The approval prompt sits in a chat the page hides, so it would stall the search.
 

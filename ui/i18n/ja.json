@@ -142,7 +142,7 @@
   },
   "browser": {
     "status_opening": "相棒が Kiro Crew のブラウザで開いています…",
-    "status_idle": "再生を押すと、相棒が Kiro Crew のブラウザでこの曲を開きます。",
+    "status_idle": "まだ何も再生していません。「探して再生」で相棒が Kiro Crew のブラウザでこの曲を開きます。",
     "status_in_control": "ブラウザのタブを操作中です。戻すまでボタンは待機します。",
     "status_no_media": "ブラウザのタブにまだプレーヤーがありません。",
     "status_ended": "終わりました。",
@@ -160,7 +160,8 @@
     "unready_title": "まだ Kiro Crew のブラウザで曲を再生できません",
     "unready_old_host": "この Kiro Crew は古すぎます。アプリのブラウザサイトに対応した版（KiroCrew#38333 を含む、v0.13.0-rc.3 より新しい版）に更新して、このページを開き直してください。",
     "unready_not_approved": "先に Mood Music の音楽サイトを承認してください。アプリのページで一度だけ承認します。",
-    "unready_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。"
+    "unready_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。",
+    "find_play": "探して再生"
   },
   "view": {
     "title": "Kiro Crew のブラウザ",
@@ -169,5 +170,22 @@
     "show": "表示",
     "hide": "隠す",
     "old_host": "この Kiro Crew ではまだここにブラウザを表示できません。Kiro Crew を更新すると、選曲の様子が見られます。"
+  },
+  "steps": {
+    "label": "相棒がしたこと",
+    "times": "{{step}} × {{count}}",
+    "search": "ウェブを検索",
+    "read": "ページを読んだ",
+    "open": "ページを開いた",
+    "click": "クリック",
+    "type": "入力",
+    "look": "ページを確認",
+    "scroll": "スクロール",
+    "wait": "ページを待った",
+    "back": "戻った",
+    "tab": "タブを切り替え",
+    "key": "キーを押した",
+    "browser": "ブラウザを使用",
+    "other": "作業した"
   }
 }
