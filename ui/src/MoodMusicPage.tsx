@@ -28,7 +28,7 @@
  * playable left.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type UIEvent } from 'react'
-import { Headphones, MessageCircleQuestion, Play, Send, ShieldCheck, Square, TriangleAlert, Waves, WifiOff } from 'lucide-react'
+import { Headphones, MessageCircleQuestion, Play, Send, ShieldCheck, Square, TriangleAlert, Volume2, Waves, WifiOff } from 'lucide-react'
 import { useAppApi, useChatLauncher, useNavigate } from '@kirocrew/app-sdk'
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from '@kirocrew/app-sdk/ui'
 import { t } from './i18n'
@@ -90,6 +90,10 @@ export const SPLIT_CSS = `
 .mm-listen { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); align-items: start; width: 100%; max-width: 1760px; margin: 0 auto; }
 .mm-player { container-type: inline-size; }
 .mm-deck { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
+/* The queue: real height with its own scroll, and rows that wrap rather than cut off. */
+.mm-queue-list { min-height: 12rem; max-height: 32rem; overflow-y: auto; overscroll-behavior: contain; padding-right: 0.25rem; }
+.mm-queue-num { flex: none; width: 1.25rem; padding-top: 0.125rem; display: inline-flex; justify-content: center; }
+.mm-clamp2 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
 @container (min-width: 860px) {
   div.mm-scroll.mm-split { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
   .mm-split > .mm-listen { flex: 1; min-height: 0; grid-template-columns: minmax(320px, 5fr) minmax(0, 7fr); align-items: stretch; }
@@ -943,31 +947,51 @@ export default function MoodMusicPage() {
                     <EmptyState icon={<Play size={28} />} title={t('page.empty_title')} subtitle={t('page.empty_body')} />
                   )}
 
-                  {queue.length > 1 && (
-                    <section aria-label={t('page.queue')} className="mm-upnext">
-                      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">{t('page.queue')}</h3>
-                      <ul className="flex flex-col gap-1.5" data-testid="mood-queue" tabIndex={0} aria-label={t('page.queue')}>
-                        {queue.map(p => (
-                          <li key={p.id}>
-                            <button
-                              type="button"
-                              onClick={() => playPick(p)}
-                              aria-current={current?.id === p.id ? 'true' : undefined}
-                              className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition-colors ${current?.id === p.id
-                                ? 'border-[var(--accent)] bg-[var(--accent-subtle)]'
-                                : 'border-[var(--border)] hover:bg-[var(--bg-hover)]'} ${p.feedback === 'skipped' ? 'opacity-50' : ''}`}
-                              style={current?.id === p.id ? undefined : CARD_STYLE}
-                            >
-                              <span className="min-w-0 flex-1">
-                                <span className="block truncate text-sm text-[var(--text)]">{p.title}</span>
-                                <span className="block truncate text-xs text-[var(--muted)]">{p.artist}</span>
-                              </span>
-                              <span className="shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
-                                {p.source === 'youtube' ? t('page.source_youtube') : t('page.source_bilibili')}
-                              </span>
-                            </button>
-                          </li>
-                        ))}
+                  {queue.length > 0 && (
+                    <section aria-label={t('page.queue')} className="mm-upnext flex min-w-0 flex-col" data-testid="mood-queue-section">
+                      <h3 className="mb-2 flex items-baseline gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+                        {t('page.queue')}
+                        <span className="font-normal tabular-nums" data-testid="mood-queue-count">{queue.length}</span>
+                      </h3>
+                      <ul className="mm-queue-list flex flex-col gap-2" data-testid="mood-queue" tabIndex={0} aria-label={t('page.queue')}>
+                        {queue.map((p, i) => {
+                          const now = current?.id === p.id
+                          return (
+                            <li key={p.id}>
+                              <button
+                                type="button"
+                                onClick={() => playPick(p)}
+                                aria-current={now ? 'true' : undefined}
+                                className={`flex w-full items-start gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors ${now
+                                  ? 'border-[var(--accent)] bg-[var(--accent-subtle)]'
+                                  : 'border-[var(--border)] hover:bg-[var(--bg-hover)]'} ${p.feedback === 'skipped' ? 'opacity-50' : ''}`}
+                                style={now ? undefined : CARD_STYLE}
+                                data-testid="mood-queue-row"
+                              >
+                                <span className={`mm-queue-num text-xs tabular-nums ${now ? 'text-[var(--accent)]' : 'text-[var(--muted)]'}`} aria-hidden="true">
+                                  {now ? <Volume2 size={14} /> : i + 1}
+                                </span>
+                                <span className="min-w-0 flex-1">
+                                  {now && (
+                                    <span className="block text-[11px] font-semibold uppercase tracking-wide text-[var(--accent)]" data-testid="mood-queue-now">
+                                      {t('page.now_playing')}
+                                    </span>
+                                  )}
+                                  <span className="mm-clamp2 text-sm font-semibold leading-snug text-[var(--text)]">{p.title}</span>
+                                  {p.artist && <span className="block text-xs text-[var(--muted)]">{p.artist}</span>}
+                                  {p.why && (
+                                    <span className="mm-clamp2 mt-1 text-xs leading-relaxed text-[var(--text)]" data-testid="mood-queue-why">
+                                      <span className="sr-only">{t('page.why')}: </span>{p.why}
+                                    </span>
+                                  )}
+                                </span>
+                                <span className="shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
+                                  {p.source === 'youtube' ? t('page.source_youtube') : t('page.source_bilibili')}
+                                </span>
+                              </button>
+                            </li>
+                          )
+                        })}
                       </ul>
                     </section>
                   )}

@@ -87,3 +87,35 @@ describe('Listen layout', () => {
     expect(SPLIT_CSS).toMatch(/^\.mm-deck \{[^}]*grid-template-columns: minmax\(0, 1fr\);/m)
   })
 })
+
+describe('Queue', () => {
+  it('has real height with its own scroll', async () => {
+    await open()
+    expect(screen.getByTestId('mood-queue')).toHaveClass('mm-queue-list')
+    expect(SPLIT_CSS).toMatch(/\.mm-queue-list \{[^}]*min-height: 12rem;[^}]*max-height: 32rem;[^}]*overflow-y: auto/)
+  })
+
+  it('shows title, artist and why on every row, and marks the current song', async () => {
+    await open()
+    const rows = screen.getAllByTestId('mood-queue-row')
+    expect(rows).toHaveLength(3)
+    rows.forEach((row, i) => {
+      expect(row).toHaveTextContent(`Song ${i + 1}`)
+      expect(row).toHaveTextContent(`Artist ${i + 1}`)
+      expect(within(row).getByTestId('mood-queue-why')).toHaveTextContent(`why ${i + 1}`)
+    })
+    // Nothing is cut to one line: the title and why wrap, up to two lines.
+    expect(within(rows[1]).getByText('Song 2').className).not.toMatch(/truncate/)
+    expect(rows[0]).toHaveAttribute('aria-current', 'true')
+    expect(within(rows[0]).getByTestId('mood-queue-now')).toBeInTheDocument()
+    expect(rows[1]).not.toHaveAttribute('aria-current')
+    expect(within(rows[1]).queryByTestId('mood-queue-now')).toBeNull()
+    expect(screen.getByTestId('mood-queue-count')).toHaveTextContent('3')
+  })
+
+  it('shows a queue of one song too', async () => {
+    api.state.mockResolvedValue({ ...STATE, queue: [pick(1)] })
+    await open()
+    expect(screen.getAllByTestId('mood-queue-row')).toHaveLength(1)
+  })
+})

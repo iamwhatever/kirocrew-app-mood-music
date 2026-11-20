@@ -4672,6 +4672,10 @@ var SPLIT_CSS = `
 .mm-listen { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); align-items: start; width: 100%; max-width: 1760px; margin: 0 auto; }
 .mm-player { container-type: inline-size; }
 .mm-deck { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
+/* The queue: real height with its own scroll, and rows that wrap rather than cut off. */
+.mm-queue-list { min-height: 12rem; max-height: 32rem; overflow-y: auto; overscroll-behavior: contain; padding-right: 0.25rem; }
+.mm-queue-num { flex: none; width: 1.25rem; padding-top: 0.125rem; display: inline-flex; justify-content: center; }
+.mm-clamp2 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
 @container (min-width: 860px) {
   div.mm-scroll.mm-split { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
   .mm-split > .mm-listen { flex: 1; min-height: 0; grid-template-columns: minmax(320px, 5fr) minmax(0, 7fr); align-items: stretch; }
@@ -5694,37 +5698,70 @@ function MoodMusicPage() {
 											icon: /* @__PURE__ */ jsx(Play, { size: 28 }),
 											title: t("page.empty_title"),
 											subtitle: t("page.empty_body")
-										}), queue.length > 1 && /* @__PURE__ */ jsxs("section", {
+										}), queue.length > 0 && /* @__PURE__ */ jsxs("section", {
 											"aria-label": t("page.queue"),
-											className: "mm-upnext",
-											children: [/* @__PURE__ */ jsx("h3", {
-												className: "mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]",
-												children: t("page.queue")
+											className: "mm-upnext flex min-w-0 flex-col",
+											"data-testid": "mood-queue-section",
+											children: [/* @__PURE__ */ jsxs("h3", {
+												className: "mb-2 flex items-baseline gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]",
+												children: [t("page.queue"), /* @__PURE__ */ jsx("span", {
+													className: "font-normal tabular-nums",
+													"data-testid": "mood-queue-count",
+													children: queue.length
+												})]
 											}), /* @__PURE__ */ jsx("ul", {
-												className: "flex flex-col gap-1.5",
+												className: "mm-queue-list flex flex-col gap-2",
 												"data-testid": "mood-queue",
 												tabIndex: 0,
 												"aria-label": t("page.queue"),
-												children: queue.map((p) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("button", {
-													type: "button",
-													onClick: () => playPick(p),
-													"aria-current": current?.id === p.id ? "true" : void 0,
-													className: `flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition-colors ${current?.id === p.id ? "border-[var(--accent)] bg-[var(--accent-subtle)]" : "border-[var(--border)] hover:bg-[var(--bg-hover)]"} ${p.feedback === "skipped" ? "opacity-50" : ""}`,
-													style: current?.id === p.id ? void 0 : CARD_STYLE,
-													children: [/* @__PURE__ */ jsxs("span", {
-														className: "min-w-0 flex-1",
-														children: [/* @__PURE__ */ jsx("span", {
-															className: "block truncate text-sm text-[var(--text)]",
-															children: p.title
-														}), /* @__PURE__ */ jsx("span", {
-															className: "block truncate text-xs text-[var(--muted)]",
-															children: p.artist
-														})]
-													}), /* @__PURE__ */ jsx("span", {
-														className: "shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
-														children: p.source === "youtube" ? t("page.source_youtube") : t("page.source_bilibili")
-													})]
-												}) }, p.id))
+												children: queue.map((p, i) => {
+													const now = current?.id === p.id;
+													return /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("button", {
+														type: "button",
+														onClick: () => playPick(p),
+														"aria-current": now ? "true" : void 0,
+														className: `flex w-full items-start gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors ${now ? "border-[var(--accent)] bg-[var(--accent-subtle)]" : "border-[var(--border)] hover:bg-[var(--bg-hover)]"} ${p.feedback === "skipped" ? "opacity-50" : ""}`,
+														style: now ? void 0 : CARD_STYLE,
+														"data-testid": "mood-queue-row",
+														children: [
+															/* @__PURE__ */ jsx("span", {
+																className: `mm-queue-num text-xs tabular-nums ${now ? "text-[var(--accent)]" : "text-[var(--muted)]"}`,
+																"aria-hidden": "true",
+																children: now ? /* @__PURE__ */ jsx(Volume2, { size: 14 }) : i + 1
+															}),
+															/* @__PURE__ */ jsxs("span", {
+																className: "min-w-0 flex-1",
+																children: [
+																	now && /* @__PURE__ */ jsx("span", {
+																		className: "block text-[11px] font-semibold uppercase tracking-wide text-[var(--accent)]",
+																		"data-testid": "mood-queue-now",
+																		children: t("page.now_playing")
+																	}),
+																	/* @__PURE__ */ jsx("span", {
+																		className: "mm-clamp2 text-sm font-semibold leading-snug text-[var(--text)]",
+																		children: p.title
+																	}),
+																	p.artist && /* @__PURE__ */ jsx("span", {
+																		className: "block text-xs text-[var(--muted)]",
+																		children: p.artist
+																	}),
+																	p.why && /* @__PURE__ */ jsxs("span", {
+																		className: "mm-clamp2 mt-1 text-xs leading-relaxed text-[var(--text)]",
+																		"data-testid": "mood-queue-why",
+																		children: [/* @__PURE__ */ jsxs("span", {
+																			className: "sr-only",
+																			children: [t("page.why"), ": "]
+																		}), p.why]
+																	})
+																]
+															}),
+															/* @__PURE__ */ jsx("span", {
+																className: "shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
+																children: p.source === "youtube" ? t("page.source_youtube") : t("page.source_bilibili")
+															})
+														]
+													}) }, p.id);
+												})
 											})]
 										})]
 									})
