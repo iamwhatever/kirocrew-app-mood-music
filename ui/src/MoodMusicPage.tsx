@@ -76,23 +76,28 @@ const MOOD_LABELS = {
 const moodLabel = (key: MoodKey) => t(MOOD_LABELS[key])
 
 /**
- * The Listen tab's two columns. Wide enough for both, the page itself stops
- * scrolling: the chat column scrolls on its own, and the player stays in view
- * with "Up next" scrolling under it. Narrower, it is one column and the page
- * scrolls as before. A container query, so it follows the page's own width
- * (the Crew sidebar takes part of the window), not the window's.
+ * The Listen tab uses the page's whole width. Wide enough, it is two columns:
+ * the chat on the left, and on the right the buddy's browser on top with the
+ * player and the queue under it. Each column scrolls on its own and the page
+ * itself does not. On a wide right column the player and the queue sit side by
+ * side. Narrower, it is one column and the page scrolls. Container queries, so
+ * the layout follows the page's own width (the Crew sidebar takes part of the
+ * window), not the window's.
  */
-const SPLIT_CSS = `
+export const SPLIT_CSS = `
 .mm-root { container-type: inline-size; }
-.mm-listen { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
-@container (min-width: 760px) {
+.mm-listen { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); align-items: start; width: 100%; max-width: 1760px; margin: 0 auto; }
+.mm-player { container-type: inline-size; }
+.mm-deck { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@container (min-width: 860px) {
   div.mm-scroll.mm-split { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
-  .mm-split > .mm-listen { flex: 1; min-height: 0; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; width: 100%; }
+  .mm-split > .mm-listen { flex: 1; min-height: 0; grid-template-columns: minmax(320px, 5fr) minmax(0, 7fr); align-items: stretch; }
   /* No scroll anchoring: rows drawn in after a return must not push the restored position. */
   .mm-col { min-height: 0; overflow-y: auto; overflow-anchor: none; padding-bottom: 1.5rem; }
-  .mm-player { min-height: 0; overflow: hidden; padding-bottom: 1.5rem; }
-  .mm-player > .mm-upnext { flex: 1; min-height: 0; display: flex; flex-direction: column; }
-  .mm-upnext > ul { flex: 1; min-height: 0; overflow-y: auto; }
+  .mm-player { min-height: 0; overflow-y: auto; overflow-anchor: none; padding-bottom: 1.5rem; }
+}
+@container (min-width: 720px) {
+  .mm-deck { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }
 `
 
@@ -679,7 +684,7 @@ export default function MoodMusicPage() {
               <MemoryTab memory={state?.memory ?? []} api={moodApi} onChanged={refresh} />
             </div>
           ) : tab === 'moments' ? <div className="mx-auto max-w-5xl"><MomentsTab moments={state?.moments ?? []} /></div> : (
-            <div className="mm-listen mx-auto max-w-5xl">
+            <div className="mm-listen" data-testid="mood-listen">
               <div
                 ref={chatColRef}
                 onScroll={onScrolled}
@@ -897,58 +902,60 @@ export default function MoodMusicPage() {
                     live={HostView ? <HostView slot={slotKey} aria-label={t('view.title')} /> : null}
                   />
                 )}
-                {current ? (
-                  <NowPlaying
-                    pick={current}
-                    stage={unready ?? (
-                      <BrowserControls
-                        media={crew}
-                        inTab={browserPick === current.id}
-                        waiting={working}
-                        continuous={continuous}
-                        onAskPlay={askPlayCurrent}
-                        onPause={pauseBrowser}
-                        onPlay={resumeBrowser}
-                        onContinuous={setContinuous}
-                      />
-                    )}
-                    busy={working}
-                    onLike={() => giveFeedback(current, current.feedback === 'liked' ? '' : 'liked')}
-                    onSkip={() => giveFeedback(current, 'skipped')}
-                    onMore={() => moreLike(current)}
-                  />
-                ) : (
-                  <EmptyState icon={<Play size={28} />} title={t('page.empty_title')} subtitle={t('page.empty_body')} />
-                )}
+                <div className="mm-deck" data-testid="mood-deck">
+                  {current ? (
+                    <NowPlaying
+                      pick={current}
+                      stage={unready ?? (
+                        <BrowserControls
+                          media={crew}
+                          inTab={browserPick === current.id}
+                          waiting={working}
+                          continuous={continuous}
+                          onAskPlay={askPlayCurrent}
+                          onPause={pauseBrowser}
+                          onPlay={resumeBrowser}
+                          onContinuous={setContinuous}
+                        />
+                      )}
+                      busy={working}
+                      onLike={() => giveFeedback(current, current.feedback === 'liked' ? '' : 'liked')}
+                      onSkip={() => giveFeedback(current, 'skipped')}
+                      onMore={() => moreLike(current)}
+                    />
+                  ) : (
+                    <EmptyState icon={<Play size={28} />} title={t('page.empty_title')} subtitle={t('page.empty_body')} />
+                  )}
 
-                {queue.length > 1 && (
-                  <section aria-label={t('page.queue')} className="mm-upnext">
-                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">{t('page.queue')}</h3>
-                    <ul className="flex flex-col gap-1.5" data-testid="mood-queue" tabIndex={0} aria-label={t('page.queue')}>
-                      {queue.map(p => (
-                        <li key={p.id}>
-                          <button
-                            type="button"
-                            onClick={() => playPick(p)}
-                            aria-current={current?.id === p.id ? 'true' : undefined}
-                            className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition-colors ${current?.id === p.id
-                              ? 'border-[var(--accent)] bg-[var(--accent-subtle)]'
-                              : 'border-[var(--border)] hover:bg-[var(--bg-hover)]'} ${p.feedback === 'skipped' ? 'opacity-50' : ''}`}
-                            style={current?.id === p.id ? undefined : CARD_STYLE}
-                          >
-                            <span className="min-w-0 flex-1">
-                              <span className="block truncate text-sm text-[var(--text)]">{p.title}</span>
-                              <span className="block truncate text-xs text-[var(--muted)]">{p.artist}</span>
-                            </span>
-                            <span className="shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
-                              {p.source === 'youtube' ? t('page.source_youtube') : t('page.source_bilibili')}
-                            </span>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
-                )}
+                  {queue.length > 1 && (
+                    <section aria-label={t('page.queue')} className="mm-upnext">
+                      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">{t('page.queue')}</h3>
+                      <ul className="flex flex-col gap-1.5" data-testid="mood-queue" tabIndex={0} aria-label={t('page.queue')}>
+                        {queue.map(p => (
+                          <li key={p.id}>
+                            <button
+                              type="button"
+                              onClick={() => playPick(p)}
+                              aria-current={current?.id === p.id ? 'true' : undefined}
+                              className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition-colors ${current?.id === p.id
+                                ? 'border-[var(--accent)] bg-[var(--accent-subtle)]'
+                                : 'border-[var(--border)] hover:bg-[var(--bg-hover)]'} ${p.feedback === 'skipped' ? 'opacity-50' : ''}`}
+                              style={current?.id === p.id ? undefined : CARD_STYLE}
+                            >
+                              <span className="min-w-0 flex-1">
+                                <span className="block truncate text-sm text-[var(--text)]">{p.title}</span>
+                                <span className="block truncate text-xs text-[var(--muted)]">{p.artist}</span>
+                              </span>
+                              <span className="shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
+                                {p.source === 'youtube' ? t('page.source_youtube') : t('page.source_bilibili')}
+                              </span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  )}
+                </div>
               </div>
             </div>
           )}

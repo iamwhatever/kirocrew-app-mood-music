@@ -4330,23 +4330,28 @@ var MOOD_LABELS = {
 };
 var moodLabel = (key) => t(MOOD_LABELS[key]);
 /**
-* The Listen tab's two columns. Wide enough for both, the page itself stops
-* scrolling: the chat column scrolls on its own, and the player stays in view
-* with "Up next" scrolling under it. Narrower, it is one column and the page
-* scrolls as before. A container query, so it follows the page's own width
-* (the Crew sidebar takes part of the window), not the window's.
+* The Listen tab uses the page's whole width. Wide enough, it is two columns:
+* the chat on the left, and on the right the buddy's browser on top with the
+* player and the queue under it. Each column scrolls on its own and the page
+* itself does not. On a wide right column the player and the queue sit side by
+* side. Narrower, it is one column and the page scrolls. Container queries, so
+* the layout follows the page's own width (the Crew sidebar takes part of the
+* window), not the window's.
 */
 var SPLIT_CSS = `
 .mm-root { container-type: inline-size; }
-.mm-listen { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
-@container (min-width: 760px) {
+.mm-listen { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); align-items: start; width: 100%; max-width: 1760px; margin: 0 auto; }
+.mm-player { container-type: inline-size; }
+.mm-deck { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@container (min-width: 860px) {
   div.mm-scroll.mm-split { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
-  .mm-split > .mm-listen { flex: 1; min-height: 0; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; width: 100%; }
+  .mm-split > .mm-listen { flex: 1; min-height: 0; grid-template-columns: minmax(320px, 5fr) minmax(0, 7fr); align-items: stretch; }
   /* No scroll anchoring: rows drawn in after a return must not push the restored position. */
   .mm-col { min-height: 0; overflow-y: auto; overflow-anchor: none; padding-bottom: 1.5rem; }
-  .mm-player { min-height: 0; overflow: hidden; padding-bottom: 1.5rem; }
-  .mm-player > .mm-upnext { flex: 1; min-height: 0; display: flex; flex-direction: column; }
-  .mm-upnext > ul { flex: 1; min-height: 0; overflow-y: auto; }
+  .mm-player { min-height: 0; overflow-y: auto; overflow-anchor: none; padding-bottom: 1.5rem; }
+}
+@container (min-width: 720px) {
+  .mm-deck { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }
 `;
 var songKey = (title = "", artist = "") => `${title.trim().toLowerCase()}|${artist.trim().toLowerCase()}`;
@@ -4989,7 +4994,8 @@ function MoodMusicPage() {
 							className: "mx-auto max-w-5xl",
 							children: /* @__PURE__ */ jsx(MomentsTab, { moments: state?.moments ?? [] })
 						}) : /* @__PURE__ */ jsxs("div", {
-							className: "mm-listen mx-auto max-w-5xl",
+							className: "mm-listen",
+							"data-testid": "mood-listen",
 							children: [/* @__PURE__ */ jsxs("div", {
 								ref: chatColRef,
 								onScroll: onScrolled,
@@ -5316,58 +5322,61 @@ function MoodMusicPage() {
 											"aria-label": t("view.title")
 										}) : null
 									}),
-									current ? /* @__PURE__ */ jsx(NowPlaying, {
-										pick: current,
-										stage: unready ?? /* @__PURE__ */ jsx(BrowserControls, {
-											media: crew,
-											inTab: browserPick === current.id,
-											waiting: working,
-											continuous,
-											onAskPlay: askPlayCurrent,
-											onPause: pauseBrowser,
-											onPlay: resumeBrowser,
-											onContinuous: setContinuous
-										}),
-										busy: working,
-										onLike: () => giveFeedback(current, current.feedback === "liked" ? "" : "liked"),
-										onSkip: () => giveFeedback(current, "skipped"),
-										onMore: () => moreLike(current)
-									}) : /* @__PURE__ */ jsx(EmptyState, {
-										icon: /* @__PURE__ */ jsx(Play, { size: 28 }),
-										title: t("page.empty_title"),
-										subtitle: t("page.empty_body")
-									}),
-									queue.length > 1 && /* @__PURE__ */ jsxs("section", {
-										"aria-label": t("page.queue"),
-										className: "mm-upnext",
-										children: [/* @__PURE__ */ jsx("h3", {
-											className: "mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]",
-											children: t("page.queue")
-										}), /* @__PURE__ */ jsx("ul", {
-											className: "flex flex-col gap-1.5",
-											"data-testid": "mood-queue",
-											tabIndex: 0,
+									/* @__PURE__ */ jsxs("div", {
+										className: "mm-deck",
+										"data-testid": "mood-deck",
+										children: [current ? /* @__PURE__ */ jsx(NowPlaying, {
+											pick: current,
+											stage: unready ?? /* @__PURE__ */ jsx(BrowserControls, {
+												media: crew,
+												inTab: browserPick === current.id,
+												waiting: working,
+												continuous,
+												onAskPlay: askPlayCurrent,
+												onPause: pauseBrowser,
+												onPlay: resumeBrowser,
+												onContinuous: setContinuous
+											}),
+											busy: working,
+											onLike: () => giveFeedback(current, current.feedback === "liked" ? "" : "liked"),
+											onSkip: () => giveFeedback(current, "skipped"),
+											onMore: () => moreLike(current)
+										}) : /* @__PURE__ */ jsx(EmptyState, {
+											icon: /* @__PURE__ */ jsx(Play, { size: 28 }),
+											title: t("page.empty_title"),
+											subtitle: t("page.empty_body")
+										}), queue.length > 1 && /* @__PURE__ */ jsxs("section", {
 											"aria-label": t("page.queue"),
-											children: queue.map((p) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("button", {
-												type: "button",
-												onClick: () => playPick(p),
-												"aria-current": current?.id === p.id ? "true" : void 0,
-												className: `flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition-colors ${current?.id === p.id ? "border-[var(--accent)] bg-[var(--accent-subtle)]" : "border-[var(--border)] hover:bg-[var(--bg-hover)]"} ${p.feedback === "skipped" ? "opacity-50" : ""}`,
-												style: current?.id === p.id ? void 0 : CARD_STYLE,
-												children: [/* @__PURE__ */ jsxs("span", {
-													className: "min-w-0 flex-1",
-													children: [/* @__PURE__ */ jsx("span", {
-														className: "block truncate text-sm text-[var(--text)]",
-														children: p.title
+											className: "mm-upnext",
+											children: [/* @__PURE__ */ jsx("h3", {
+												className: "mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]",
+												children: t("page.queue")
+											}), /* @__PURE__ */ jsx("ul", {
+												className: "flex flex-col gap-1.5",
+												"data-testid": "mood-queue",
+												tabIndex: 0,
+												"aria-label": t("page.queue"),
+												children: queue.map((p) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("button", {
+													type: "button",
+													onClick: () => playPick(p),
+													"aria-current": current?.id === p.id ? "true" : void 0,
+													className: `flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition-colors ${current?.id === p.id ? "border-[var(--accent)] bg-[var(--accent-subtle)]" : "border-[var(--border)] hover:bg-[var(--bg-hover)]"} ${p.feedback === "skipped" ? "opacity-50" : ""}`,
+													style: current?.id === p.id ? void 0 : CARD_STYLE,
+													children: [/* @__PURE__ */ jsxs("span", {
+														className: "min-w-0 flex-1",
+														children: [/* @__PURE__ */ jsx("span", {
+															className: "block truncate text-sm text-[var(--text)]",
+															children: p.title
+														}), /* @__PURE__ */ jsx("span", {
+															className: "block truncate text-xs text-[var(--muted)]",
+															children: p.artist
+														})]
 													}), /* @__PURE__ */ jsx("span", {
-														className: "block truncate text-xs text-[var(--muted)]",
-														children: p.artist
+														className: "shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
+														children: p.source === "youtube" ? t("page.source_youtube") : t("page.source_bilibili")
 													})]
-												}), /* @__PURE__ */ jsx("span", {
-													className: "shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
-													children: p.source === "youtube" ? t("page.source_youtube") : t("page.source_bilibili")
-												})]
-											}) }, p.id))
+												}) }, p.id))
+											})]
 										})]
 									})
 								]
