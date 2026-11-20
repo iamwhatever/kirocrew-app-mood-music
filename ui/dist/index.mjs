@@ -2707,6 +2707,7 @@ function BrowserView({ open, onToggle, operating, live }) {
 			]
 		}), open && /* @__PURE__ */ jsx("div", {
 			id: "mood-browser-view-body",
+			className: live ? "mm-view-body" : void 0,
 			"data-testid": "mood-browser-view-body",
 			children: live ?? /* @__PURE__ */ jsx("p", {
 				className: "text-xs text-[var(--muted)]",
@@ -4672,6 +4673,9 @@ var SPLIT_CSS = `
 .mm-listen { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); align-items: start; width: 100%; max-width: 1760px; margin: 0 auto; }
 .mm-player { container-type: inline-size; }
 .mm-deck { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
+/* The live view: tall enough to watch, short enough to leave the player and queue in view. */
+.mm-view-body { display: flex; flex-direction: column; height: clamp(14rem, 42vh, 30rem); }
+.mm-view-body > * { flex: 1; min-height: 0; }
 /* The queue: real height with its own scroll, and rows that wrap rather than cut off. */
 .mm-queue-list { min-height: 12rem; max-height: 32rem; overflow-y: auto; overscroll-behavior: contain; padding-right: 0.25rem; }
 .mm-queue-num { flex: none; width: 1.25rem; padding-top: 0.125rem; display: inline-flex; justify-content: center; }

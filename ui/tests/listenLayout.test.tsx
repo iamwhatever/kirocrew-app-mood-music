@@ -119,3 +119,12 @@ describe('Queue', () => {
     expect(screen.getAllByTestId('mood-queue-row')).toHaveLength(1)
   })
 })
+
+describe('Live view size', () => {
+  it('caps the live view so the player and queue stay in view', async () => {
+    const { default: BrowserView } = await import('../src/BrowserView')
+    render(<BrowserView open onToggle={() => undefined} operating={false} live={<div />} />)
+    expect(screen.getByTestId('mood-browser-view-body')).toHaveClass('mm-view-body')
+    expect(SPLIT_CSS).toMatch(/\.mm-view-body \{[^}]*height: clamp\(14rem, 42vh, 30rem\)/)
+  })
+})
