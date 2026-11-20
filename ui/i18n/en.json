@@ -169,5 +169,22 @@
     "show": "Show",
     "hide": "Hide",
     "old_host": "This Kiro Crew cannot show its browser here yet. Update Kiro Crew to watch your buddy pick songs."
+  },
+  "steps": {
+    "label": "What your buddy did",
+    "times": "{{step}} × {{count}}",
+    "search": "Searched the web",
+    "read": "Read a page",
+    "open": "Opened a page",
+    "click": "Clicked",
+    "type": "Typed",
+    "look": "Looked at the page",
+    "scroll": "Scrolled",
+    "wait": "Waited for the page",
+    "back": "Went back",
+    "tab": "Switched tabs",
+    "key": "Pressed a key",
+    "browser": "Used the browser",
+    "other": "Did a step"
   }
 }

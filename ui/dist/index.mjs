@@ -191,6 +191,23 @@ var CATALOGS = {
 			"show": "দেখান",
 			"hide": "লুকান",
 			"old_host": "এই Kiro Crew এখনো এখানে ব্রাউজার দেখাতে পারে না। Kiro Crew আপডেট করলে সঙ্গীকে গান বাছতে দেখতে পাবেন।"
+		},
+		steps: {
+			"label": "আপনার বন্ধু যা করেছে",
+			"times": "{{step}} × {{count}}",
+			"search": "ওয়েবে খুঁজেছে",
+			"read": "একটি পাতা পড়েছে",
+			"open": "একটি পাতা খুলেছে",
+			"click": "ক্লিক করেছে",
+			"type": "টাইপ করেছে",
+			"look": "পাতাটি দেখেছে",
+			"scroll": "স্ক্রল করেছে",
+			"wait": "পাতার জন্য অপেক্ষা করেছে",
+			"back": "পিছনে গেছে",
+			"tab": "ট্যাব বদলেছে",
+			"key": "একটি কী চেপেছে",
+			"browser": "ব্রাউজার ব্যবহার করেছে",
+			"other": "একটি ধাপ করেছে"
 		}
 	},
 	de: {
@@ -364,6 +381,23 @@ var CATALOGS = {
 			"show": "Anzeigen",
 			"hide": "Ausblenden",
 			"old_host": "Dieses Kiro Crew kann den Browser hier noch nicht zeigen. Aktualisiere Kiro Crew, um zuzusehen, wie dein Buddy Songs wählt."
+		},
+		steps: {
+			"label": "Was dein Buddy getan hat",
+			"times": "{{step}} × {{count}}",
+			"search": "Im Web gesucht",
+			"read": "Eine Seite gelesen",
+			"open": "Eine Seite geöffnet",
+			"click": "Geklickt",
+			"type": "Getippt",
+			"look": "Die Seite angesehen",
+			"scroll": "Gescrollt",
+			"wait": "Auf die Seite gewartet",
+			"back": "Zurückgegangen",
+			"tab": "Tab gewechselt",
+			"key": "Eine Taste gedrückt",
+			"browser": "Den Browser benutzt",
+			"other": "Einen Schritt gemacht"
 		}
 	},
 	en: {
@@ -537,6 +571,23 @@ var CATALOGS = {
 			"show": "Show",
 			"hide": "Hide",
 			"old_host": "This Kiro Crew cannot show its browser here yet. Update Kiro Crew to watch your buddy pick songs."
+		},
+		steps: {
+			"label": "What your buddy did",
+			"times": "{{step}} × {{count}}",
+			"search": "Searched the web",
+			"read": "Read a page",
+			"open": "Opened a page",
+			"click": "Clicked",
+			"type": "Typed",
+			"look": "Looked at the page",
+			"scroll": "Scrolled",
+			"wait": "Waited for the page",
+			"back": "Went back",
+			"tab": "Switched tabs",
+			"key": "Pressed a key",
+			"browser": "Used the browser",
+			"other": "Did a step"
 		}
 	},
 	es: {
@@ -710,6 +761,23 @@ var CATALOGS = {
 			"show": "Mostrar",
 			"hide": "Ocultar",
 			"old_host": "Este Kiro Crew aún no puede mostrar su navegador aquí. Actualiza Kiro Crew para ver cómo tu compañero elige canciones."
+		},
+		steps: {
+			"label": "Lo que hizo tu compañero",
+			"times": "{{step}} × {{count}}",
+			"search": "Buscó en la web",
+			"read": "Leyó una página",
+			"open": "Abrió una página",
+			"click": "Hizo clic",
+			"type": "Escribió",
+			"look": "Miró la página",
+			"scroll": "Se desplazó",
+			"wait": "Esperó a la página",
+			"back": "Volvió atrás",
+			"tab": "Cambió de pestaña",
+			"key": "Pulsó una tecla",
+			"browser": "Usó el navegador",
+			"other": "Hizo un paso"
 		}
 	},
 	fr: {
@@ -883,6 +951,23 @@ var CATALOGS = {
 			"show": "Afficher",
 			"hide": "Masquer",
 			"old_host": "Ce Kiro Crew ne peut pas encore afficher son navigateur ici. Mets à jour Kiro Crew pour voir ton compagnon choisir les chansons."
+		},
+		steps: {
+			"label": "Ce qu'a fait ton compagnon",
+			"times": "{{step}} × {{count}}",
+			"search": "A cherché sur le web",
+			"read": "A lu une page",
+			"open": "A ouvert une page",
+			"click": "A cliqué",
+			"type": "A tapé",
+			"look": "A regardé la page",
+			"scroll": "A fait défiler",
+			"wait": "A attendu la page",
+			"back": "Est revenu en arrière",
+			"tab": "A changé d'onglet",
+			"key": "A appuyé sur une touche",
+			"browser": "A utilisé le navigateur",
+			"other": "A fait une étape"
 		}
 	},
 	hi: {
@@ -1056,6 +1141,23 @@ var CATALOGS = {
 			"show": "दिखाएँ",
 			"hide": "छिपाएँ",
 			"old_host": "यह Kiro Crew अभी यहाँ ब्राउज़र नहीं दिखा सकता। Kiro Crew अपडेट करें, फिर साथी को गाने चुनते देख पाएँगे।"
+		},
+		steps: {
+			"label": "आपके साथी ने क्या किया",
+			"times": "{{step}} × {{count}}",
+			"search": "वेब पर खोजा",
+			"read": "एक पेज पढ़ा",
+			"open": "एक पेज खोला",
+			"click": "क्लिक किया",
+			"type": "टाइप किया",
+			"look": "पेज देखा",
+			"scroll": "स्क्रॉल किया",
+			"wait": "पेज का इंतज़ार किया",
+			"back": "पीछे गया",
+			"tab": "टैब बदला",
+			"key": "एक कुंजी दबाई",
+			"browser": "ब्राउज़र इस्तेमाल किया",
+			"other": "एक कदम उठाया"
 		}
 	},
 	it: {
@@ -1229,6 +1331,23 @@ var CATALOGS = {
 			"show": "Mostra",
 			"hide": "Nascondi",
 			"old_host": "Questo Kiro Crew non può ancora mostrare qui il suo browser. Aggiorna Kiro Crew per vedere il compagno scegliere le canzoni."
+		},
+		steps: {
+			"label": "Cosa ha fatto il tuo amico",
+			"times": "{{step}} × {{count}}",
+			"search": "Ha cercato sul web",
+			"read": "Ha letto una pagina",
+			"open": "Ha aperto una pagina",
+			"click": "Ha cliccato",
+			"type": "Ha digitato",
+			"look": "Ha guardato la pagina",
+			"scroll": "Ha scorso",
+			"wait": "Ha atteso la pagina",
+			"back": "È tornato indietro",
+			"tab": "Ha cambiato scheda",
+			"key": "Ha premuto un tasto",
+			"browser": "Ha usato il browser",
+			"other": "Ha fatto un passo"
 		}
 	},
 	ja: {
@@ -1402,6 +1521,23 @@ var CATALOGS = {
 			"show": "表示",
 			"hide": "隠す",
 			"old_host": "この Kiro Crew ではまだここにブラウザを表示できません。Kiro Crew を更新すると、選曲の様子が見られます。"
+		},
+		steps: {
+			"label": "相棒がしたこと",
+			"times": "{{step}} × {{count}}",
+			"search": "ウェブを検索",
+			"read": "ページを読んだ",
+			"open": "ページを開いた",
+			"click": "クリック",
+			"type": "入力",
+			"look": "ページを確認",
+			"scroll": "スクロール",
+			"wait": "ページを待った",
+			"back": "戻った",
+			"tab": "タブを切り替え",
+			"key": "キーを押した",
+			"browser": "ブラウザを使用",
+			"other": "作業した"
 		}
 	},
 	ko: {
@@ -1575,6 +1711,23 @@ var CATALOGS = {
 			"show": "보기",
 			"hide": "숨기기",
 			"old_host": "이 Kiro Crew는 아직 여기에 브라우저를 보여 줄 수 없어요. Kiro Crew를 업데이트하면 선곡하는 모습을 볼 수 있어요."
+		},
+		steps: {
+			"label": "버디가 한 일",
+			"times": "{{step}} × {{count}}",
+			"search": "웹 검색",
+			"read": "페이지 읽기",
+			"open": "페이지 열기",
+			"click": "클릭",
+			"type": "입력",
+			"look": "페이지 확인",
+			"scroll": "스크롤",
+			"wait": "페이지 대기",
+			"back": "뒤로 가기",
+			"tab": "탭 전환",
+			"key": "키 누르기",
+			"browser": "브라우저 사용",
+			"other": "작업 수행"
 		}
 	},
 	pt: {
@@ -1748,6 +1901,23 @@ var CATALOGS = {
 			"show": "Mostrar",
 			"hide": "Ocultar",
 			"old_host": "Este Kiro Crew ainda não consegue mostrar o navegador aqui. Atualize o Kiro Crew para ver o parceiro escolher as músicas."
+		},
+		steps: {
+			"label": "O que seu parceiro fez",
+			"times": "{{step}} × {{count}}",
+			"search": "Pesquisou na web",
+			"read": "Leu uma página",
+			"open": "Abriu uma página",
+			"click": "Clicou",
+			"type": "Digitou",
+			"look": "Olhou a página",
+			"scroll": "Rolou a página",
+			"wait": "Esperou a página",
+			"back": "Voltou",
+			"tab": "Trocou de aba",
+			"key": "Apertou uma tecla",
+			"browser": "Usou o navegador",
+			"other": "Fez uma etapa"
 		}
 	},
 	ru: {
@@ -1921,6 +2091,23 @@ var CATALOGS = {
 			"show": "Показать",
 			"hide": "Скрыть",
 			"old_host": "Этот Kiro Crew пока не может показать здесь браузер. Обновите Kiro Crew, чтобы видеть, как напарник выбирает песни."
+		},
+		steps: {
+			"label": "Что сделал ваш приятель",
+			"times": "{{step}} × {{count}}",
+			"search": "Искал в интернете",
+			"read": "Прочитал страницу",
+			"open": "Открыл страницу",
+			"click": "Нажал",
+			"type": "Ввёл текст",
+			"look": "Посмотрел страницу",
+			"scroll": "Прокрутил",
+			"wait": "Ждал страницу",
+			"back": "Вернулся назад",
+			"tab": "Переключил вкладку",
+			"key": "Нажал клавишу",
+			"browser": "Пользовался браузером",
+			"other": "Сделал шаг"
 		}
 	},
 	"zh-CN": {
@@ -2094,6 +2281,23 @@ var CATALOGS = {
 			"show": "展开",
 			"hide": "收起",
 			"old_host": "这个 Kiro Crew 还不能在这里显示浏览器画面。更新 Kiro Crew 后就能看搭子选歌。"
+		},
+		steps: {
+			"label": "搭子做了什么",
+			"times": "{{step}} × {{count}}",
+			"search": "搜索网页",
+			"read": "阅读网页",
+			"open": "打开页面",
+			"click": "点击",
+			"type": "输入",
+			"look": "查看页面",
+			"scroll": "滚动",
+			"wait": "等待页面",
+			"back": "返回",
+			"tab": "切换标签页",
+			"key": "按键",
+			"browser": "使用浏览器",
+			"other": "执行一步"
 		}
 	}
 };
@@ -2474,6 +2678,30 @@ function BrowserView({ open, onToggle, operating, live }) {
 				children: t("view.old_host")
 			})
 		})]
+	});
+}
+// src/BuddySteps.tsx
+/**
+* What the buddy did in a turn, in plain words ("Searched the web × 3 · Read a
+* page · Opened a page · Clicked"), under its reply or under the live status.
+* Never a tool name, a search word or an address: those stay in the full record.
+*/
+function BuddySteps({ steps, testId }) {
+	if (!steps.length) return null;
+	return /* @__PURE__ */ jsx("ol", {
+		"aria-label": t("steps.label"),
+		className: "mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[var(--muted)]",
+		"data-testid": testId,
+		children: steps.map((s, i) => /* @__PURE__ */ jsxs("li", {
+			className: "inline-flex items-center gap-1.5",
+			children: [i > 0 && /* @__PURE__ */ jsx("span", {
+				"aria-hidden": "true",
+				children: "·"
+			}), /* @__PURE__ */ jsx("span", { children: s.count > 1 ? t("steps.times", {
+				step: t(`steps.${s.kind}`),
+				count: s.count
+			}) : t(`steps.${s.kind}`) })]
+		}, i))
 	});
 }
 // src/FullRecord.tsx
@@ -4102,6 +4330,61 @@ var toolOf = (m) => {
 	if (/web_search|search/.test(text)) return "web_search";
 	return text.trim() ? "other" : "";
 };
+/** The browser tool's ops, as the step the person sees. */
+var BROWSER_OPS = {
+	navigate: "open",
+	click: "click",
+	type: "type",
+	snapshot: "look",
+	screenshot: "look",
+	scroll: "scroll",
+	wait_for: "wait",
+	back: "back",
+	tabs: "tab",
+	press_key: "key"
+};
+/** The `op` a browser call's input names: an object, or the JSON text a row carries. */
+function browserOp(m) {
+	const meta = m.meta ?? {};
+	for (const raw of [meta.input, meta.tool_input]) {
+		let input = raw;
+		if (typeof input === "string") try {
+			input = JSON.parse(input);
+		} catch {
+			continue;
+		}
+		const op = input?.op;
+		if (typeof op === "string") return op;
+	}
+	return "";
+}
+function stepOf(m) {
+	const tool = toolOf(m);
+	if (tool === "web_search") return "search";
+	if (tool === "web_fetch") return "read";
+	if (tool === "browser") return BROWSER_OPS[browserOp(m)] ?? "browser";
+	return tool ? "other" : null;
+}
+/** The tool rows of *rows* as steps, a run of one kind folded into one with its count. */
+function stepsOf(rows) {
+	const out = [];
+	for (const m of rows) {
+		if (m.role !== "tool") continue;
+		const kind = stepOf(m);
+		if (!kind) continue;
+		const last = out[out.length - 1];
+		if (last?.kind === kind) last.count += 1;
+		else out.push({
+			kind,
+			count: 1
+		});
+	}
+	return out;
+}
+/** What the running turn has done so far. */
+function liveSteps(slot) {
+	return slot?.running ? stepsOf(currentTurn(slot)) : [];
+}
 /** The person's own words in a request the page sent; other text is shown as typed. */
 function personText(content) {
 	const lines = content.split("\n");
@@ -4120,15 +4403,22 @@ function conversation(slot) {
 	const out = [];
 	const all = msgs(slot);
 	let last = null;
+	let turn = [];
 	const flush = () => {
 		if (last?.content) out.push({
 			who: "buddy",
 			text: replyText(last.content),
-			reply: last.content
+			reply: last.content,
+			steps: stepsOf(turn)
 		});
 		last = null;
+		turn = [];
 	};
 	for (const m of all) {
+		if (m.role === "tool") {
+			turn.push(m);
+			continue;
+		}
 		if (typeof m.content !== "string" || !m.content.trim()) continue;
 		if (m.role === "user") {
 			flush();
@@ -5071,26 +5361,33 @@ function MoodMusicPage() {
 											}, i) : /* @__PURE__ */ jsxs("div", {
 												className: "max-w-[95%] rounded-2xl border border-[var(--border)] px-3 py-2",
 												style: CARD_STYLE,
-												children: [/* @__PURE__ */ jsxs("p", {
-													className: "text-sm text-[var(--text)]",
-													children: [/* @__PURE__ */ jsx("span", {
-														className: "mr-1 font-semibold text-[var(--accent)]",
-														children: t("chat.buddy")
-													}), line.text]
-												}), line === lastBuddy && line.reply && replySource(line.reply) === state?.last_source && queue.length > 0 && /* @__PURE__ */ jsx("div", {
-													className: "mt-2 grid gap-2",
-													"data-testid": "mood-cards",
-													children: queue.map((p) => /* @__PURE__ */ jsx(SongCard, {
-														pick: p,
-														playing: current?.id === p.id,
-														known: knownSongs.has(songKey(p.title, p.artist)),
-														busy: working,
-														onPlay: () => playPick(p),
-														onLike: () => giveFeedback(p, p.feedback === "liked" ? "" : "liked"),
-														onSkip: () => giveFeedback(p, "skipped"),
-														onKnown: () => markKnown(p, "user")
-													}, p.id))
-												})]
+												children: [
+													/* @__PURE__ */ jsxs("p", {
+														className: "text-sm text-[var(--text)]",
+														children: [/* @__PURE__ */ jsx("span", {
+															className: "mr-1 font-semibold text-[var(--accent)]",
+															children: t("chat.buddy")
+														}), line.text]
+													}),
+													/* @__PURE__ */ jsx(BuddySteps, {
+														steps: line.steps ?? [],
+														testId: "mood-steps"
+													}),
+													line === lastBuddy && line.reply && replySource(line.reply) === state?.last_source && queue.length > 0 && /* @__PURE__ */ jsx("div", {
+														className: "mt-2 grid gap-2",
+														"data-testid": "mood-cards",
+														children: queue.map((p) => /* @__PURE__ */ jsx(SongCard, {
+															pick: p,
+															playing: current?.id === p.id,
+															known: knownSongs.has(songKey(p.title, p.artist)),
+															busy: working,
+															onPlay: () => playPick(p),
+															onLike: () => giveFeedback(p, p.feedback === "liked" ? "" : "liked"),
+															onSkip: () => giveFeedback(p, "skipped"),
+															onKnown: () => markKnown(p, "user")
+														}, p.id))
+													})
+												]
 											}, i)),
 											showYou && /* @__PURE__ */ jsx("p", {
 												className: "self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]",
@@ -5105,6 +5402,10 @@ function MoodMusicPage() {
 													"aria-hidden": "true",
 													className: reduceMotion ? "" : "animate-pulse"
 												}), statusText(status)]
+											}),
+											status && /* @__PURE__ */ jsx(BuddySteps, {
+												steps: liveSteps(slot),
+												testId: "mood-live-steps"
 											})
 										]
 									}),

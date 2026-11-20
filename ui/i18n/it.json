@@ -169,5 +169,22 @@
     "show": "Mostra",
     "hide": "Nascondi",
     "old_host": "Questo Kiro Crew non può ancora mostrare qui il suo browser. Aggiorna Kiro Crew per vedere il compagno scegliere le canzoni."
+  },
+  "steps": {
+    "label": "Cosa ha fatto il tuo amico",
+    "times": "{{step}} × {{count}}",
+    "search": "Ha cercato sul web",
+    "read": "Ha letto una pagina",
+    "open": "Ha aperto una pagina",
+    "click": "Ha cliccato",
+    "type": "Ha digitato",
+    "look": "Ha guardato la pagina",
+    "scroll": "Ha scorso",
+    "wait": "Ha atteso la pagina",
+    "back": "È tornato indietro",
+    "tab": "Ha cambiato scheda",
+    "key": "Ha premuto un tasto",
+    "browser": "Ha usato il browser",
+    "other": "Ha fatto un passo"
   }
 }

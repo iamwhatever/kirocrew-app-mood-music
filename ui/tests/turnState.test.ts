@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { activityKey, buddyStatus, conversation, pendingApproval, personText, turnError } from '../src/turnState'
+import { activityKey, buddyStatus, conversation, liveSteps, pendingApproval, personText, stepsOf, turnError } from '../src/turnState'
 
 const user = (content = '[Mood Music]\nMood: 想念\n\nExplore level: balanced') => ({ role: 'user', content })
 const tool = (name: string) => ({ role: 'tool', content: `${name} something`, meta: { tool_name: name } })
@@ -65,5 +65,25 @@ describe('activityKey', () => {
     const a = activityKey({ running: true, messages: [user()] })
     expect(activityKey({ running: true, messages: [user(), { role: 'streaming', content: 'a' }] })).not.toBe(a)
     expect(activityKey({ running: true, messages: [user()] })).toBe(a)
+  })
+})
+
+describe('steps', () => {
+  const browser = (op: string) => ({ role: 'tool', content: '🔧 browser', meta: { input: JSON.stringify({ op, args: { url: 'https://www.youtube.com/results?search_query=x' } }) } })
+
+  it('names each step in plain kinds, folding a run of one kind', () => {
+    const rows = [tool('web_search'), tool('web_search'), { role: 'tool', content: '🔧 Fetch URL' }, browser('navigate'), browser('click'), browser('click'), { role: 'tool', content: '🔧 browser', meta: { input: { op: 'tabs' } } }, browser('reflex')]
+    expect(stepsOf(rows)).toEqual([
+      { kind: 'search', count: 2 }, { kind: 'read', count: 1 }, { kind: 'open', count: 1 },
+      { kind: 'click', count: 2 }, { kind: 'tab', count: 1 }, { kind: 'browser', count: 1 },
+    ])
+  })
+
+  it('puts each turn’s steps on its buddy line, and the running turn’s in liveSteps', () => {
+    const rows = [user(), tool('web_search'), { role: 'assistant', content: 'Here.' }, user(), browser('navigate')]
+    const lines = conversation({ running: true, messages: rows })
+    expect(lines[1]).toMatchObject({ who: 'buddy', steps: [{ kind: 'search', count: 1 }] })
+    expect(liveSteps({ running: true, messages: rows })).toEqual([{ kind: 'open', count: 1 }])
+    expect(liveSteps({ running: false, messages: rows })).toEqual([])
   })
 })

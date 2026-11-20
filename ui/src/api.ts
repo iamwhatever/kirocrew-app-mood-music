@@ -122,8 +122,9 @@ export interface SlotMessage {
   role?: string
   type?: string
   content?: string
-  /** On a `permission` row: the approval's id, and `resolved` once it is answered. */
-  meta?: { approval_id?: unknown; resolved?: unknown; tool_name?: unknown; tool_input?: unknown; kind?: unknown }
+  /** On a `permission` row: the approval's id, and `resolved` once it is answered.
+   *  On a `tool` row: `input`, the call's arguments (JSON text). */
+  meta?: { approval_id?: unknown; resolved?: unknown; tool_name?: unknown; tool_input?: unknown; input?: unknown; kind?: unknown }
 }
 
 export interface SlotData {

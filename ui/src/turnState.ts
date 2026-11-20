@@ -4,8 +4,10 @@
  * and anything that needs the person (an approval, an error).
  *
  * Tool names and search words never leave this module: the status says only
- * "thinking / searching / reading / writing" and how many times. The full
- * record, with tools and URLs, is the collapsed transcript below the chat.
+ * "thinking / searching / reading / writing" and how many times, and each turn's
+ * steps are plain kinds ("searched", "read a page", "clicked"), always shown
+ * with the conversation. The full record, with tools and URLs, is the collapsed
+ * transcript below the chat.
  */
 import type { SlotData, SlotMessage } from './api'
 import { replyText } from './replyParse'
@@ -18,11 +20,23 @@ export interface BuddyStatus {
   pages: number
 }
 
+/** What one tool call did, in the person's words; never the tool's own name. */
+export type StepKind =
+  | 'search' | 'read' | 'open' | 'click' | 'type' | 'look' | 'scroll' | 'wait' | 'back' | 'tab' | 'key' | 'browser' | 'other'
+
+/** A run of the same kind of step, in order. */
+export interface Step {
+  kind: StepKind
+  count: number
+}
+
 export interface Line {
   who: 'you' | 'buddy'
   text: string
   /** On a buddy line: the raw reply, so the page can match it to its picks. */
   reply?: string
+  /** On a buddy line: what it did in that turn before replying. */
+  steps?: Step[]
 }
 
 /** The heads `request.prompt.ts` writes on the line after `[Mood Music]`. */
@@ -47,6 +61,53 @@ const toolOf = (m: SlotMessage) => {
   return text.trim() ? 'other' : ''
 }
 
+/** The browser tool's ops, as the step the person sees. */
+const BROWSER_OPS: Record<string, StepKind> = {
+  navigate: 'open', click: 'click', type: 'type', snapshot: 'look', screenshot: 'look',
+  scroll: 'scroll', wait_for: 'wait', back: 'back', tabs: 'tab', press_key: 'key',
+}
+
+/** The `op` a browser call's input names: an object, or the JSON text a row carries. */
+function browserOp(m: SlotMessage): string {
+  const meta = m.meta ?? {}
+  for (const raw of [meta.input, meta.tool_input]) {
+    let input = raw
+    if (typeof input === 'string') {
+      try { input = JSON.parse(input) } catch { continue }
+    }
+    const op = (input as { op?: unknown } | null)?.op
+    if (typeof op === 'string') return op
+  }
+  return ''
+}
+
+function stepOf(m: SlotMessage): StepKind | null {
+  const tool = toolOf(m)
+  if (tool === 'web_search') return 'search'
+  if (tool === 'web_fetch') return 'read'
+  if (tool === 'browser') return BROWSER_OPS[browserOp(m)] ?? 'browser'
+  return tool ? 'other' : null
+}
+
+/** The tool rows of *rows* as steps, a run of one kind folded into one with its count. */
+export function stepsOf(rows: SlotMessage[]): Step[] {
+  const out: Step[] = []
+  for (const m of rows) {
+    if (m.role !== 'tool') continue
+    const kind = stepOf(m)
+    if (!kind) continue
+    const last = out[out.length - 1]
+    if (last?.kind === kind) last.count += 1
+    else out.push({ kind, count: 1 })
+  }
+  return out
+}
+
+/** What the running turn has done so far. */
+export function liveSteps(slot: SlotData | undefined): Step[] {
+  return slot?.running ? stepsOf(currentTurn(slot)) : []
+}
+
 /** The person's own words in a request the page sent; other text is shown as typed. */
 export function personText(content: string): string {
   const lines = content.split('\n')
@@ -68,11 +129,14 @@ export function conversation(slot: SlotData | undefined): Line[] {
   const out: Line[] = []
   const all = msgs(slot)
   let last: SlotMessage | null = null
+  let turn: SlotMessage[] = []
   const flush = () => {
-    if (last?.content) out.push({ who: 'buddy', text: replyText(last.content), reply: last.content })
+    if (last?.content) out.push({ who: 'buddy', text: replyText(last.content), reply: last.content, steps: stepsOf(turn) })
     last = null
+    turn = []
   }
   for (const m of all) {
+    if (m.role === 'tool') { turn.push(m); continue }
     if (typeof m.content !== 'string' || !m.content.trim()) continue
     if (m.role === 'user') { flush(); out.push({ who: 'you', text: personText(m.content) }) }
     else if (m.role === 'assistant') last = m

@@ -169,5 +169,22 @@
     "show": "보기",
     "hide": "숨기기",
     "old_host": "이 Kiro Crew는 아직 여기에 브라우저를 보여 줄 수 없어요. Kiro Crew를 업데이트하면 선곡하는 모습을 볼 수 있어요."
+  },
+  "steps": {
+    "label": "버디가 한 일",
+    "times": "{{step}} × {{count}}",
+    "search": "웹 검색",
+    "read": "페이지 읽기",
+    "open": "페이지 열기",
+    "click": "클릭",
+    "type": "입력",
+    "look": "페이지 확인",
+    "scroll": "스크롤",
+    "wait": "페이지 대기",
+    "back": "뒤로 가기",
+    "tab": "탭 전환",
+    "key": "키 누르기",
+    "browser": "브라우저 사용",
+    "other": "작업 수행"
   }
 }

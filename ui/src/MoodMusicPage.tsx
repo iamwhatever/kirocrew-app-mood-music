@@ -36,6 +36,7 @@ import { createMoodApi, grantCause, latestReply, type GrantCause, type MoodState
 import Banner from './Banner'
 import BrowserControls from './BrowserControls'
 import BrowserView from './BrowserView'
+import BuddySteps from './BuddySteps'
 import { APPROVE_PATH, hostBrowserView, readiness, useCrewBrowser } from './crewBrowser'
 import FullRecord from './FullRecord'
 import MemoryTab from './MemoryTab'
@@ -48,7 +49,7 @@ import { parseDjReply, replySource, type DjReply } from './replyParse'
 import { usePrefersReducedMotion } from './reducedMotion'
 import { CARD_STYLE } from './cardStyle'
 import SongCard from './SongCard'
-import { activityKey, buddyStatus, conversation, pendingApproval, turnError, type BuddyStatus } from './turnState'
+import { activityKey, buddyStatus, conversation, liveSteps, pendingApproval, turnError, type BuddyStatus } from './turnState'
 import { loadView, saveView, type PageView, type SavedPending, type Tab } from './pageMemory'
 
 const errMessage = (e: unknown): string => (e instanceof Error ? e.message : typeof e === 'string' ? e : '')
@@ -749,6 +750,7 @@ export default function MoodMusicPage() {
                           <span className="mr-1 font-semibold text-[var(--accent)]">{t('chat.buddy')}</span>
                           {line.text}
                         </p>
+                        <BuddySteps steps={line.steps ?? []} testId="mood-steps" />
                         {line === lastBuddy && line.reply && replySource(line.reply) === state?.last_source && queue.length > 0 && (
                           <div className="mt-2 grid gap-2" data-testid="mood-cards">
                             {queue.map(p => (
@@ -778,6 +780,7 @@ export default function MoodMusicPage() {
                       {statusText(status)}
                     </p>
                   )}
+                  {status && <BuddySteps steps={liveSteps(slot)} testId="mood-live-steps" />}
                 </section>
 
                 {approval && (

@@ -169,5 +169,22 @@
     "show": "展开",
     "hide": "收起",
     "old_host": "这个 Kiro Crew 还不能在这里显示浏览器画面。更新 Kiro Crew 后就能看搭子选歌。"
+  },
+  "steps": {
+    "label": "搭子做了什么",
+    "times": "{{step}} × {{count}}",
+    "search": "搜索网页",
+    "read": "阅读网页",
+    "open": "打开页面",
+    "click": "点击",
+    "type": "输入",
+    "look": "查看页面",
+    "scroll": "滚动",
+    "wait": "等待页面",
+    "back": "返回",
+    "tab": "切换标签页",
+    "key": "按键",
+    "browser": "使用浏览器",
+    "other": "执行一步"
   }
 }
