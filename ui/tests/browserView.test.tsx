@@ -126,6 +126,9 @@ describe('the page', () => {
 
   it('asks the host to keep the tab showing after the turn ends, and keeps the box open', async () => {
     host.level = 11
+    // A played song is marked heard and its steps kept.
+    api.addMemory.mockResolvedValue({})
+    api.setPlaySteps.mockResolvedValue({})
     await open()
     expect(screen.getByTestId('host-browser-view').getAttribute('data-stay-live')).toBe('true')
     fireEvent.click(screen.getByTestId('mood-browser-play'))
