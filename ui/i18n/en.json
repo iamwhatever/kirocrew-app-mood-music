@@ -155,7 +155,7 @@
     "progress": "Progress",
     "volume": "Volume",
     "continuous": "Continuous play",
-    "continuous_note": "Continuous play works only while this page is open. Close it, and the music stops when the current song ends.",
+    "continuous_note": "Continuous play goes on with this page closed, on a Kiro Crew with background play (KiroCrew#40261). On an older one, close the page and the music stops when the current song ends.",
     "not_played": "Your buddy could not play it this time: {{reason}}",
     "no_reason": "no reason given",
     "approve": "Approve the sites",

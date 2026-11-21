@@ -154,7 +154,7 @@
     "progress": "Progreso",
     "volume": "Volumen",
     "continuous": "Reproducción continua",
-    "continuous_note": "La reproducción continua solo funciona con esta página abierta. Si la cierras, la música se detiene al acabar la canción actual.",
+    "continuous_note": "La reproducción continua sigue con esta página cerrada en un Kiro Crew con reproducción en segundo plano (KiroCrew#40261). En uno más antiguo, si cierras la página, la música se detiene al acabar la canción actual.",
     "not_played": "Tu compañero no pudo reproducirla esta vez: {{reason}}",
     "no_reason": "sin motivo",
     "approve": "Aprobar los sitios",

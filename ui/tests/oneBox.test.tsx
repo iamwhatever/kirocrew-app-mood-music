@@ -14,7 +14,7 @@ const mock = vi.hoisted(() => ({
     state: vi.fn(), addMoment: vi.fn(), setQueue: vi.fn(), feedback: vi.fn(), verifyPicks: vi.fn(),
     addMemory: vi.fn(), updateMemory: vi.fn(), deleteMemory: vi.fn(), clearStale: vi.fn(), markUsed: vi.fn(),
     openSlot: vi.fn(), getSlot: vi.fn(), ask: vi.fn(), approve: vi.fn(), stop: vi.fn(), setSettings: vi.fn(),
-    setPlaySteps: vi.fn(), forgetPlaySteps: vi.fn(),
+    setPlaySteps: vi.fn(), forgetPlaySteps: vi.fn(), setPlayback: vi.fn(), claimEnded: vi.fn(),
   },
 }))
 vi.mock('../src/api', async orig => {
@@ -83,6 +83,8 @@ beforeEach(() => {
   api.setQueue.mockResolvedValue({ queue: QUEUE })
   api.setSettings.mockResolvedValue({})
   api.setPlaySteps.mockResolvedValue({})
+  api.setPlayback.mockResolvedValue({})
+  api.claimEnded.mockResolvedValue(true)
   api.forgetPlaySteps.mockResolvedValue({ forgotten: true })
   api.markUsed.mockResolvedValue({ marked: 0 })
   api.addMemory.mockResolvedValue({})
@@ -144,6 +146,8 @@ describe('the one box', () => {
     await flush(POLL_MS)
     await flush()
     expect(stubMedia.pause).toHaveBeenCalledTimes(1)
+    // Kept with the backend too, so an ending with the page closed wakes nobody.
+    expect(api.setPlayback).toHaveBeenCalledWith({ paused: true })
     expect(asks()).toHaveLength(2)
   })
 

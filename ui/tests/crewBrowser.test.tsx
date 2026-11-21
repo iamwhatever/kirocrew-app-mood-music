@@ -25,7 +25,7 @@ const mock = vi.hoisted(() => ({
     state: vi.fn(), addMoment: vi.fn(), setQueue: vi.fn(), feedback: vi.fn(), verifyPicks: vi.fn(),
     addMemory: vi.fn(), updateMemory: vi.fn(), deleteMemory: vi.fn(), clearStale: vi.fn(), markUsed: vi.fn(),
     openSlot: vi.fn(), getSlot: vi.fn(), ask: vi.fn(), approve: vi.fn(), stop: vi.fn(), setSettings: vi.fn(),
-    setPlaySteps: vi.fn(), forgetPlaySteps: vi.fn(),
+    setPlaySteps: vi.fn(), forgetPlaySteps: vi.fn(), setPlayback: vi.fn(), claimEnded: vi.fn(),
   },
 }))
 vi.mock('../src/api', async orig => {
@@ -96,6 +96,8 @@ async function songEnds() {
 beforeEach(() => {
   vi.useFakeTimers()
   vi.clearAllMocks()
+  api.setPlayback.mockResolvedValue({})
+  api.claimEnded.mockResolvedValue(true)
   host.level = 10
   stubMedia.error = 'no_tab'
   api.state.mockResolvedValue(state())
@@ -436,7 +438,47 @@ describe('Crew Browser player', () => {
     expect(screen.getByTestId('mood-continuous')).toHaveAttribute('aria-pressed', 'false')
   })
 
-  it('says on the page that continuous play stops with the page closed', async () => {
+  it('tells the backend which song plays, and the pause and the play, so it wakes nobody past them', async () => {
+    await open()
+    await playAndAnswer({ played: true, site: 'youtube', steps: ['x'] })
+    expect(api.setPlayback).toHaveBeenCalledWith({ pick_id: QUEUE[0].id })
+    await act(async () => { setStubMedia(PLAYING) })
+    fireEvent.click(screen.getByTestId('mood-browser-pause'))
+    expect(api.setPlayback).toHaveBeenLastCalledWith({ paused: true })
+    fireEvent.click(screen.getByTestId('mood-browser-play'))
+    expect(api.setPlayback).toHaveBeenLastCalledWith({ paused: false })
+  })
+
+  it('claims each ending, and wakes the buddy for it only when the claim is its own', async () => {
+    await open()
+    await playAndAnswer({ played: true, site: 'youtube', steps: ['x'] })
+    await songEnds()
+    expect(api.claimEnded).toHaveBeenCalledWith(QUEUE[0].id)
+    expect(asks()).toHaveLength(2)
+  })
+
+  it('does not wake the buddy when the backend heard the same ending first, and follows the song it starts', async () => {
+    await open()
+    await playAndAnswer({ played: true, site: 'youtube', steps: ['x'] })
+    api.claimEnded.mockResolvedValue(false)
+    await songEnds()
+    expect(asks()).toHaveLength(1)
+    // The backend's wake played the next song: the page reads it in and shows it up now.
+    api.state.mockResolvedValue(state({}, { playback: { pick_id: QUEUE[1].id, ended_for: QUEUE[0].id, paused: false } }))
+    await flush(POLL_MS)
+    await flush()
+    const nowRow = screen.getAllByTestId('mood-queue-row').find(r => within(r).queryByTestId('mood-queue-now'))
+    expect(nowRow).toHaveTextContent('Song 2')
+    // Its ending is claimed by that song's id, and won this time: the buddy plays the one after.
+    api.claimEnded.mockResolvedValue(true)
+    await act(async () => { setStubMedia(PLAYING) })
+    await songEnds()
+    expect(api.claimEnded).toHaveBeenLastCalledWith(QUEUE[1].id)
+    expect(asks()).toHaveLength(2)
+    expect(asks()[1]).toContain('Play in Crew Browser: "Song 3" - Artist 3')
+  })
+
+  it('says on the page when continuous play goes on with the page closed', async () => {
     await open()
     expect(screen.getByTestId('mood-continuous-note')).toHaveTextContent(t('browser.continuous_note'))
   })

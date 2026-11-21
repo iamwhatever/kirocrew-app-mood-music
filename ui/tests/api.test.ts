@@ -33,6 +33,15 @@ describe('createMoodApi', () => {
     await expect(createMoodApi(api).ask('x')).rejects.toThrow(new Error(code))
   })
 
+  it("claims a song's ending through the backend, and keeps playing when the claim cannot be made", async () => {
+    const won = fakeApi(() => ({ claimed: true }))
+    await expect(createMoodApi(won).claimEnded('a'.repeat(32))).resolves.toBe(true)
+    expect(won.post).toHaveBeenCalledWith('/api/apps/mood-music/playback/ended', { pick_id: 'a'.repeat(32) })
+    await expect(createMoodApi(fakeApi(() => ({ claimed: false }))).claimEnded('a'.repeat(32))).resolves.toBe(false)
+    // The page wakes the buddy as before when the backend cannot answer.
+    await expect(createMoodApi(fakeApi(() => { throw refused(500, 'x') })).claimEnded('a'.repeat(32))).resolves.toBe(true)
+  })
+
   it('passes any other failure through unchanged', async () => {
     const other = refused(403, 'owner_only')
     const api = fakeApi(() => { throw other })

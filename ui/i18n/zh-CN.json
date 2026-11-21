@@ -155,7 +155,7 @@
     "progress": "进度",
     "volume": "音量",
     "continuous": "连续播放",
-    "continuous_note": "连续播放只在这个页面开着时有效。关掉页面后，这首放完就停。",
+    "continuous_note": "这个页面关着也能连续播放，需要支持后台连播的 Kiro Crew（KiroCrew#40261）。旧版本里关掉页面后，这首放完就停。",
     "not_played": "搭子这次没能放出来：{{reason}}",
     "no_reason": "没有说明原因",
     "approve": "去批准网站",

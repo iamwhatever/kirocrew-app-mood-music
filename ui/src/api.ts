@@ -107,6 +107,16 @@ export interface MoodState {
   settings: Settings
   /** Per site, the steps that last played a song in Kiro Crew's browser. Absent on an older backend. */
   play_steps?: Partial<Record<PickSource, { steps: string[]; updated_at: number }>>
+  /** The song in the buddy's tab, as the page or the backend last started it. Absent on an older backend. */
+  playback?: Playback
+}
+
+/** Shared with the backend, so one song's end wakes the buddy once, page open or closed. */
+export interface Playback {
+  pick_id: string
+  /** The song whose ending already woke the buddy. */
+  ended_for: string
+  paused: boolean
 }
 
 export interface Settings {
@@ -116,6 +126,8 @@ export interface Settings {
   continuous?: boolean
   /** The buddy's live browser box in the player column is open. Absent on an older backend. */
   view_open?: boolean
+  /** Picks stay with the feeling instead of turning and lifting it. Absent until the person sets it. */
+  stay_only?: boolean
 }
 
 export interface SlotMessage {
@@ -170,6 +182,15 @@ export function createMoodApi(api: AppApi) {
     /** Forget *site*'s steps after they failed, so the buddy finds the way again. */
     forgetPlaySteps: (site: PickSource) =>
       api.del<{ site: PickSource; forgotten: boolean }>(`${BASE}/play-steps/${site}`),
+    /** A song (re)started in the tab, or the person's pause / play. */
+    setPlayback: (patch: { pick_id?: string; paused?: boolean }) => api.put<Playback>(`${BASE}/playback`, patch),
+    /**
+     * Claim the ending of *pickId*: only the first claim, the page's or the
+     * backend's, wakes the buddy. A failed request answers true, so the page
+     * keeps playing as it did before the backend could hear endings.
+     */
+    claimEnded: (pickId: string) =>
+      api.post<{ claimed: boolean }>(`${BASE}/playback/ended`, { pick_id: pickId }).then(r => r.claimed !== false, () => true),
     addMemory: (item: NewMemory) => api.post<MemoryItem>(`${BASE}/memory`, item),
     updateMemory: (id: string, patch: { text?: string; pinned?: boolean }) =>
       api.put<MemoryItem>(`${BASE}/memory/${encodeURIComponent(id)}`, patch),

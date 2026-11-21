@@ -63,6 +63,22 @@ MAX_STEPS = 8
 MAX_STEP_CHARS = 120
 
 
+#: The song in the buddy's tab (a queue id), the one whose ending already woke the
+#: buddy, and whether the person paused. Shared by the page and the backend hook
+#: (``playback.py``), so one ending wakes the buddy once whoever hears it first.
+_NO_PLAYBACK = {"pick_id": "", "ended_for": "", "paused": False}
+
+#: One lock per state file: every request builds its own store, and the page's
+#: claim and the backend hook's claim must not interleave.
+_LOCKS: dict[str, threading.Lock] = {}
+_LOCKS_GUARD = threading.Lock()
+
+
+def _lock_for(path: Path) -> threading.Lock:
+    with _LOCKS_GUARD:
+        return _LOCKS.setdefault(str(path), threading.Lock())
+
+
 class MemoryFull(Exception):
     """A kind is at its cap and every item in it is the person's own or pinned."""
 
@@ -77,6 +93,7 @@ def _empty() -> dict[str, Any]:
         "anchors": [],
         "settings": dict(DEFAULT_SETTINGS),
         "play_steps": {},
+        "playback": dict(_NO_PLAYBACK),
     }
 
 
@@ -102,7 +119,7 @@ class MoodStore:
     def __init__(self, path: Path, *, now: Callable[[], float] = time.time) -> None:
         self._path = path
         self._now = now
-        self._lock = threading.Lock()
+        self._lock = _lock_for(path)
 
     # ── file ──
 
@@ -132,6 +149,10 @@ class MoodStore:
         for flag in ("record_open", "view_open"):
             if isinstance(saved.get(flag), bool):
                 state["settings"][flag] = saved[flag]
+        # The page's "stay only" switch, kept here so a refill with the page closed
+        # follows it. Absent until the person sets it: readers default to off.
+        if isinstance(saved.get("stay_only"), bool):
+            state["settings"]["stay_only"] = saved["stay_only"]
         # Continuous play is on unless the person turned it off. Up to 0.2.6 the
         # file kept the old default (off) for everyone, so a stored ``false`` is
         # read only once it is the person's own choice (``continuous_choice``).
@@ -152,6 +173,12 @@ class MoodStore:
                     "steps": list(entry["steps"]),
                     "updated_at": entry.get("updated_at") if isinstance(entry.get("updated_at"), (int, float)) else 0,
                 }
+        played = data.get("playback") if isinstance(data.get("playback"), dict) else {}
+        for key in ("pick_id", "ended_for"):
+            if isinstance(played.get(key), str):
+                state["playback"][key] = played[key]
+        if isinstance(played.get("paused"), bool):
+            state["playback"]["paused"] = played["paused"]
         if not isinstance(data.get("memory"), list):
             # A file from before memory: its likes and skips become memory items.
             for f in reversed(state["feedback"]):
@@ -210,6 +237,46 @@ class MoodStore:
             del state["play_steps"][site]
             self._write(state)
         return True
+
+    def set_playback(
+        self, *, pick_id: str | None = None, paused: bool | None = None
+    ) -> dict[str, Any]:
+        """A song (re)started in the tab, and/or the person's pause or play.
+
+        A start clears the ending already handled and the pause, so this song's
+        own ending wakes the buddy again, a replay of the same song included.
+        """
+        with self._lock:
+            state = self._read()
+            playback = state["playback"]
+            if pick_id is not None:
+                playback.update(pick_id=pick_id, ended_for="", paused=False)
+            if paused is not None:
+                playback["paused"] = paused
+            self._write(state)
+            return dict(playback)
+
+    def claim_ended(self, pick_id: str) -> bool:
+        """Whether the ending of *pick_id* may wake the buddy; at most once per ending.
+
+        Refused with continuous play off, after the person's pause, for a song
+        that is not the one in the tab, and for an ending already claimed. The
+        first claim records it, so the page and the backend never both wake.
+        """
+        with self._lock:
+            state = self._read()
+            playback = state["playback"]
+            if (
+                not pick_id
+                or not state["settings"].get("continuous", True)
+                or playback["paused"]
+                or playback["ended_for"] == pick_id
+                or (playback["pick_id"] and playback["pick_id"] != pick_id)
+            ):
+                return False
+            playback.update(pick_id=pick_id, ended_for=pick_id)
+            self._write(state)
+            return True
 
     def set_settings(self, **changes: Any) -> dict[str, Any]:
         """Store the page's choices; callers pass only checked values."""

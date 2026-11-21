@@ -154,7 +154,7 @@
     "progress": "Progression",
     "volume": "Volume",
     "continuous": "Lecture continue",
-    "continuous_note": "La lecture continue ne marche que tant que cette page est ouverte. Ferme-la, et la musique s’arrête à la fin de la chanson en cours.",
+    "continuous_note": "La lecture continue se poursuit page fermée avec un Kiro Crew qui joue en arrière-plan (KiroCrew#40261). Avec une version plus ancienne, ferme la page et la musique s’arrête à la fin de la chanson en cours.",
     "not_played": "Ton compagnon n’a pas pu la lancer cette fois : {{reason}}",
     "no_reason": "sans raison donnée",
     "approve": "Approuver les sites",

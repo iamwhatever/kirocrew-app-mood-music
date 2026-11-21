@@ -404,6 +404,24 @@ describe('MoodMusicPage', () => {
     expect(sent).toContain('Arc: stay only')
   })
 
+  it('keeps the stay-only switch with the backend, so a refill with the page closed follows it', async () => {
+    render(<MoodMusicPage />)
+    await flush()
+    const stay = screen.getByRole('button', { name: t('chat.stay_only') })
+    fireEvent.click(stay)
+    expect(api.setSettings).toHaveBeenLastCalledWith({ stay_only: true })
+    fireEvent.click(stay)
+    expect(api.setSettings).toHaveBeenLastCalledWith({ stay_only: false })
+  })
+
+  it('shows the stay-only switch the backend keeps, on a page opened fresh', async () => {
+    api.state.mockResolvedValue({ ...EMPTY, memory: [LIKED], settings: { ...EMPTY.settings, stay_only: true } })
+    render(<MoodMusicPage />)
+    await flush()
+    expect(screen.getByRole('button', { name: t('chat.stay_only') })).toHaveAttribute('aria-pressed', 'true')
+    expect(api.setSettings).not.toHaveBeenCalled()
+  })
+
   it('has no player choice, and every request says songs play in Kiro Crew\'s browser', async () => {
     render(<MoodMusicPage />)
     await flush()

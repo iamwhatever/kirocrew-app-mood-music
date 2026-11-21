@@ -154,7 +154,7 @@
     "progress": "Fortschritt",
     "volume": "Lautstärke",
     "continuous": "Endlos abspielen",
-    "continuous_note": "Endlos abspielen geht nur, solange diese Seite offen ist. Schließt du sie, endet die Musik mit dem aktuellen Song.",
+    "continuous_note": "Endlos abspielen läuft auch bei geschlossener Seite weiter, wenn Kiro Crew im Hintergrund abspielen kann (KiroCrew#40261). Bei einer älteren Version endet die Musik mit dem aktuellen Song, sobald du die Seite schließt.",
     "not_played": "Dein Buddy konnte ihn diesmal nicht abspielen: {{reason}}",
     "no_reason": "ohne Angabe eines Grundes",
     "approve": "Seiten freigeben",

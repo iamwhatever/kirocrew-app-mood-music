@@ -24,7 +24,10 @@
  * browser and reports the steps that worked, which the app keeps per site and
  * sends back next time. Pause, seek and volume go straight to the tab. With
  * continuous play on, a song's end (read by this page's poll) wakes the buddy
- * once for the next song, and asks for more when the queue runs low. A host
+ * once for the next song, and asks for more when the queue runs low. The
+ * backend hears endings too, with the page closed (`backend/playback.py`): each
+ * ending is claimed once through `/playback/ended`, so only one side wakes the
+ * buddy, and the page follows a song the backend started. A host
  * without the seam, sites the owner has not approved, or a policy that turns the
  * browser off, show a note with what to do, and the play button stays off.
  *
@@ -63,6 +66,8 @@ type Kind = 'say' | 'answer' | 'more' | 'follow'
 
 /** Poll cadence while the buddy works. */
 export const POLL_MS = 1000
+/** How many state reads the page makes, one per POLL_MS, waiting for a song the backend started. */
+export const FOLLOW_READS = 120
 /** No new activity for this long: the page says the buddy may be stuck (design §1.8). */
 export const STUCK_MS = 2 * 60_000
 /** Failed reads for this long: the page says it cannot reach Kiro Crew. */
@@ -215,6 +220,11 @@ export default function MoodMusicPage() {
     moodApi.state().then(async s => {
       if (!live) return
       setState(s)
+      // "Stay only" is kept with the backend, so a refill with the page closed
+      // follows it. One set before it was kept there is handed over once.
+      const stored = s.settings?.stay_only
+      if (typeof stored === 'boolean') setStayOnly(stored)
+      else if (saved?.stayOnly) void moodApi.setSettings({ stay_only: true }).catch(() => undefined)
       // Someone who talked to the buddy before sees that conversation again:
       // the slot holds it, so it is read back, not kept a second time.
       const out = saved?.pending
@@ -540,6 +550,8 @@ export default function MoodMusicPage() {
     const inTabNow = !result && !!crewMediaRef.current && !crewMediaRef.current.ended
     if (result?.played || inTabNow) {
       setBrowserPick(play.pickId)
+      // The backend learns which song plays, so it can play the next one with the page closed.
+      void moodApi.setPlayback({ pick_id: play.pickId }).catch(() => undefined)
       // A song the buddy started counts as heard (design §0.6): not an explore pick again.
       const heard = queue.find(p => p.id === play.pickId)
       if (result?.played && heard && !knownSongs.has(songKey(heard.title, heard.artist))) {
@@ -621,10 +633,38 @@ export default function MoodMusicPage() {
     const at = playable.findIndex(p => p.id === id)
     const next = at >= 0 ? playable[at + 1] : undefined
     if (!next) return
-    setCurrentId(next.id)
-    void run(() => askPlay(next, 'ended'))
+    void run(async () => {
+      // The backend hears endings too (a Kiro Crew with the hook): one claim
+      // decides who wakes the buddy. Lost: the backend woke it; follow its song.
+      if (!(await moodApi.claimEnded(id))) { setFollowFrom(id); return }
+      setCurrentId(next.id)
+      await askPlay(next, 'ended')
+    })
   }
   onEndedRef.current = onEnded
+
+  // The backend woke the buddy for an ending: read the state until its song is in.
+  const [followFrom, setFollowFrom] = useState<string | null>(null)
+  useEffect(() => {
+    if (!followFrom) return
+    let left = FOLLOW_READS
+    const timer = setInterval(() => {
+      if (--left <= 0) setFollowFrom(null)
+      void refresh().catch(() => undefined)
+    }, POLL_MS)
+    return () => clearInterval(timer)
+  }, [followFrom, refresh])
+  // A song the backend started (the page closed, or quicker than the page) is the one playing.
+  const playingId = state?.playback?.pick_id || null
+  useEffect(() => {
+    if (!playingId) return
+    setFollowFrom(f => (f && f !== playingId ? null : f))
+    if (playingId !== browserPick) {
+      setBrowserPick(playingId)
+      setCurrentId(playingId)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playingId])
 
   // The media route answers only for an open chat, so the page opens it: it can
   // then tell whether the sites are approved, before the first song.
@@ -639,12 +679,18 @@ export default function MoodMusicPage() {
     return () => { live = false }
   }, [restored, moodApi])
 
+  // The pause is kept with the backend too, so it wakes nobody with the page closed.
+  const tellPlayback = (patch: { pick_id?: string; paused?: boolean }) => {
+    void moodApi.setPlayback(patch).catch(() => undefined)
+  }
   const pauseBrowser = () => {
     stoppedRef.current = true
+    tellPlayback({ paused: true })
     void crew.pause()
   }
   const resumeBrowser = () => {
     stoppedRef.current = false
+    tellPlayback({ paused: false })
     void crew.play()
   }
   const replayBrowser = () => {
@@ -652,10 +698,14 @@ export default function MoodMusicPage() {
     // A fresh start of the song in the tab lets its next ending wake the buddy again.
     endedForRef.current = null
     setEndedFor(null)
+    tellPlayback(browserPick ? { pick_id: browserPick } : { paused: false })
     void crew.seek(0).then(() => crew.play())
   }
   const setContinuous = (on: boolean) => {
-    if (on) stoppedRef.current = false
+    if (on) {
+      stoppedRef.current = false
+      tellPlayback({ paused: false })
+    }
     saveSettings({ continuous: on })
   }
   const askPlayCurrent = () => {
@@ -822,7 +872,7 @@ export default function MoodMusicPage() {
                   <button
                     type="button"
                     aria-pressed={stayOnly}
-                    onClick={() => setStayOnly(v => !v)}
+                    onClick={() => { setStayOnly(!stayOnly); saveSettings({ stay_only: !stayOnly }) }}
                     className={`mm-press rounded-full border px-3 py-1 text-xs transition-colors ${stayOnly
                       ? 'border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]'
                       : 'border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]'}`}
