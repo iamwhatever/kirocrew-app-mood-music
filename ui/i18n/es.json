@@ -86,7 +86,7 @@
     "hello": "Hola, soy tu compañero musical. Cuéntame cómo te sientes o una canción que te emocionó.",
     "you": "Tú",
     "buddy": "Compañero",
-    "placeholder": "Cómo te sientes, o una canción que te emocionó…",
+    "placeholder": "Di cómo te sientes, o qué quieres que ponga tu compañero…",
     "send": "Enviar",
     "stop": "Parar",
     "stopped": "Detenido.",
@@ -107,7 +107,6 @@
     "open_full": "Abrir en el chat completo",
     "dismiss": "Entendido",
     "error_title": "Esta vez algo salió mal",
-    "show_record": "Ver el registro completo",
     "stuck_title": "Tu compañero parece atascado",
     "stop_restart": "Parar y empezar de nuevo",
     "wait": "Esperar un poco más",
@@ -122,7 +121,10 @@
     "explore_balanced": "Equilibrado",
     "explore_more": "Explorar más",
     "stay_only": "Hoy solo quiero quedarme en este sentimiento",
-    "status_playing": "Tu compañero está abriendo la canción en el navegador de Kiro Crew…"
+    "status_playing": "Tu compañero está abriendo la canción en el navegador de Kiro Crew…",
+    "record_title": "Lo que hace tu compañero",
+    "latest": "Lo último",
+    "no_next": "No hay siguiente canción en la cola."
   },
   "card": {
     "arc_stay": "Acompañar",

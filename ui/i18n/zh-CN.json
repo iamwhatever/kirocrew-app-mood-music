@@ -86,7 +86,7 @@
     "hello": "嗨，我是你的音乐搭子。说说你现在的心情，或一首打动你的歌。",
     "you": "你",
     "buddy": "搭子",
-    "placeholder": "说说你的心情，或一首打动你的歌…",
+    "placeholder": "说说心情，或者告诉搭子：下一首、换成粤语…",
     "send": "发送",
     "stop": "停",
     "stopped": "已停下。",
@@ -107,7 +107,6 @@
     "open_full": "在完整聊天打开",
     "dismiss": "知道了",
     "error_title": "这一轮出错了",
-    "show_record": "查看完整记录",
     "stuck_title": "搭子好像卡住了",
     "stop_restart": "停下重来",
     "wait": "再等等",
@@ -122,7 +121,10 @@
     "explore_balanced": "平衡",
     "explore_more": "多探索",
     "stay_only": "今天只想待在这个情绪里",
-    "status_playing": "搭子正在 Kiro Crew 的浏览器里打开这首歌…"
+    "status_playing": "搭子正在 Kiro Crew 的浏览器里打开这首歌…",
+    "record_title": "搭子在做什么",
+    "latest": "最新",
+    "no_next": "队列里没有下一首了。"
   },
   "card": {
     "arc_stay": "陪着",

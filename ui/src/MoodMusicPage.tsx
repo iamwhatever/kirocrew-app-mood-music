@@ -1,11 +1,17 @@
 /**
  * MoodMusicPage — talk to your music buddy, hear songs with the same feeling.
  *
- * The Listen tab is a conversation with the buddy (design §1.6): the person's
- * words, the buddy's one or two sentences, and its picks as song cards, with a
- * status line ("thinking / searching / reading / writing / checking") that
- * never names a tool. The player and the queue sit beside it. Moments and
- * Memory are the other tabs.
+ * The Listen tab is a conversation with the buddy (design §1.6). Its left
+ * column is the buddy's record, always open: the person's words, every step
+ * the buddy takes in plain words (searched, read a page, opened, clicked) and
+ * the notes it writes on the way, its one or two sentences, and its picks as
+ * song cards, newest at the bottom, with a status line that never names a
+ * tool. Under it is the one box: a feeling ("this one makes me cry") and a
+ * command ("next", "play Suzhou River") go in the same box and the same
+ * conversation, and the buddy reads which it is. A command comes back as an
+ * `action` the page runs with the player's own code. The player, the live view
+ * and the queue sit beside it, and their buttons drive the browser tab directly,
+ * never through the box. Moments and Memory are the other tabs.
  *
  * The page talks to the buddy through one app-owned chat slot (`api.ts`). The
  * App SDK gives an app bundle no slot push of its own (only `ChatEmbed` reads
@@ -27,8 +33,8 @@
  * turn, a turn that went quiet, a lost connection, and a reply with nothing
  * playable left.
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type UIEvent } from 'react'
-import { Headphones, MessageCircleQuestion, Play, Send, ShieldCheck, Square, TriangleAlert, Volume2, Waves, WifiOff } from 'lucide-react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent, type UIEvent } from 'react'
+import { ArrowDown, ExternalLink, Headphones, MessageCircleQuestion, Play, Send, ShieldCheck, Square, TriangleAlert, Volume2, Waves, WifiOff } from 'lucide-react'
 import { useAppApi, useChatLauncher, useNavigate } from '@kirocrew/app-sdk'
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from '@kirocrew/app-sdk/ui'
 import { t } from './i18n'
@@ -38,14 +44,13 @@ import BrowserControls from './BrowserControls'
 import BrowserView from './BrowserView'
 import BuddySteps from './BuddySteps'
 import { APPROVE_PATH, hostBrowserView, readiness, useCrewBrowser } from './crewBrowser'
-import FullRecord from './FullRecord'
 import MemoryTab from './MemoryTab'
 import MomentsTab from './MomentsTab'
 import MoodBackdrop from './MoodBackdrop'
 import { MOOD_KEYS, moodLookFor, presetScene, type MoodKey, type MoodLook, type Scene } from './moods'
 import NowPlaying from './NowPlaying'
 import { REFILL_AT, buildPlayRequest, buildRequest, memorySummary, type ExploreLevel } from './request.prompt'
-import { parseDjReply, replySource, type DjReply } from './replyParse'
+import { parseDjReply, replySource, type DjReply, type ReplyAction } from './replyParse'
 import { usePrefersReducedMotion } from './reducedMotion'
 import { CARD_STYLE } from './cardStyle'
 import SongCard from './SongCard'
@@ -54,7 +59,7 @@ import { loadView, saveView, type PageView, type SavedPending, type Tab } from '
 
 const errMessage = (e: unknown): string => (e instanceof Error ? e.message : typeof e === 'string' ? e : '')
 
-type Kind = 'mood' | 'answer' | 'more' | 'follow'
+type Kind = 'say' | 'answer' | 'more' | 'follow'
 
 /** Poll cadence while the buddy works. */
 export const POLL_MS = 1000
@@ -97,11 +102,24 @@ export const SPLIT_CSS = `
 .mm-queue-list { min-height: 12rem; max-height: 32rem; overflow-y: auto; overscroll-behavior: contain; padding-right: 0.25rem; }
 .mm-queue-num { flex: none; width: 1.25rem; padding-top: 0.125rem; display: inline-flex; justify-content: center; }
 .mm-clamp2 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+/* The buddy's record scrolls on its own. No scroll anchoring: the page itself follows new rows. */
+.mm-record { overflow-y: auto; overscroll-behavior: contain; overflow-anchor: none; min-height: 14rem; max-height: min(60vh, 36rem); }
+/* A new row rises in; a press gives at once. Transform and opacity only. */
+@keyframes mm-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.mm-row, .mm-step { animation: mm-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.mm-press { transition: transform 100ms ease-out, background-color 150ms ease-out; }
+.mm-press:active { transform: scale(0.97); }
+@media (prefers-reduced-motion: reduce) {
+  .mm-row, .mm-step { animation: none; }
+  .mm-press, .mm-press:active { transition: none; transform: none; }
+}
 @container (min-width: 860px) {
   div.mm-scroll.mm-split { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
   .mm-split > .mm-listen { flex: 1; min-height: 0; grid-template-columns: minmax(320px, 5fr) minmax(0, 7fr); align-items: stretch; }
-  /* No scroll anchoring: rows drawn in after a return must not push the restored position. */
-  .mm-col { min-height: 0; overflow-y: auto; overflow-anchor: none; padding-bottom: 1.5rem; }
+  /* The left column holds still: the record fills it and scrolls, the box stays at its foot. */
+  .mm-col { min-height: 0; overflow: hidden; padding-bottom: 1.5rem; }
+  .mm-record-card { flex: 1; }
+  .mm-record { flex: 1; min-height: 0; max-height: none; }
   .mm-player { min-height: 0; overflow-y: auto; overflow-anchor: none; padding-bottom: 1.5rem; }
 }
 @container (min-width: 720px) {
@@ -146,7 +164,9 @@ export default function MoodMusicPage() {
   const [slot, setSlot] = useState<import('./api').SlotData | undefined>()
   const [text, setText] = useState(saved?.text ?? '')
   const [chip, setChip] = useState<MoodKey | null>(saved?.chip ?? null)
-  const [answer, setAnswer] = useState('')
+  // A player command the buddy read from the box, run once the turn is over.
+  const [action, setAction] = useState<{ kind: ReplyAction; pickId?: string } | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   // The backdrop scene: a chip's preset, or the one the buddy chose on a big mood shift.
   const [scene, setScene] = useState<Scene>(saved?.scene ?? presetScene('neutral'))
   const [currentId, setCurrentId] = useState<string | null>(saved?.currentId ?? null)
@@ -172,8 +192,12 @@ export default function MoodMusicPage() {
   // still loading never writes its empty first frame over it.
   const [restored, setRestored] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
-  const chatColRef = useRef<HTMLDivElement>(null)
+  const recordRef = useRef<HTMLDivElement>(null)
   const scrollTopRef = useRef(saved?.scroll ?? 0)
+  const recordScrollRef = useRef(saved?.recordScroll ?? 0)
+  // The record follows new rows while the person is at its bottom; scrolled up, it stays put.
+  const stickRef = useRef(true)
+  const [atBottom, setAtBottom] = useState(true)
   const slotRef = useRef<string | null>(null)
   const momentRef = useRef<string>('')
   // The last request sent, so a reply the page could not use can be asked again.
@@ -224,22 +248,43 @@ export default function MoodMusicPage() {
   const viewRef = useRef(view)
   viewRef.current = view
   const persist = useCallback(() => {
-    if (restored) saveView({ ...viewRef.current, scroll: scrollTopRef.current })
+    if (restored) saveView({ ...viewRef.current, scroll: scrollTopRef.current, recordScroll: recordScrollRef.current })
   }, [restored])
-  const onScrolled = (e: UIEvent<HTMLElement>) => { scrollTopRef.current = e.currentTarget.scrollTop; persist() }
+  const onScrolled = (e: UIEvent<HTMLElement>) => {
+    // Only the page's own scroll: the record's scroll events bubble up here too.
+    if (e.target !== e.currentTarget) return
+    scrollTopRef.current = e.currentTarget.scrollTop
+    persist()
+  }
+  /** Whether *el* is scrolled to (near) its bottom. */
+  const nearBottom = (el: HTMLElement) => el.scrollHeight - el.scrollTop - el.clientHeight < 32
+  const onRecordScrolled = (e: UIEvent<HTMLElement>) => {
+    const el = e.currentTarget
+    // Moving up is the person reading back; reaching the bottom follows again.
+    // A smooth scroll on its way down changes neither.
+    if (nearBottom(el)) stickRef.current = true
+    else if (el.scrollTop < recordScrollRef.current) stickRef.current = false
+    recordScrollRef.current = el.scrollTop
+    setAtBottom(stickRef.current)
+    persist()
+  }
   useEffect(persist, [persist, tab, text, chip, stayOnly, scene, currentId, slotKey, pending, browserPick, endedFor])
 
   // Back where they were on the page, once what it shows is drawn again.
   useEffect(() => {
-    // One of the two scrolls, by layout: the page (one column) or the chat column.
-    if (!restored || !scrollTopRef.current) return
-    for (const el of [scrollRef.current, chatColRef.current]) if (el) el.scrollTop = scrollTopRef.current
+    if (!restored) return
+    if (scrollTopRef.current && scrollRef.current) scrollRef.current.scrollTop = scrollTopRef.current
+    const record = recordRef.current
+    if (record && recordScrollRef.current) {
+      record.scrollTop = recordScrollRef.current
+      stickRef.current = nearBottom(record)
+      setAtBottom(stickRef.current)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [restored])
 
   const queue = state?.queue ?? []
   const explore: ExploreLevel = state?.settings?.explore ?? 'balanced'
-  const recordOpen = state?.settings?.record_open ?? false
   const viewOpen = state?.settings?.view_open ?? true
   // The host's live view of the buddy's tab (level 11); absent on an older host.
   // `stayLive`: when a turn ends with the tab still open, the host streams it
@@ -270,7 +315,7 @@ export default function MoodMusicPage() {
   )
 
   /** Send one turn to the buddy and start waiting for its reply. */
-  const ask = useCallback(async (message: string, shown: string, memoryIds: string[], play?: Pending['play']) => {
+  const ask = useCallback(async (message: string, shown: string, memoryIds: string[], play?: Pending['play'], say?: boolean) => {
     const known = slotRef.current ?? (await moodApi.openSlot()).key
     // The reply already in the slot, so the poll waits for a NEW one.
     const before = await moodApi.getSlot(known).catch(() => undefined)
@@ -279,7 +324,10 @@ export default function MoodMusicPage() {
     const key = await moodApi.ask(message)
     slotRef.current = key
     setSlotKey(key)
-    setPending({ momentId: momentRef.current, baseline: replyMark(before), memoryIds, text: shown, ...(play ? { play } : {}) })
+    setPending({ momentId: momentRef.current, baseline: replyMark(before), memoryIds, text: shown, ...(play ? { play } : {}), ...(say ? { say } : {}) })
+    // What the person just sent shows at the bottom of the record.
+    stickRef.current = true
+    setAtBottom(true)
   }, [moodApi])
   const pendingRef = useRef(pending)
   pendingRef.current = pending
@@ -328,44 +376,44 @@ export default function MoodMusicPage() {
 
   const send = (kind: Kind, words: string) => {
     if (!words || pending || busy) return
+    // A box message keeps its moment only once its picks land (a command is no moment).
+    momentRef.current = ''
     void run(async () => {
-      if (kind === 'mood') {
-        const moment = await moodApi.addMoment(words)
-        momentRef.current = moment.id
-        setState(s => (s ? { ...s, moments: [moment, ...s.moments] } : s))
-      }
       const { ids } = memorySummary(state?.memory ?? [])
-      await ask(buildRequest({ kind, text: words, state, explore, stayOnly }), words, ids)
+      const nowPlaying = current ? { title: current.title, artist: current.artist } : null
+      await ask(buildRequest({ kind, text: words, state, explore, stayOnly, nowPlaying }), words, ids, undefined, kind === 'say')
     })
   }
 
-  /** Record the mood and ask the buddy for songs. A chip, or words that name one, set its scene now; other words keep the scene. */
-  const startMood = (mood: string, nextLook: MoodLook) => {
-    if (!mood || pending || busy) return
-    if (nextLook !== 'neutral') setScene(presetScene(nextLook))
-    send('mood', mood)
+  /**
+   * The one box. While the buddy's question is open, what is typed answers it;
+   * otherwise it is a message the buddy reads as a feeling or a command. A
+   * chip, or words that name a mood, set its scene now; other words keep it.
+   */
+  const submitBox = (e: FormEvent) => {
+    e.preventDefault()
+    const typed = text.trim()
+    if (!typed || pending || busy) return
+    if (openQuestion) {
+      send('answer', typed)
+    } else {
+      const look: MoodLook = chip && typed.startsWith(moodLabel(chip)) ? chip : moodLookFor([typed])
+      if (look !== 'neutral') setScene(presetScene(look))
+      send('say', typed)
+    }
     setText('')
   }
 
-  const submitMood = (e: FormEvent) => {
-    e.preventDefault()
-    const typed = text.trim()
-    startMood(typed || (chip ? moodLabel(chip) : ''), chip ?? moodLookFor([typed]))
-  }
-
-  /** A chip is a search: its mood, plus whatever is typed in the box. */
+  /** A chip puts its mood at the start of the box, in place of another chip's, and leaves the rest typed. */
   const pickChip = (key: MoodKey) => {
-    const typed = text.trim()
+    let rest = text.trim()
+    for (const k of MOOD_KEYS) {
+      const label = moodLabel(k)
+      if (rest.startsWith(label)) { rest = rest.slice(label.length).replace(/^[\s:：,，]+/, ''); break }
+    }
     setChip(key)
-    startMood(typed ? `${moodLabel(key)}: ${typed}` : moodLabel(key), key)
-  }
-
-  const submitAnswer = (e: FormEvent) => {
-    e.preventDefault()
-    const reply = answer.trim()
-    if (!reply) return
-    setAnswer('')
-    send('answer', reply)
+    setText(rest ? `${moodLabel(key)}: ${rest}` : moodLabel(key))
+    inputRef.current?.focus()
   }
 
   const moreLike = (pick: QueuedPick) => send('more', pick.artist ? `"${pick.title}" - ${pick.artist}` : `"${pick.title}"`)
@@ -444,6 +492,8 @@ export default function MoodMusicPage() {
         if (!chipRef.current && tagLook !== 'neutral') setScene(s => (s.source === 'neutral' ? presetScene(tagLook) : s))
       }
       if (parsed.picks.length === 0) {
+        // A player command from the box: the page runs it once this turn is over.
+        if (parsed.action && parsed.action !== 'play') { setAction({ kind: parsed.action }); return }
         // A question, or the buddy saying it found nothing good enough (with
         // follow-ups), is an answer the conversation already shows.
         if (!parsed.question && !parsed.followUps.length) {
@@ -458,12 +508,16 @@ export default function MoodMusicPage() {
         const dropped = parsed.dropped + Object.values(checked.dropped).reduce((a, b) => a + b, 0)
         if (checked.picks.length === 0) { setDroppedAll(dropped); setError('all_dropped'); return }
         if (dropped > 0) setNotice(t('page.dropped', { count: dropped }))
+        // A box message that brought songs was a feeling worth keeping as a moment.
+        const momentId = pending.say ? (await moodApi.addMoment(pending.text)).id : pending.momentId
         const { queue: next } = await moodApi.setQueue({
-          source, moment_id: pending.momentId || undefined, mood_tags: parsed.moodTags, picks: checked.picks,
+          source, moment_id: momentId || undefined, mood_tags: parsed.moodTags, picks: checked.picks,
         })
         queueMemoryRef.current = pending.memoryIds
         setState(await moodApi.state())
         setCurrentId(next[0]?.id ?? null)
+        // "Play this song now": the first pick goes straight to the browser.
+        if (parsed.action === 'play' && next[0]) setAction({ kind: 'play', pickId: next[0].id })
       } catch (e) {
         setError(errMessage(e) || 'unknown')
       } finally {
@@ -610,6 +664,29 @@ export default function MoodMusicPage() {
     void run(() => askPlay(current, 'start'))
   }
 
+  /** The next song after the current one that was not skipped. */
+  const nextPick = () => {
+    const playable = queue.filter(p => p.feedback !== 'skipped')
+    const at = current ? playable.findIndex(p => p.id === current.id) : -1
+    return playable[at + 1]
+  }
+
+  // A command the buddy read from the box runs here, once its turn is over, with
+  // the same code as the player's own buttons.
+  useEffect(() => {
+    if (!action || pending || busy) return
+    setAction(null)
+    if (action.kind === 'pause') pauseBrowser()
+    else if (action.kind === 'resume') resumeBrowser()
+    else if (action.kind === 'replay') replayBrowser()
+    else {
+      const pick = action.kind === 'next' ? nextPick() : queue.find(p => p.id === action.pickId)
+      if (pick) playPick(pick)
+      else setNotice(t('chat.no_next'))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [action, pending, busy])
+
   const approve = (id: string, action: 'approved' | 'rejected') => {
     const key = slotRef.current
     if (!key) return
@@ -621,10 +698,6 @@ export default function MoodMusicPage() {
   }
 
   const openFullChat = () => { if (slotRef.current) openChat({ slotKey: slotRef.current }) }
-  const openRecord = () => {
-    if (!recordOpen) saveSettings({ record_open: true })
-    document.getElementById('mood-full-record')?.scrollIntoView?.({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
-  }
 
   const retry = () => {
     const again = lastAskRef.current
@@ -658,6 +731,28 @@ export default function MoodMusicPage() {
   const lastParsed = !pending && lastBuddy?.reply ? parseDjReply(lastBuddy.reply) : null
   const showYou = pending && pending.text && !(lines.length && lines[lines.length - 1].who === 'you' && lines[lines.length - 1].text === pending.text)
   const remember = lastParsed?.remember && lastParsed.remember !== dismissedRemember ? lastParsed.remember : ''
+  // The buddy's open question: the one box answers it.
+  const openQuestion = lastParsed?.question && !pending ? lastParsed.question : ''
+
+  // New rows in the record: follow them down, unless the person scrolled up.
+  const recordKey = `${tab}|${lines.length}|${activityKey(slot)}|${status?.phase ?? ''}|${openQuestion}|${queue.length}|${!!approval}`
+  const toEnd = (el: HTMLElement) => {
+    if (typeof el.scrollTo === 'function') el.scrollTo({ top: el.scrollHeight, behavior: reduceMotion ? 'auto' : 'smooth' })
+    else el.scrollTop = el.scrollHeight
+  }
+  useLayoutEffect(() => {
+    const el = recordRef.current
+    if (!el) return
+    if (stickRef.current) toEnd(el)
+    // Drawn again after another tab: back to where the person left it.
+    else if (!el.scrollTop && recordScrollRef.current) el.scrollTop = recordScrollRef.current
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recordKey])
+  const toLatest = () => {
+    stickRef.current = true
+    setAtBottom(true)
+    if (recordRef.current) toEnd(recordRef.current)
+  }
   // Why songs cannot play here yet, with what to do; drawn in the player's place.
   const unready = browserMode ? null : (
     <Banner
@@ -711,15 +806,7 @@ export default function MoodMusicPage() {
             </div>
           ) : tab === 'moments' ? <div className="mx-auto max-w-5xl"><MomentsTab moments={state?.moments ?? []} /></div> : (
             <div className="mm-listen" data-testid="mood-listen">
-              <div
-                ref={chatColRef}
-                onScroll={onScrolled}
-                className="mm-col flex min-w-0 flex-col gap-3"
-                data-testid="mood-chat-column"
-                role="region"
-                aria-label={t('page.tab_listen')}
-                tabIndex={0}
-              >
+              <div className="mm-col flex min-w-0 flex-col gap-3" data-testid="mood-chat-column">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-xs text-[var(--muted)]">{t('chat.explore')}</span>
                   <SegmentedControl<ExploreLevel>
@@ -736,76 +823,111 @@ export default function MoodMusicPage() {
                     type="button"
                     aria-pressed={stayOnly}
                     onClick={() => setStayOnly(v => !v)}
-                    className={`rounded-full border px-3 py-1 text-xs transition-colors ${stayOnly
+                    className={`mm-press rounded-full border px-3 py-1 text-xs transition-colors ${stayOnly
                       ? 'border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]'
                       : 'border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]'}`}
                   >
                     {t('chat.stay_only')}
                   </button>
                 </div>
-                <div role="group" aria-label={t('page.mood_chips')} className="flex flex-wrap gap-2">
-                  {MOOD_KEYS.map(key => (
-                    <button
-                      key={key}
-                      type="button"
-                      aria-pressed={chip === key}
-                      onClick={() => pickChip(key)}
-                      disabled={working}
-                      className={`rounded-full border px-3 py-1 text-xs transition-colors ${chip === key
-                        ? 'border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]'
-                        : 'border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]'}`}
-                    >
-                      {moodLabel(key)}
-                    </button>
-                  ))}
-                </div>
 
-                <section aria-label={t('chat.conversation')} className="flex flex-col gap-2" data-testid="mood-chat">
-                  {lines.length === 0 && !pending && (
-                    <p className="text-sm text-[var(--muted)]">{t('chat.hello')}</p>
-                  )}
-                  {lines.slice(-20).map((line, i) => (
-                    line.who === 'you' ? (
-                      <p key={i} className="self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]">
-                        <span className="sr-only">{t('chat.you')}: </span>{line.text}
-                      </p>
-                    ) : (
-                      <div key={i} className="max-w-[95%] rounded-2xl border border-[var(--border)] px-3 py-2" style={CARD_STYLE}>
-                        <p className="text-sm text-[var(--text)]">
-                          <span className="mr-1 font-semibold text-[var(--accent)]">{t('chat.buddy')}</span>
-                          {line.text}
-                        </p>
-                        <BuddySteps steps={line.steps ?? []} testId="mood-steps" />
-                        {line === lastBuddy && line.reply && replySource(line.reply) === state?.last_source && queue.length > 0 && (
-                          <div className="mt-2 grid gap-2" data-testid="mood-cards">
-                            {queue.map(p => (
-                              <SongCard
-                                key={p.id}
-                                pick={p}
-                                playing={current?.id === p.id}
-                                known={knownSongs.has(songKey(p.title, p.artist))}
-                                busy={working}
-                                onPlay={() => playPick(p)}
-                                onLike={() => giveFeedback(p, p.feedback === 'liked' ? '' : 'liked')}
-                                onSkip={() => giveFeedback(p, 'skipped')}
-                                onKnown={() => markKnown(p, 'user')}
-                              />
-                            ))}
+                {/* The buddy's record: always open, newest at the bottom, its own scroll. */}
+                <section
+                  className="mm-record-card relative flex min-h-0 flex-col rounded-2xl border border-[var(--border)]"
+                  style={CARD_STYLE}
+                  aria-labelledby="mood-record-title"
+                  data-testid="mood-record-card"
+                >
+                  <header className="flex items-center justify-between gap-2 border-b border-[var(--border)] px-3 py-2">
+                    <h2 id="mood-record-title" className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">{t('chat.record_title')}</h2>
+                    {slotKey && (
+                      <button
+                        type="button"
+                        onClick={openFullChat}
+                        className="mm-press inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs text-[var(--muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                      >
+                        <ExternalLink size={12} aria-hidden="true" />
+                        {t('chat.open_full')}
+                      </button>
+                    )}
+                  </header>
+                  <div
+                    ref={recordRef}
+                    onScroll={onRecordScrolled}
+                    className="mm-record flex flex-col gap-2 px-3 py-3"
+                    data-testid="mood-record"
+                    role="log"
+                    aria-label={t('chat.conversation')}
+                    tabIndex={0}
+                  >
+                    <section className="flex flex-col gap-2" data-testid="mood-chat">
+                      {lines.length === 0 && !pending && (
+                        <p className="text-sm text-[var(--muted)]">{t('chat.hello')}</p>
+                      )}
+                      {lines.slice(-30).map((line, i) => (
+                        line.who === 'you' ? (
+                          <p key={i} className="mm-row self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]">
+                            <span className="sr-only">{t('chat.you')}: </span>{line.text}
+                          </p>
+                        ) : (
+                          <div key={i} className="mm-row max-w-[95%]">
+                            <BuddySteps steps={line.steps ?? []} testId="mood-steps" />
+                            <p className="mt-1.5 text-sm text-[var(--text)]">
+                              <span className="mr-1 font-semibold text-[var(--accent)]">{t('chat.buddy')}</span>
+                              {line.text}
+                            </p>
+                            {line === lastBuddy && line.reply && replySource(line.reply) === state?.last_source && queue.length > 0 && (
+                              <div className="mt-2 grid gap-2" data-testid="mood-cards">
+                                {queue.map(p => (
+                                  <SongCard
+                                    key={p.id}
+                                    pick={p}
+                                    playing={current?.id === p.id}
+                                    known={knownSongs.has(songKey(p.title, p.artist))}
+                                    busy={working}
+                                    onPlay={() => playPick(p)}
+                                    onLike={() => giveFeedback(p, p.feedback === 'liked' ? '' : 'liked')}
+                                    onSkip={() => giveFeedback(p, 'skipped')}
+                                    onKnown={() => markKnown(p, 'user')}
+                                  />
+                                ))}
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    )
-                  ))}
-                  {showYou && (
-                    <p className="self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]">{pending.text}</p>
+                        )
+                      ))}
+                      {showYou && (
+                        <p className="mm-row self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]">{pending.text}</p>
+                      )}
+                      {status && <BuddySteps steps={liveSteps(slot)} testId="mood-live-steps" />}
+                      {status && (
+                        <p role="status" className="mm-row flex items-center gap-1.5 text-xs text-[var(--muted)]" data-testid="mood-status">
+                          <Headphones size={13} aria-hidden="true" className={reduceMotion ? '' : 'animate-pulse'} />
+                          {statusText(status)}
+                        </p>
+                      )}
+                      {openQuestion && (
+                        <div className="mm-row rounded-2xl border border-[var(--accent)] px-3 py-2" data-testid="mood-question">
+                          <p className="flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)]">
+                            <MessageCircleQuestion size={14} aria-hidden="true" />
+                            {t('page.question_label')}
+                          </p>
+                          <p className="mt-1 text-sm text-[var(--text)]">{openQuestion}</p>
+                        </div>
+                      )}
+                    </section>
+                  </div>
+                  {!atBottom && (
+                    <button
+                      type="button"
+                      onClick={toLatest}
+                      className="mm-press absolute bottom-2 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1 text-xs text-[var(--text)] shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                      data-testid="mood-record-latest"
+                    >
+                      <ArrowDown size={12} aria-hidden="true" />
+                      {t('chat.latest')}
+                    </button>
                   )}
-                  {status && (
-                    <p role="status" className="flex items-center gap-1.5 text-xs text-[var(--muted)]" data-testid="mood-status">
-                      <Headphones size={13} aria-hidden="true" className={reduceMotion ? '' : 'animate-pulse'} />
-                      {statusText(status)}
-                    </p>
-                  )}
-                  {status && <BuddySteps steps={liveSteps(slot)} testId="mood-live-steps" />}
                 </section>
 
                 {approval && (
@@ -823,14 +945,14 @@ export default function MoodMusicPage() {
                 {turnFailed && (
                   <Banner testId="mood-turn-error" title={t('chat.error_title')} body={turnFailed} icon={<TriangleAlert size={14} aria-hidden="true" />}>
                     <Btn primary onClick={retry}>{t('page.retry')}</Btn>
-                    <Btn onClick={openRecord}>{t('chat.show_record')}</Btn>
+                    <Btn onClick={openFullChat}>{t('chat.open_full')}</Btn>
                   </Banner>
                 )}
                 {stuck && pending && (
                   <Banner testId="mood-stuck" title={t('chat.stuck_title')} icon={<TriangleAlert size={14} aria-hidden="true" />}>
                     <Btn primary onClick={stopAndRetry}>{t('chat.stop_restart')}</Btn>
                     <Btn onClick={() => setStuck(false)}>{t('chat.wait')}</Btn>
-                    <Btn onClick={openRecord}>{t('chat.show_record')}</Btn>
+                    <Btn onClick={openFullChat}>{t('chat.open_full')}</Btn>
                   </Banner>
                 )}
                 {offline && (
@@ -839,67 +961,63 @@ export default function MoodMusicPage() {
                   </Banner>
                 )}
 
-                {lastParsed?.question && !pending && (
-                  <form onSubmit={submitAnswer} className="rounded-2xl border border-[var(--accent)] p-3" style={CARD_STYLE} data-testid="mood-question">
-                    <p className="flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)]">
-                      <MessageCircleQuestion size={14} aria-hidden="true" />
-                      {t('page.question_label')}
-                    </p>
-                    <p className="mt-1 text-sm text-[var(--text)]">{lastParsed.question}</p>
-                    <div className="mt-2 flex gap-2">
-                      <input
-                        aria-label={t('page.answer_placeholder')}
-                        value={answer}
-                        onChange={e => setAnswer(e.target.value)}
-                        maxLength={300}
-                        placeholder={t('page.answer_placeholder')}
-                        className="min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-                      />
-                      <Btn type="submit" primary disabled={working || !answer.trim()}>{t('page.send_answer')}</Btn>
+                {/* The one box: feelings and commands alike, into the same conversation. */}
+                <form onSubmit={submitBox} className="mm-composer flex flex-col gap-2" data-testid="mood-composer">
+                  {!pending && ((lastParsed?.followUps.length ?? 0) > 0 || remember) && (
+                    <div role="group" aria-label={t('chat.follow_ups')} className="flex flex-wrap gap-2" data-testid="mood-follow-ups">
+                      {lastParsed!.followUps.map(f => (
+                        <Btn key={f} type="button" disabled={working} onClick={() => send('follow', f)}>{f}</Btn>
+                      ))}
+                      {remember && (
+                        <Btn
+                          type="button"
+                          disabled={working}
+                          onClick={() => {
+                            setDismissedRemember(remember)
+                            void moodApi.addMemory({ kind: 'note', text: remember, origin: 'user' }).then(refresh)
+                              .then(() => setNotice(t('chat.remembered', { note: remember })))
+                              .catch(e => setError(errMessage(e) || 'unknown'))
+                          }}
+                        >
+                          {t('chat.remember', { note: remember })}
+                        </Btn>
+                      )}
                     </div>
-                  </form>
-                )}
-
-                {!pending && ((lastParsed?.followUps.length ?? 0) > 0 || remember) && (
-                  <div role="group" aria-label={t('chat.follow_ups')} className="flex flex-wrap gap-2" data-testid="mood-follow-ups">
-                    {lastParsed!.followUps.map(f => (
-                      <Btn key={f} disabled={working} onClick={() => send('follow', f)}>{f}</Btn>
-                    ))}
-                    {remember && (
-                      <Btn
-                        disabled={working}
-                        onClick={() => {
-                          setDismissedRemember(remember)
-                          void moodApi.addMemory({ kind: 'note', text: remember, origin: 'user' }).then(refresh)
-                            .then(() => setNotice(t('chat.remembered', { note: remember })))
-                            .catch(e => setError(errMessage(e) || 'unknown'))
-                        }}
+                  )}
+                  <div role="group" aria-label={t('page.mood_chips')} className="flex flex-wrap gap-2">
+                    {MOOD_KEYS.map(key => (
+                      <button
+                        key={key}
+                        type="button"
+                        aria-pressed={chip === key}
+                        onClick={() => pickChip(key)}
+                        className={`mm-press rounded-full border px-3 py-1 text-xs transition-colors ${chip === key
+                          ? 'border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]'
+                          : 'border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]'}`}
                       >
-                        {t('chat.remember', { note: remember })}
-                      </Btn>
-                    )}
+                        {moodLabel(key)}
+                      </button>
+                    ))}
                   </div>
-                )}
-
-                <form onSubmit={submitMood} className="flex flex-col gap-2">
                   <label id="mood-input-label" htmlFor="mood-input" className="sr-only">{t('page.mood_label')}</label>
                   <div className="flex gap-2">
                     <input
+                      ref={inputRef}
                       id="mood-input"
                       aria-labelledby="mood-input-label"
                       value={text}
                       onChange={e => setText(e.target.value)}
                       maxLength={200}
-                      placeholder={t('chat.placeholder')}
-                      className="min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                      placeholder={openQuestion ? t('page.answer_placeholder') : t('chat.placeholder')}
+                      className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                     />
                     {pending ? (
-                      <Btn type="button" onClick={stop} disabled={pending.stopped}>
+                      <Btn type="button" className="shrink-0 whitespace-nowrap" onClick={stop} disabled={pending.stopped}>
                         <Square size={14} aria-hidden="true" />
                         {t('chat.stop')}
                       </Btn>
                     ) : (
-                      <Btn type="submit" primary disabled={working || (!text.trim() && !chip)}>
+                      <Btn type="submit" primary className="shrink-0 whitespace-nowrap" disabled={working || !text.trim()}>
                         <Send size={14} aria-hidden="true" />
                         {t('chat.send')}
                       </Btn>
@@ -911,13 +1029,6 @@ export default function MoodMusicPage() {
                   )}
                   {notice && <p className="text-xs text-[var(--muted)]">{notice}</p>}
                 </form>
-
-                <FullRecord
-                  slotKey={slotKey}
-                  open={recordOpen}
-                  onToggle={open => saveSettings({ record_open: open })}
-                  onSend={message => moodApi.ask(message)}
-                />
               </div>
 
               <div className="mm-player flex min-w-0 flex-col gap-4" data-testid="mood-player-column">

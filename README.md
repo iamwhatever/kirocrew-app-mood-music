@@ -125,9 +125,9 @@ finding songs, Moments and Memory still work.
 ## First run
 
 The page opens with a short hello from the buddy and an empty player. Type a
-feeling or a song name in the box and choose **Send**, or click one of the mood
-chips: a chip starts the search by itself. On a wide window the chat is on the left,
-and the browser, the player and **Up next** are on the right. The conversation stays
+feeling or a song name in the box and choose **Send**; a mood chip fills the box for
+you. On a wide window the buddy's record and the box are on the left, and the
+browser, the player and **Up next** are on the right; on a narrow one they stack. The conversation stays
 on this page; it is not listed in Kiro Crew's sessions.
 
 ## How to use it
@@ -136,23 +136,29 @@ on this page; it is not listed in Kiro Crew's sessions.
 2. Choose how far to explore: **More familiar**, **Balanced** (one song you may
    know and four new ones) or **Explore more**. To stay with a feeling, turn on
    **Just stay in this feeling today**.
-3. Type how you feel, or a song that moved you, and choose **Send**, or click a mood
-   chip such as **Calm** or **Missing someone**. A line under the chat says what the
-   buddy is doing: thinking, searching, reading reviews, writing, or checking that
-   each song plays, with its steps in plain words (for example "Searched the web ×
-   3 · Read a page"). Each reply keeps its steps. **Stop** cancels it.
-4. Each song card says why it is here, what to listen for and who praised it. Choose
+3. Use the one box at the bottom left for everything: how you feel ("this one makes
+   me cry"), a song that moved you, or what to play ("next", "play it again",
+   "something in Cantonese", "play Suzhou River"). Choose **Send**. A mood chip
+   such as **Calm** or **Missing someone** puts its mood in the box for you. When
+   the buddy asks you a question, the box answers it. **Stop** cancels a reply.
+   If the buddy reads an ask to play, pause or skip, the page does it in the player.
+4. The left column is the buddy's record, always open: what you said, every step
+   it takes in plain words ("Searched the web", "Read a page", "Opened a page",
+   "Clicked"), the short notes it writes on the way, and its reply. The newest is
+   at the bottom and the record follows it, unless you scroll up to read back;
+   **Latest** takes you down again. **Open in full chat** shows the same
+   conversation with every search and page the buddy used.
+5. Each song card says why it is here, what to listen for and who praised it. Choose
    **Play**, the heart to like it, skip, or **I know it**. Tap a suggestion under the
    reply to keep talking, or **Remember: ...** to save a preference the buddy heard.
-5. **Up next** lists every song with its artist and why it was picked; the one
-   playing says **Now playing**. Click any song to play it now.
-6. Open **Memory** to see your own notes and the songs and moods the app recorded.
+6. **Up next** lists every song with its artist and why it was picked; the one
+   playing says **Now playing**. Click any song to play it now. Pause, play, the
+   progress bar and the volume act on the browser at once; they do not ask the buddy.
+7. Open **Memory** to see your own notes and the songs and moods the app recorded.
    Add, edit, pin or delete any of them; **Clear everything out of date** removes
    what the app recorded and has not used for 90 days. What you wrote yourself is
    never removed for you.
-7. Open **Moments** to see the moods you shared and the songs they brought.
-8. **Show the full record** under the chat opens the whole conversation, with every
-   search and page the buddy used.
+8. Open **Moments** to see the moods you shared and the songs they brought.
 9. The background follows the mood. A chip sets its scene at once. The buddy
    picks a new scene only when your mood clearly shifts, and the scene drifts
    toward its brighter colour as the songs move from stay to lift. To stop the
@@ -198,7 +204,8 @@ on this page; it is not listed in Kiro Crew's sessions.
 ## Troubleshooting / FAQ
 
 **I see "Couldn't read your buddy's answer" or "Something went wrong this time".**
-Choose **Ask again** or **Try again**. **Show the full record** shows what happened.
+Choose **Ask again** or **Try again**. The record on the left shows what the buddy
+did; **Open in full chat** shows every search and page.
 
 **I see "Your buddy seems stuck".**
 Nothing moved for two minutes. Choose **Wait a bit more**, or **Stop and start

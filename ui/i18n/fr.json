@@ -86,7 +86,7 @@
     "hello": "Salut, je suis ton acolyte musical. Dis-moi ce que tu ressens, ou une chanson qui t’a ému.",
     "you": "Toi",
     "buddy": "Acolyte",
-    "placeholder": "Ce que tu ressens, ou une chanson qui t’a ému…",
+    "placeholder": "Dis ce que tu ressens, ou ce que ton compagnon doit jouer…",
     "send": "Envoyer",
     "stop": "Arrêter",
     "stopped": "Arrêté.",
@@ -107,7 +107,6 @@
     "open_full": "Ouvrir dans le chat complet",
     "dismiss": "Compris",
     "error_title": "Quelque chose s’est mal passé cette fois",
-    "show_record": "Voir l’historique complet",
     "stuck_title": "Ton acolyte semble bloqué",
     "stop_restart": "Arrêter et recommencer",
     "wait": "Attendre encore un peu",
@@ -122,7 +121,10 @@
     "explore_balanced": "Équilibré",
     "explore_more": "Plus de découvertes",
     "stay_only": "Aujourd’hui, rester dans cette émotion",
-    "status_playing": "Ton compagnon ouvre la chanson dans le navigateur de Kiro Crew…"
+    "status_playing": "Ton compagnon ouvre la chanson dans le navigateur de Kiro Crew…",
+    "record_title": "Ce que fait ton compagnon",
+    "latest": "Plus récent",
+    "no_next": "Pas de chanson suivante dans la file."
   },
   "card": {
     "arc_stay": "Rester avec",

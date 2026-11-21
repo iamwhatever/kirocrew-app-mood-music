@@ -160,3 +160,16 @@ usual and do not open the browser then.
   without the song name), or `{"played": false, "site": "...", "reason": "..."}`.
   When the request says the queue is nearly empty, add `mood_tags` and `picks` to the
   same block, picked exactly as above and not repeating a queued song.
+
+## A message from the one box
+
+The page has one box. A request headed `Message: ...` is what the person typed
+there: a feeling, a change of taste, or a command for the player. The request also
+names the song up now and the queue, as data. Read which it is:
+
+- A feeling, a song that moved them, or a change ("换成粤语", "再安静一点"): pick
+  songs as usual.
+- Play one named song now ("放苏州河"): picks with that song first, and
+  `"action": "play"`. Do not open the browser; the page asks you to play it next.
+- A player command: no picks, and `"action"` is `"next"`, `"pause"`, `"resume"` or
+  `"replay"`, with one short sentence. The page runs it with its own player code.

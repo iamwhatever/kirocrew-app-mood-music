@@ -88,6 +88,7 @@ describe('coming back to the page', () => {
     render(<MoodMusicPage />)
     await flush()
     fireEvent.click(screen.getByRole('button', { name: t('mood_calm') }))
+    fireEvent.click(screen.getByRole('button', { name: t('chat.send') }))
     await flush()
     const slot = done(PICKS)
     api.getSlot.mockResolvedValue(slot)
@@ -121,6 +122,7 @@ describe('coming back to the page', () => {
     render(<MoodMusicPage />)
     await flush()
     fireEvent.click(screen.getByRole('button', { name: t('mood_calm') }))
+    fireEvent.click(screen.getByRole('button', { name: t('chat.send') }))
     await flush()
     api.getSlot.mockResolvedValue(done({ question: '是哪种安静？', picks: [] }))
     api.state.mockResolvedValue({ ...EMPTY, moments: [MOMENT] })
@@ -136,6 +138,7 @@ describe('coming back to the page', () => {
     render(<MoodMusicPage />)
     await flush()
     fireEvent.click(screen.getByRole('button', { name: t('mood_calm') }))
+    fireEvent.click(screen.getByRole('button', { name: t('chat.send') }))
     await flush()
     api.getSlot.mockResolvedValue(searching)
     await flush(POLL_MS)
@@ -163,6 +166,7 @@ describe('coming back to the page', () => {
     render(<MoodMusicPage />)
     await flush()
     fireEvent.click(screen.getByRole('button', { name: t('mood_calm') }))
+    fireEvent.click(screen.getByRole('button', { name: t('chat.send') }))
     await flush()
     api.getSlot.mockResolvedValue(searching)
     await flush(POLL_MS)
@@ -234,26 +238,32 @@ describe('coming back to the page', () => {
     expect(scroller().scrollTop).toBe(340)
   })
 
-  it('gives the chat and Up next their own scroll areas, reachable by keyboard, and restores the chat scroll', async () => {
+  it('gives the record and Up next their own scroll areas, reachable by keyboard, and restores the record scroll', async () => {
     const slot = done(PICKS)
     api.state.mockResolvedValue(queuedState(slot))
     api.getSlot.mockResolvedValue(slot)
     render(<MoodMusicPage />)
     await flush()
-    const chat = screen.getByRole('region', { name: t('tab_listen') })
-    expect(chat).toHaveAttribute('tabindex', '0')
-    expect(chat).toHaveClass('mm-col')
+    const record = screen.getByRole('log', { name: t('chat.conversation') })
+    expect(record).toHaveAttribute('tabindex', '0')
+    expect(record).toHaveClass('mm-record')
     const upNext = screen.getByTestId('mood-queue')
     expect(upNext).toHaveAttribute('tabindex', '0')
     expect(upNext).toHaveAccessibleName(t('queue'))
-    // The player sits outside the chat's scroll area, so scrolling the chat never moves it.
-    expect(chat).not.toContainElement(screen.getByTestId('mood-browser-controls'))
+    // The player and the box sit outside the record's scroll area, so scrolling it never moves them.
+    expect(record).not.toContainElement(screen.getByTestId('mood-browser-controls'))
+    expect(record).not.toContainElement(screen.getByLabelText(t('mood_label')))
     expect(screen.getByTestId('mood-scroll')).toHaveClass('mm-split')
 
-    chat.scrollTop = 220
-    fireEvent.scroll(chat)
+    // A tall record, read back from the top: the person scrolled up from the bottom.
+    Object.defineProperty(record, 'scrollHeight', { configurable: true, value: 1000 })
+    Object.defineProperty(record, 'clientHeight', { configurable: true, value: 300 })
+    record.scrollTop = 700
+    fireEvent.scroll(record)
+    record.scrollTop = 220
+    fireEvent.scroll(record)
     await leaveAndReturn()
-    expect(screen.getByTestId('mood-chat-column').scrollTop).toBe(220)
+    expect(screen.getByTestId('mood-record').scrollTop).toBe(220)
   })
 
   it('keeps nothing too large, and ignores a saved view that does not read', async () => {

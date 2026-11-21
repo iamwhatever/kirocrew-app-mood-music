@@ -5,7 +5,7 @@
  * What the page shows is already durable elsewhere: the conversation is the
  * buddy's chat slot and the cards and queue are the app's storage. This keeps
  * only the view around them (tab, what is typed, which song is up, the scroll
- * position) and a turn still out, so its reply is read when the page is back.
+ * positions of the page and the buddy record) and a turn still out, so its reply is read when the page is back.
  *
  * It lives in this browser tab's `sessionStorage`, under one key, capped in
  * size: it is the person's own view, gone when the tab closes, and holds no
@@ -25,6 +25,8 @@ export interface SavedPending {
   memoryIds: string[]
   text: string
   stopped?: boolean
+  /** Sent from the one box: its moment is kept only once its picks land, so a command is no moment. */
+  say?: boolean
   /** A play request to the buddy (Crew Browser): the song, its site, and whether it asked for more. */
   play?: { pickId: string; site: 'youtube' | 'bilibili'; refill: boolean }
 }
@@ -39,6 +41,8 @@ export interface PageView {
   currentId: string | null
   slotKey: string | null
   scroll: number
+  /** The buddy record's own scroll. */
+  recordScroll?: number
   pending: SavedPending | null
   /** The queued song the Crew Browser tab plays, as the buddy last reported. */
   browserPick?: string | null
@@ -58,6 +62,7 @@ function readPending(v: unknown): SavedPending | null {
     memoryIds: Array.isArray(p.memoryIds) ? p.memoryIds.filter(i => typeof i === 'string').slice(0, 50).map(i => i.slice(0, 64)) : [],
     text: str(p.text, 300),
     stopped: p.stopped === true || undefined,
+    say: p.say === true || undefined,
     play: readPlay(p.play),
   }
 }
@@ -86,6 +91,7 @@ export function loadView(): Partial<PageView> | null {
       currentId: typeof v.currentId === 'string' ? v.currentId.slice(0, 64) : null,
       slotKey: typeof v.slotKey === 'string' ? v.slotKey.slice(0, 200) : null,
       scroll: typeof v.scroll === 'number' && v.scroll > 0 ? v.scroll : 0,
+      recordScroll: typeof v.recordScroll === 'number' && v.recordScroll > 0 ? v.recordScroll : 0,
       pending: readPending(v.pending),
       browserPick: typeof v.browserPick === 'string' ? v.browserPick.slice(0, 64) : null,
       endedFor: typeof v.endedFor === 'string' ? v.endedFor.slice(0, 64) : null,

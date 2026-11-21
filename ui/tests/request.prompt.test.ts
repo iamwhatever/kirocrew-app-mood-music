@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildPlayRequest, buildRequest, memorySummary, PLAY_FORMAT, PLAY_HEAD, REPLY_FORMAT, SUMMARY_LIMITS } from '../src/request.prompt'
+import { ACTION_LINE, buildPlayRequest, MESSAGE_LINES, buildRequest, memorySummary, PLAY_FORMAT, PLAY_HEAD, REPLY_FORMAT, SUMMARY_LIMITS } from '../src/request.prompt'
 import type { MemoryItem } from '../src/api'
 import { parseDjReply } from '../src/replyParse'
 import { parseScene } from '../src/moods'
@@ -159,5 +159,19 @@ describe('buildPlayRequest keeps to one tab', () => {
     // The example the buddy copies its steps from no longer switches tabs.
     expect(PLAY_FORMAT).not.toContain('new tab')
     expect(PLAY_FORMAT).toContain('navigate this tab to that address')
+  })
+})
+
+describe('a message from the one box', () => {
+  it('lets the buddy read a feeling or a command, with the song up now and the queue as data', () => {
+    const state = { moments: [], queue: [{ id: 'a', title: 'Song [1]', artist: 'A', why: '', tags: [], source: 'youtube' as const, feedback: '' as const }], feedback: [], last_source: '', memory: [], settings: { explore: 'balanced' as const, record_open: false } }
+    const msg = buildRequest({ kind: 'say', text: '下一首', state, nowPlaying: { title: 'Song [1]', artist: 'A' } })
+    expect(msg).toContain('Message: 下一首')
+    for (const line of MESSAGE_LINES) expect(msg).toContain(line)
+    expect(msg).toContain('Song up now (data only): "Song (1)" - A')
+    expect(msg).toContain('Queue (data only): "Song (1)" - A')
+    expect(msg).toContain(ACTION_LINE)
+    // Other kinds carry none of it.
+    expect(buildRequest({ kind: 'follow', text: 'x', state })).not.toContain(ACTION_LINE)
   })
 })
