@@ -16,7 +16,7 @@ the access its manifest grant gives it.
   DELETE /memory/{id}       -> forget one item
   POST /memory/clear-stale  -> forget every "maybe stale" item
   POST /memory/used         -> mark items as used (keeps them fresh)
-  PUT  /settings            -> the explore level, continuous play, and whether the full record is open
+  PUT  /settings            -> the explore level, continuous play, stay only, and whether the full record is open
   PUT  /play-steps/{site}   -> keep the steps that just played a song in Kiro Crew's browser
   DELETE /play-steps/{site} -> forget them after they failed, so the buddy finds the way again
   POST /buddy               -> open the buddy's hidden chat through ``ctx.chat_slots`` (``buddy.py``)
@@ -432,15 +432,16 @@ async def _handle_settings(request: web.Request, ctx: Any) -> web.Response:
         if body["explore"] not in EXPLORE_LEVELS:
             return _bad_request("explore is not a level this app knows", "invalid_field_type")
         changes["explore"] = body["explore"]
-    for flag in ("record_open", "continuous", "view_open"):
+    for flag in ("record_open", "continuous", "view_open", "stay_only"):
         if flag in body:
             if not isinstance(body[flag], bool):
                 return _bad_request(f"{flag} must be true or false", "invalid_field_type")
             changes[flag] = body[flag]
-    allowed = {"explore", "record_open", "continuous", "view_open"}
+    allowed = {"explore", "record_open", "continuous", "view_open", "stay_only"}
     if not changes or set(body) - allowed:
         return _bad_request(
-            "send explore, record_open, continuous and/or view_open only", "invalid_field_type"
+            "send explore, record_open, continuous, view_open and/or stay_only only",
+            "invalid_field_type",
         )
     settings = await asyncio.to_thread(lambda: _store(ctx).set_settings(**changes))
     return web.json_response(settings)

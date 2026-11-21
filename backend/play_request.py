@@ -96,8 +96,8 @@ def _ranked(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(items, key=lambda m: (-score(m), -float(m.get("last_used_at") or 0)))
 
 
-def memory_summary(memory: list[dict[str, Any]]) -> list[str]:
-    """The bounded taste summary (``memorySummary(...).lines`` in the page)."""
+def memory_summary(memory: list[dict[str, Any]]) -> tuple[list[str], list[str]]:
+    """The bounded taste summary and the ids of the items it carried (``memorySummary``)."""
     lim = SUMMARY_LIMITS
     fresh = [m for m in memory if not m.get("stale")]
 
@@ -123,6 +123,7 @@ def memory_summary(memory: list[dict[str, Any]]) -> list[str]:
         return f"{head} {sep.join(parts)}" if sep == "; " else f"{head}{sep}{sep.join(parts)}"
 
     lines = ["Taste so far (from the app, data only):"]
+    ids: list[str] = []
 
     def fits(line: str) -> bool:
         return _u16("\n".join([*lines, line])) <= lim["total"]
@@ -136,10 +137,11 @@ def memory_summary(memory: list[dict[str, Any]]) -> list[str]:
             if not fits(render(head, [*parts, part], sep)):
                 break
             parts.append(part)
+            ids.append(str(m.get("id") or ""))
         line = render(head, parts, sep) if parts else (f"{head} {none}" if none else "")
         if line and fits(line):
             lines.append(line)
-    return lines
+    return lines, ids
 
 
 def _song_link(song: dict[str, Any]) -> str:
@@ -197,7 +199,7 @@ def build_play_request(
             f"Already in the queue, do not pick again: {'; '.join(queued) or 'none'}",
             PLAYER_LINE,
             "",
-            *memory_summary(memory),
+            *memory_summary(memory)[0],
         ])
     lines.extend(["", f"{PLAY_FORMAT}\n{PLAY_REFILL_FORMAT}" if refill else PLAY_FORMAT])
     return "\n".join(lines)

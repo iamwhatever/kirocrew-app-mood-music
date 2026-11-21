@@ -126,6 +126,8 @@ export interface Settings {
   continuous?: boolean
   /** The buddy's live browser box in the player column is open. Absent on an older backend. */
   view_open?: boolean
+  /** Picks stay with the feeling instead of turning and lifting it. Absent until the person sets it. */
+  stay_only?: boolean
 }
 
 export interface SlotMessage {

@@ -220,6 +220,11 @@ export default function MoodMusicPage() {
     moodApi.state().then(async s => {
       if (!live) return
       setState(s)
+      // "Stay only" is kept with the backend, so a refill with the page closed
+      // follows it. One set before it was kept there is handed over once.
+      const stored = s.settings?.stay_only
+      if (typeof stored === 'boolean') setStayOnly(stored)
+      else if (saved?.stayOnly) void moodApi.setSettings({ stay_only: true }).catch(() => undefined)
       // Someone who talked to the buddy before sees that conversation again:
       // the slot holds it, so it is read back, not kept a second time.
       const out = saved?.pending
@@ -867,7 +872,7 @@ export default function MoodMusicPage() {
                   <button
                     type="button"
                     aria-pressed={stayOnly}
-                    onClick={() => setStayOnly(v => !v)}
+                    onClick={() => { setStayOnly(!stayOnly); saveSettings({ stay_only: !stayOnly }) }}
                     className={`mm-press rounded-full border px-3 py-1 text-xs transition-colors ${stayOnly
                       ? 'border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]'
                       : 'border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]'}`}

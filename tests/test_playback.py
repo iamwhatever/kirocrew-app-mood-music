@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import time
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -19,13 +20,14 @@ from typing import Any
 import pytest
 
 from backend import buddy, playback, verify
-from backend.play_request import build_play_request, reply_source
+from backend.play_request import build_play_request, memory_summary, reply_source
 from backend.store import MoodStore
 from tests.harness import make_ctx
 from tests.test_routes import _call
 
 GOLDEN = Path(__file__).parent / "fixtures" / "play_request_golden.json"
 VID = "dQw4w9WgXcQ"
+OLD = time.time() - 3600
 
 
 def ended(key: str = buddy.BUDDY_KEY) -> dict[str, Any]:
@@ -242,6 +244,69 @@ def test_a_low_queue_asks_for_more_and_adds_the_checked_picks(ctx, monkeypatch) 
     assert snap["last_source"] == reply_source(ctx.chat_slots.reply)
 
 
+def test_stay_only_set_on_the_page_then_page_closed_then_refill_follows_it(ctx) -> None:
+    queue(ctx, 2)
+    # The person turned "stay only" on in the page, then closed it.
+    assert _call(ctx, "PUT", "/settings", {"stay_only": True})[0] == 200
+    fire(ctx, ended())
+    assert "nearly empty" in ctx.chat_slots.sent[0]
+    assert "Arc: stay only" in ctx.chat_slots.sent[0]
+
+
+def test_a_refill_uses_the_default_arc_when_stay_only_was_never_set(ctx) -> None:
+    queue(ctx, 2)
+    assert "stay_only" not in store(ctx).snapshot()["settings"]
+    fire(ctx, ended())
+    assert "Arc: stay -> turn -> lift" in ctx.chat_slots.sent[0]
+    # Turned off again on the page: the default arc again.
+    _call(ctx, "PUT", "/settings", {"stay_only": True})
+    _call(ctx, "PUT", "/settings", {"stay_only": False})
+    assert store(ctx).snapshot()["settings"]["stay_only"] is False
+
+
+def test_stay_only_must_be_true_or_false(ctx) -> None:
+    status, body = _call(ctx, "PUT", "/settings", {"stay_only": "yes"})
+    assert (status, body["code"]) == (400, "invalid_field_type")
+
+
+def _old_memory(ctx: Any) -> list[str]:
+    """Two memory items last used an hour ago (not stale, so a request carries them); their ids."""
+    clock = {"now": OLD}
+    old = MoodStore(Path(ctx.data_dir) / "state.json", now=lambda: clock["now"])
+    ids = [old.add_memory("note", text="likes piano", origin="user")["id"],
+           old.add_memory("liked", title="苏州河", artist="薛凯琪", origin="app")["id"]]
+    return ids
+
+
+def test_a_backend_refill_marks_the_memory_it_carried_used(ctx, monkeypatch) -> None:
+    ids = _old_memory(ctx)
+    queue(ctx, 2)
+
+    async def keep_all(picks: list[dict[str, Any]], fetch: Any, **avoid: Any) -> Any:
+        return picks, {}
+
+    monkeypatch.setattr(verify, "verify_picks", keep_all)
+    ctx.chat_slots.reply = played(picks=[{"title": "Fresh", "artist": "New", "source": "youtube"}])
+    fire(ctx, ended())
+    assert "likes piano" in ctx.chat_slots.sent[0]
+    used = {m["id"]: m["last_used_at"] for m in store(ctx).snapshot()["memory"]}
+    assert all(used[i] > OLD for i in ids)
+
+
+def test_a_refill_that_adds_nothing_marks_nothing_used(ctx, monkeypatch) -> None:
+    ids = _old_memory(ctx)
+    queue(ctx, 2)
+
+    async def drop_all(picks: list[dict[str, Any]], fetch: Any, **avoid: Any) -> Any:
+        return [], {"not_found": len(picks)}
+
+    monkeypatch.setattr(verify, "verify_picks", drop_all)
+    ctx.chat_slots.reply = played(picks=[{"title": "Gone", "artist": "X", "source": "youtube"}])
+    fire(ctx, ended())
+    used = {m["id"]: m["last_used_at"] for m in store(ctx).snapshot()["memory"]}
+    assert all(used[i] == OLD for i in ids)
+
+
 def test_an_empty_queue_after_the_next_song_asks_for_more(ctx) -> None:
     q = queue(ctx, 2)
     song, refill = playback.next_pick(store(ctx).snapshot(), q[0]["id"])
@@ -315,5 +380,6 @@ def test_the_play_request_and_reply_id_match_the_page_word_for_word() -> None:
         out = build_play_request(song=i["song"], steps=i["steps"], why=i["why"], refill=i["refill"],
                                  memory=i["memory"], explore=i["explore"], stay_only=i["stay_only"])
         assert out == case["expected"], case["name"]
+        assert memory_summary(i["memory"])[1] == case["summary_ids"], case["name"]
     for source in golden["sources"]:
         assert reply_source(source["content"]) == source["expected"]

@@ -31,7 +31,7 @@ import re
 from typing import Any
 
 from . import buddy, links, verify
-from .play_request import REFILL_AT, build_play_request, reply_source
+from .play_request import REFILL_AT, build_play_request, memory_summary, reply_source
 from .store import PLAY_SITES, MemoryFull
 
 logger = logging.getLogger(__name__)
@@ -61,11 +61,18 @@ def next_pick(snapshot: dict[str, Any], pick_id: str) -> tuple[dict[str, Any] | 
     return playable[at + 1], len(playable) - (at + 2) <= REFILL_AT
 
 
-def play_message(snapshot: dict[str, Any], song: dict[str, Any], refill: bool) -> str:
-    """The page's play request for *song* after an ending, built from the stored state."""
+def play_message(
+    snapshot: dict[str, Any], song: dict[str, Any], refill: bool
+) -> tuple[str, list[str]]:
+    """The page's play request for *song* after an ending, built from the stored state.
+
+    With the ids of the memory items a refill request carried, marked used once
+    its picks land, as the page marks the memory behind a queue.
+    """
     settings = snapshot.get("settings") or {}
     moments = snapshot.get("moments") or []
-    return build_play_request(
+    memory = snapshot.get("memory") or []
+    message = build_play_request(
         song=song,
         steps=((snapshot.get("play_steps") or {}).get(song.get("source")) or {}).get("steps") or [],
         why="ended",
@@ -76,12 +83,12 @@ def play_message(snapshot: dict[str, Any], song: dict[str, Any], refill: bool) -
                 for p in snapshot.get("queue", [])
             ],
         } if refill else None,
-        memory=snapshot.get("memory") or [],
+        memory=memory,
         explore=settings.get("explore") or "balanced",
-        # shortcut: the page's "stay only" switch lives in the page alone; a wake
-        # with the page closed uses the default arc. Store it if people miss it.
-        stay_only=False,
+        # The page stores its "stay only" switch; off until the person sets it.
+        stay_only=settings.get("stay_only") is True,
     )
+    return message, (memory_summary(memory)[1] if refill else [])
 
 
 # ── the reply ──
@@ -176,7 +183,10 @@ def _latest_reply(rows: list[Any]) -> str:
     return ""
 
 
-async def after_turn(ctx: Any, state: Any, turn: asyncio.Task[Any], song: dict[str, Any]) -> None:
+async def after_turn(
+    ctx: Any, state: Any, turn: asyncio.Task[Any], song: dict[str, Any],
+    memory_ids: list[str] | None = None,
+) -> None:
     """Read the buddy's answer to a wake and keep what it says, as the page's ``afterPlay`` does."""
     from .routes import _store  # noqa: PLC0415
 
@@ -214,6 +224,9 @@ async def after_turn(ctx: Any, state: Any, turn: asyncio.Task[Any], song: dict[s
     if kept:
         await asyncio.to_thread(lambda: store.set_queue(
             kept, source=reply_source(reply), mood_tags=parsed["mood_tags"], append=True))
+        if memory_ids:
+            # The memory the refill request carried helped: keep it fresh (design §2.3).
+            await asyncio.to_thread(lambda: store.mark_used(memory_ids))
 
 
 async def on_media_ended(ctx: Any, event: Any) -> None:
@@ -245,15 +258,16 @@ async def on_media_ended(ctx: Any, event: Any) -> None:
     song, refill = next_pick(snapshot, pick_id)
     if song is None:
         return
+    message, memory_ids = play_message(snapshot, song, refill)
     try:
-        turn = slots.send(state, slot, play_message(snapshot, song, refill),
+        turn = slots.send(state, slot, message,
                           **({"reservation": reservation} if reservation is not None else {}))
     except (PermissionError, RuntimeError) as exc:
         logger.warning("mood-music: the buddy could not be woken: %s", exc)
         return
     if turn is None:
         return
-    follow = asyncio.ensure_future(after_turn(ctx, state, turn, song))
+    follow = asyncio.ensure_future(after_turn(ctx, state, turn, song, memory_ids))
     track = getattr(slots, "track", None)
     if callable(track):
         track(state, follow)

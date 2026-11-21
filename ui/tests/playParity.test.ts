@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 import golden from '../../tests/fixtures/play_request_golden.json'
 import type { MoodState } from '../src/api'
 import { replySource } from '../src/replyParse'
-import { buildPlayRequest, type ExploreLevel, type PlaySong } from '../src/request.prompt'
+import { buildPlayRequest, memorySummary, type ExploreLevel, type PlaySong } from '../src/request.prompt'
 
 describe('play request parity with the backend', () => {
   for (const c of golden.cases) {
@@ -21,6 +21,8 @@ describe('play request parity with the backend', () => {
         stayOnly: i.stay_only,
       })
       expect(out).toBe(c.expected)
+      // The memory a refill carried, which the backend marks used once its picks land.
+      expect(memorySummary(i.memory as never).ids).toEqual(c.summary_ids)
     })
   }
 

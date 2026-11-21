@@ -4869,6 +4869,9 @@ function MoodMusicPage() {
 		moodApi.state().then(async (s) => {
 			if (!live) return;
 			setState(s);
+			const stored = s.settings?.stay_only;
+			if (typeof stored === "boolean") setStayOnly(stored);
+			else if (saved?.stayOnly) moodApi.setSettings({ stay_only: true }).catch(() => void 0);
 			const out = saved?.pending;
 			if (s.last_source || s.moments.length || saved?.slotKey || out) {
 				const { key } = await moodApi.openSlot();
@@ -5586,7 +5589,10 @@ function MoodMusicPage() {
 											/* @__PURE__ */ jsx("button", {
 												type: "button",
 												"aria-pressed": stayOnly,
-												onClick: () => setStayOnly((v) => !v),
+												onClick: () => {
+													setStayOnly(!stayOnly);
+													saveSettings({ stay_only: !stayOnly });
+												},
 												className: `mm-press rounded-full border px-3 py-1 text-xs transition-colors ${stayOnly ? "border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]" : "border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]"}`,
 												children: t("chat.stay_only")
 											})

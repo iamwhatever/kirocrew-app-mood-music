@@ -149,6 +149,10 @@ class MoodStore:
         for flag in ("record_open", "view_open"):
             if isinstance(saved.get(flag), bool):
                 state["settings"][flag] = saved[flag]
+        # The page's "stay only" switch, kept here so a refill with the page closed
+        # follows it. Absent until the person sets it: readers default to off.
+        if isinstance(saved.get("stay_only"), bool):
+            state["settings"]["stay_only"] = saved["stay_only"]
         # Continuous play is on unless the person turned it off. Up to 0.2.6 the
         # file kept the old default (off) for everyone, so a stored ``false`` is
         # read only once it is the person's own choice (``continuous_choice``).
