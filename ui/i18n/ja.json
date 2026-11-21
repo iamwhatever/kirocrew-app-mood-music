@@ -86,7 +86,7 @@
     "hello": "こんにちは、音楽の相棒です。今の気持ちや、心に響いた曲を教えてください。",
     "you": "あなた",
     "buddy": "相棒",
-    "placeholder": "今の気持ち、または心に響いた曲…",
+    "placeholder": "気分を話すか、バディに再生してほしい曲を伝えて…",
     "send": "送信",
     "stop": "停止",
     "stopped": "停止しました。",
@@ -107,7 +107,6 @@
     "open_full": "完全なチャットで開く",
     "dismiss": "わかった",
     "error_title": "今回はうまくいきませんでした",
-    "show_record": "完全な記録を見る",
     "stuck_title": "相棒が止まっているようです",
     "stop_restart": "止めてやり直す",
     "wait": "もう少し待つ",
@@ -122,7 +121,10 @@
     "explore_balanced": "バランス",
     "explore_more": "もっと探索",
     "stay_only": "今日はこの気持ちのままでいたい",
-    "status_playing": "相棒が Kiro Crew のブラウザで曲を開いています…"
+    "status_playing": "相棒が Kiro Crew のブラウザで曲を開いています…",
+    "record_title": "バディがしていること",
+    "latest": "最新へ",
+    "no_next": "キューに次の曲がありません。"
   },
   "card": {
     "arc_stay": "寄り添う",

@@ -50,7 +50,17 @@ export interface DjReply {
   scene?: Scene
   /** The answer to a play request, when the block is one. */
   play?: PlayResult
+  /** What the person asked the player to do, which the page then does itself. */
+  action?: ReplyAction
 }
+
+/**
+ * A command the person typed in the box ("下一首", "暂停", "放苏州河"), as the
+ * buddy read it. `play`: play the reply's first pick now. The page runs each one
+ * with the same code as its own buttons.
+ */
+export type ReplyAction = 'next' | 'pause' | 'resume' | 'replay' | 'play'
+export const REPLY_ACTIONS: readonly ReplyAction[] = ['next', 'pause', 'resume', 'replay', 'play']
 
 /** What the buddy reports after a "Play in Crew Browser" request. */
 export interface PlayResult {
@@ -173,6 +183,7 @@ export function parseDjReply(content: string): DjReply | null {
     remember: text(d.remember, 60),
     ...sceneOf(d.scene),
     ...(playResult(d) ? { play: playResult(d) } : {}),
+    ...(oneOf(d.action, REPLY_ACTIONS) ? { action: oneOf(d.action, REPLY_ACTIONS) } : {}),
   }
 }
 

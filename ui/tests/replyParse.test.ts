@@ -135,3 +135,12 @@ describe('parseDjReply: a play report', () => {
     expect(parseDjReply(block({ picks: [] }))?.play).toBeUndefined()
   })
 })
+
+describe('a command from the box', () => {
+  it('reads a known action and ignores anything else', () => {
+    expect(parseDjReply(block({ action: 'next' }))?.action).toBe('next')
+    expect(parseDjReply(block({ action: 'play', picks: [{ title: 'A', source: 'youtube' }] }))?.action).toBe('play')
+    expect(parseDjReply(block({ action: 'delete everything' }))?.action).toBeUndefined()
+    expect(parseDjReply(block({ picks: [] }))).not.toHaveProperty('action')
+  })
+})

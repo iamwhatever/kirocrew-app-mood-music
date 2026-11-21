@@ -86,7 +86,7 @@
     "hello": "Hi, I'm your music buddy. Tell me how you feel, or a song that moved you.",
     "you": "You",
     "buddy": "Buddy",
-    "placeholder": "How do you feel, or a song that moved you…",
+    "placeholder": "Say how you feel, or tell your buddy what to play…",
     "send": "Send",
     "stop": "Stop",
     "stopped": "Stopped.",
@@ -107,7 +107,6 @@
     "open_full": "Open in full chat",
     "dismiss": "Got it",
     "error_title": "Something went wrong this time",
-    "show_record": "Show the full record",
     "stuck_title": "Your buddy seems stuck",
     "stop_restart": "Stop and start over",
     "wait": "Wait a bit more",
@@ -122,7 +121,10 @@
     "explore_balanced": "Balanced",
     "explore_more": "Explore more",
     "stay_only": "Just stay in this feeling today",
-    "status_playing": "Your buddy is opening the song in Kiro Crew's browser…"
+    "status_playing": "Your buddy is opening the song in Kiro Crew's browser…",
+    "record_title": "What your buddy is doing",
+    "latest": "Latest",
+    "no_next": "No next song in the queue."
   },
   "card": {
     "arc_stay": "Stay with it",

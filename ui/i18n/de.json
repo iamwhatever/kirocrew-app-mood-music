@@ -86,7 +86,7 @@
     "hello": "Hi, ich bin dein Musik-Buddy. Sag mir, wie du dich fühlst, oder einen Song, der dich berührt hat.",
     "you": "Du",
     "buddy": "Buddy",
-    "placeholder": "Wie fühlst du dich, oder ein Song, der dich berührt hat…",
+    "placeholder": "Sag, wie du dich fühlst, oder was dein Buddy spielen soll…",
     "send": "Senden",
     "stop": "Stopp",
     "stopped": "Gestoppt.",
@@ -107,7 +107,6 @@
     "open_full": "Im vollen Chat öffnen",
     "dismiss": "Verstanden",
     "error_title": "Diesmal ist etwas schiefgegangen",
-    "show_record": "Ganzen Verlauf zeigen",
     "stuck_title": "Dein Buddy scheint festzuhängen",
     "stop_restart": "Stoppen und neu starten",
     "wait": "Noch etwas warten",
@@ -122,7 +121,10 @@
     "explore_balanced": "Ausgewogen",
     "explore_more": "Mehr entdecken",
     "stay_only": "Heute einfach in diesem Gefühl bleiben",
-    "status_playing": "Dein Buddy öffnet den Song im Browser von Kiro Crew…"
+    "status_playing": "Dein Buddy öffnet den Song im Browser von Kiro Crew…",
+    "record_title": "Was dein Buddy gerade tut",
+    "latest": "Neueste",
+    "no_next": "Kein nächster Song in der Warteschlange."
   },
   "card": {
     "arc_stay": "Dabeibleiben",

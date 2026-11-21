@@ -5,9 +5,9 @@
  *
  * Tool names and search words never leave this module: the status says only
  * "thinking / searching / reading / writing" and how many times, and each turn's
- * steps are plain kinds ("searched", "read a page", "clicked"), always shown
- * with the conversation. The full record, with tools and URLs, is the collapsed
- * transcript below the chat.
+ * steps are plain kinds ("searched", "read a page", "clicked") and the notes
+ * the buddy wrote between them, always shown in the record with the
+ * conversation. Tool names and URLs stay in the full chat.
  */
 import type { SlotData, SlotMessage } from './api'
 import { replyText } from './replyParse'
@@ -23,11 +23,14 @@ export interface BuddyStatus {
 /** What one tool call did, in the person's words; never the tool's own name. */
 export type StepKind =
   | 'search' | 'read' | 'open' | 'click' | 'type' | 'look' | 'scroll' | 'wait' | 'back' | 'tab' | 'key' | 'browser' | 'other'
+  | 'note'
 
-/** A run of the same kind of step, in order. */
+/** A run of the same kind of step, in order. A `note` is the buddy's own words between steps. */
 export interface Step {
   kind: StepKind
   count: number
+  /** On a `note`: what the buddy wrote, fenced blocks removed. */
+  text?: string
 }
 
 export interface Line {
@@ -40,7 +43,7 @@ export interface Line {
 }
 
 /** The heads `request.prompt.ts` writes on the line after `[Mood Music]`. */
-const HEADS = ['Mood', 'Answer to your question', 'More like this song', 'Follow-up', 'Play in Crew Browser']
+const HEADS = ['Message', 'Mood', 'Answer to your question', 'More like this song', 'Follow-up', 'Play in Crew Browser']
 
 const msgs = (slot: SlotData | undefined): SlotMessage[] => slot?.messages ?? []
 
@@ -89,10 +92,21 @@ function stepOf(m: SlotMessage): StepKind | null {
   return tool ? 'other' : null
 }
 
-/** The tool rows of *rows* as steps, a run of one kind folded into one with its count. */
+/** Longest note shown in the record. */
+const NOTE_CHARS = 200
+
+/**
+ * The tool rows and the buddy's notes in *rows* as steps, in order; a run of
+ * one tool kind folds into one step with its count.
+ */
 export function stepsOf(rows: SlotMessage[]): Step[] {
   const out: Step[] = []
   for (const m of rows) {
+    if (m.role === 'assistant') {
+      const text = typeof m.content === 'string' ? replyText(m.content).slice(0, NOTE_CHARS) : ''
+      if (text) out.push({ kind: 'note', count: 1, text })
+      continue
+    }
     if (m.role !== 'tool') continue
     const kind = stepOf(m)
     if (!kind) continue
@@ -122,8 +136,8 @@ export function personText(content: string): string {
 /**
  * The conversation as the page draws it: the person's words and, per turn, the
  * buddy's LAST reply. The notes a model writes between tool calls ("I'll search
- * first") are working steps, not the answer: they stay in the full record. A
- * turn still running shows no buddy line yet; the status line speaks for it.
+ * first") are working steps, not the answer: they show among that turn's steps.
+ * A turn still running shows no buddy line yet; its live steps speak for it.
  */
 export function conversation(slot: SlotData | undefined): Line[] {
   const out: Line[] = []
@@ -136,10 +150,18 @@ export function conversation(slot: SlotData | undefined): Line[] {
     turn = []
   }
   for (const m of all) {
-    if (m.role === 'tool') { turn.push(m); continue }
+    if (m.role === 'tool') {
+      // A reply followed by more steps was a note on the way, not the answer.
+      if (last) { turn.push(last); last = null }
+      turn.push(m)
+      continue
+    }
     if (typeof m.content !== 'string' || !m.content.trim()) continue
     if (m.role === 'user') { flush(); out.push({ who: 'you', text: personText(m.content) }) }
-    else if (m.role === 'assistant') last = m
+    else if (m.role === 'assistant') {
+      if (last) turn.push(last)
+      last = m
+    }
   }
   if (!slot?.running) flush()
   return out

@@ -1,7 +1,7 @@
 import * as sdk from "@kirocrew/app-sdk";
 import { activeLocale, fmtDateTime, useAppApi, useChatLauncher, useLanguageGeneration, useNavigate } from "@kirocrew/app-sdk";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Brain, Check, ChevronRight, ExternalLink, Headphones, Heart, MessageCircleQuestion, MonitorPlay, Music, Pause, Pin, PinOff, Play, Repeat, Search, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Volume2, Waves, WifiOff } from "lucide-react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { ArrowDown, ArrowDownUp, Brain, Check, ChevronRight, ExternalLink, Eye, FileText, Globe, Headphones, Heart, Hourglass, Keyboard, MessageCircleQuestion, MessageSquare, MonitorPlay, MousePointerClick, Music, PanelTop, Pause, Pin, PinOff, Play, Repeat, Search, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Undo2, Volume2, Waves, WifiOff } from "lucide-react";
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from "@kirocrew/app-sdk/ui";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 // src/i18n.ts
@@ -108,7 +108,7 @@ var CATALOGS = {
 			"hello": "হাই, আমি আপনার গানের বন্ধু। বলুন কেমন লাগছে, বা কোন গান মন ছুঁয়েছে।",
 			"you": "আপনি",
 			"buddy": "বন্ধু",
-			"placeholder": "কেমন লাগছে, বা কোন গান মন ছুঁয়েছে…",
+			"placeholder": "কেমন লাগছে বলুন, বা সঙ্গীকে বলুন কী বাজাবে…",
 			"send": "পাঠান",
 			"stop": "থামান",
 			"stopped": "থামানো হয়েছে।",
@@ -129,7 +129,6 @@ var CATALOGS = {
 			"open_full": "পুরো চ্যাটে খুলুন",
 			"dismiss": "বুঝেছি",
 			"error_title": "এবার কিছু ভুল হয়েছে",
-			"show_record": "পুরো রেকর্ড দেখুন",
 			"stuck_title": "বন্ধু মনে হয় আটকে গেছে",
 			"stop_restart": "থামিয়ে আবার শুরু",
 			"wait": "আরেকটু অপেক্ষা",
@@ -144,7 +143,10 @@ var CATALOGS = {
 			"explore_balanced": "ভারসাম্য",
 			"explore_more": "আরও অন্বেষণ",
 			"stay_only": "আজ শুধু এই অনুভূতিতে থাকি",
-			"status_playing": "আপনার সঙ্গী Kiro Crew-এর ব্রাউজারে গানটি খুলছে…"
+			"status_playing": "আপনার সঙ্গী Kiro Crew-এর ব্রাউজারে গানটি খুলছে…",
+			"record_title": "আপনার সঙ্গী কী করছে",
+			"latest": "সর্বশেষ",
+			"no_next": "সারিতে পরের গান নেই।"
 		},
 		card: {
 			"arc_stay": "পাশে থাকা",
@@ -299,7 +301,7 @@ var CATALOGS = {
 			"hello": "Hi, ich bin dein Musik-Buddy. Sag mir, wie du dich fühlst, oder einen Song, der dich berührt hat.",
 			"you": "Du",
 			"buddy": "Buddy",
-			"placeholder": "Wie fühlst du dich, oder ein Song, der dich berührt hat…",
+			"placeholder": "Sag, wie du dich fühlst, oder was dein Buddy spielen soll…",
 			"send": "Senden",
 			"stop": "Stopp",
 			"stopped": "Gestoppt.",
@@ -320,7 +322,6 @@ var CATALOGS = {
 			"open_full": "Im vollen Chat öffnen",
 			"dismiss": "Verstanden",
 			"error_title": "Diesmal ist etwas schiefgegangen",
-			"show_record": "Ganzen Verlauf zeigen",
 			"stuck_title": "Dein Buddy scheint festzuhängen",
 			"stop_restart": "Stoppen und neu starten",
 			"wait": "Noch etwas warten",
@@ -335,7 +336,10 @@ var CATALOGS = {
 			"explore_balanced": "Ausgewogen",
 			"explore_more": "Mehr entdecken",
 			"stay_only": "Heute einfach in diesem Gefühl bleiben",
-			"status_playing": "Dein Buddy öffnet den Song im Browser von Kiro Crew…"
+			"status_playing": "Dein Buddy öffnet den Song im Browser von Kiro Crew…",
+			"record_title": "Was dein Buddy gerade tut",
+			"latest": "Neueste",
+			"no_next": "Kein nächster Song in der Warteschlange."
 		},
 		card: {
 			"arc_stay": "Dabeibleiben",
@@ -490,7 +494,7 @@ var CATALOGS = {
 			"hello": "Hi, I'm your music buddy. Tell me how you feel, or a song that moved you.",
 			"you": "You",
 			"buddy": "Buddy",
-			"placeholder": "How do you feel, or a song that moved you…",
+			"placeholder": "Say how you feel, or tell your buddy what to play…",
 			"send": "Send",
 			"stop": "Stop",
 			"stopped": "Stopped.",
@@ -511,7 +515,6 @@ var CATALOGS = {
 			"open_full": "Open in full chat",
 			"dismiss": "Got it",
 			"error_title": "Something went wrong this time",
-			"show_record": "Show the full record",
 			"stuck_title": "Your buddy seems stuck",
 			"stop_restart": "Stop and start over",
 			"wait": "Wait a bit more",
@@ -526,7 +529,10 @@ var CATALOGS = {
 			"explore_balanced": "Balanced",
 			"explore_more": "Explore more",
 			"stay_only": "Just stay in this feeling today",
-			"status_playing": "Your buddy is opening the song in Kiro Crew's browser…"
+			"status_playing": "Your buddy is opening the song in Kiro Crew's browser…",
+			"record_title": "What your buddy is doing",
+			"latest": "Latest",
+			"no_next": "No next song in the queue."
 		},
 		card: {
 			"arc_stay": "Stay with it",
@@ -681,7 +687,7 @@ var CATALOGS = {
 			"hello": "Hola, soy tu compañero musical. Cuéntame cómo te sientes o una canción que te emocionó.",
 			"you": "Tú",
 			"buddy": "Compañero",
-			"placeholder": "Cómo te sientes, o una canción que te emocionó…",
+			"placeholder": "Di cómo te sientes, o qué quieres que ponga tu compañero…",
 			"send": "Enviar",
 			"stop": "Parar",
 			"stopped": "Detenido.",
@@ -702,7 +708,6 @@ var CATALOGS = {
 			"open_full": "Abrir en el chat completo",
 			"dismiss": "Entendido",
 			"error_title": "Esta vez algo salió mal",
-			"show_record": "Ver el registro completo",
 			"stuck_title": "Tu compañero parece atascado",
 			"stop_restart": "Parar y empezar de nuevo",
 			"wait": "Esperar un poco más",
@@ -717,7 +722,10 @@ var CATALOGS = {
 			"explore_balanced": "Equilibrado",
 			"explore_more": "Explorar más",
 			"stay_only": "Hoy solo quiero quedarme en este sentimiento",
-			"status_playing": "Tu compañero está abriendo la canción en el navegador de Kiro Crew…"
+			"status_playing": "Tu compañero está abriendo la canción en el navegador de Kiro Crew…",
+			"record_title": "Lo que hace tu compañero",
+			"latest": "Lo último",
+			"no_next": "No hay siguiente canción en la cola."
 		},
 		card: {
 			"arc_stay": "Acompañar",
@@ -872,7 +880,7 @@ var CATALOGS = {
 			"hello": "Salut, je suis ton acolyte musical. Dis-moi ce que tu ressens, ou une chanson qui t’a ému.",
 			"you": "Toi",
 			"buddy": "Acolyte",
-			"placeholder": "Ce que tu ressens, ou une chanson qui t’a ému…",
+			"placeholder": "Dis ce que tu ressens, ou ce que ton compagnon doit jouer…",
 			"send": "Envoyer",
 			"stop": "Arrêter",
 			"stopped": "Arrêté.",
@@ -893,7 +901,6 @@ var CATALOGS = {
 			"open_full": "Ouvrir dans le chat complet",
 			"dismiss": "Compris",
 			"error_title": "Quelque chose s’est mal passé cette fois",
-			"show_record": "Voir l’historique complet",
 			"stuck_title": "Ton acolyte semble bloqué",
 			"stop_restart": "Arrêter et recommencer",
 			"wait": "Attendre encore un peu",
@@ -908,7 +915,10 @@ var CATALOGS = {
 			"explore_balanced": "Équilibré",
 			"explore_more": "Plus de découvertes",
 			"stay_only": "Aujourd’hui, rester dans cette émotion",
-			"status_playing": "Ton compagnon ouvre la chanson dans le navigateur de Kiro Crew…"
+			"status_playing": "Ton compagnon ouvre la chanson dans le navigateur de Kiro Crew…",
+			"record_title": "Ce que fait ton compagnon",
+			"latest": "Plus récent",
+			"no_next": "Pas de chanson suivante dans la file."
 		},
 		card: {
 			"arc_stay": "Rester avec",
@@ -1063,7 +1073,7 @@ var CATALOGS = {
 			"hello": "नमस्ते, मैं आपका संगीत साथी हूँ। बताइए आप कैसा महसूस कर रहे हैं, या कोई गाना जिसने आपको छुआ।",
 			"you": "आप",
 			"buddy": "साथी",
-			"placeholder": "आप कैसा महसूस कर रहे हैं, या कोई गाना जिसने छुआ…",
+			"placeholder": "बताइए आप कैसा महसूस करते हैं, या साथी क्या चलाए…",
 			"send": "भेजें",
 			"stop": "रोकें",
 			"stopped": "रोक दिया।",
@@ -1084,7 +1094,6 @@ var CATALOGS = {
 			"open_full": "पूरी चैट में खोलें",
 			"dismiss": "समझ गया",
 			"error_title": "इस बार कुछ गड़बड़ हुई",
-			"show_record": "पूरा रिकॉर्ड देखें",
 			"stuck_title": "साथी अटका हुआ लगता है",
 			"stop_restart": "रोककर फिर शुरू करें",
 			"wait": "थोड़ा और रुकें",
@@ -1099,7 +1108,10 @@ var CATALOGS = {
 			"explore_balanced": "संतुलित",
 			"explore_more": "और खोज",
 			"stay_only": "आज बस इसी एहसास में रहना है",
-			"status_playing": "आपका साथी Kiro Crew के ब्राउज़र में गाना खोल रहा है…"
+			"status_playing": "आपका साथी Kiro Crew के ब्राउज़र में गाना खोल रहा है…",
+			"record_title": "आपका साथी क्या कर रहा है",
+			"latest": "नया",
+			"no_next": "कतार में अगला गाना नहीं है।"
 		},
 		card: {
 			"arc_stay": "साथ रहना",
@@ -1254,7 +1266,7 @@ var CATALOGS = {
 			"hello": "Ciao, sono il tuo compagno musicale. Dimmi come ti senti o una canzone che ti ha emozionato.",
 			"you": "Tu",
 			"buddy": "Compagno",
-			"placeholder": "Come ti senti, o una canzone che ti ha emozionato…",
+			"placeholder": "Di' come ti senti, o cosa deve suonare il tuo compagno…",
 			"send": "Invia",
 			"stop": "Ferma",
 			"stopped": "Fermato.",
@@ -1275,7 +1287,6 @@ var CATALOGS = {
 			"open_full": "Apri nella chat completa",
 			"dismiss": "Ho capito",
 			"error_title": "Questa volta qualcosa è andato storto",
-			"show_record": "Mostra la cronologia completa",
 			"stuck_title": "Il tuo compagno sembra bloccato",
 			"stop_restart": "Ferma e ricomincia",
 			"wait": "Aspetta ancora un po’",
@@ -1290,7 +1301,10 @@ var CATALOGS = {
 			"explore_balanced": "Equilibrato",
 			"explore_more": "Esplora di più",
 			"stay_only": "Oggi voglio solo restare in questa emozione",
-			"status_playing": "Il tuo compagno sta aprendo la canzone nel browser di Kiro Crew…"
+			"status_playing": "Il tuo compagno sta aprendo la canzone nel browser di Kiro Crew…",
+			"record_title": "Cosa sta facendo il tuo compagno",
+			"latest": "Più recenti",
+			"no_next": "Nessun brano successivo in coda."
 		},
 		card: {
 			"arc_stay": "Restare",
@@ -1445,7 +1459,7 @@ var CATALOGS = {
 			"hello": "こんにちは、音楽の相棒です。今の気持ちや、心に響いた曲を教えてください。",
 			"you": "あなた",
 			"buddy": "相棒",
-			"placeholder": "今の気持ち、または心に響いた曲…",
+			"placeholder": "気分を話すか、バディに再生してほしい曲を伝えて…",
 			"send": "送信",
 			"stop": "停止",
 			"stopped": "停止しました。",
@@ -1466,7 +1480,6 @@ var CATALOGS = {
 			"open_full": "完全なチャットで開く",
 			"dismiss": "わかった",
 			"error_title": "今回はうまくいきませんでした",
-			"show_record": "完全な記録を見る",
 			"stuck_title": "相棒が止まっているようです",
 			"stop_restart": "止めてやり直す",
 			"wait": "もう少し待つ",
@@ -1481,7 +1494,10 @@ var CATALOGS = {
 			"explore_balanced": "バランス",
 			"explore_more": "もっと探索",
 			"stay_only": "今日はこの気持ちのままでいたい",
-			"status_playing": "相棒が Kiro Crew のブラウザで曲を開いています…"
+			"status_playing": "相棒が Kiro Crew のブラウザで曲を開いています…",
+			"record_title": "バディがしていること",
+			"latest": "最新へ",
+			"no_next": "キューに次の曲がありません。"
 		},
 		card: {
 			"arc_stay": "寄り添う",
@@ -1636,7 +1652,7 @@ var CATALOGS = {
 			"hello": "안녕, 나는 너의 음악 단짝이야. 지금 기분이나 마음을 울린 노래를 알려 줘.",
 			"you": "나",
 			"buddy": "단짝",
-			"placeholder": "지금 기분이나 마음을 울린 노래…",
+			"placeholder": "기분을 말하거나, 버디에게 틀어 줄 곡을 말해 주세요…",
 			"send": "보내기",
 			"stop": "멈춤",
 			"stopped": "멈췄어요.",
@@ -1657,7 +1673,6 @@ var CATALOGS = {
 			"open_full": "전체 채팅에서 열기",
 			"dismiss": "알겠어요",
 			"error_title": "이번엔 문제가 생겼어요",
-			"show_record": "전체 기록 보기",
 			"stuck_title": "단짝이 멈춘 것 같아요",
 			"stop_restart": "멈추고 다시 시작",
 			"wait": "조금 더 기다리기",
@@ -1672,7 +1687,10 @@ var CATALOGS = {
 			"explore_balanced": "균형",
 			"explore_more": "더 탐색",
 			"stay_only": "오늘은 이 기분 그대로 있고 싶어",
-			"status_playing": "친구가 Kiro Crew 브라우저에서 노래를 여는 중이에요…"
+			"status_playing": "친구가 Kiro Crew 브라우저에서 노래를 여는 중이에요…",
+			"record_title": "버디가 하고 있는 일",
+			"latest": "최신",
+			"no_next": "대기열에 다음 곡이 없어요."
 		},
 		card: {
 			"arc_stay": "곁에 머물기",
@@ -1827,7 +1845,7 @@ var CATALOGS = {
 			"hello": "Oi, sou seu parceiro musical. Conte como você se sente ou uma música que te emocionou.",
 			"you": "Você",
 			"buddy": "Parceiro",
-			"placeholder": "Como você se sente, ou uma música que te emocionou…",
+			"placeholder": "Diga como você se sente, ou o que seu parceiro deve tocar…",
 			"send": "Enviar",
 			"stop": "Parar",
 			"stopped": "Parado.",
@@ -1848,7 +1866,6 @@ var CATALOGS = {
 			"open_full": "Abrir no chat completo",
 			"dismiss": "Entendi",
 			"error_title": "Algo deu errado desta vez",
-			"show_record": "Ver o registro completo",
 			"stuck_title": "Seu parceiro parece travado",
 			"stop_restart": "Parar e recomeçar",
 			"wait": "Esperar mais um pouco",
@@ -1863,7 +1880,10 @@ var CATALOGS = {
 			"explore_balanced": "Equilibrado",
 			"explore_more": "Explorar mais",
 			"stay_only": "Hoje só quero ficar neste sentimento",
-			"status_playing": "Seu parceiro está abrindo a música no navegador do Kiro Crew…"
+			"status_playing": "Seu parceiro está abrindo a música no navegador do Kiro Crew…",
+			"record_title": "O que seu parceiro está fazendo",
+			"latest": "Mais recente",
+			"no_next": "Não há próxima música na fila."
 		},
 		card: {
 			"arc_stay": "Ficar junto",
@@ -2018,7 +2038,7 @@ var CATALOGS = {
 			"hello": "Привет, я ваш музыкальный друг. Расскажите, что вы чувствуете, или назовите песню, которая тронула.",
 			"you": "Вы",
 			"buddy": "Друг",
-			"placeholder": "Что вы чувствуете, или песня, которая тронула…",
+			"placeholder": "Расскажите, что чувствуете, или что включить напарнику…",
 			"send": "Отправить",
 			"stop": "Стоп",
 			"stopped": "Остановлено.",
@@ -2039,7 +2059,6 @@ var CATALOGS = {
 			"open_full": "Открыть в полном чате",
 			"dismiss": "Понятно",
 			"error_title": "В этот раз что-то пошло не так",
-			"show_record": "Показать полную запись",
 			"stuck_title": "Похоже, друг застрял",
 			"stop_restart": "Остановить и начать заново",
 			"wait": "Подождать ещё",
@@ -2054,7 +2073,10 @@ var CATALOGS = {
 			"explore_balanced": "Баланс",
 			"explore_more": "Больше открытий",
 			"stay_only": "Сегодня просто побыть в этом чувстве",
-			"status_playing": "Ваш напарник открывает песню в браузере Kiro Crew…"
+			"status_playing": "Ваш напарник открывает песню в браузере Kiro Crew…",
+			"record_title": "Что делает ваш напарник",
+			"latest": "К новым",
+			"no_next": "В очереди нет следующей песни."
 		},
 		card: {
 			"arc_stay": "Побыть рядом",
@@ -2209,7 +2231,7 @@ var CATALOGS = {
 			"hello": "嗨，我是你的音乐搭子。说说你现在的心情，或一首打动你的歌。",
 			"you": "你",
 			"buddy": "搭子",
-			"placeholder": "说说你的心情，或一首打动你的歌…",
+			"placeholder": "说说心情，或者告诉搭子：下一首、换成粤语…",
 			"send": "发送",
 			"stop": "停",
 			"stopped": "已停下。",
@@ -2230,7 +2252,6 @@ var CATALOGS = {
 			"open_full": "在完整聊天打开",
 			"dismiss": "知道了",
 			"error_title": "这一轮出错了",
-			"show_record": "查看完整记录",
 			"stuck_title": "搭子好像卡住了",
 			"stop_restart": "停下重来",
 			"wait": "再等等",
@@ -2245,7 +2266,10 @@ var CATALOGS = {
 			"explore_balanced": "平衡",
 			"explore_more": "多探索",
 			"stay_only": "今天只想待在这个情绪里",
-			"status_playing": "搭子正在 Kiro Crew 的浏览器里打开这首歌…"
+			"status_playing": "搭子正在 Kiro Crew 的浏览器里打开这首歌…",
+			"record_title": "搭子在做什么",
+			"latest": "最新",
+			"no_next": "队列里没有下一首了。"
 		},
 		card: {
 			"arc_stay": "陪着",
@@ -2656,6 +2680,13 @@ function moodLookFor(texts) {
 * bad pick is dropped, and lengths are cut to the backend's limits. Text is only
 * ever rendered as React text, never as HTML.
 */
+var REPLY_ACTIONS = [
+	"next",
+	"pause",
+	"resume",
+	"replay",
+	"play"
+];
 var MAX_STEPS = 8;
 var MAX_STEP_CHARS = 120;
 var STEP_BAD_RE = /[\u0000-\u001f\u007f\u2028\u2029`[\]]/;
@@ -2780,7 +2811,8 @@ function parseDjReply(content) {
 		followUps: tags(d.follow_ups, 40, 3),
 		remember: text(d.remember, 60),
 		...sceneOf(d.scene),
-		...playResult(d) ? { play: playResult(d) } : {}
+		...playResult(d) ? { play: playResult(d) } : {},
+		...oneOf(d.action, REPLY_ACTIONS) ? { action: oneOf(d.action, REPLY_ACTIONS) } : {}
 	};
 }
 /** `{scene}` when the block's scene fits the bounds, else nothing: the page keeps its scene. */
@@ -3188,77 +3220,54 @@ function BrowserView({ open, onToggle, operating, live }) {
 }
 // src/BuddySteps.tsx
 /**
-* What the buddy did in a turn, in plain words ("Searched the web × 3 · Read a
-* page · Opened a page · Clicked"), under its reply or under the live status.
-* Never a tool name, a search word or an address: those stay in the full record.
+* What the buddy did in a turn, in plain words, one step per row in the order
+* it happened: "Searched the web × 3", "Read a page", "Opened a page",
+* "Clicked", and the short notes it wrote on the way. Never a tool name, a
+* search word or an address: those stay in the full chat.
 */
+var ICONS = {
+	search: Search,
+	read: FileText,
+	open: Globe,
+	click: MousePointerClick,
+	type: Keyboard,
+	look: Eye,
+	scroll: ArrowDownUp,
+	wait: Hourglass,
+	back: Undo2,
+	tab: PanelTop,
+	key: Keyboard,
+	browser: Globe,
+	other: Sparkles,
+	note: MessageSquare
+};
 function BuddySteps({ steps, testId }) {
 	if (!steps.length) return null;
 	return /* @__PURE__ */ jsx("ol", {
 		"aria-label": t("steps.label"),
-		className: "mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[var(--muted)]",
+		className: "mm-steps mt-1.5 flex flex-col gap-1 text-xs text-[var(--muted)]",
 		"data-testid": testId,
-		children: steps.map((s, i) => /* @__PURE__ */ jsxs("li", {
-			className: "inline-flex items-center gap-1.5",
-			children: [i > 0 && /* @__PURE__ */ jsx("span", {
-				"aria-hidden": "true",
-				children: "·"
-			}), /* @__PURE__ */ jsx("span", { children: s.count > 1 ? t("steps.times", {
+		children: steps.map((s, i) => {
+			const Icon = ICONS[s.kind];
+			const words = s.kind === "note" ? s.text ?? "" : s.count > 1 ? t("steps.times", {
 				step: t(`steps.${s.kind}`),
 				count: s.count
-			}) : t(`steps.${s.kind}`) })]
-		}, i))
-	});
-}
-// src/FullRecord.tsx
-/**
-* "Show the full record" (design §1.9): the buddy's whole slot in Kiro Crew's
-* own transcript, with tool names, search words, URLs, the raw block and the
-* memory summary the page added. Collapsed by default; the page remembers
-* whether the person left it open.
-*
-* `ChatEmbed` is read off a namespace import, so a host without it still loads
-* the bundle; there the record is reached through "Open in full chat" alone.
-*/
-function FullRecord({ slotKey, open, onToggle, onSend }) {
-	const { openChat } = sdk.useChatLauncher();
-	const Embed = sdk.ChatEmbed;
-	if (!slotKey) return null;
-	return /* @__PURE__ */ jsxs("section", {
-		id: "mood-full-record",
-		className: "flex flex-col gap-2",
-		"data-testid": "mood-full-record",
-		children: [/* @__PURE__ */ jsxs("div", {
-			className: "flex flex-wrap items-center gap-2",
-			children: [/* @__PURE__ */ jsxs("button", {
-				type: "button",
-				"aria-expanded": open,
-				"aria-controls": "mood-full-record-body",
-				onClick: () => onToggle(!open),
-				className: "inline-flex items-center gap-1 text-xs text-[var(--muted)] hover:text-[var(--text)]",
-				children: [/* @__PURE__ */ jsx(ChevronRight, {
-					size: 13,
-					"aria-hidden": "true",
-					className: open ? "rotate-90" : ""
-				}), t("chat.show_record")]
-			}), /* @__PURE__ */ jsxs(Btn, {
-				type: "button",
-				onClick: () => openChat({ slotKey }),
-				children: [/* @__PURE__ */ jsx(ExternalLink, {
-					size: 13,
-					"aria-hidden": "true"
-				}), t("chat.open_full")]
-			})]
-		}), open && Embed && /* @__PURE__ */ jsx("div", {
-			id: "mood-full-record-body",
-			style: { height: 420 },
-			children: /* @__PURE__ */ jsx(Embed, {
-				slotKey,
-				agent: "mood-music-dj",
-				startAtBottom: true,
-				onSend
-			})
-		})]
+			}) : t(`steps.${s.kind}`);
+			return /* @__PURE__ */ jsxs("li", {
+				className: "mm-step flex items-start gap-1.5",
+				"data-kind": s.kind,
+				children: [/* @__PURE__ */ jsx("span", {
+					className: "mt-[1px] shrink-0",
+					children: /* @__PURE__ */ jsx(Icon, {
+						size: 12,
+						"aria-hidden": "true"
+					})
+				}), /* @__PURE__ */ jsx("span", {
+					className: s.kind === "note" ? "italic text-[var(--text)] opacity-80" : "",
+					children: words
+				})]
+			}, i);
+		})
 	});
 }
 // src/MemoryTab.tsx
@@ -4034,8 +4043,9 @@ var PLAYER_LINE = "Player: Kiro Crew's browser. Give every pick the site that ha
 * of what the person liked and skipped, marked as data for the agent.
 */
 function buildRequest(opts) {
-	const { kind, text, state, explore = "balanced", stayOnly = false } = opts;
+	const { kind, text, state, explore = "balanced", stayOnly = false, nowPlaying = null } = opts;
 	const head = {
+		say: "Message",
 		mood: "Mood",
 		answer: "Answer to your question",
 		more: "More like this song",
@@ -4046,14 +4056,38 @@ function buildRequest(opts) {
 		"[Mood Music]",
 		`${head}: ${text}`,
 		"",
+		...kind === "say" ? [...messageLines(state, nowPlaying), ""] : [],
 		`Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`,
 		`Arc: ${stayOnly ? "stay only" : "stay -> turn -> lift"}`,
 		PLAYER_LINE,
 		"",
 		...memorySummary(state?.memory ?? []).lines,
 		"",
-		REPLY_FORMAT
+		REPLY_FORMAT,
+		...kind === "say" ? [ACTION_LINE] : []
 	].join("\n");
+}
+/**
+* The page has one box: a feeling and a command for the player go in the same
+* place, so the buddy reads which one it is. A command comes back as an
+* `action` the page runs with its own player code.
+*/
+var MESSAGE_LINES = [
+	"The person typed this in the one box on the page. It may be a feeling, a change of taste, or a command for the player. Read which, and answer in the reply format below:",
+	"- A feeling, a song that moved them, or a change of taste (\"换成粤语\", \"再安静一点\"): new picks as usual.",
+	"- Play one named song now (\"放苏州河\"): picks with that song first, and \"action\": \"play\". Do not open the browser: the page asks you to play it next.",
+	"- A player command: no picks, and \"action\" is \"next\" (the next song in the queue), \"pause\", \"resume\" or \"replay\" (the song up now, from the start). One short sentence is enough."
+];
+/** Added to the reply format of a `say` request. */
+var ACTION_LINE = "- \"action\" (optional): \"next\", \"pause\", \"resume\", \"replay\" or \"play\", only when the person asked the player to do that.";
+function messageLines(state, now) {
+	const song = (q) => `"${clean(q.title, 80)}"${q.artist ? ` - ${clean(q.artist, 60)}` : ""}`;
+	const queued = (state?.queue ?? []).filter((q) => q.feedback !== "skipped").slice(0, 12).map(song);
+	return [
+		...MESSAGE_LINES,
+		`Song up now (data only): ${now ? song(now) : "none"}`,
+		`Queue (data only): ${queued.join("; ") || "empty"}`
+	];
 }
 /**
 * Text from memory made safe to sit inside the request as one line of data: no
@@ -4364,6 +4398,7 @@ function SongCard({ pick, playing, known, busy, onPlay, onLike, onSkip, onKnown 
 // src/turnState.ts
 /** The heads `request.prompt.ts` writes on the line after `[Mood Music]`. */
 var HEADS = [
+	"Message",
 	"Mood",
 	"Answer to your question",
 	"More like this song",
@@ -4421,10 +4456,24 @@ function stepOf(m) {
 	if (tool === "browser") return BROWSER_OPS[browserOp(m)] ?? "browser";
 	return tool ? "other" : null;
 }
-/** The tool rows of *rows* as steps, a run of one kind folded into one with its count. */
+/** Longest note shown in the record. */
+var NOTE_CHARS = 200;
+/**
+* The tool rows and the buddy's notes in *rows* as steps, in order; a run of
+* one tool kind folds into one step with its count.
+*/
 function stepsOf(rows) {
 	const out = [];
 	for (const m of rows) {
+		if (m.role === "assistant") {
+			const text = typeof m.content === "string" ? replyText(m.content).slice(0, NOTE_CHARS) : "";
+			if (text) out.push({
+				kind: "note",
+				count: 1,
+				text
+			});
+			continue;
+		}
 		if (m.role !== "tool") continue;
 		const kind = stepOf(m);
 		if (!kind) continue;
@@ -4452,8 +4501,8 @@ function personText(content) {
 /**
 * The conversation as the page draws it: the person's words and, per turn, the
 * buddy's LAST reply. The notes a model writes between tool calls ("I'll search
-* first") are working steps, not the answer: they stay in the full record. A
-* turn still running shows no buddy line yet; the status line speaks for it.
+* first") are working steps, not the answer: they show among that turn's steps.
+* A turn still running shows no buddy line yet; its live steps speak for it.
 */
 function conversation(slot) {
 	const out = [];
@@ -4472,6 +4521,10 @@ function conversation(slot) {
 	};
 	for (const m of all) {
 		if (m.role === "tool") {
+			if (last) {
+				turn.push(last);
+				last = null;
+			}
 			turn.push(m);
 			continue;
 		}
@@ -4482,7 +4535,10 @@ function conversation(slot) {
 				who: "you",
 				text: personText(m.content)
 			});
-		} else if (m.role === "assistant") last = m;
+		} else if (m.role === "assistant") {
+			if (last) turn.push(last);
+			last = m;
+		}
 	}
 	if (!slot?.running) flush();
 	return out;
@@ -4567,7 +4623,7 @@ function activityKey(slot) {
 * What the page shows is already durable elsewhere: the conversation is the
 * buddy's chat slot and the cards and queue are the app's storage. This keeps
 * only the view around them (tab, what is typed, which song is up, the scroll
-* position) and a turn still out, so its reply is read when the page is back.
+* positions of the page and the buddy record) and a turn still out, so its reply is read when the page is back.
 *
 * It lives in this browser tab's `sessionStorage`, under one key, capped in
 * size: it is the person's own view, gone when the tab closes, and holds no
@@ -4589,6 +4645,7 @@ function readPending(v) {
 		memoryIds: Array.isArray(p.memoryIds) ? p.memoryIds.filter((i) => typeof i === "string").slice(0, 50).map((i) => i.slice(0, 64)) : [],
 		text: str(p.text, 300),
 		stopped: p.stopped === true || void 0,
+		say: p.say === true || void 0,
 		play: readPlay(p.play)
 	};
 }
@@ -4618,6 +4675,7 @@ function loadView() {
 			currentId: typeof v.currentId === "string" ? v.currentId.slice(0, 64) : null,
 			slotKey: typeof v.slotKey === "string" ? v.slotKey.slice(0, 200) : null,
 			scroll: typeof v.scroll === "number" && v.scroll > 0 ? v.scroll : 0,
+			recordScroll: typeof v.recordScroll === "number" && v.recordScroll > 0 ? v.recordScroll : 0,
 			pending: readPending(v.pending),
 			browserPick: typeof v.browserPick === "string" ? v.browserPick.slice(0, 64) : null,
 			endedFor: typeof v.endedFor === "string" ? v.endedFor.slice(0, 64) : null
@@ -4638,11 +4696,17 @@ function saveView(view) {
 /**
 * MoodMusicPage — talk to your music buddy, hear songs with the same feeling.
 *
-* The Listen tab is a conversation with the buddy (design §1.6): the person's
-* words, the buddy's one or two sentences, and its picks as song cards, with a
-* status line ("thinking / searching / reading / writing / checking") that
-* never names a tool. The player and the queue sit beside it. Moments and
-* Memory are the other tabs.
+* The Listen tab is a conversation with the buddy (design §1.6). Its left
+* column is the buddy's record, always open: the person's words, every step
+* the buddy takes in plain words (searched, read a page, opened, clicked) and
+* the notes it writes on the way, its one or two sentences, and its picks as
+* song cards, newest at the bottom, with a status line that never names a
+* tool. Under it is the one box: a feeling ("this one makes me cry") and a
+* command ("next", "play Suzhou River") go in the same box and the same
+* conversation, and the buddy reads which it is. A command comes back as an
+* `action` the page runs with the player's own code. The player, the live view
+* and the queue sit beside it, and their buttons drive the browser tab directly,
+* never through the box. Moments and Memory are the other tabs.
 *
 * The page talks to the buddy through one app-owned chat slot (`api.ts`). The
 * App SDK gives an app bundle no slot push of its own (only `ChatEmbed` reads
@@ -4696,11 +4760,24 @@ var SPLIT_CSS = `
 .mm-queue-list { min-height: 12rem; max-height: 32rem; overflow-y: auto; overscroll-behavior: contain; padding-right: 0.25rem; }
 .mm-queue-num { flex: none; width: 1.25rem; padding-top: 0.125rem; display: inline-flex; justify-content: center; }
 .mm-clamp2 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+/* The buddy's record scrolls on its own. No scroll anchoring: the page itself follows new rows. */
+.mm-record { overflow-y: auto; overscroll-behavior: contain; overflow-anchor: none; min-height: 14rem; max-height: min(60vh, 36rem); }
+/* A new row rises in; a press gives at once. Transform and opacity only. */
+@keyframes mm-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.mm-row, .mm-step { animation: mm-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.mm-press { transition: transform 100ms ease-out, background-color 150ms ease-out; }
+.mm-press:active { transform: scale(0.97); }
+@media (prefers-reduced-motion: reduce) {
+  .mm-row, .mm-step { animation: none; }
+  .mm-press, .mm-press:active { transition: none; transform: none; }
+}
 @container (min-width: 860px) {
   div.mm-scroll.mm-split { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
   .mm-split > .mm-listen { flex: 1; min-height: 0; grid-template-columns: minmax(320px, 5fr) minmax(0, 7fr); align-items: stretch; }
-  /* No scroll anchoring: rows drawn in after a return must not push the restored position. */
-  .mm-col { min-height: 0; overflow-y: auto; overflow-anchor: none; padding-bottom: 1.5rem; }
+  /* The left column holds still: the record fills it and scrolls, the box stays at its foot. */
+  .mm-col { min-height: 0; overflow: hidden; padding-bottom: 1.5rem; }
+  .mm-record-card { flex: 1; }
+  .mm-record { flex: 1; min-height: 0; max-height: none; }
   .mm-player { min-height: 0; overflow-y: auto; overflow-anchor: none; padding-bottom: 1.5rem; }
 }
 @container (min-width: 720px) {
@@ -4739,7 +4816,8 @@ function MoodMusicPage() {
 	const [slot, setSlot] = useState();
 	const [text, setText] = useState(saved?.text ?? "");
 	const [chip, setChip] = useState(saved?.chip ?? null);
-	const [answer, setAnswer] = useState("");
+	const [action, setAction] = useState(null);
+	const inputRef = useRef(null);
 	const [scene, setScene] = useState(saved?.scene ?? presetScene("neutral"));
 	const [currentId, setCurrentId] = useState(saved?.currentId ?? null);
 	const [motionPaused, setMotionPaused] = useState(false);
@@ -4760,8 +4838,11 @@ function MoodMusicPage() {
 	const stoppedRef = useRef(false);
 	const [restored, setRestored] = useState(false);
 	const scrollRef = useRef(null);
-	const chatColRef = useRef(null);
+	const recordRef = useRef(null);
 	const scrollTopRef = useRef(saved?.scroll ?? 0);
+	const recordScrollRef = useRef(saved?.recordScroll ?? 0);
+	const stickRef = useRef(true);
+	const [atBottom, setAtBottom] = useState(true);
 	const slotRef = useRef(null);
 	const momentRef = useRef("");
 	const lastAskRef = useRef("");
@@ -4820,11 +4901,23 @@ function MoodMusicPage() {
 	const persist = useCallback(() => {
 		if (restored) saveView({
 			...viewRef.current,
-			scroll: scrollTopRef.current
+			scroll: scrollTopRef.current,
+			recordScroll: recordScrollRef.current
 		});
 	}, [restored]);
 	const onScrolled = (e) => {
+		if (e.target !== e.currentTarget) return;
 		scrollTopRef.current = e.currentTarget.scrollTop;
+		persist();
+	};
+	/** Whether *el* is scrolled to (near) its bottom. */
+	const nearBottom = (el) => el.scrollHeight - el.scrollTop - el.clientHeight < 32;
+	const onRecordScrolled = (e) => {
+		const el = e.currentTarget;
+		if (nearBottom(el)) stickRef.current = true;
+		else if (el.scrollTop < recordScrollRef.current) stickRef.current = false;
+		recordScrollRef.current = el.scrollTop;
+		setAtBottom(stickRef.current);
 		persist();
 	};
 	useEffect(persist, [
@@ -4841,12 +4934,17 @@ function MoodMusicPage() {
 		endedFor
 	]);
 	useEffect(() => {
-		if (!restored || !scrollTopRef.current) return;
-		for (const el of [scrollRef.current, chatColRef.current]) if (el) el.scrollTop = scrollTopRef.current;
+		if (!restored) return;
+		if (scrollTopRef.current && scrollRef.current) scrollRef.current.scrollTop = scrollTopRef.current;
+		const record = recordRef.current;
+		if (record && recordScrollRef.current) {
+			record.scrollTop = recordScrollRef.current;
+			stickRef.current = nearBottom(record);
+			setAtBottom(stickRef.current);
+		}
 	}, [restored]);
 	const queue = state?.queue ?? [];
 	const explore = state?.settings?.explore ?? "balanced";
-	const recordOpen = state?.settings?.record_open ?? false;
 	const viewOpen = state?.settings?.view_open ?? true;
 	const HostView = hostBrowserView();
 	const continuous = state?.settings?.continuous ?? true;
@@ -4869,7 +4967,7 @@ function MoodMusicPage() {
 	const current = queue.find((p) => p.id === currentId) ?? queue.find((p) => p.feedback !== "skipped") ?? null;
 	const knownSongs = useMemo(() => new Set((state?.memory ?? []).filter((m) => m.kind === "known").map((m) => songKey(m.title, m.artist))), [state?.memory]);
 	/** Send one turn to the buddy and start waiting for its reply. */
-	const ask = useCallback(async (message, shown, memoryIds, play) => {
+	const ask = useCallback(async (message, shown, memoryIds, play, say) => {
 		const known = slotRef.current ?? (await moodApi.openSlot()).key;
 		const before = await moodApi.getSlot(known).catch(() => void 0);
 		lastAskRef.current = message;
@@ -4882,8 +4980,11 @@ function MoodMusicPage() {
 			baseline: replyMark(before),
 			memoryIds,
 			text: shown,
-			...play ? { play } : {}
+			...play ? { play } : {},
+			...say ? { say } : {}
 		});
+		stickRef.current = true;
+		setAtBottom(true);
 	}, [moodApi]);
 	const pendingRef = useRef(pending);
 	pendingRef.current = pending;
@@ -4936,49 +5037,53 @@ function MoodMusicPage() {
 	}, []);
 	const send = (kind, words) => {
 		if (!words || pending || busy) return;
+		momentRef.current = "";
 		run(async () => {
-			if (kind === "mood") {
-				const moment = await moodApi.addMoment(words);
-				momentRef.current = moment.id;
-				setState((s) => s ? {
-					...s,
-					moments: [moment, ...s.moments]
-				} : s);
-			}
 			const { ids } = memorySummary(state?.memory ?? []);
+			const nowPlaying = current ? {
+				title: current.title,
+				artist: current.artist
+			} : null;
 			await ask(buildRequest({
 				kind,
 				text: words,
 				state,
 				explore,
-				stayOnly
-			}), words, ids);
+				stayOnly,
+				nowPlaying
+			}), words, ids, void 0, kind === "say");
 		});
 	};
-	/** Record the mood and ask the buddy for songs. A chip, or words that name one, set its scene now; other words keep the scene. */
-	const startMood = (mood, nextLook) => {
-		if (!mood || pending || busy) return;
-		if (nextLook !== "neutral") setScene(presetScene(nextLook));
-		send("mood", mood);
+	/**
+	* The one box. While the buddy's question is open, what is typed answers it;
+	* otherwise it is a message the buddy reads as a feeling or a command. A
+	* chip, or words that name a mood, set its scene now; other words keep it.
+	*/
+	const submitBox = (e) => {
+		e.preventDefault();
+		const typed = text.trim();
+		if (!typed || pending || busy) return;
+		if (openQuestion) send("answer", typed);
+		else {
+			const look = chip && typed.startsWith(moodLabel(chip)) ? chip : moodLookFor([typed]);
+			if (look !== "neutral") setScene(presetScene(look));
+			send("say", typed);
+		}
 		setText("");
 	};
-	const submitMood = (e) => {
-		e.preventDefault();
-		const typed = text.trim();
-		startMood(typed || (chip ? moodLabel(chip) : ""), chip ?? moodLookFor([typed]));
-	};
-	/** A chip is a search: its mood, plus whatever is typed in the box. */
+	/** A chip puts its mood at the start of the box, in place of another chip's, and leaves the rest typed. */
 	const pickChip = (key) => {
-		const typed = text.trim();
+		let rest = text.trim();
+		for (const k of MOOD_KEYS) {
+			const label = moodLabel(k);
+			if (rest.startsWith(label)) {
+				rest = rest.slice(label.length).replace(/^[\s:：,，]+/, "");
+				break;
+			}
+		}
 		setChip(key);
-		startMood(typed ? `${moodLabel(key)}: ${typed}` : moodLabel(key), key);
-	};
-	const submitAnswer = (e) => {
-		e.preventDefault();
-		const reply = answer.trim();
-		if (!reply) return;
-		setAnswer("");
-		send("answer", reply);
+		setText(rest ? `${moodLabel(key)}: ${rest}` : moodLabel(key));
+		inputRef.current?.focus();
 	};
 	const moreLike = (pick) => send("more", pick.artist ? `"${pick.title}" - ${pick.artist}` : `"${pick.title}"`);
 	const stop = () => {
@@ -5059,6 +5164,10 @@ function MoodMusicPage() {
 				if (!chipRef.current && tagLook !== "neutral") setScene((s) => s.source === "neutral" ? presetScene(tagLook) : s);
 			}
 			if (parsed.picks.length === 0) {
+				if (parsed.action && parsed.action !== "play") {
+					setAction({ kind: parsed.action });
+					return;
+				}
 				if (!parsed.question && !parsed.followUps.length) {
 					if (parsed.dropped > 0) {
 						setDroppedAll(parsed.dropped);
@@ -5077,15 +5186,20 @@ function MoodMusicPage() {
 					return;
 				}
 				if (dropped > 0) setNotice(t("page.dropped", { count: dropped }));
+				const momentId = pending.say ? (await moodApi.addMoment(pending.text)).id : pending.momentId;
 				const { queue: next } = await moodApi.setQueue({
 					source,
-					moment_id: pending.momentId || void 0,
+					moment_id: momentId || void 0,
 					mood_tags: parsed.moodTags,
 					picks: checked.picks
 				});
 				queueMemoryRef.current = pending.memoryIds;
 				setState(await moodApi.state());
 				setCurrentId(next[0]?.id ?? null);
+				if (parsed.action === "play" && next[0]) setAction({
+					kind: "play",
+					pickId: next[0].id
+				});
 			} catch (e) {
 				setError(errMessage(e) || "unknown");
 			} finally {
@@ -5232,6 +5346,27 @@ function MoodMusicPage() {
 		stoppedRef.current = false;
 		run(() => askPlay(current, "start"));
 	};
+	/** The next song after the current one that was not skipped. */
+	const nextPick = () => {
+		const playable = queue.filter((p) => p.feedback !== "skipped");
+		return playable[(current ? playable.findIndex((p) => p.id === current.id) : -1) + 1];
+	};
+	useEffect(() => {
+		if (!action || pending || busy) return;
+		setAction(null);
+		if (action.kind === "pause") pauseBrowser();
+		else if (action.kind === "resume") resumeBrowser();
+		else if (action.kind === "replay") replayBrowser();
+		else {
+			const pick = action.kind === "next" ? nextPick() : queue.find((p) => p.id === action.pickId);
+			if (pick) playPick(pick);
+			else setNotice(t("chat.no_next"));
+		}
+	}, [
+		action,
+		pending,
+		busy
+	]);
 	const approve = (id, action) => {
 		const key = slotRef.current;
 		if (!key) return;
@@ -5243,13 +5378,6 @@ function MoodMusicPage() {
 	};
 	const openFullChat = () => {
 		if (slotRef.current) openChat({ slotKey: slotRef.current });
-	};
-	const openRecord = () => {
-		if (!recordOpen) saveSettings({ record_open: true });
-		document.getElementById("mood-full-record")?.scrollIntoView?.({
-			behavior: reduceMotion ? "auto" : "smooth",
-			block: "start"
-		});
 	};
 	const retry = () => {
 		const again = lastAskRef.current;
@@ -5280,6 +5408,26 @@ function MoodMusicPage() {
 	const lastParsed = !pending && lastBuddy?.reply ? parseDjReply(lastBuddy.reply) : null;
 	const showYou = pending && pending.text && !(lines.length && lines[lines.length - 1].who === "you" && lines[lines.length - 1].text === pending.text);
 	const remember = lastParsed?.remember && lastParsed.remember !== dismissedRemember ? lastParsed.remember : "";
+	const openQuestion = lastParsed?.question && !pending ? lastParsed.question : "";
+	const recordKey = `${tab}|${lines.length}|${activityKey(slot)}|${status?.phase ?? ""}|${openQuestion}|${queue.length}|${!!approval}`;
+	const toEnd = (el) => {
+		if (typeof el.scrollTo === "function") el.scrollTo({
+			top: el.scrollHeight,
+			behavior: reduceMotion ? "auto" : "smooth"
+		});
+		else el.scrollTop = el.scrollHeight;
+	};
+	useLayoutEffect(() => {
+		const el = recordRef.current;
+		if (!el) return;
+		if (stickRef.current) toEnd(el);
+		else if (!el.scrollTop && recordScrollRef.current) el.scrollTop = recordScrollRef.current;
+	}, [recordKey]);
+	const toLatest = () => {
+		stickRef.current = true;
+		setAtBottom(true);
+		if (recordRef.current) toEnd(recordRef.current);
+	};
 	const unready = browserMode ? null : /* @__PURE__ */ jsx(Banner, {
 		testId: "mood-browser-unready",
 		title: t("browser.unready_title"),
@@ -5360,13 +5508,8 @@ function MoodMusicPage() {
 							className: "mm-listen",
 							"data-testid": "mood-listen",
 							children: [/* @__PURE__ */ jsxs("div", {
-								ref: chatColRef,
-								onScroll: onScrolled,
 								className: "mm-col flex min-w-0 flex-col gap-3",
 								"data-testid": "mood-chat-column",
-								role: "region",
-								"aria-label": t("page.tab_listen"),
-								tabIndex: 0,
 								children: [
 									/* @__PURE__ */ jsxs("div", {
 										className: "flex flex-wrap items-center gap-2",
@@ -5398,87 +5541,129 @@ function MoodMusicPage() {
 												type: "button",
 												"aria-pressed": stayOnly,
 												onClick: () => setStayOnly((v) => !v),
-												className: `rounded-full border px-3 py-1 text-xs transition-colors ${stayOnly ? "border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]" : "border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]"}`,
+												className: `mm-press rounded-full border px-3 py-1 text-xs transition-colors ${stayOnly ? "border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]" : "border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]"}`,
 												children: t("chat.stay_only")
 											})
 										]
 									}),
-									/* @__PURE__ */ jsx("div", {
-										role: "group",
-										"aria-label": t("page.mood_chips"),
-										className: "flex flex-wrap gap-2",
-										children: MOOD_KEYS.map((key) => /* @__PURE__ */ jsx("button", {
-											type: "button",
-											"aria-pressed": chip === key,
-											onClick: () => pickChip(key),
-											disabled: working,
-											className: `rounded-full border px-3 py-1 text-xs transition-colors ${chip === key ? "border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]" : "border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]"}`,
-											children: moodLabel(key)
-										}, key))
-									}),
 									/* @__PURE__ */ jsxs("section", {
-										"aria-label": t("chat.conversation"),
-										className: "flex flex-col gap-2",
-										"data-testid": "mood-chat",
+										className: "mm-record-card relative flex min-h-0 flex-col rounded-2xl border border-[var(--border)]",
+										style: CARD_STYLE,
+										"aria-labelledby": "mood-record-title",
+										"data-testid": "mood-record-card",
 										children: [
-											lines.length === 0 && !pending && /* @__PURE__ */ jsx("p", {
-												className: "text-sm text-[var(--muted)]",
-												children: t("chat.hello")
+											/* @__PURE__ */ jsxs("header", {
+												className: "flex items-center justify-between gap-2 border-b border-[var(--border)] px-3 py-2",
+												children: [/* @__PURE__ */ jsx("h2", {
+													id: "mood-record-title",
+													className: "text-xs font-semibold uppercase tracking-wide text-[var(--muted)]",
+													children: t("chat.record_title")
+												}), slotKey && /* @__PURE__ */ jsxs("button", {
+													type: "button",
+													onClick: openFullChat,
+													className: "mm-press inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs text-[var(--muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]",
+													children: [/* @__PURE__ */ jsx(ExternalLink, {
+														size: 12,
+														"aria-hidden": "true"
+													}), t("chat.open_full")]
+												})]
 											}),
-											lines.slice(-20).map((line, i) => line.who === "you" ? /* @__PURE__ */ jsxs("p", {
-												className: "self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]",
-												children: [/* @__PURE__ */ jsxs("span", {
-													className: "sr-only",
-													children: [t("chat.you"), ": "]
-												}), line.text]
-											}, i) : /* @__PURE__ */ jsxs("div", {
-												className: "max-w-[95%] rounded-2xl border border-[var(--border)] px-3 py-2",
-												style: CARD_STYLE,
-												children: [
-													/* @__PURE__ */ jsxs("p", {
-														className: "text-sm text-[var(--text)]",
-														children: [/* @__PURE__ */ jsx("span", {
-															className: "mr-1 font-semibold text-[var(--accent)]",
-															children: t("chat.buddy")
-														}), line.text]
-													}),
-													/* @__PURE__ */ jsx(BuddySteps, {
-														steps: line.steps ?? [],
-														testId: "mood-steps"
-													}),
-													line === lastBuddy && line.reply && replySource(line.reply) === state?.last_source && queue.length > 0 && /* @__PURE__ */ jsx("div", {
-														className: "mt-2 grid gap-2",
-														"data-testid": "mood-cards",
-														children: queue.map((p) => /* @__PURE__ */ jsx(SongCard, {
-															pick: p,
-															playing: current?.id === p.id,
-															known: knownSongs.has(songKey(p.title, p.artist)),
-															busy: working,
-															onPlay: () => playPick(p),
-															onLike: () => giveFeedback(p, p.feedback === "liked" ? "" : "liked"),
-															onSkip: () => giveFeedback(p, "skipped"),
-															onKnown: () => markKnown(p, "user")
-														}, p.id))
-													})
-												]
-											}, i)),
-											showYou && /* @__PURE__ */ jsx("p", {
-												className: "self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]",
-												children: pending.text
+											/* @__PURE__ */ jsx("div", {
+												ref: recordRef,
+												onScroll: onRecordScrolled,
+												className: "mm-record flex flex-col gap-2 px-3 py-3",
+												"data-testid": "mood-record",
+												role: "log",
+												"aria-label": t("chat.conversation"),
+												tabIndex: 0,
+												children: /* @__PURE__ */ jsxs("section", {
+													className: "flex flex-col gap-2",
+													"data-testid": "mood-chat",
+													children: [
+														lines.length === 0 && !pending && /* @__PURE__ */ jsx("p", {
+															className: "text-sm text-[var(--muted)]",
+															children: t("chat.hello")
+														}),
+														lines.slice(-30).map((line, i) => line.who === "you" ? /* @__PURE__ */ jsxs("p", {
+															className: "mm-row self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]",
+															children: [/* @__PURE__ */ jsxs("span", {
+																className: "sr-only",
+																children: [t("chat.you"), ": "]
+															}), line.text]
+														}, i) : /* @__PURE__ */ jsxs("div", {
+															className: "mm-row max-w-[95%]",
+															children: [
+																/* @__PURE__ */ jsx(BuddySteps, {
+																	steps: line.steps ?? [],
+																	testId: "mood-steps"
+																}),
+																/* @__PURE__ */ jsxs("p", {
+																	className: "mt-1.5 text-sm text-[var(--text)]",
+																	children: [/* @__PURE__ */ jsx("span", {
+																		className: "mr-1 font-semibold text-[var(--accent)]",
+																		children: t("chat.buddy")
+																	}), line.text]
+																}),
+																line === lastBuddy && line.reply && replySource(line.reply) === state?.last_source && queue.length > 0 && /* @__PURE__ */ jsx("div", {
+																	className: "mt-2 grid gap-2",
+																	"data-testid": "mood-cards",
+																	children: queue.map((p) => /* @__PURE__ */ jsx(SongCard, {
+																		pick: p,
+																		playing: current?.id === p.id,
+																		known: knownSongs.has(songKey(p.title, p.artist)),
+																		busy: working,
+																		onPlay: () => playPick(p),
+																		onLike: () => giveFeedback(p, p.feedback === "liked" ? "" : "liked"),
+																		onSkip: () => giveFeedback(p, "skipped"),
+																		onKnown: () => markKnown(p, "user")
+																	}, p.id))
+																})
+															]
+														}, i)),
+														showYou && /* @__PURE__ */ jsx("p", {
+															className: "mm-row self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]",
+															children: pending.text
+														}),
+														status && /* @__PURE__ */ jsx(BuddySteps, {
+															steps: liveSteps(slot),
+															testId: "mood-live-steps"
+														}),
+														status && /* @__PURE__ */ jsxs("p", {
+															role: "status",
+															className: "mm-row flex items-center gap-1.5 text-xs text-[var(--muted)]",
+															"data-testid": "mood-status",
+															children: [/* @__PURE__ */ jsx(Headphones, {
+																size: 13,
+																"aria-hidden": "true",
+																className: reduceMotion ? "" : "animate-pulse"
+															}), statusText(status)]
+														}),
+														openQuestion && /* @__PURE__ */ jsxs("div", {
+															className: "mm-row rounded-2xl border border-[var(--accent)] px-3 py-2",
+															"data-testid": "mood-question",
+															children: [/* @__PURE__ */ jsxs("p", {
+																className: "flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)]",
+																children: [/* @__PURE__ */ jsx(MessageCircleQuestion, {
+																	size: 14,
+																	"aria-hidden": "true"
+																}), t("page.question_label")]
+															}), /* @__PURE__ */ jsx("p", {
+																className: "mt-1 text-sm text-[var(--text)]",
+																children: openQuestion
+															})]
+														})
+													]
+												})
 											}),
-											status && /* @__PURE__ */ jsxs("p", {
-												role: "status",
-												className: "flex items-center gap-1.5 text-xs text-[var(--muted)]",
-												"data-testid": "mood-status",
-												children: [/* @__PURE__ */ jsx(Headphones, {
-													size: 13,
-													"aria-hidden": "true",
-													className: reduceMotion ? "" : "animate-pulse"
-												}), statusText(status)]
-											}),
-											status && /* @__PURE__ */ jsx(BuddySteps, {
-												steps: liveSteps(slot),
-												testId: "mood-live-steps"
+											!atBottom && /* @__PURE__ */ jsxs("button", {
+												type: "button",
+												onClick: toLatest,
+												className: "mm-press absolute bottom-2 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1 text-xs text-[var(--text)] shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]",
+												"data-testid": "mood-record-latest",
+												children: [/* @__PURE__ */ jsx(ArrowDown, {
+													size: 12,
+													"aria-hidden": "true"
+												}), t("chat.latest")]
 											})
 										]
 									}),
@@ -5528,8 +5713,8 @@ function MoodMusicPage() {
 											onClick: retry,
 											children: t("page.retry")
 										}), /* @__PURE__ */ jsx(Btn, {
-											onClick: openRecord,
-											children: t("chat.show_record")
+											onClick: openFullChat,
+											children: t("chat.open_full")
 										})]
 									}),
 									stuck && pending && /* @__PURE__ */ jsxs(Banner, {
@@ -5550,8 +5735,8 @@ function MoodMusicPage() {
 												children: t("chat.wait")
 											}),
 											/* @__PURE__ */ jsx(Btn, {
-												onClick: openRecord,
-												children: t("chat.show_record")
+												onClick: openFullChat,
+												children: t("chat.open_full")
 											})
 										]
 									}),
@@ -5568,67 +5753,47 @@ function MoodMusicPage() {
 											children: t("chat.reconnect")
 										})
 									}),
-									lastParsed?.question && !pending && /* @__PURE__ */ jsxs("form", {
-										onSubmit: submitAnswer,
-										className: "rounded-2xl border border-[var(--accent)] p-3",
-										style: CARD_STYLE,
-										"data-testid": "mood-question",
-										children: [
-											/* @__PURE__ */ jsxs("p", {
-												className: "flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)]",
-												children: [/* @__PURE__ */ jsx(MessageCircleQuestion, {
-													size: 14,
-													"aria-hidden": "true"
-												}), t("page.question_label")]
-											}),
-											/* @__PURE__ */ jsx("p", {
-												className: "mt-1 text-sm text-[var(--text)]",
-												children: lastParsed.question
-											}),
-											/* @__PURE__ */ jsxs("div", {
-												className: "mt-2 flex gap-2",
-												children: [/* @__PURE__ */ jsx("input", {
-													"aria-label": t("page.answer_placeholder"),
-													value: answer,
-													onChange: (e) => setAnswer(e.target.value),
-													maxLength: 300,
-													placeholder: t("page.answer_placeholder"),
-													className: "min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-												}), /* @__PURE__ */ jsx(Btn, {
-													type: "submit",
-													primary: true,
-													disabled: working || !answer.trim(),
-													children: t("page.send_answer")
-												})]
-											})
-										]
-									}),
-									!pending && ((lastParsed?.followUps.length ?? 0) > 0 || remember) && /* @__PURE__ */ jsxs("div", {
-										role: "group",
-										"aria-label": t("chat.follow_ups"),
-										className: "flex flex-wrap gap-2",
-										"data-testid": "mood-follow-ups",
-										children: [lastParsed.followUps.map((f) => /* @__PURE__ */ jsx(Btn, {
-											disabled: working,
-											onClick: () => send("follow", f),
-											children: f
-										}, f)), remember && /* @__PURE__ */ jsx(Btn, {
-											disabled: working,
-											onClick: () => {
-												setDismissedRemember(remember);
-												moodApi.addMemory({
-													kind: "note",
-													text: remember,
-													origin: "user"
-												}).then(refresh).then(() => setNotice(t("chat.remembered", { note: remember }))).catch((e) => setError(errMessage(e) || "unknown"));
-											},
-											children: t("chat.remember", { note: remember })
-										})]
-									}),
 									/* @__PURE__ */ jsxs("form", {
-										onSubmit: submitMood,
-										className: "flex flex-col gap-2",
+										onSubmit: submitBox,
+										className: "mm-composer flex flex-col gap-2",
+										"data-testid": "mood-composer",
 										children: [
+											!pending && ((lastParsed?.followUps.length ?? 0) > 0 || remember) && /* @__PURE__ */ jsxs("div", {
+												role: "group",
+												"aria-label": t("chat.follow_ups"),
+												className: "flex flex-wrap gap-2",
+												"data-testid": "mood-follow-ups",
+												children: [lastParsed.followUps.map((f) => /* @__PURE__ */ jsx(Btn, {
+													type: "button",
+													disabled: working,
+													onClick: () => send("follow", f),
+													children: f
+												}, f)), remember && /* @__PURE__ */ jsx(Btn, {
+													type: "button",
+													disabled: working,
+													onClick: () => {
+														setDismissedRemember(remember);
+														moodApi.addMemory({
+															kind: "note",
+															text: remember,
+															origin: "user"
+														}).then(refresh).then(() => setNotice(t("chat.remembered", { note: remember }))).catch((e) => setError(errMessage(e) || "unknown"));
+													},
+													children: t("chat.remember", { note: remember })
+												})]
+											}),
+											/* @__PURE__ */ jsx("div", {
+												role: "group",
+												"aria-label": t("page.mood_chips"),
+												className: "flex flex-wrap gap-2",
+												children: MOOD_KEYS.map((key) => /* @__PURE__ */ jsx("button", {
+													type: "button",
+													"aria-pressed": chip === key,
+													onClick: () => pickChip(key),
+													className: `mm-press rounded-full border px-3 py-1 text-xs transition-colors ${chip === key ? "border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]" : "border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]"}`,
+													children: moodLabel(key)
+												}, key))
+											}),
 											/* @__PURE__ */ jsx("label", {
 												id: "mood-input-label",
 												htmlFor: "mood-input",
@@ -5638,15 +5803,17 @@ function MoodMusicPage() {
 											/* @__PURE__ */ jsxs("div", {
 												className: "flex gap-2",
 												children: [/* @__PURE__ */ jsx("input", {
+													ref: inputRef,
 													id: "mood-input",
 													"aria-labelledby": "mood-input-label",
 													value: text,
 													onChange: (e) => setText(e.target.value),
 													maxLength: 200,
-													placeholder: t("chat.placeholder"),
-													className: "min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+													placeholder: openQuestion ? t("page.answer_placeholder") : t("chat.placeholder"),
+													className: "min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
 												}), pending ? /* @__PURE__ */ jsxs(Btn, {
 													type: "button",
+													className: "shrink-0 whitespace-nowrap",
 													onClick: stop,
 													disabled: pending.stopped,
 													children: [/* @__PURE__ */ jsx(Square, {
@@ -5656,7 +5823,8 @@ function MoodMusicPage() {
 												}) : /* @__PURE__ */ jsxs(Btn, {
 													type: "submit",
 													primary: true,
-													disabled: working || !text.trim() && !chip,
+													className: "shrink-0 whitespace-nowrap",
+													disabled: working || !text.trim(),
 													children: [/* @__PURE__ */ jsx(Send, {
 														size: 14,
 														"aria-hidden": "true"
@@ -5674,12 +5842,6 @@ function MoodMusicPage() {
 												children: notice
 											})
 										]
-									}),
-									/* @__PURE__ */ jsx(FullRecord, {
-										slotKey,
-										open: recordOpen,
-										onToggle: (open) => saveSettings({ record_open: open }),
-										onSend: (message) => moodApi.ask(message)
 									})
 								]
 							}), /* @__PURE__ */ jsxs("div", {

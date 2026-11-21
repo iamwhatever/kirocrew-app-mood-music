@@ -87,3 +87,26 @@ describe('steps', () => {
     expect(liveSteps({ running: false, messages: rows })).toEqual([])
   })
 })
+
+describe('notes between steps', () => {
+  it('shows a reply followed by more steps as a note among them, and the last reply as the answer', () => {
+    const rows = [
+      user(),
+      tool('web_search'),
+      { role: 'assistant', content: 'Let me check a review.' },
+      tool('web_fetch'),
+      { role: 'assistant', content: 'Here.\n```mood-music\n{}\n```' },
+    ]
+    const [, buddy] = conversation({ running: false, messages: rows })
+    expect(buddy.text).toBe('Here.')
+    expect(buddy.steps).toEqual([
+      { kind: 'search', count: 1 },
+      { kind: 'note', count: 1, text: 'Let me check a review.' },
+      { kind: 'read', count: 1 },
+    ])
+  })
+
+  it('reads the person’s words from a box message', () => {
+    expect(personText('[Mood Music]\nMessage: 下一首\n\nThe person typed')).toBe('下一首')
+  })
+})

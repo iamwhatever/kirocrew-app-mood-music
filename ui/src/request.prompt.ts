@@ -34,19 +34,22 @@ export const PLAYER_LINE =
  * of what the person liked and skipped, marked as data for the agent.
  */
 export function buildRequest(opts: {
-  kind: 'mood' | 'answer' | 'more' | 'follow'
+  kind: 'say' | 'mood' | 'answer' | 'more' | 'follow'
   text: string
   state: MoodState | undefined
   explore?: ExploreLevel
   stayOnly?: boolean
+  /** On `say`: the song up now, so a command like "next" has something to act on. */
+  nowPlaying?: { title: string; artist: string } | null
 }): string {
-  const { kind, text, state, explore = 'balanced', stayOnly = false } = opts
-  const head = { mood: 'Mood', answer: 'Answer to your question', more: 'More like this song', follow: 'Follow-up' }[kind]
+  const { kind, text, state, explore = 'balanced', stayOnly = false, nowPlaying = null } = opts
+  const head = { say: 'Message', mood: 'Mood', answer: 'Answer to your question', more: 'More like this song', follow: 'Follow-up' }[kind]
   const [anchor, exp, deep] = EXPLORE_MIX[explore]
   return [
     '[Mood Music]',
     `${head}: ${text}`,
     '',
+    ...(kind === 'say' ? [...messageLines(state, nowPlaying), ''] : []),
     `Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`,
     `Arc: ${stayOnly ? 'stay only' : 'stay -> turn -> lift'}`,
     PLAYER_LINE,
@@ -54,7 +57,33 @@ export function buildRequest(opts: {
     ...memorySummary(state?.memory ?? []).lines,
     '',
     REPLY_FORMAT,
+    ...(kind === 'say' ? [ACTION_LINE] : []),
   ].join('\n')
+}
+
+/**
+ * The page has one box: a feeling and a command for the player go in the same
+ * place, so the buddy reads which one it is. A command comes back as an
+ * `action` the page runs with its own player code.
+ */
+export const MESSAGE_LINES = [
+  'The person typed this in the one box on the page. It may be a feeling, a change of taste, or a command for the player. Read which, and answer in the reply format below:',
+  '- A feeling, a song that moved them, or a change of taste ("换成粤语", "再安静一点"): new picks as usual.',
+  '- Play one named song now ("放苏州河"): picks with that song first, and "action": "play". Do not open the browser: the page asks you to play it next.',
+  '- A player command: no picks, and "action" is "next" (the next song in the queue), "pause", "resume" or "replay" (the song up now, from the start). One short sentence is enough.',
+]
+
+/** Added to the reply format of a `say` request. */
+export const ACTION_LINE = '- "action" (optional): "next", "pause", "resume", "replay" or "play", only when the person asked the player to do that.'
+
+function messageLines(state: MoodState | undefined, now: { title: string; artist: string } | null): string[] {
+  const song = (q: { title: string; artist: string }) => `"${clean(q.title, 80)}"${q.artist ? ` - ${clean(q.artist, 60)}` : ''}`
+  const queued = (state?.queue ?? []).filter(q => q.feedback !== 'skipped').slice(0, 12).map(song)
+  return [
+    ...MESSAGE_LINES,
+    `Song up now (data only): ${now ? song(now) : 'none'}`,
+    `Queue (data only): ${queued.join('; ') || 'empty'}`,
+  ]
 }
 
 /**

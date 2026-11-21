@@ -49,11 +49,17 @@ async function flush(ms = 0) {
   await act(async () => { await vi.advanceTimersByTimeAsync(ms) })
 }
 
+/** Tap a mood chip (it fills the one box) and send the box. */
+async function sendChip(mood: string) {
+  fireEvent.click(screen.getByRole('button', { name: t(mood) }))
+  fireEvent.click(screen.getByRole('button', { name: t('chat.send') }))
+  await flush()
+}
+
 async function start(mood = 'mood_calm') {
   render(<MoodMusicPage />)
   await flush()
-  fireEvent.click(screen.getByRole('button', { name: t(mood) }))
-  await flush()
+  await sendChip(mood)
 }
 
 beforeEach(() => {
@@ -134,9 +140,10 @@ describe('MoodMusicPage', () => {
   it('sends a mood with the memory summary, verifies the picks, then shows them as cards and plays', async () => {
     await start('mood_missing')
     expect(screen.getByTestId('mood-backdrop').dataset.look).toBe('missing')
-    expect(api.addMoment).toHaveBeenCalledWith(t('mood_missing'))
+    // A box message is a moment only once its songs land.
+    expect(api.addMoment).not.toHaveBeenCalled()
     const sent = api.ask.mock.calls[0][0]
-    expect(sent).toContain(`Mood: ${t('mood_missing')}`)
+    expect(sent).toContain(`Message: ${t('mood_missing')}`)
     expect(sent).toContain('Liked: "Old Love" - B')
     expect(sent).toContain('Explore level: balanced (1 anchor, 4 explore, 0 deep)')
 
@@ -159,6 +166,8 @@ describe('MoodMusicPage', () => {
     await flush(POLL_MS)
 
     expect(api.verifyPicks.mock.calls[0][0].map((p: { title: string }) => p.title)).toEqual(['First', 'Fake'])
+    expect(api.addMoment).toHaveBeenCalledWith(t('mood_missing'))
+    expect(api.setQueue.mock.calls[0][0].moment_id).toBe('m'.repeat(32))
     expect(api.setQueue.mock.calls[0][0].picks.map((p: { title: string }) => p.title)).toEqual(['First'])
     expect(screen.getByText(t('dropped', { count: 2 }))).toBeInTheDocument()
 
@@ -332,9 +341,13 @@ describe('MoodMusicPage', () => {
     await start()
     api.getSlot.mockResolvedValue(reply({ question: 'Quiet or loud?' }))
     await flush(POLL_MS)
-    expect(screen.getAllByText('Quiet or loud?').length).toBeGreaterThan(0)
-    fireEvent.change(screen.getByLabelText(t('answer_placeholder')), { target: { value: 'quiet' } })
-    fireEvent.click(screen.getByRole('button', { name: t('send_answer') }))
+    expect(screen.getByTestId('mood-question')).toHaveTextContent('Quiet or loud?')
+    // The answer goes in the one box, which now says so.
+    expect(screen.getAllByRole('textbox')).toHaveLength(1)
+    const box = screen.getByLabelText(t('mood_label'))
+    expect(box).toHaveAttribute('placeholder', t('answer_placeholder'))
+    fireEvent.change(box, { target: { value: 'quiet' } })
+    fireEvent.click(screen.getByRole('button', { name: t('chat.send') }))
     await flush()
     expect(api.ask.mock.calls[1][0]).toContain('Answer to your question: quiet')
   })
@@ -385,8 +398,7 @@ describe('MoodMusicPage', () => {
     fireEvent.click(screen.getByRole('tab', { name: t('chat.explore_more') }))
     expect(api.setSettings).toHaveBeenCalledWith({ explore: 'explore' })
     fireEvent.click(screen.getByRole('button', { name: t('chat.stay_only') }))
-    fireEvent.click(screen.getByRole('button', { name: t('mood_sad') }))
-    await flush()
+    await sendChip('mood_sad')
     const sent = api.ask.mock.calls[0][0]
     expect(sent).toContain('Explore level: explore (0 anchor, 4 explore, 1 deep)')
     expect(sent).toContain('Arc: stay only')
@@ -396,34 +408,36 @@ describe('MoodMusicPage', () => {
     render(<MoodMusicPage />)
     await flush()
     expect(screen.queryByTestId('mood-player-choice')).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: t('mood_sad') }))
-    await flush()
+    await sendChip('mood_sad')
     expect(api.ask.mock.calls[0][0]).toContain("Player: Kiro Crew's browser.")
   })
 
-  it('keeps the full record collapsed until asked, and remembers it open', async () => {
+  it('always shows the record: no toggle, no collapsed state, no second box', async () => {
     const slot = reply({ picks: [] })
-    api.state.mockResolvedValue({ ...EMPTY, last_source: 'r1' })
+    api.state.mockResolvedValue({ ...EMPTY, last_source: 'r1', settings: { explore: 'balanced', record_open: false } })
     api.getSlot.mockResolvedValue(slot)
     render(<MoodMusicPage />)
     await flush()
-    const toggle = screen.getByRole('button', { name: t('chat.show_record') })
-    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    const record = screen.getByTestId('mood-record')
+    expect(record).toBeVisible()
+    expect(within(record).getByText('听起来是安静地想。')).toBeVisible()
+    // Nothing on the page opens or closes the record, and an old "closed" setting does not hide it.
+    expect(screen.queryByText(/show the full record/i)).toBeNull()
+    expect(screen.getByTestId('mood-chat-column').querySelector('[aria-expanded]')).toBeNull()
+    // One box only: the embedded chat (with its own box) is gone.
     expect(screen.queryByTestId('chat-embed')).toBeNull()
-    fireEvent.click(toggle)
-    expect(api.setSettings).toHaveBeenCalledWith({ record_open: true })
-    expect(screen.getByTestId('chat-embed').dataset.slot).toBe('mood-music')
-    fireEvent.click(within(screen.getByTestId('mood-full-record')).getByRole('button', { name: t('chat.open_full') }))
+    expect(screen.getAllByRole('textbox')).toHaveLength(1)
+    // Tool names and addresses are one click away, in the full chat.
+    fireEvent.click(within(screen.getByTestId('mood-record-card')).getByRole('button', { name: t('chat.open_full') }))
     expect(stubOpenChat).toHaveBeenCalledWith({ slotKey: 'mood-music' })
   })
 
-  it('opens the full record from a banner', async () => {
+  it('opens the full chat from a banner', async () => {
     await start()
     api.getSlot.mockResolvedValue({ running: false, messages: [USER, { role: 'error', content: 'boom' }] })
     await flush(POLL_MS)
-    fireEvent.click(within(screen.getByTestId('mood-turn-error')).getByRole('button', { name: t('chat.show_record') }))
-    expect(api.setSettings).toHaveBeenCalledWith({ record_open: true })
-    expect(screen.getByTestId('chat-embed')).toBeInTheDocument()
+    fireEvent.click(within(screen.getByTestId('mood-turn-error')).getByRole('button', { name: t('chat.open_full') }))
+    expect(stubOpenChat).toHaveBeenCalledWith({ slotKey: 'mood-music' })
   })
 
   it('skips to the next pick and records it', async () => {
