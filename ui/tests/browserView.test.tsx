@@ -22,7 +22,7 @@ const mock = vi.hoisted(() => ({
     state: vi.fn(), addMoment: vi.fn(), setQueue: vi.fn(), feedback: vi.fn(), verifyPicks: vi.fn(),
     addMemory: vi.fn(), updateMemory: vi.fn(), deleteMemory: vi.fn(), clearStale: vi.fn(), markUsed: vi.fn(),
     openSlot: vi.fn(), getSlot: vi.fn(), ask: vi.fn(), approve: vi.fn(), stop: vi.fn(), setSettings: vi.fn(),
-    setPlaySteps: vi.fn(), forgetPlaySteps: vi.fn(),
+    setPlaySteps: vi.fn(), forgetPlaySteps: vi.fn(), setPlayback: vi.fn(), claimEnded: vi.fn(),
   },
 }))
 vi.mock('../src/api', async orig => {
@@ -56,6 +56,8 @@ const statusText = () => screen.getByTestId('mood-browser-view-status').textCont
 beforeEach(() => {
   vi.useFakeTimers()
   vi.clearAllMocks()
+  api.setPlayback.mockResolvedValue({})
+  api.claimEnded.mockResolvedValue(true)
   host.level = 10
   stubMedia.error = 'no_tab'
   api.state.mockResolvedValue(state())

@@ -34,6 +34,7 @@ def test_an_empty_store_reads_empty(tmp_path: Path) -> None:
             "explore": "balanced", "record_open": False, "continuous": True, "view_open": True,
         },
         "play_steps": {},
+        "playback": {"pick_id": "", "ended_for": "", "paused": False},
     }
 
 

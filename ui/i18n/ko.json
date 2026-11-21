@@ -154,7 +154,7 @@
     "progress": "진행",
     "volume": "음량",
     "continuous": "연속 재생",
-    "continuous_note": "연속 재생은 이 페이지가 열려 있을 때만 돼요. 닫으면 지금 노래가 끝날 때 멈춰요.",
+    "continuous_note": "백그라운드 재생을 지원하는 Kiro Crew(KiroCrew#40261)에서는 이 페이지를 닫아도 연속 재생이 이어져요. 이전 버전에서는 닫으면 지금 노래가 끝날 때 멈춰요.",
     "not_played": "이번에는 재생하지 못했어요: {{reason}}",
     "no_reason": "이유 없음",
     "approve": "사이트 승인하기",

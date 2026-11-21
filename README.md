@@ -56,8 +56,11 @@ close to the one you are hearing.
 
 The first time, approve the music sites on the app's page (**Approve the sites**
 takes you there). Mood Music may only open bilibili and YouTube search and video
-pages. Continuous play works only while the Mood Music page is open: close it and the
-music stops when the current song ends.
+pages. Continuous play goes on with the Mood Music page closed, on a Kiro Crew that
+tells the app when a song ends (KiroCrew#40261): the app wakes the buddy once for the
+next song, and asks for more when the list runs low. **Pause** and turning continuous
+play off hold there too. On an older Kiro Crew it works only while the page is open:
+close it and the music stops when the current song ends.
 
 Above the player, **Kiro Crew's browser** shows the buddy's browser tab live, the same
 picture a chat shows under a browser step. The line beside it says **Using the

@@ -176,7 +176,7 @@ var CATALOGS = {
 			"progress": "অগ্রগতি",
 			"volume": "ভলিউম",
 			"continuous": "একটানা বাজানো",
-			"continuous_note": "একটানা বাজানো শুধু এই পেজ খোলা থাকলেই কাজ করে। বন্ধ করলে চলতি গান শেষ হলেই গান থেমে যাবে।",
+			"continuous_note": "ব্যাকগ্রাউন্ডে বাজানো সমর্থন করে এমন Kiro Crew-তে (KiroCrew#40261) এই পেজ বন্ধ থাকলেও একটানা বাজানো চলতে থাকে। পুরোনো সংস্করণে পেজ বন্ধ করলে চলতি গান শেষ হলেই গান থেমে যাবে।",
 			"not_played": "এবার আপনার সঙ্গী গানটি চালাতে পারেনি: {{reason}}",
 			"no_reason": "কোনো কারণ বলা হয়নি",
 			"approve": "সাইটগুলো অনুমোদন করুন",
@@ -369,7 +369,7 @@ var CATALOGS = {
 			"progress": "Fortschritt",
 			"volume": "Lautstärke",
 			"continuous": "Endlos abspielen",
-			"continuous_note": "Endlos abspielen geht nur, solange diese Seite offen ist. Schließt du sie, endet die Musik mit dem aktuellen Song.",
+			"continuous_note": "Endlos abspielen läuft auch bei geschlossener Seite weiter, wenn Kiro Crew im Hintergrund abspielen kann (KiroCrew#40261). Bei einer älteren Version endet die Musik mit dem aktuellen Song, sobald du die Seite schließt.",
 			"not_played": "Dein Buddy konnte ihn diesmal nicht abspielen: {{reason}}",
 			"no_reason": "ohne Angabe eines Grundes",
 			"approve": "Seiten freigeben",
@@ -563,7 +563,7 @@ var CATALOGS = {
 			"progress": "Progress",
 			"volume": "Volume",
 			"continuous": "Continuous play",
-			"continuous_note": "Continuous play works only while this page is open. Close it, and the music stops when the current song ends.",
+			"continuous_note": "Continuous play goes on with this page closed, on a Kiro Crew with background play (KiroCrew#40261). On an older one, close the page and the music stops when the current song ends.",
 			"not_played": "Your buddy could not play it this time: {{reason}}",
 			"no_reason": "no reason given",
 			"approve": "Approve the sites",
@@ -755,7 +755,7 @@ var CATALOGS = {
 			"progress": "Progreso",
 			"volume": "Volumen",
 			"continuous": "Reproducción continua",
-			"continuous_note": "La reproducción continua solo funciona con esta página abierta. Si la cierras, la música se detiene al acabar la canción actual.",
+			"continuous_note": "La reproducción continua sigue con esta página cerrada en un Kiro Crew con reproducción en segundo plano (KiroCrew#40261). En uno más antiguo, si cierras la página, la música se detiene al acabar la canción actual.",
 			"not_played": "Tu compañero no pudo reproducirla esta vez: {{reason}}",
 			"no_reason": "sin motivo",
 			"approve": "Aprobar los sitios",
@@ -948,7 +948,7 @@ var CATALOGS = {
 			"progress": "Progression",
 			"volume": "Volume",
 			"continuous": "Lecture continue",
-			"continuous_note": "La lecture continue ne marche que tant que cette page est ouverte. Ferme-la, et la musique s’arrête à la fin de la chanson en cours.",
+			"continuous_note": "La lecture continue se poursuit page fermée avec un Kiro Crew qui joue en arrière-plan (KiroCrew#40261). Avec une version plus ancienne, ferme la page et la musique s’arrête à la fin de la chanson en cours.",
 			"not_played": "Ton compagnon n’a pas pu la lancer cette fois : {{reason}}",
 			"no_reason": "sans raison donnée",
 			"approve": "Approuver les sites",
@@ -1141,7 +1141,7 @@ var CATALOGS = {
 			"progress": "प्रगति",
 			"volume": "आवाज़",
 			"continuous": "लगातार चलाएँ",
-			"continuous_note": "लगातार चलाना तभी काम करता है जब यह पेज खुला हो। इसे बंद करेंगे तो मौजूदा गाना ख़त्म होते ही संगीत रुक जाएगा।",
+			"continuous_note": "बैकग्राउंड प्लेबैक वाले Kiro Crew (KiroCrew#40261) में यह पेज बंद होने पर भी लगातार चलाना जारी रहता है। पुराने संस्करण में पेज बंद करेंगे तो मौजूदा गाना ख़त्म होते ही संगीत रुक जाएगा।",
 			"not_played": "इस बार आपका साथी इसे नहीं चला पाया: {{reason}}",
 			"no_reason": "कोई कारण नहीं बताया",
 			"approve": "साइटों को मंज़ूरी दें",
@@ -1334,7 +1334,7 @@ var CATALOGS = {
 			"progress": "Avanzamento",
 			"volume": "Volume",
 			"continuous": "Riproduzione continua",
-			"continuous_note": "La riproduzione continua funziona solo con questa pagina aperta. Se la chiudi, la musica si ferma alla fine della canzone in corso.",
+			"continuous_note": "La riproduzione continua va avanti anche a pagina chiusa con un Kiro Crew che riproduce in background (KiroCrew#40261). Con una versione più vecchia, se chiudi la pagina la musica si ferma alla fine della canzone in corso.",
 			"not_played": "Questa volta il tuo compagno non è riuscito a riprodurla: {{reason}}",
 			"no_reason": "nessun motivo indicato",
 			"approve": "Approva i siti",
@@ -1527,7 +1527,7 @@ var CATALOGS = {
 			"progress": "再生位置",
 			"volume": "音量",
 			"continuous": "連続再生",
-			"continuous_note": "連続再生はこのページを開いている間だけ有効です。閉じると、今の曲が終わったところで止まります。",
+			"continuous_note": "バックグラウンド再生に対応した Kiro Crew（KiroCrew#40261）なら、このページを閉じても連続再生が続きます。古い版では、閉じると今の曲が終わったところで止まります。",
 			"not_played": "今回は再生できませんでした：{{reason}}",
 			"no_reason": "理由の説明なし",
 			"approve": "サイトを承認する",
@@ -1720,7 +1720,7 @@ var CATALOGS = {
 			"progress": "진행",
 			"volume": "음량",
 			"continuous": "연속 재생",
-			"continuous_note": "연속 재생은 이 페이지가 열려 있을 때만 돼요. 닫으면 지금 노래가 끝날 때 멈춰요.",
+			"continuous_note": "백그라운드 재생을 지원하는 Kiro Crew(KiroCrew#40261)에서는 이 페이지를 닫아도 연속 재생이 이어져요. 이전 버전에서는 닫으면 지금 노래가 끝날 때 멈춰요.",
 			"not_played": "이번에는 재생하지 못했어요: {{reason}}",
 			"no_reason": "이유 없음",
 			"approve": "사이트 승인하기",
@@ -1913,7 +1913,7 @@ var CATALOGS = {
 			"progress": "Progresso",
 			"volume": "Volume",
 			"continuous": "Reprodução contínua",
-			"continuous_note": "A reprodução contínua só funciona com esta página aberta. Feche-a, e a música para quando a música atual acabar.",
+			"continuous_note": "A reprodução contínua segue com esta página fechada num Kiro Crew com reprodução em segundo plano (KiroCrew#40261). Num mais antigo, feche a página e a música para quando a música atual acabar.",
 			"not_played": "Seu parceiro não conseguiu tocar desta vez: {{reason}}",
 			"no_reason": "sem motivo informado",
 			"approve": "Aprovar os sites",
@@ -2106,7 +2106,7 @@ var CATALOGS = {
 			"progress": "Прогресс",
 			"volume": "Громкость",
 			"continuous": "Непрерывное воспроизведение",
-			"continuous_note": "Непрерывное воспроизведение работает, только пока эта страница открыта. Закройте её — и музыка остановится после текущей песни.",
+			"continuous_note": "В Kiro Crew с фоновым воспроизведением (KiroCrew#40261) непрерывное воспроизведение продолжается и при закрытой странице. В более старой версии закройте страницу — и музыка остановится после текущей песни.",
 			"not_played": "Напарнику не удалось её включить: {{reason}}",
 			"no_reason": "причина не указана",
 			"approve": "Одобрить сайты",
@@ -2300,7 +2300,7 @@ var CATALOGS = {
 			"progress": "进度",
 			"volume": "音量",
 			"continuous": "连续播放",
-			"continuous_note": "连续播放只在这个页面开着时有效。关掉页面后，这首放完就停。",
+			"continuous_note": "这个页面关着也能连续播放，需要支持后台连播的 Kiro Crew（KiroCrew#40261）。旧版本里关掉页面后，这首放完就停。",
 			"not_played": "搭子这次没能放出来：{{reason}}",
 			"no_reason": "没有说明原因",
 			"approve": "去批准网站",
@@ -2879,6 +2879,14 @@ function createMoodApi(api) {
 		setPlaySteps: (site, steps) => api.put(`${BASE}/play-steps/${site}`, { steps }),
 		/** Forget *site*'s steps after they failed, so the buddy finds the way again. */
 		forgetPlaySteps: (site) => api.del(`${BASE}/play-steps/${site}`),
+		/** A song (re)started in the tab, or the person's pause / play. */
+		setPlayback: (patch) => api.put(`${BASE}/playback`, patch),
+		/**
+		* Claim the ending of *pickId*: only the first claim, the page's or the
+		* backend's, wakes the buddy. A failed request answers true, so the page
+		* keeps playing as it did before the backend could hear endings.
+		*/
+		claimEnded: (pickId) => api.post(`${BASE}/playback/ended`, { pick_id: pickId }).then((r) => r.claimed !== false, () => true),
 		addMemory: (item) => api.post(`${BASE}/memory`, item),
 		updateMemory: (id, patch) => api.put(`${BASE}/memory/${encodeURIComponent(id)}`, patch),
 		deleteMemory: (id) => api.del(`${BASE}/memory/${encodeURIComponent(id)}`),
@@ -4719,7 +4727,10 @@ function saveView(view) {
 * browser and reports the steps that worked, which the app keeps per site and
 * sends back next time. Pause, seek and volume go straight to the tab. With
 * continuous play on, a song's end (read by this page's poll) wakes the buddy
-* once for the next song, and asks for more when the queue runs low. A host
+* once for the next song, and asks for more when the queue runs low. The
+* backend hears endings too, with the page closed (`backend/playback.py`): each
+* ending is claimed once through `/playback/ended`, so only one side wakes the
+* buddy, and the page follows a song the backend started. A host
 * without the seam, sites the owner has not approved, or a policy that turns the
 * browser off, show a note with what to do, and the play button stays off.
 *
@@ -5222,6 +5233,7 @@ function MoodMusicPage() {
 		const inTabNow = !result && !!crewMediaRef.current && !crewMediaRef.current.ended;
 		if (result?.played || inTabNow) {
 			setBrowserPick(play.pickId);
+			moodApi.setPlayback({ pick_id: play.pickId }).catch(() => void 0);
 			const heard = queue.find((p) => p.id === play.pickId);
 			if (result?.played && heard && !knownSongs.has(songKey(heard.title, heard.artist))) {
 				markKnown(heard, "app");
@@ -5307,10 +5319,35 @@ function MoodMusicPage() {
 		const at = playable.findIndex((p) => p.id === id);
 		const next = at >= 0 ? playable[at + 1] : void 0;
 		if (!next) return;
-		setCurrentId(next.id);
-		run(() => askPlay(next, "ended"));
+		run(async () => {
+			if (!await moodApi.claimEnded(id)) {
+				setFollowFrom(id);
+				return;
+			}
+			setCurrentId(next.id);
+			await askPlay(next, "ended");
+		});
 	};
 	onEndedRef.current = onEnded;
+	const [followFrom, setFollowFrom] = useState(null);
+	useEffect(() => {
+		if (!followFrom) return;
+		let left = 120;
+		const timer = setInterval(() => {
+			if (--left <= 0) setFollowFrom(null);
+			refresh().catch(() => void 0);
+		}, POLL_MS);
+		return () => clearInterval(timer);
+	}, [followFrom, refresh]);
+	const playingId = state?.playback?.pick_id || null;
+	useEffect(() => {
+		if (!playingId) return;
+		setFollowFrom((f) => f && f !== playingId ? null : f);
+		if (playingId !== browserPick) {
+			setBrowserPick(playingId);
+			setCurrentId(playingId);
+		}
+	}, [playingId]);
 	useEffect(() => {
 		if (!restored || slotRef.current) return;
 		let live = true;
@@ -5323,22 +5360,31 @@ function MoodMusicPage() {
 			live = false;
 		};
 	}, [restored, moodApi]);
+	const tellPlayback = (patch) => {
+		moodApi.setPlayback(patch).catch(() => void 0);
+	};
 	const pauseBrowser = () => {
 		stoppedRef.current = true;
+		tellPlayback({ paused: true });
 		crew.pause();
 	};
 	const resumeBrowser = () => {
 		stoppedRef.current = false;
+		tellPlayback({ paused: false });
 		crew.play();
 	};
 	const replayBrowser = () => {
 		stoppedRef.current = false;
 		endedForRef.current = null;
 		setEndedFor(null);
+		tellPlayback(browserPick ? { pick_id: browserPick } : { paused: false });
 		crew.seek(0).then(() => crew.play());
 	};
 	const setContinuous = (on) => {
-		if (on) stoppedRef.current = false;
+		if (on) {
+			stoppedRef.current = false;
+			tellPlayback({ paused: false });
+		}
 		saveSettings({ continuous: on });
 	};
 	const askPlayCurrent = () => {

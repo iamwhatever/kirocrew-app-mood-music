@@ -21,6 +21,11 @@ the access its manifest grant gives it.
   DELETE /play-steps/{site} -> forget them after they failed, so the buddy finds the way again
   POST /buddy               -> open the buddy's hidden chat through ``ctx.chat_slots`` (``buddy.py``)
   POST /buddy/send          -> send the buddy one turn there
+  PUT  /playback            -> the song now in the tab, or the person's pause / play
+  POST /playback/ended      -> claim one song's ending, so only one side wakes the buddy
+
+The manifest's ``backend.hooks.on_browser_media_ended`` is ``playback.on_media_ended``:
+with the page closed, the backend wakes the buddy for the next song itself.
 
 A pick names the site the buddy plays it on (``source``). Its link is optional:
 the buddy finds the song by searching that site in Kiro Crew's browser when it
@@ -479,6 +484,49 @@ async def _handle_forget_steps(request: web.Request, ctx: Any) -> web.Response:
     return web.json_response({"site": site, "forgotten": gone})
 
 
+def _pick_id(body: dict[str, Any], *, required: bool) -> tuple[str | None, web.Response | None]:
+    value = body.get("pick_id")
+    if value is None and not required:
+        return None, None
+    if not isinstance(value, str) or not _ID_RE.fullmatch(value):
+        return None, _bad_request("pick_id is not a pick id", "invalid_field_type")
+    return value, None
+
+
+async def _handle_playback(request: web.Request, ctx: Any) -> web.Response:
+    body, err = await _json_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    if not body or set(body) - {"pick_id", "paused"}:
+        return _bad_request("send pick_id and/or paused only", "invalid_field_type")
+    pick_id, err = _pick_id(body, required=False)
+    if err is not None:
+        return err
+    paused = body.get("paused")
+    if paused is not None and not isinstance(paused, bool):
+        return _bad_request("paused must be true or false", "invalid_field_type")
+    playback = await asyncio.to_thread(
+        lambda: _store(ctx).set_playback(pick_id=pick_id, paused=paused)
+    )
+    return web.json_response(playback)
+
+
+async def _handle_ended(request: web.Request, ctx: Any) -> web.Response:
+    body, err = await _json_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    if set(body) != {"pick_id"}:
+        return _bad_request("send pick_id only", "invalid_field_type")
+    pick_id, err = _pick_id(body, required=True)
+    if err is not None:
+        return err
+    assert pick_id is not None
+    claimed = await asyncio.to_thread(lambda: _store(ctx).claim_ended(pick_id))
+    return web.json_response({"claimed": claimed})
+
+
 def register_routes(ctx: Any) -> list[_host.Route]:
     """The manifest's ``backend.hooks.routes``: this app's routes, unprefixed.
 
@@ -513,4 +561,6 @@ def register_routes(ctx: Any) -> list[_host.Route]:
         ),
         route("POST", "/buddy", _owner_only("open_buddy", buddy.handle_open)),
         route("POST", "/buddy/send", _owner_only("send_buddy", buddy.handle_send)),
+        route("PUT", "/playback", _owner_only("playback", _handle_playback)),
+        route("POST", "/playback/ended", _owner_only("playback_ended", _handle_ended)),
     ]
