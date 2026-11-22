@@ -27,6 +27,14 @@ describe('createMoodApi', () => {
     expect(api.post).toHaveBeenCalledWith('/api/apps/mood-music/buddy/send', { message: '[Mood Music] calm' })
   })
 
+  it("steers into the buddy's running turn through the dashboard's send route, as the person", async () => {
+    const steered = fakeApi(() => ({ ok: true, steered: true }))
+    await expect(createMoodApi(steered).steer('mood-music-dj', '[Mood Music] switch')).resolves.toBe(true)
+    expect(steered.post).toHaveBeenCalledWith('/api/chat?ws=1', { message: '[Mood Music] switch', slot: 'mood-music-dj', steer: true })
+    // Queued behind the turn instead: the page then waits on that next turn.
+    await expect(createMoodApi(fakeApi(() => ({ ok: true, queued: true }))).steer('mood-music-dj', 'x')).resolves.toBe(false)
+  })
+
   it.each(['old_host', 'hidden_refused'])('turns a %s refusal into its bare code', async code => {
     const api = fakeApi(() => { throw refused(code === 'old_host' ? 409 : 403, code) })
     await expect(createMoodApi(api).openSlot()).rejects.toThrow(new Error(code))

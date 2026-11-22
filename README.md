@@ -51,7 +51,9 @@ sound. The buddy plays every song in one tab of its own. **Play**, **Pause**, th
 progress bar and the volume act on that tab at once; they never wait for the buddy.
 **Continuous play** is on from the start: when a song ends the buddy plays the next
 one, adding songs for the same mood when the list runs low, until you press
-**Pause**. Turn it off and the page remembers. Click **More like this** to get songs
+**Pause**. A song that ends while the buddy is busy with something else plays the
+next one as soon as the buddy is done. Pressing play on the video site itself after
+a pause here counts as play. Turn it off and the page remembers. Click **More like this** to get songs
 close to the one you are hearing.
 
 The first time, approve the music sites on the app's page (**Approve the sites**
@@ -145,17 +147,21 @@ on this page; it is not listed in Kiro Crew's sessions.
    such as **Calm** or **Missing someone** puts its mood in the box for you. When
    the buddy asks you a question, the box answers it. **Stop** cancels a reply.
    If the buddy reads an ask to play, pause or skip, the page does it in the player.
-4. The left column is the buddy's record, always open: what you said, every step
+4. The left column is the buddy's record, always open: what you said, the steps
    it takes in plain words ("Searched the web", "Read a page", "Opened a page",
-   "Clicked"), the short notes it writes on the way, and its reply. The newest is
-   at the bottom and the record follows it, unless you scroll up to read back;
-   **Latest** takes you down again. **Open in full chat** shows the same
-   conversation with every search and page the buddy used.
+   "Clicked"), the short notes it writes on the way, and its reply. While the buddy
+   works, its newest five steps show; when it is done, they fold into one row
+   (**What your buddy did**) that opens to show them all. The newest is at the
+   bottom and the record follows it, unless you scroll up to read back; **Latest**
+   takes you down again, and says **New message** when the buddy wrote while you
+   were up. **Open in full chat** shows the same conversation with every search and
+   page the buddy used.
 5. Each song card says why it is here, what to listen for and who praised it. Choose
    **Play**, the heart to like it, skip, or **I know it**. Tap a suggestion under the
    reply to keep talking, or **Remember: ...** to save a preference the buddy heard.
 6. **Up next** lists every song with its artist and why it was picked; the one
-   playing says **Now playing**. Click any song to play it now. Pause, play, the
+   playing says **Now playing**. Click any song to play it now, even while the buddy
+   is still working: it drops what it was doing and plays that song. Pause, play, the
    progress bar and the volume act on the browser at once; they do not ask the buddy.
 7. Open **Memory** to see your own notes and the songs and moods the app recorded.
    Add, edit, pin or delete any of them; **Clear everything out of date** removes

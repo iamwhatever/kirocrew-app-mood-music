@@ -146,7 +146,8 @@ var CATALOGS = {
 			"status_playing": "আপনার সঙ্গী Kiro Crew-এর ব্রাউজারে গানটি খুলছে…",
 			"record_title": "আপনার সঙ্গী কী করছে",
 			"latest": "সর্বশেষ",
-			"no_next": "সারিতে পরের গান নেই।"
+			"no_next": "সারিতে পরের গান নেই।",
+			"new_message": "নতুন বার্তা"
 		},
 		card: {
 			"arc_stay": "পাশে থাকা",
@@ -185,7 +186,8 @@ var CATALOGS = {
 			"unready_old_host": "এই Kiro Crew খুব পুরোনো। অ্যাপ ব্রাউজার সাইট সমর্থিত সংস্করণে (KiroCrew#38333 সহ, v0.13.0-rc.3-এর চেয়ে নতুন) Kiro Crew আপডেট করুন, তারপর এই পেজ আবার খুলুন।",
 			"unready_not_approved": "আগে মুড মিউজিকের জন্য গানের সাইটগুলো অনুমোদন করুন। অ্যাপের পেজে একবার অনুমোদন করলেই হবে।",
 			"unready_browse_off": "এই কম্পিউটারের একটি নীতি Kiro Crew-এর ব্রাউজার বন্ধ রেখেছে।",
-			"find_play": "খুঁজে চালাও"
+			"find_play": "খুঁজে চালাও",
+			"playback_unsaved": "কোন গান বাজছে তা Mood Music-কে জানানো যায়নি, তাই পরের গান নিজে থেকে শুরু নাও হতে পারে। পরের গানে প্লে চাপুন।"
 		},
 		view: {
 			"title": "Kiro Crew-এর ব্রাউজার",
@@ -210,7 +212,8 @@ var CATALOGS = {
 			"tab": "ট্যাব বদলেছে",
 			"key": "একটি কী চেপেছে",
 			"browser": "ব্রাউজার ব্যবহার করেছে",
-			"other": "একটি ধাপ করেছে"
+			"other": "একটি ধাপ করেছে",
+			"folded": "আপনার বন্ধু যা করেছে ({{count}})"
 		}
 	},
 	de: {
@@ -339,7 +342,8 @@ var CATALOGS = {
 			"status_playing": "Dein Buddy öffnet den Song im Browser von Kiro Crew…",
 			"record_title": "Was dein Buddy gerade tut",
 			"latest": "Neueste",
-			"no_next": "Kein nächster Song in der Warteschlange."
+			"no_next": "Kein nächster Song in der Warteschlange.",
+			"new_message": "Neue Nachricht"
 		},
 		card: {
 			"arc_stay": "Dabeibleiben",
@@ -378,7 +382,8 @@ var CATALOGS = {
 			"unready_old_host": "Dieses Kiro Crew ist zu alt. Aktualisiere Kiro Crew auf eine Version mit App-Browserseiten (KiroCrew#38333, neuer als v0.13.0-rc.3) und öffne diese Seite dann erneut.",
 			"unready_not_approved": "Gib zuerst die Musikseiten für Mood Music frei. Das machst du einmal, auf der Seite der App.",
 			"unready_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet.",
-			"find_play": "Suchen und abspielen"
+			"find_play": "Suchen und abspielen",
+			"playback_unsaved": "Mood Music konnte nicht gespeichert werden, welcher Song läuft. Der nächste Song startet daher vielleicht nicht von selbst. Starte ihn selbst."
 		},
 		view: {
 			"title": "Browser von Kiro Crew",
@@ -403,7 +408,8 @@ var CATALOGS = {
 			"tab": "Tab gewechselt",
 			"key": "Eine Taste gedrückt",
 			"browser": "Den Browser benutzt",
-			"other": "Einen Schritt gemacht"
+			"other": "Einen Schritt gemacht",
+			"folded": "Was dein Buddy getan hat ({{count}})"
 		}
 	},
 	en: {
@@ -532,7 +538,8 @@ var CATALOGS = {
 			"status_playing": "Your buddy is opening the song in Kiro Crew's browser…",
 			"record_title": "What your buddy is doing",
 			"latest": "Latest",
-			"no_next": "No next song in the queue."
+			"no_next": "No next song in the queue.",
+			"new_message": "New message"
 		},
 		card: {
 			"arc_stay": "Stay with it",
@@ -571,7 +578,8 @@ var CATALOGS = {
 			"unready_old_host": "This Kiro Crew is too old. Update Kiro Crew to a version with app browser sites (KiroCrew#38333, newer than v0.13.0-rc.3), then open this page again.",
 			"unready_not_approved": "First approve the music sites for Mood Music. You approve them once, on the app's page.",
 			"unready_browse_off": "Kiro Crew's browser is turned off by a policy on this computer.",
-			"find_play": "Find and play"
+			"find_play": "Find and play",
+			"playback_unsaved": "Could not tell Mood Music which song is playing, so the next song may not start by itself. Press play on the next song."
 		},
 		view: {
 			"title": "Kiro Crew's browser",
@@ -596,7 +604,8 @@ var CATALOGS = {
 			"tab": "Switched tabs",
 			"key": "Pressed a key",
 			"browser": "Used the browser",
-			"other": "Did a step"
+			"other": "Did a step",
+			"folded": "What your buddy did ({{count}})"
 		}
 	},
 	es: {
@@ -725,7 +734,8 @@ var CATALOGS = {
 			"status_playing": "Tu compañero está abriendo la canción en el navegador de Kiro Crew…",
 			"record_title": "Lo que hace tu compañero",
 			"latest": "Lo último",
-			"no_next": "No hay siguiente canción en la cola."
+			"no_next": "No hay siguiente canción en la cola.",
+			"new_message": "Mensaje nuevo"
 		},
 		card: {
 			"arc_stay": "Acompañar",
@@ -764,7 +774,8 @@ var CATALOGS = {
 			"unready_old_host": "Este Kiro Crew es demasiado antiguo. Actualiza Kiro Crew a una versión con sitios de navegador para apps (KiroCrew#38333, más nueva que v0.13.0-rc.3) y vuelve a abrir esta página.",
 			"unready_not_approved": "Primero aprueba los sitios de música para Mood Music. Se aprueban una vez, en la página de la app.",
 			"unready_browse_off": "Una política de este equipo tiene apagado el navegador de Kiro Crew.",
-			"find_play": "Buscar y reproducir"
+			"find_play": "Buscar y reproducir",
+			"playback_unsaved": "No se pudo decir a Mood Music qué canción suena, así que la siguiente quizá no empiece sola. Pulsa reproducir en la siguiente."
 		},
 		view: {
 			"title": "Navegador de Kiro Crew",
@@ -789,7 +800,8 @@ var CATALOGS = {
 			"tab": "Cambió de pestaña",
 			"key": "Pulsó una tecla",
 			"browser": "Usó el navegador",
-			"other": "Hizo un paso"
+			"other": "Hizo un paso",
+			"folded": "Lo que hizo tu compañero ({{count}})"
 		}
 	},
 	fr: {
@@ -918,7 +930,8 @@ var CATALOGS = {
 			"status_playing": "Ton compagnon ouvre la chanson dans le navigateur de Kiro Crew…",
 			"record_title": "Ce que fait ton compagnon",
 			"latest": "Plus récent",
-			"no_next": "Pas de chanson suivante dans la file."
+			"no_next": "Pas de chanson suivante dans la file.",
+			"new_message": "Nouveau message"
 		},
 		card: {
 			"arc_stay": "Rester avec",
@@ -957,7 +970,8 @@ var CATALOGS = {
 			"unready_old_host": "Ce Kiro Crew est trop ancien. Mets Kiro Crew à jour vers une version avec les sites de navigateur pour apps (KiroCrew#38333, plus récente que v0.13.0-rc.3), puis rouvre cette page.",
 			"unready_not_approved": "Approuve d’abord les sites de musique pour Mood Music. Une seule fois, sur la page de l’app.",
 			"unready_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew.",
-			"find_play": "Trouver et lire"
+			"find_play": "Trouver et lire",
+			"playback_unsaved": "Impossible d'indiquer à Mood Music quelle chanson joue : la suivante risque de ne pas démarrer seule. Lance-la toi-même."
 		},
 		view: {
 			"title": "Navigateur de Kiro Crew",
@@ -982,7 +996,8 @@ var CATALOGS = {
 			"tab": "A changé d'onglet",
 			"key": "A appuyé sur une touche",
 			"browser": "A utilisé le navigateur",
-			"other": "A fait une étape"
+			"other": "A fait une étape",
+			"folded": "Ce qu'a fait ton compagnon ({{count}})"
 		}
 	},
 	hi: {
@@ -1111,7 +1126,8 @@ var CATALOGS = {
 			"status_playing": "आपका साथी Kiro Crew के ब्राउज़र में गाना खोल रहा है…",
 			"record_title": "आपका साथी क्या कर रहा है",
 			"latest": "नया",
-			"no_next": "कतार में अगला गाना नहीं है।"
+			"no_next": "कतार में अगला गाना नहीं है।",
+			"new_message": "नया संदेश"
 		},
 		card: {
 			"arc_stay": "साथ रहना",
@@ -1150,7 +1166,8 @@ var CATALOGS = {
 			"unready_old_host": "यह Kiro Crew बहुत पुराना है। Kiro Crew को ऐप ब्राउज़र साइटों वाले संस्करण (KiroCrew#38333 सहित, v0.13.0-rc.3 से नया) में अपडेट करें, फिर यह पेज दोबारा खोलें।",
 			"unready_not_approved": "पहले मूड म्यूज़िक के लिए संगीत साइटों को मंज़ूरी दें। ऐप के पेज पर एक बार मंज़ूरी देनी होती है।",
 			"unready_browse_off": "इस कंप्यूटर की एक नीति ने Kiro Crew का ब्राउज़र बंद कर रखा है।",
-			"find_play": "ढूँढकर चलाएँ"
+			"find_play": "ढूँढकर चलाएँ",
+			"playback_unsaved": "Mood Music को नहीं बताया जा सका कि कौन-सा गाना चल रहा है, इसलिए अगला गाना शायद अपने-आप शुरू न हो। अगले गाने पर चलाएँ दबाएँ।"
 		},
 		view: {
 			"title": "Kiro Crew का ब्राउज़र",
@@ -1175,7 +1192,8 @@ var CATALOGS = {
 			"tab": "टैब बदला",
 			"key": "एक कुंजी दबाई",
 			"browser": "ब्राउज़र इस्तेमाल किया",
-			"other": "एक कदम उठाया"
+			"other": "एक कदम उठाया",
+			"folded": "आपके साथी ने क्या किया ({{count}})"
 		}
 	},
 	it: {
@@ -1304,7 +1322,8 @@ var CATALOGS = {
 			"status_playing": "Il tuo compagno sta aprendo la canzone nel browser di Kiro Crew…",
 			"record_title": "Cosa sta facendo il tuo compagno",
 			"latest": "Più recenti",
-			"no_next": "Nessun brano successivo in coda."
+			"no_next": "Nessun brano successivo in coda.",
+			"new_message": "Nuovo messaggio"
 		},
 		card: {
 			"arc_stay": "Restare",
@@ -1343,7 +1362,8 @@ var CATALOGS = {
 			"unready_old_host": "Questo Kiro Crew è troppo vecchio. Aggiorna Kiro Crew a una versione con i siti del browser per le app (KiroCrew#38333, più recente di v0.13.0-rc.3), poi riapri questa pagina.",
 			"unready_not_approved": "Prima approva i siti musicali per Mood Music. Si approvano una volta, nella pagina dell’app.",
 			"unready_browse_off": "Una regola di questo computer ha spento il browser di Kiro Crew.",
-			"find_play": "Trova e riproduci"
+			"find_play": "Trova e riproduci",
+			"playback_unsaved": "Non è stato possibile dire a Mood Music quale canzone suona, quindi la prossima potrebbe non partire da sola. Avviala tu."
 		},
 		view: {
 			"title": "Browser di Kiro Crew",
@@ -1368,7 +1388,8 @@ var CATALOGS = {
 			"tab": "Ha cambiato scheda",
 			"key": "Ha premuto un tasto",
 			"browser": "Ha usato il browser",
-			"other": "Ha fatto un passo"
+			"other": "Ha fatto un passo",
+			"folded": "Cosa ha fatto il tuo amico ({{count}})"
 		}
 	},
 	ja: {
@@ -1497,7 +1518,8 @@ var CATALOGS = {
 			"status_playing": "相棒が Kiro Crew のブラウザで曲を開いています…",
 			"record_title": "バディがしていること",
 			"latest": "最新へ",
-			"no_next": "キューに次の曲がありません。"
+			"no_next": "キューに次の曲がありません。",
+			"new_message": "新しいメッセージ"
 		},
 		card: {
 			"arc_stay": "寄り添う",
@@ -1536,7 +1558,8 @@ var CATALOGS = {
 			"unready_old_host": "この Kiro Crew は古すぎます。アプリのブラウザサイトに対応した版（KiroCrew#38333 を含む、v0.13.0-rc.3 より新しい版）に更新して、このページを開き直してください。",
 			"unready_not_approved": "先に Mood Music の音楽サイトを承認してください。アプリのページで一度だけ承認します。",
 			"unready_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。",
-			"find_play": "探して再生"
+			"find_play": "探して再生",
+			"playback_unsaved": "再生中の曲を Mood Music に記録できませんでした。次の曲が自動で始まらないことがあります。次の曲を再生してください。"
 		},
 		view: {
 			"title": "Kiro Crew のブラウザ",
@@ -1561,7 +1584,8 @@ var CATALOGS = {
 			"tab": "タブを切り替え",
 			"key": "キーを押した",
 			"browser": "ブラウザを使用",
-			"other": "作業した"
+			"other": "作業した",
+			"folded": "相棒がしたこと（{{count}}）"
 		}
 	},
 	ko: {
@@ -1690,7 +1714,8 @@ var CATALOGS = {
 			"status_playing": "친구가 Kiro Crew 브라우저에서 노래를 여는 중이에요…",
 			"record_title": "버디가 하고 있는 일",
 			"latest": "최신",
-			"no_next": "대기열에 다음 곡이 없어요."
+			"no_next": "대기열에 다음 곡이 없어요.",
+			"new_message": "새 메시지"
 		},
 		card: {
 			"arc_stay": "곁에 머물기",
@@ -1729,7 +1754,8 @@ var CATALOGS = {
 			"unready_old_host": "이 Kiro Crew는 너무 오래됐어요. 앱 브라우저 사이트를 지원하는 버전(KiroCrew#38333 포함, v0.13.0-rc.3보다 새 버전)으로 업데이트한 뒤 이 페이지를 다시 여세요.",
 			"unready_not_approved": "먼저 무드 뮤직의 음악 사이트를 승인하세요. 앱 페이지에서 한 번만 승인하면 돼요.",
 			"unready_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요.",
-			"find_play": "찾아서 재생"
+			"find_play": "찾아서 재생",
+			"playback_unsaved": "지금 재생 중인 곡을 Mood Music에 알리지 못했어요. 다음 곡이 저절로 시작되지 않을 수 있어요. 다음 곡을 재생해 주세요."
 		},
 		view: {
 			"title": "Kiro Crew 브라우저",
@@ -1754,7 +1780,8 @@ var CATALOGS = {
 			"tab": "탭 전환",
 			"key": "키 누르기",
 			"browser": "브라우저 사용",
-			"other": "작업 수행"
+			"other": "작업 수행",
+			"folded": "버디가 한 일 ({{count}})"
 		}
 	},
 	pt: {
@@ -1883,7 +1910,8 @@ var CATALOGS = {
 			"status_playing": "Seu parceiro está abrindo a música no navegador do Kiro Crew…",
 			"record_title": "O que seu parceiro está fazendo",
 			"latest": "Mais recente",
-			"no_next": "Não há próxima música na fila."
+			"no_next": "Não há próxima música na fila.",
+			"new_message": "Nova mensagem"
 		},
 		card: {
 			"arc_stay": "Ficar junto",
@@ -1922,7 +1950,8 @@ var CATALOGS = {
 			"unready_old_host": "Este Kiro Crew é antigo demais. Atualize o Kiro Crew para uma versão com sites de navegador para apps (KiroCrew#38333, mais nova que v0.13.0-rc.3) e abra esta página de novo.",
 			"unready_not_approved": "Primeiro aprove os sites de música para o Mood Music. Você aprova uma vez, na página do app.",
 			"unready_browse_off": "Uma política deste computador desligou o navegador do Kiro Crew.",
-			"find_play": "Encontrar e tocar"
+			"find_play": "Encontrar e tocar",
+			"playback_unsaved": "Não foi possível dizer ao Mood Music qual música está tocando, então a próxima pode não começar sozinha. Toque a próxima."
 		},
 		view: {
 			"title": "Navegador do Kiro Crew",
@@ -1947,7 +1976,8 @@ var CATALOGS = {
 			"tab": "Trocou de aba",
 			"key": "Apertou uma tecla",
 			"browser": "Usou o navegador",
-			"other": "Fez uma etapa"
+			"other": "Fez uma etapa",
+			"folded": "O que seu parceiro fez ({{count}})"
 		}
 	},
 	ru: {
@@ -2076,7 +2106,8 @@ var CATALOGS = {
 			"status_playing": "Ваш напарник открывает песню в браузере Kiro Crew…",
 			"record_title": "Что делает ваш напарник",
 			"latest": "К новым",
-			"no_next": "В очереди нет следующей песни."
+			"no_next": "В очереди нет следующей песни.",
+			"new_message": "Новое сообщение"
 		},
 		card: {
 			"arc_stay": "Побыть рядом",
@@ -2115,7 +2146,8 @@ var CATALOGS = {
 			"unready_old_host": "Эта версия Kiro Crew слишком старая. Обновите Kiro Crew до версии с сайтами браузера для приложений (KiroCrew#38333, новее v0.13.0-rc.3) и откройте эту страницу снова.",
 			"unready_not_approved": "Сначала одобрите музыкальные сайты для «Музыки настроения». Это делается один раз, на странице приложения.",
 			"unready_browse_off": "Браузер Kiro Crew отключён политикой на этом компьютере.",
-			"find_play": "Найти и включить"
+			"find_play": "Найти и включить",
+			"playback_unsaved": "Не удалось сообщить Mood Music, какая песня играет, поэтому следующая может не начаться сама. Включите её сами."
 		},
 		view: {
 			"title": "Браузер Kiro Crew",
@@ -2140,7 +2172,8 @@ var CATALOGS = {
 			"tab": "Переключил вкладку",
 			"key": "Нажал клавишу",
 			"browser": "Пользовался браузером",
-			"other": "Сделал шаг"
+			"other": "Сделал шаг",
+			"folded": "Что сделал ваш приятель ({{count}})"
 		}
 	},
 	"zh-CN": {
@@ -2269,7 +2302,8 @@ var CATALOGS = {
 			"status_playing": "搭子正在 Kiro Crew 的浏览器里打开这首歌…",
 			"record_title": "搭子在做什么",
 			"latest": "最新",
-			"no_next": "队列里没有下一首了。"
+			"no_next": "队列里没有下一首了。",
+			"new_message": "新消息"
 		},
 		card: {
 			"arc_stay": "陪着",
@@ -2308,7 +2342,8 @@ var CATALOGS = {
 			"unready_old_host": "这个 Kiro Crew 版本太旧。请把 Kiro Crew 更新到支持应用浏览器网站的版本（含 KiroCrew#38333，比 v0.13.0-rc.3 新），再打开这个页面。",
 			"unready_not_approved": "请先为情绪音乐批准这几个音乐网站。只需在应用页面批准一次。",
 			"unready_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。",
-			"find_play": "查找并播放"
+			"find_play": "查找并播放",
+			"playback_unsaved": "没能告诉情绪音乐现在放的是哪首，下一首可能不会自己开始。请点下一首播放。"
 		},
 		view: {
 			"title": "Kiro Crew 的浏览器",
@@ -2333,7 +2368,8 @@ var CATALOGS = {
 			"tab": "切换标签页",
 			"key": "按键",
 			"browser": "使用浏览器",
-			"other": "执行一步"
+			"other": "执行一步",
+			"folded": "搭子做了什么（{{count}}）"
 		}
 	}
 };
@@ -2900,6 +2936,18 @@ function createMoodApi(api) {
 			request_id: requestId
 		}),
 		stop: (key) => api.post(`/api/chat/slots/${encodeURIComponent(key)}/stop`),
+		/**
+		* Put *message* into the buddy's RUNNING turn, so it changes course now.
+		* The page sends as the person, through the dashboard's own send route
+		* (`POST /api/chat` with `steer`, App Kit "Host Sessions"); an app's backend
+		* cannot steer. True when the gateway steered it; false when it queued it
+		* behind the turn instead (the turn had just ended, or not started yet).
+		*/
+		steer: (key, message) => api.post("/api/chat?ws=1", {
+			message,
+			slot: key,
+			steer: true
+		}).then((r) => r?.steered === true),
 		/** Send one turn through the backend; a refusal rejects. Returns the slot key the turn went to. */
 		ask: async (message) => {
 			return (await api.post(`${BASE}/buddy/send`, { message }).catch(plainRefusal)).key;
@@ -3009,6 +3057,23 @@ function readiness(media) {
 		case "browser_error": return media.media ? "ready" : "unknown";
 		default: return "ready";
 	}
+}
+/**
+* Whether the song ended between two readings although no reading said
+* `ended`: the last one was within {@link NEAR_END_S} of the end, and now the
+* length is gone, or the clock is back at 0 with the video stopped. YouTube
+* drops the video's source at its end screen, so `ended` may never show.
+* shortcut: a stopgap for hosts that report only `ended`; drop it once Kiro Crew
+* counts endings itself.
+*/
+function endedBetween(prev, now) {
+	if (!prev || !now || prev.ended || typeof prev.duration !== "number" || !(prev.duration > 0)) return false;
+	if (prev.duration - prev.currentTime > 2) return false;
+	return now.duration === null || now.currentTime === 0 && now.paused;
+}
+/** Whether the tab still shows a song over: `ended`, or stopped with no length or at 0. */
+function stillEnded(media) {
+	return !!media && (media.ended || media.paused && (media.duration === null || media.currentTime === 0));
 }
 /** m:ss, for the progress bar. */
 function clock(seconds) {
@@ -3226,13 +3291,6 @@ function BrowserView({ open, onToggle, operating, live }) {
 		})]
 	});
 }
-// src/BuddySteps.tsx
-/**
-* What the buddy did in a turn, in plain words, one step per row in the order
-* it happened: "Searched the web × 3", "Read a page", "Opened a page",
-* "Clicked", and the short notes it wrote on the way. Never a tool name, a
-* search word or an address: those stay in the full chat.
-*/
 var ICONS = {
 	search: Search,
 	read: FileText,
@@ -3249,8 +3307,9 @@ var ICONS = {
 	other: Sparkles,
 	note: MessageSquare
 };
-function BuddySteps({ steps, testId }) {
-	if (!steps.length) return null;
+/** *start*: where the first row sits in the whole turn. Rows are keyed by that, so
+*  a new row rises in and the older ones keep their place as the oldest drops off. */
+function StepList({ steps, start = 0, testId }) {
 	return /* @__PURE__ */ jsx("ol", {
 		"aria-label": t("steps.label"),
 		className: "mm-steps mt-1.5 flex flex-col gap-1 text-xs text-[var(--muted)]",
@@ -3274,8 +3333,37 @@ function BuddySteps({ steps, testId }) {
 					className: s.kind === "note" ? "italic text-[var(--text)] opacity-80" : "",
 					children: words
 				})]
-			}, i);
+			}, start + i);
 		})
+	});
+}
+function BuddySteps({ steps, live = false, testId }) {
+	const [open, setOpen] = useState(false);
+	if (!steps.length) return null;
+	if (live) {
+		const start = Math.max(0, steps.length - 5);
+		return /* @__PURE__ */ jsx(StepList, {
+			steps: steps.slice(start),
+			start,
+			testId
+		});
+	}
+	const count = steps.reduce((n, s) => n + s.count, 0);
+	return /* @__PURE__ */ jsxs("div", {
+		"data-testid": testId,
+		children: [/* @__PURE__ */ jsxs("button", {
+			type: "button",
+			"aria-expanded": open,
+			onClick: () => setOpen((o) => !o),
+			className: "mm-press mm-fold inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-xs text-[var(--muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]",
+			"data-testid": "mood-steps-fold",
+			children: [/* @__PURE__ */ jsx(ChevronRight, {
+				size: 12,
+				"aria-hidden": "true",
+				className: "mm-chevron",
+				"data-open": open
+			}), t("steps.folded", { count })]
+		}), open && /* @__PURE__ */ jsx(StepList, { steps })]
 	});
 }
 // src/MemoryTab.tsx
@@ -4206,7 +4294,7 @@ function buildPlayRequest(opts) {
 		"[Mood Music]",
 		`${PLAY_HEAD}: "${title}"${artist ? ` - ${artist}` : ""}`,
 		"",
-		why === "ended" ? "The song before it just ended (continuous play is on)." : "The person pressed play.",
+		why === "ended" ? "The song before it just ended (continuous play is on)." : why === "switch" ? SWITCH_LINE : "The person pressed play.",
 		`Site: ${song.source}`
 	];
 	if (link) lines.push(`Checked link on this site (open it only if the search does not find the song): ${link}`);
@@ -4224,6 +4312,8 @@ function buildPlayRequest(opts) {
 	lines.push("", refill ? `${PLAY_FORMAT}\n${playRefillFormat()}` : PLAY_FORMAT);
 	return lines.join("\n");
 }
+/** A song the person picked while the buddy was still working, steered into that turn. */
+var SWITCH_LINE = "The person picked this song while you were still working: drop the song or task you were on in this turn and play this one now. Reply for this song only.";
 /** Every play stays in the buddy's one tab: the page's buttons and live view follow that tab. */
 var ONE_TAB = "Use the one tab you already have: open the video in it (navigate to its own address from the results page), never in a new tab. Skip a saved step that opens or switches to a new tab.";
 /** The reply contract of a play request. */
@@ -4725,7 +4815,9 @@ function saveView(view) {
 * Songs play only in Kiro Crew's browser (`crewBrowser.ts`). A play goes to
 * the buddy as one request: it finds the song on its site in Kiro Crew's
 * browser and reports the steps that worked, which the app keeps per site and
-* sends back next time. Pause, seek and volume go straight to the tab. With
+* sends back next time. A song picked while a turn runs is steered into that
+* turn (`api.ts` `steer`), so the buddy switches at once instead of after it.
+* Pause, seek and volume go straight to the tab. With
 * continuous play on, a song's end (read by this page's poll) wakes the buddy
 * once for the next song, and asks for more when the queue runs low. The
 * backend hears endings too, with the page closed (`backend/playback.py`): each
@@ -4778,9 +4870,13 @@ var SPLIT_CSS = `
 .mm-row, .mm-step { animation: mm-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 .mm-press { transition: transform 100ms ease-out, background-color 150ms ease-out; }
 .mm-press:active { transform: scale(0.97); }
+/* A turn's folded steps: the chevron turns as the row opens. */
+.mm-chevron { transition: transform 150ms ease-out; }
+.mm-chevron[data-open="true"] { transform: rotate(90deg); }
 @media (prefers-reduced-motion: reduce) {
   .mm-row, .mm-step { animation: none; }
   .mm-press, .mm-press:active { transition: none; transform: none; }
+  .mm-chevron { transition: none; }
 }
 @container (min-width: 860px) {
   div.mm-scroll.mm-split { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
@@ -5153,7 +5249,19 @@ function MoodMusicPage() {
 			const fresh = !!reply && !sameReply(pending.baseline, read);
 			if (!failed && !fresh && !pending.stopped) return;
 			live = false;
-			setPending(null);
+			const queuedSwitch = pending.stopped ? null : switchQueuedRef.current;
+			switchQueuedRef.current = null;
+			setPending(queuedSwitch ? {
+				momentId: "",
+				baseline: replyMark(read),
+				memoryIds: [],
+				text: queuedSwitch.text,
+				play: {
+					pickId: queuedSwitch.pickId,
+					site: queuedSwitch.site,
+					refill: false
+				}
+			} : null);
 			setStuck(false);
 			if (pending.stopped) {
 				setNotice(t("chat.stopped"));
@@ -5236,7 +5344,7 @@ function MoodMusicPage() {
 		const inTabNow = !result && !!crewMediaRef.current && !crewMediaRef.current.ended;
 		if (result?.played || inTabNow) {
 			setBrowserPick(play.pickId);
-			moodApi.setPlayback({ pick_id: play.pickId }).catch(() => void 0);
+			tellPlaying(play.pickId);
 			const heard = queue.find((p) => p.id === play.pickId);
 			if (result?.played && heard && !knownSongs.has(songKey(heard.title, heard.artist))) {
 				markKnown(heard, "app");
@@ -5270,6 +5378,23 @@ function MoodMusicPage() {
 			setChecking(false);
 		}
 	}
+	/**
+	* Tell the backend which song now plays. Without it, every later claim for
+	* this song's ending is refused, so continuous play stops: a failure is tried
+	* again, and said on the page when it still fails.
+	*/
+	const tellPlaying = async (pickId) => {
+		for (let attempt = 1;; attempt++) try {
+			await moodApi.setPlayback({ pick_id: pickId });
+			return;
+		} catch {
+			if (attempt >= 3) {
+				setNotice(t("browser.playback_unsaved"));
+				return;
+			}
+			await new Promise((resolve) => setTimeout(resolve, POLL_MS * attempt));
+		}
+	};
 	/** The memory behind this queue helped: keep it fresh (design §2.3). */
 	const markUsed = useCallback(() => {
 		const ids = queueMemoryRef.current;
@@ -5301,9 +5426,58 @@ function MoodMusicPage() {
 	};
 	const playPick = (pick) => {
 		setCurrentId(pick.id);
-		if (browserMode && !pending && !busy) {
+		if (!browserMode) return;
+		if (pending && !pending.stopped) {
+			switchTo(pick);
+			return;
+		}
+		if (!pending && !busy) {
 			stoppedRef.current = false;
 			run(() => askPlay(pick, "start"));
+		}
+	};
+	const switchQueuedRef = useRef(null);
+	/**
+	* The person picked *pick* while the buddy works: the play request goes INTO
+	* the running turn (a steer), so the buddy switches now instead of after it.
+	* The turn the page waits on becomes this song's play.
+	*/
+	const switchTo = async (pick) => {
+		const key = slotRef.current;
+		if (!key) return;
+		stoppedRef.current = false;
+		const message = buildPlayRequest({
+			song: pick,
+			steps: state?.play_steps?.[pick.source]?.steps ?? [],
+			why: "switch",
+			state,
+			explore,
+			stayOnly
+		});
+		const shown = pick.artist ? `"${pick.title}" - ${pick.artist}` : `"${pick.title}"`;
+		const play = {
+			pickId: pick.id,
+			site: pick.source,
+			refill: false
+		};
+		lastAskRef.current = message;
+		lastShownRef.current = shown;
+		try {
+			if (await moodApi.steer(key, message)) {
+				switchQueuedRef.current = null;
+				setPending((p) => p ? {
+					...p,
+					play,
+					text: shown
+				} : p);
+			} else switchQueuedRef.current = {
+				...play,
+				text: shown
+			};
+			stickRef.current = true;
+			setAtBottom(true);
+		} catch (e) {
+			setError(errMessage(e) || "unknown");
 		}
 	};
 	/**
@@ -5315,7 +5489,11 @@ function MoodMusicPage() {
 	const onEnded = () => {
 		const id = browserPick;
 		if (!browserMode || !continuous || stoppedRef.current || !id) return;
-		if (endedForRef.current === id || pendingRef.current || busy) return;
+		if (endedForRef.current === id) return;
+		if (pendingRef.current || busy) {
+			setOwedEnd(id);
+			return;
+		}
 		endedForRef.current = id;
 		setEndedFor(id);
 		const playable = queue.filter((p) => p.feedback !== "skipped");
@@ -5332,6 +5510,35 @@ function MoodMusicPage() {
 		});
 	};
 	onEndedRef.current = onEnded;
+	const [owedEnd, setOwedEnd] = useState(null);
+	useEffect(() => {
+		if (!owedEnd || pending || busy) return;
+		setOwedEnd(null);
+		if (owedEnd === browserPick && stillEnded(crewMediaRef.current)) onEndedRef.current();
+	}, [
+		owedEnd,
+		pending,
+		busy
+	]);
+	const lastMediaRef = useRef(crew.media);
+	const pausedAtRef = useRef(0);
+	useEffect(() => {
+		const prev = lastMediaRef.current;
+		const now = crew.media;
+		lastMediaRef.current = now;
+		if (endedBetween(prev, now)) onEndedRef.current();
+		if ((stoppedRef.current || state?.playback?.paused === true) && now && !now.paused && !now.ended && Date.now() - pausedAtRef.current > 3e3) {
+			stoppedRef.current = false;
+			setState((s) => s?.playback ? {
+				...s,
+				playback: {
+					...s.playback,
+					paused: false
+				}
+			} : s);
+			tellPlayback({ paused: false });
+		}
+	}, [crew.media]);
 	const [followFrom, setFollowFrom] = useState(null);
 	useEffect(() => {
 		if (!followFrom) return;
@@ -5368,6 +5575,7 @@ function MoodMusicPage() {
 	};
 	const pauseBrowser = () => {
 		stoppedRef.current = true;
+		pausedAtRef.current = Date.now();
 		tellPlayback({ paused: true });
 		crew.pause();
 	};
@@ -5472,6 +5680,16 @@ function MoodMusicPage() {
 		if (stickRef.current) toEnd(el);
 		else if (!el.scrollTop && recordScrollRef.current) el.scrollTop = recordScrollRef.current;
 	}, [recordKey]);
+	const buddyCount = lines.filter((l) => l.who === "buddy").length;
+	const seenBuddyRef = useRef(buddyCount);
+	const [unseen, setUnseen] = useState(false);
+	useEffect(() => {
+		if (buddyCount > seenBuddyRef.current && !stickRef.current) setUnseen(true);
+		seenBuddyRef.current = buddyCount;
+	}, [buddyCount]);
+	useEffect(() => {
+		if (atBottom) setUnseen(false);
+	}, [atBottom]);
 	const toLatest = () => {
 		stickRef.current = true;
 		setAtBottom(true);
@@ -5678,6 +5896,7 @@ function MoodMusicPage() {
 														}),
 														status && /* @__PURE__ */ jsx(BuddySteps, {
 															steps: liveSteps(slot),
+															live: true,
 															testId: "mood-live-steps"
 														}),
 														status && /* @__PURE__ */ jsxs("p", {
@@ -5712,10 +5931,18 @@ function MoodMusicPage() {
 												onClick: toLatest,
 												className: "mm-press absolute bottom-2 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1 text-xs text-[var(--text)] shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]",
 												"data-testid": "mood-record-latest",
-												children: [/* @__PURE__ */ jsx(ArrowDown, {
-													size: 12,
-													"aria-hidden": "true"
-												}), t("chat.latest")]
+												children: [
+													unseen && /* @__PURE__ */ jsx("span", {
+														className: "h-1.5 w-1.5 rounded-full bg-[var(--accent)]",
+														"aria-hidden": "true",
+														"data-testid": "mood-record-unseen"
+													}),
+													/* @__PURE__ */ jsx(ArrowDown, {
+														size: 12,
+														"aria-hidden": "true"
+													}),
+													unseen ? t("chat.new_message") : t("chat.latest")
+												]
 											})
 										]
 									}),

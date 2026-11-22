@@ -124,7 +124,8 @@
     "status_playing": "친구가 Kiro Crew 브라우저에서 노래를 여는 중이에요…",
     "record_title": "버디가 하고 있는 일",
     "latest": "최신",
-    "no_next": "대기열에 다음 곡이 없어요."
+    "no_next": "대기열에 다음 곡이 없어요.",
+    "new_message": "새 메시지"
   },
   "card": {
     "arc_stay": "곁에 머물기",
@@ -163,7 +164,8 @@
     "unready_old_host": "이 Kiro Crew는 너무 오래됐어요. 앱 브라우저 사이트를 지원하는 버전(KiroCrew#38333 포함, v0.13.0-rc.3보다 새 버전)으로 업데이트한 뒤 이 페이지를 다시 여세요.",
     "unready_not_approved": "먼저 무드 뮤직의 음악 사이트를 승인하세요. 앱 페이지에서 한 번만 승인하면 돼요.",
     "unready_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요.",
-    "find_play": "찾아서 재생"
+    "find_play": "찾아서 재생",
+    "playback_unsaved": "지금 재생 중인 곡을 Mood Music에 알리지 못했어요. 다음 곡이 저절로 시작되지 않을 수 있어요. 다음 곡을 재생해 주세요."
   },
   "view": {
     "title": "Kiro Crew 브라우저",
@@ -188,6 +190,7 @@
     "tab": "탭 전환",
     "key": "키 누르기",
     "browser": "브라우저 사용",
-    "other": "작업 수행"
+    "other": "작업 수행",
+    "folded": "버디가 한 일 ({{count}})"
   }
 }

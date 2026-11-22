@@ -124,7 +124,8 @@
     "status_playing": "Ton compagnon ouvre la chanson dans le navigateur de Kiro Crew…",
     "record_title": "Ce que fait ton compagnon",
     "latest": "Plus récent",
-    "no_next": "Pas de chanson suivante dans la file."
+    "no_next": "Pas de chanson suivante dans la file.",
+    "new_message": "Nouveau message"
   },
   "card": {
     "arc_stay": "Rester avec",
@@ -163,7 +164,8 @@
     "unready_old_host": "Ce Kiro Crew est trop ancien. Mets Kiro Crew à jour vers une version avec les sites de navigateur pour apps (KiroCrew#38333, plus récente que v0.13.0-rc.3), puis rouvre cette page.",
     "unready_not_approved": "Approuve d’abord les sites de musique pour Mood Music. Une seule fois, sur la page de l’app.",
     "unready_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew.",
-    "find_play": "Trouver et lire"
+    "find_play": "Trouver et lire",
+    "playback_unsaved": "Impossible d'indiquer à Mood Music quelle chanson joue : la suivante risque de ne pas démarrer seule. Lance-la toi-même."
   },
   "view": {
     "title": "Navigateur de Kiro Crew",
@@ -188,6 +190,7 @@
     "tab": "A changé d'onglet",
     "key": "A appuyé sur une touche",
     "browser": "A utilisé le navigateur",
-    "other": "A fait une étape"
+    "other": "A fait une étape",
+    "folded": "Ce qu'a fait ton compagnon ({{count}})"
   }
 }

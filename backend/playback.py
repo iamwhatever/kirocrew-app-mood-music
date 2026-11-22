@@ -13,6 +13,11 @@ also where continuous play off and the person's pause are honoured, so neither
 side can wake the buddy past them. The page tells the store which song plays and
 when the person pauses (``PUT /playback``).
 
+The host reports one ending once. An ending that comes while a turn runs (the
+person's own request) is not dropped: a tracked task claims it once the slot is
+idle, for the song that ended then, so a turn that started another song meanwhile
+claims nothing.
+
 The side that woke the buddy reads its answer. Here that is a task held with the
 gateway's background work (``chat_slots.track``): once the turn ends it keeps the
 steps that worked (or forgets those that failed), records the song as playing and
@@ -241,33 +246,72 @@ async def on_media_ended(ctx: Any, event: Any) -> None:
     state = _gateway_state(ctx)
     if slots is None or state is None:
         return
-    slot = slots.get(state, buddy.BUDDY_KEY)
-    if slot is None or getattr(slot, "running", False):
-        # A turn already out (the person's own request) wins, as on the page.
+    # The song that ended: a turn running now may start another before this one is claimed.
+    snapshot = await asyncio.to_thread(_store(ctx).snapshot)
+    pick_id = str((snapshot.get("playback") or {}).get("pick_id") or "")
+    if not pick_id:
         return
+    if await _wake(ctx, state, slots, pick_id) == "busy":
+        # A turn already out (the person's own request) goes first. The host
+        # reports an ending once, so it is claimed after that turn, not dropped.
+        follow = asyncio.ensure_future(_wake_after_turn(ctx, state, slots, pick_id))
+        track = getattr(slots, "track", None)
+        if callable(track):
+            track(state, follow)
+
+
+#: How often a wake held up by a running turn looks again, and for how long at most.
+#: shortcut: polls the slot; a host turn-ended signal for apps would replace it.
+BUSY_POLL_S = 2.0
+BUSY_WAIT_S = 30 * 60.0
+
+
+async def _wake_after_turn(ctx: Any, state: Any, slots: Any, pick_id: str) -> None:
+    """Claim *pick_id*'s ending once the running turn is over (and any after it)."""
+    waited = 0.0
+    while waited < BUSY_WAIT_S:
+        await asyncio.sleep(BUSY_POLL_S)
+        waited += BUSY_POLL_S
+        if await _wake(ctx, state, slots, pick_id) != "busy":
+            return
+    logger.info("mood-music: the buddy stayed busy; a song ending was not claimed")
+
+
+async def _wake(ctx: Any, state: Any, slots: Any, pick_id: str) -> str:
+    """Claim *pick_id*'s ending and wake the buddy for the next song.
+
+    ``busy`` when a turn is running, so nothing was claimed; ``done`` otherwise.
+    """
+    from .routes import _store  # noqa: PLC0415
+
+    slot = slots.get(state, buddy.BUDDY_KEY)
+    if slot is None:
+        return "done"
+    if getattr(slot, "running", False):
+        return "busy"
     reserve = getattr(slots, "reserve", None)
     # Held across the awaits below, so a page send meanwhile queues behind this wake.
     reservation = reserve(state, slot) if callable(reserve) else None
     if callable(reserve) and reservation is None:
-        return
+        return "busy"
     store = _store(ctx)
     snapshot = await asyncio.to_thread(store.snapshot)
-    pick_id = str((snapshot.get("playback") or {}).get("pick_id") or "")
-    if not pick_id or not await asyncio.to_thread(lambda: store.claim_ended(pick_id)):
-        return
+    if not await asyncio.to_thread(lambda: store.claim_ended(pick_id)):
+        return "done"
     song, refill = next_pick(snapshot, pick_id)
     if song is None:
-        return
+        return "done"
     message, memory_ids = play_message(snapshot, song, refill)
     try:
         turn = slots.send(state, slot, message,
                           **({"reservation": reservation} if reservation is not None else {}))
     except (PermissionError, RuntimeError) as exc:
         logger.warning("mood-music: the buddy could not be woken: %s", exc)
-        return
+        return "done"
     if turn is None:
-        return
+        return "done"
     follow = asyncio.ensure_future(after_turn(ctx, state, turn, song, memory_ids))
     track = getattr(slots, "track", None)
     if callable(track):
         track(state, follow)
+    return "done"

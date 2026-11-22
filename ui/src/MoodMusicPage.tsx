@@ -22,7 +22,9 @@
  * Songs play only in Kiro Crew's browser (`crewBrowser.ts`). A play goes to
  * the buddy as one request: it finds the song on its site in Kiro Crew's
  * browser and reports the steps that worked, which the app keeps per site and
- * sends back next time. Pause, seek and volume go straight to the tab. With
+ * sends back next time. A song picked while a turn runs is steered into that
+ * turn (`api.ts` `steer`), so the buddy switches at once instead of after it.
+ * Pause, seek and volume go straight to the tab. With
  * continuous play on, a song's end (read by this page's poll) wakes the buddy
  * once for the next song, and asks for more when the queue runs low. The
  * backend hears endings too, with the page closed (`backend/playback.py`): each
@@ -46,7 +48,7 @@ import Banner from './Banner'
 import BrowserControls from './BrowserControls'
 import BrowserView from './BrowserView'
 import BuddySteps from './BuddySteps'
-import { APPROVE_PATH, hostBrowserView, readiness, useCrewBrowser } from './crewBrowser'
+import { APPROVE_PATH, endedBetween, hostBrowserView, readiness, stillEnded, useCrewBrowser } from './crewBrowser'
 import MemoryTab from './MemoryTab'
 import MomentsTab from './MomentsTab'
 import MoodBackdrop from './MoodBackdrop'
@@ -70,6 +72,10 @@ export const POLL_MS = 1000
 export const FOLLOW_READS = 120
 /** No new activity for this long: the page says the buddy may be stuck (design §1.8). */
 export const STUCK_MS = 2 * 60_000
+/** How many times the page tries to tell the backend which song plays. */
+export const PLAYBACK_TRIES = 3
+/** Readings of the tab playing after the person's pause, this long after it, mean they played it on the site. */
+export const RESUME_GRACE_MS = 3000
 /** Failed reads for this long: the page says it cannot reach Kiro Crew. */
 export const OFFLINE_MS = 10_000
 
@@ -114,9 +120,13 @@ export const SPLIT_CSS = `
 .mm-row, .mm-step { animation: mm-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 .mm-press { transition: transform 100ms ease-out, background-color 150ms ease-out; }
 .mm-press:active { transform: scale(0.97); }
+/* A turn's folded steps: the chevron turns as the row opens. */
+.mm-chevron { transition: transform 150ms ease-out; }
+.mm-chevron[data-open="true"] { transform: rotate(90deg); }
 @media (prefers-reduced-motion: reduce) {
   .mm-row, .mm-step { animation: none; }
   .mm-press, .mm-press:active { transition: none; transform: none; }
+  .mm-chevron { transition: none; }
 }
 @container (min-width: 860px) {
   div.mm-scroll.mm-split { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
@@ -486,7 +496,12 @@ export default function MoodMusicPage() {
       const fresh = !!reply && !sameReply(pending.baseline, read)
       if (!failed && !fresh && !pending.stopped) return
       live = false
-      setPending(null)
+      // A song picked during this turn that was queued behind it runs next: wait on that turn.
+      const queuedSwitch = pending.stopped ? null : switchQueuedRef.current
+      switchQueuedRef.current = null
+      setPending(queuedSwitch
+        ? { momentId: '', baseline: replyMark(read), memoryIds: [], text: queuedSwitch.text, play: { pickId: queuedSwitch.pickId, site: queuedSwitch.site, refill: false } }
+        : null)
       setStuck(false)
       if (pending.stopped) { setNotice(t('chat.stopped')); return }
       if (failed && !fresh) { setTurnFailed(failed); return }
@@ -551,7 +566,7 @@ export default function MoodMusicPage() {
     if (result?.played || inTabNow) {
       setBrowserPick(play.pickId)
       // The backend learns which song plays, so it can play the next one with the page closed.
-      void moodApi.setPlayback({ pick_id: play.pickId }).catch(() => undefined)
+      void tellPlaying(play.pickId)
       // A song the buddy started counts as heard (design §0.6): not an explore pick again.
       const heard = queue.find(p => p.id === play.pickId)
       if (result?.played && heard && !knownSongs.has(songKey(heard.title, heard.artist))) {
@@ -577,6 +592,23 @@ export default function MoodMusicPage() {
       setError(errMessage(e) || 'unknown')
     } finally {
       setChecking(false)
+    }
+  }
+
+  /**
+   * Tell the backend which song now plays. Without it, every later claim for
+   * this song's ending is refused, so continuous play stops: a failure is tried
+   * again, and said on the page when it still fails.
+   */
+  const tellPlaying = async (pickId: string) => {
+    for (let attempt = 1; ; attempt++) {
+      try {
+        await moodApi.setPlayback({ pick_id: pickId })
+        return
+      } catch {
+        if (attempt >= PLAYBACK_TRIES) { setNotice(t('browser.playback_unsaved')); return }
+        await new Promise(resolve => setTimeout(resolve, POLL_MS * attempt))
+      }
     }
   }
 
@@ -611,9 +643,46 @@ export default function MoodMusicPage() {
 
   const playPick = (pick: QueuedPick) => {
     setCurrentId(pick.id)
-    if (browserMode && !pending && !busy) {
+    if (!browserMode) return
+    if (pending && !pending.stopped) { void switchTo(pick); return }
+    if (!pending && !busy) {
       stoppedRef.current = false
       void run(() => askPlay(pick, 'start'))
+    }
+  }
+
+  // A song the person picked while a turn ran, which the gateway queued behind
+  // that turn instead of steering it in: once that turn is over, the page waits
+  // on this one.
+  const switchQueuedRef = useRef<NonNullable<Pending['play']> & { text: string } | null>(null)
+
+  /**
+   * The person picked *pick* while the buddy works: the play request goes INTO
+   * the running turn (a steer), so the buddy switches now instead of after it.
+   * The turn the page waits on becomes this song's play.
+   */
+  const switchTo = async (pick: QueuedPick) => {
+    const key = slotRef.current
+    if (!key) return
+    stoppedRef.current = false
+    const message = buildPlayRequest({
+      song: pick, steps: state?.play_steps?.[pick.source]?.steps ?? [], why: 'switch', state, explore, stayOnly,
+    })
+    const shown = pick.artist ? `"${pick.title}" - ${pick.artist}` : `"${pick.title}"`
+    const play = { pickId: pick.id, site: pick.source, refill: false }
+    lastAskRef.current = message
+    lastShownRef.current = shown
+    try {
+      if (await moodApi.steer(key, message)) {
+        switchQueuedRef.current = null
+        setPending(p => (p ? { ...p, play, text: shown } : p))
+      } else {
+        switchQueuedRef.current = { ...play, text: shown }
+      }
+      stickRef.current = true
+      setAtBottom(true)
+    } catch (e) {
+      setError(errMessage(e) || 'unknown')
     }
   }
 
@@ -626,7 +695,9 @@ export default function MoodMusicPage() {
   const onEnded = () => {
     const id = browserPick
     if (!browserMode || !continuous || stoppedRef.current || !id) return
-    if (endedForRef.current === id || pendingRef.current || busy) return
+    if (endedForRef.current === id) return
+    // The host reports an ending once: with the buddy busy it is owed, not dropped.
+    if (pendingRef.current || busy) { setOwedEnd(id); return }
     endedForRef.current = id
     setEndedFor(id)
     const playable = queue.filter(p => p.feedback !== 'skipped')
@@ -642,6 +713,34 @@ export default function MoodMusicPage() {
     })
   }
   onEndedRef.current = onEnded
+
+  // An ending heard while the buddy was busy: once its turn is over, and if the
+  // same song is still over in the tab, it wakes the buddy then.
+  const [owedEnd, setOwedEnd] = useState<string | null>(null)
+  useEffect(() => {
+    if (!owedEnd || pending || busy) return
+    setOwedEnd(null)
+    if (owedEnd === browserPick && stillEnded(crewMediaRef.current)) onEndedRef.current()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [owedEnd, pending, busy])
+
+  // Readings of the tab: an ending no reading called `ended` (`endedBetween`),
+  // and the person pressing play on the site itself after pausing here.
+  const lastMediaRef = useRef(crew.media)
+  const pausedAtRef = useRef(0)
+  useEffect(() => {
+    const prev = lastMediaRef.current
+    const now = crew.media
+    lastMediaRef.current = now
+    if (endedBetween(prev, now)) onEndedRef.current()
+    const pausedHere = stoppedRef.current || state?.playback?.paused === true
+    if (pausedHere && now && !now.paused && !now.ended && Date.now() - pausedAtRef.current > RESUME_GRACE_MS) {
+      stoppedRef.current = false
+      setState(s => (s?.playback ? { ...s, playback: { ...s.playback, paused: false } } : s))
+      tellPlayback({ paused: false })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [crew.media])
 
   // The backend woke the buddy for an ending: read the state until its song is in.
   const [followFrom, setFollowFrom] = useState<string | null>(null)
@@ -685,6 +784,7 @@ export default function MoodMusicPage() {
   }
   const pauseBrowser = () => {
     stoppedRef.current = true
+    pausedAtRef.current = Date.now()
     tellPlayback({ paused: true })
     void crew.pause()
   }
@@ -798,6 +898,16 @@ export default function MoodMusicPage() {
     else if (!el.scrollTop && recordScrollRef.current) el.scrollTop = recordScrollRef.current
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recordKey])
+  // A buddy reply that lands while the person reads back marks the Latest button
+  // until they are at the bottom again.
+  const buddyCount = lines.filter(l => l.who === 'buddy').length
+  const seenBuddyRef = useRef(buddyCount)
+  const [unseen, setUnseen] = useState(false)
+  useEffect(() => {
+    if (buddyCount > seenBuddyRef.current && !stickRef.current) setUnseen(true)
+    seenBuddyRef.current = buddyCount
+  }, [buddyCount])
+  useEffect(() => { if (atBottom) setUnseen(false) }, [atBottom])
   const toLatest = () => {
     stickRef.current = true
     setAtBottom(true)
@@ -949,7 +1059,7 @@ export default function MoodMusicPage() {
                       {showYou && (
                         <p className="mm-row self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]">{pending.text}</p>
                       )}
-                      {status && <BuddySteps steps={liveSteps(slot)} testId="mood-live-steps" />}
+                      {status && <BuddySteps steps={liveSteps(slot)} live testId="mood-live-steps" />}
                       {status && (
                         <p role="status" className="mm-row flex items-center gap-1.5 text-xs text-[var(--muted)]" data-testid="mood-status">
                           <Headphones size={13} aria-hidden="true" className={reduceMotion ? '' : 'animate-pulse'} />
@@ -974,8 +1084,9 @@ export default function MoodMusicPage() {
                       className="mm-press absolute bottom-2 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1 text-xs text-[var(--text)] shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                       data-testid="mood-record-latest"
                     >
+                      {unseen && <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" aria-hidden="true" data-testid="mood-record-unseen" />}
                       <ArrowDown size={12} aria-hidden="true" />
-                      {t('chat.latest')}
+                      {unseen ? t('chat.new_message') : t('chat.latest')}
                     </button>
                   )}
                 </section>

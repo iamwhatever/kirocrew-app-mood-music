@@ -124,7 +124,8 @@
     "status_playing": "Dein Buddy öffnet den Song im Browser von Kiro Crew…",
     "record_title": "Was dein Buddy gerade tut",
     "latest": "Neueste",
-    "no_next": "Kein nächster Song in der Warteschlange."
+    "no_next": "Kein nächster Song in der Warteschlange.",
+    "new_message": "Neue Nachricht"
   },
   "card": {
     "arc_stay": "Dabeibleiben",
@@ -163,7 +164,8 @@
     "unready_old_host": "Dieses Kiro Crew ist zu alt. Aktualisiere Kiro Crew auf eine Version mit App-Browserseiten (KiroCrew#38333, neuer als v0.13.0-rc.3) und öffne diese Seite dann erneut.",
     "unready_not_approved": "Gib zuerst die Musikseiten für Mood Music frei. Das machst du einmal, auf der Seite der App.",
     "unready_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet.",
-    "find_play": "Suchen und abspielen"
+    "find_play": "Suchen und abspielen",
+    "playback_unsaved": "Mood Music konnte nicht gespeichert werden, welcher Song läuft. Der nächste Song startet daher vielleicht nicht von selbst. Starte ihn selbst."
   },
   "view": {
     "title": "Browser von Kiro Crew",
@@ -188,6 +190,7 @@
     "tab": "Tab gewechselt",
     "key": "Eine Taste gedrückt",
     "browser": "Den Browser benutzt",
-    "other": "Einen Schritt gemacht"
+    "other": "Einen Schritt gemacht",
+    "folded": "Was dein Buddy getan hat ({{count}})"
   }
 }

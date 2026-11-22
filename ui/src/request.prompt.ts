@@ -184,7 +184,8 @@ function songLink(song: PlaySong): string {
 export function buildPlayRequest(opts: {
   song: PlaySong
   steps: string[]
-  why: 'start' | 'ended'
+  /** `switch`: the person picked this song while a turn was running; it is steered into that turn. */
+  why: 'start' | 'ended' | 'switch'
   refill?: { moodTags: string[]; queued: { title: string; artist: string }[] } | null
   state: MoodState | undefined
   explore?: ExploreLevel
@@ -198,7 +199,9 @@ export function buildPlayRequest(opts: {
     '[Mood Music]',
     `${PLAY_HEAD}: "${title}"${artist ? ` - ${artist}` : ''}`,
     '',
-    why === 'ended' ? 'The song before it just ended (continuous play is on).' : 'The person pressed play.',
+    why === 'ended' ? 'The song before it just ended (continuous play is on).'
+      : why === 'switch' ? SWITCH_LINE
+        : 'The person pressed play.',
     `Site: ${song.source}`,
   ]
   if (link) lines.push(`Checked link on this site (open it only if the search does not find the song): ${link}`)
@@ -228,6 +231,10 @@ export function buildPlayRequest(opts: {
   lines.push('', refill ? `${PLAY_FORMAT}\n${playRefillFormat()}` : PLAY_FORMAT)
   return lines.join('\n')
 }
+
+/** A song the person picked while the buddy was still working, steered into that turn. */
+export const SWITCH_LINE =
+  'The person picked this song while you were still working: drop the song or task you were on in this turn and play this one now. Reply for this song only.'
 
 /** Every play stays in the buddy's one tab: the page's buttons and live view follow that tab. */
 export const ONE_TAB = 'Use the one tab you already have: open the video in it (navigate to its own address from the results page), never in a new tab. Skip a saved step that opens or switches to a new tab.'

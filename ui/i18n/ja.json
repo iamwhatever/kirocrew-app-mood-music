@@ -124,7 +124,8 @@
     "status_playing": "相棒が Kiro Crew のブラウザで曲を開いています…",
     "record_title": "バディがしていること",
     "latest": "最新へ",
-    "no_next": "キューに次の曲がありません。"
+    "no_next": "キューに次の曲がありません。",
+    "new_message": "新しいメッセージ"
   },
   "card": {
     "arc_stay": "寄り添う",
@@ -163,7 +164,8 @@
     "unready_old_host": "この Kiro Crew は古すぎます。アプリのブラウザサイトに対応した版（KiroCrew#38333 を含む、v0.13.0-rc.3 より新しい版）に更新して、このページを開き直してください。",
     "unready_not_approved": "先に Mood Music の音楽サイトを承認してください。アプリのページで一度だけ承認します。",
     "unready_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。",
-    "find_play": "探して再生"
+    "find_play": "探して再生",
+    "playback_unsaved": "再生中の曲を Mood Music に記録できませんでした。次の曲が自動で始まらないことがあります。次の曲を再生してください。"
   },
   "view": {
     "title": "Kiro Crew のブラウザ",
@@ -188,6 +190,7 @@
     "tab": "タブを切り替え",
     "key": "キーを押した",
     "browser": "ブラウザを使用",
-    "other": "作業した"
+    "other": "作業した",
+    "folded": "相棒がしたこと（{{count}}）"
   }
 }
