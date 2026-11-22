@@ -24,7 +24,10 @@ vi.mock('../src/api', async orig => {
 
 import MoodMusicPage, { POLL_MS } from '../src/MoodMusicPage'
 import PlaylistsTab, { defaultName, likedSongs } from '../src/PlaylistsTab'
-import { stubMedia } from './stubs/app-sdk'
+import { setStubMedia, stubMedia } from './stubs/app-sdk'
+import type { BrowserMediaState } from '@kirocrew/app-sdk'
+
+const PLAYING: BrowserMediaState = { kind: 'video', paused: false, ended: false, currentTime: 42, duration: 200, volume: 0.8, muted: false }
 
 const api = mock.api
 const ID = 'dQw4w9WgXcQ'
@@ -240,6 +243,40 @@ describe('playing a list on the page', () => {
     expect(asks()[0]).toContain('Play in Crew Browser: "Song 5" - Artist 5')
     // Three songs: no refill yet, so the list was not asked for its next part.
     expect(api.playlistNext).not.toHaveBeenCalled()
+  })
+
+  it('moves the marker off a song still playing from the old queue to the list\'s first, and keeps it there once it plays', async () => {
+    api.playlistNext.mockResolvedValue({ active: false, added: 0, ask_buddy: false })
+    render(<MoodMusicPage />)
+    await flush()
+    await flush()
+    // Song 1 of the old queue plays in the tab.
+    fireEvent.click(screen.getByTestId('mood-browser-play'))
+    await flush()
+    api.getSlot.mockResolvedValue(replyTo(asks()[0], { played: true, site: 'youtube', steps: ['x'] }))
+    await flush(POLL_MS)
+    await flush()
+    await act(async () => { setStubMedia(PLAYING) })
+    await flush()
+
+    const fromList = [pick(5), pick(6), pick(7)]
+    api.playPlaylist.mockResolvedValue({ queue: fromList })
+    fireEvent.click(screen.getByRole('tab', { name: t('playlists.tab') }))
+    await flush()
+    api.state.mockResolvedValue(state({ queue: fromList, last_source: `playlist:${LIST_ID}:abcd1234` }))
+    fireEvent.click(screen.getByRole('button', { name: t('playlists.play', { name: 'Rainy' }) }))
+    await flush()
+    await flush()
+    const marked = () => screen.getAllByTestId('mood-queue-row').map(r => r.getAttribute('aria-current'))
+    // The person chose this list: its first song is the one up, not the old song still in the tab.
+    expect(marked()).toEqual(['true', null, null])
+    expect(asks()[asks().length - 1]).toContain('Play in Crew Browser: "Song 5" - Artist 5')
+
+    api.getSlot.mockResolvedValue(replyTo(asks()[asks().length - 1], { played: true, site: 'youtube', steps: ['open the video'] }))
+    await flush(POLL_MS)
+    await flush()
+    expect(marked()).toEqual(['true', null, null])
+    expect(api.setPlayback).toHaveBeenLastCalledWith({ pick_id: pick(5).id })
   })
 
   it.each([
