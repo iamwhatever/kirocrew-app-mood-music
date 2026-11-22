@@ -3289,7 +3289,7 @@ function BrowserControls({ media, waiting, continuous, onAskPlay, onPause, onPla
 function BrowserView({ open, onToggle, operating, live }) {
 	return /* @__PURE__ */ jsxs("section", {
 		"aria-label": t("view.title"),
-		className: "flex flex-col gap-2 rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-3",
+		className: `mm-view ${open && live ? "mm-view-open " : ""}flex flex-col gap-2 rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-3`,
 		"data-testid": "mood-browser-view",
 		children: [/* @__PURE__ */ jsxs("div", {
 			className: "flex items-center gap-2",
@@ -4923,22 +4923,24 @@ var moodLabel = (key) => t(MOOD_LABELS[key]);
 /**
 * The Listen tab uses the page's whole width. Wide enough, it is two columns:
 * the chat on the left, and on the right the buddy's browser on top with the
-* player and the queue under it. Each column scrolls on its own and the page
-* itself does not. On a wide right column the player and the queue sit side by
-* side. Narrower, it is one column and the page scrolls. Container queries, so
-* the layout follows the page's own width (the Crew sidebar takes part of the
-* window), not the window's.
+* player and the queue under it. The page itself does not scroll: on the left
+* the record scrolls, on the right only the queue does (never the column around
+* it, so the queue's last row is never pushed below the window). On a wide right
+* column the player and the queue sit side by side. A window too short for all
+* of it, and a narrow page (one column), scroll as one with no inner queue
+* scroll. Container queries, so the layout follows the page's own size (the
+* Crew sidebar takes part of the window), not the window's.
 */
 var SPLIT_CSS = `
-.mm-root { container-type: inline-size; }
+.mm-root { container: mm-page / inline-size; }
 .mm-listen { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); align-items: start; width: 100%; max-width: 1760px; margin: 0 auto; }
 .mm-player { container-type: inline-size; }
 .mm-deck { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
 /* The live view: tall enough to watch, short enough to leave the player and queue in view. */
 .mm-view-body { display: flex; flex-direction: column; height: clamp(14rem, 42vh, 30rem); }
 .mm-view-body > * { flex: 1; min-height: 0; }
-/* The queue: real height with its own scroll, and rows that wrap rather than cut off. */
-.mm-queue-list { min-height: 12rem; max-height: 32rem; overflow-y: auto; overscroll-behavior: contain; padding-right: 0.25rem; }
+/* The queue: rows that wrap rather than cut off. One column: the page scrolls, the queue does not. */
+.mm-queue-list { padding-right: 0.25rem; }
 .mm-queue-num { flex: none; width: 1.25rem; padding-top: 0.125rem; display: inline-flex; justify-content: center; }
 .mm-clamp2 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
 /* The buddy's record scrolls on its own. No scroll anchoring: the page itself follows new rows. */
@@ -4956,17 +4958,44 @@ var SPLIT_CSS = `
   .mm-press, .mm-press:active { transition: none; transform: none; }
   .mm-chevron { transition: none; }
 }
-@container (min-width: 860px) {
+@container mm-page (min-width: 860px) {
   div.mm-scroll.mm-split { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
   .mm-split > .mm-listen { flex: 1; min-height: 0; grid-template-columns: minmax(320px, 5fr) minmax(0, 7fr); align-items: stretch; }
   /* The left column holds still: the record fills it and scrolls, the box stays at its foot. */
   .mm-col { min-height: 0; overflow: hidden; padding-bottom: 1.5rem; }
   .mm-record-card { flex: 1; }
   .mm-record { flex: 1; min-height: 0; max-height: none; }
-  .mm-player { min-height: 0; overflow-y: auto; overflow-anchor: none; padding-bottom: 1.5rem; }
+  /* The right column holds still and fills the height. Only the queue scrolls: the
+     player keeps its own height, the live view gives way first, the queue takes the rest. */
+  .mm-split > .mm-listen { grid-template-rows: minmax(0, 1fr); container: mm-cols / size; }
+  .mm-player { min-height: 0; overflow: hidden; padding-bottom: 1.5rem; }
+  .mm-view { flex: 0 1 auto; min-height: 0; }
+  .mm-view-open { min-height: 9rem; }
+  .mm-view .mm-view-body { height: auto; flex: 0 1 clamp(14rem, 42vh, 30rem); min-height: 0; }
+  .mm-deck { flex: 1 1 0; grid-template-rows: auto minmax(0, 1fr); align-items: stretch; }
+  .mm-deck > :first-child { align-self: start; }
+  .mm-upnext { min-height: 0; }
+  /* contain: size keeps the rows from stretching the column; the list fills what is left. */
+  .mm-queue-list { flex: 1 1 0; min-height: 10rem; overflow-y: auto; overscroll-behavior: contain; contain: size; }
+}
+/* Columns too short to hold the player, a 10rem queue and (when open) the smallest
+   live view: the right column scrolls as one and the queue shows every row, so
+   there is still one scroll. Hiding the live view lowers the bar.
+   shortcut: 48rem / 42rem assume a now-playing card of about 24rem; raise them if
+   that card grows. */
+@container mm-cols (max-height: 48rem) {
+  .mm-player.mm-player-view { overflow-y: auto; overflow-anchor: none; }
+  .mm-player-view .mm-view, .mm-player-view .mm-deck { flex: none; }
+  .mm-player-view .mm-view .mm-view-body { flex: none; height: clamp(14rem, 42vh, 30rem); }
+  .mm-player-view .mm-queue-list { flex: none; min-height: 0; overflow: visible; contain: none; }
+}
+@container mm-cols (max-height: 42rem) {
+  .mm-player { overflow-y: auto; overflow-anchor: none; }
+  .mm-view, .mm-deck { flex: none; }
+  .mm-queue-list { flex: none; min-height: 0; overflow: visible; contain: none; }
 }
 @container (min-width: 720px) {
-  .mm-deck { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .mm-deck { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
 }
 `;
 var songKey = (title = "", artist = "") => `${title.trim().toLowerCase()}|${artist.trim().toLowerCase()}`;
@@ -6312,7 +6341,7 @@ function MoodMusicPage() {
 									})
 								]
 							}), /* @__PURE__ */ jsxs("div", {
-								className: "mm-player flex min-w-0 flex-col gap-4",
+								className: `mm-player ${browserMode && slotKey && viewOpen && HostView ? "mm-player-view " : ""}flex min-w-0 flex-col gap-4`,
 								"data-testid": "mood-player-column",
 								children: [
 									!current && unready,

@@ -25,7 +25,7 @@ export default function BrowserView({ open, onToggle, operating, live }: {
   return (
     <section
       aria-label={t('view.title')}
-      className="flex flex-col gap-2 rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-3"
+      className={`mm-view ${open && live ? 'mm-view-open ' : ''}flex flex-col gap-2 rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-3`}
       data-testid="mood-browser-view"
     >
       <div className="flex items-center gap-2">

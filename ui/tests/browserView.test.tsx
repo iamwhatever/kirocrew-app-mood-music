@@ -126,6 +126,22 @@ describe('the page', () => {
     expect(screen.queryByTestId('mood-browser-view-old-host')).toBeNull()
   })
 
+  it('marks the right column while the live view is open, and unmarks it when folded', async () => {
+    host.level = 11
+    await open()
+    const column = screen.getByTestId('mood-player-column')
+    expect(column).toHaveClass('mm-player', 'mm-player-view')
+    fireEvent.click(screen.getByTestId('mood-browser-view-toggle'))
+    await flush()
+    expect(column).toHaveClass('mm-player')
+    expect(column).not.toHaveClass('mm-player-view')
+  })
+
+  it('does not mark the column on a host with no live view', async () => {
+    await open()
+    expect(screen.getByTestId('mood-player-column')).not.toHaveClass('mm-player-view')
+  })
+
   it('asks the host to keep the tab showing after the turn ends, and keeps the box open', async () => {
     host.level = 11
     // A played song is marked heard and its steps kept.
