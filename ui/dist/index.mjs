@@ -275,6 +275,7 @@ var CATALOGS = {
 			"error": "করা গেল না ({{code}})।",
 			"liked_title": "পছন্দের গান থেকে ({{count}})",
 			"liked_empty": "পছন্দ করা গান এখানে দেখা যায়।",
+			"liked_folded": "এখানে পছন্দের মাত্র {{count}}টি গান আছে: পুরোনোগুলো আপনার রুচির প্রোফাইলে (স্মৃতি ট্যাব) গুছিয়ে রাখা হয়েছে, আর যোগ করা যায় না।",
 			"filter": "মুড দিয়ে বাছুন",
 			"all_moods": "সব",
 			"pick_shown": "দেখানো সব বাছুন ({{count}})",
@@ -555,6 +556,7 @@ var CATALOGS = {
 			"error": "Das ging nicht ({{code}}).",
 			"liked_title": "Aus Songs, die dir gefallen ({{count}})",
 			"liked_empty": "Songs mit „Gefällt mir“ erscheinen hier.",
+			"liked_folded": "Hier sind nur noch {{count}} Songs, die dir gefallen: Ältere wurden in dein Geschmacksprofil (Gedächtnis) eingeordnet und lassen sich nicht mehr hinzufügen.",
 			"filter": "Nach Stimmung filtern",
 			"all_moods": "Alle",
 			"pick_shown": "Alle angezeigten wählen ({{count}})",
@@ -835,6 +837,7 @@ var CATALOGS = {
 			"error": "Could not do that ({{code}}).",
 			"liked_title": "From songs you liked ({{count}})",
 			"liked_empty": "Like a song and it shows up here.",
+			"liked_folded": "Only {{count}} liked songs are still here: older ones were folded into your taste profile (Memory tab) and can no longer be added.",
 			"filter": "Filter by mood",
 			"all_moods": "All",
 			"pick_shown": "Tick all shown ({{count}})",
@@ -1115,6 +1118,7 @@ var CATALOGS = {
 			"error": "No se pudo hacer ({{code}}).",
 			"liked_title": "De las canciones que te gustaron ({{count}})",
 			"liked_empty": "Las canciones con Me gusta aparecen aquí.",
+			"liked_folded": "Aquí solo quedan {{count}} canciones que te gustaron: las más antiguas pasaron a tu perfil de gustos (Memoria) y ya no se pueden añadir.",
 			"filter": "Filtrar por ánimo",
 			"all_moods": "Todas",
 			"pick_shown": "Marcar todas las mostradas ({{count}})",
@@ -1395,6 +1399,7 @@ var CATALOGS = {
 			"error": "Impossible ({{code}}).",
 			"liked_title": "Parmi les chansons aimées ({{count}})",
 			"liked_empty": "Les chansons que tu aimes apparaissent ici.",
+			"liked_folded": "Il ne reste ici que {{count}} chansons aimées : les plus anciennes ont été intégrées à ton profil de goûts (Mémoire) et ne peuvent plus être ajoutées.",
 			"filter": "Filtrer par humeur",
 			"all_moods": "Toutes",
 			"pick_shown": "Cocher toutes celles affichées ({{count}})",
@@ -1675,6 +1680,7 @@ var CATALOGS = {
 			"error": "यह नहीं हो सका ({{code}})।",
 			"liked_title": "पसंद किए गानों से ({{count}})",
 			"liked_empty": "पसंद किए गाने यहाँ दिखते हैं।",
+			"liked_folded": "यहाँ पसंद किए गए सिर्फ़ {{count}} गाने बचे हैं: पुराने आपकी पसंद की प्रोफ़ाइल (याद टैब) में समेट दिए गए और अब जोड़े नहीं जा सकते।",
 			"filter": "मूड से छाँटें",
 			"all_moods": "सभी",
 			"pick_shown": "दिख रहे सभी चुनें ({{count}})",
@@ -1955,6 +1961,7 @@ var CATALOGS = {
 			"error": "Non è stato possibile ({{code}}).",
 			"liked_title": "Dai brani che ti piacciono ({{count}})",
 			"liked_empty": "I brani con Mi piace compaiono qui.",
+			"liked_folded": "Qui restano solo {{count}} brani che ti piacciono: i più vecchi sono confluiti nel tuo profilo di gusti (Memoria) e non si possono più aggiungere.",
 			"filter": "Filtra per umore",
 			"all_moods": "Tutti",
 			"pick_shown": "Seleziona tutti quelli mostrati ({{count}})",
@@ -2235,6 +2242,7 @@ var CATALOGS = {
 			"error": "できませんでした（{{code}}）。",
 			"liked_title": "いいねした曲から（{{count}}）",
 			"liked_empty": "いいねした曲がここに出ます。",
+			"liked_folded": "ここに残っているいいねした曲は {{count}} 曲だけです。古い曲は好みのプロフィール（メモリー）にまとめられ、もう追加できません。",
 			"filter": "気分で絞り込む",
 			"all_moods": "すべて",
 			"pick_shown": "表示中をすべて選択（{{count}}）",
@@ -2515,6 +2523,7 @@ var CATALOGS = {
 			"error": "하지 못했어요({{code}}).",
 			"liked_title": "좋아요한 노래에서 ({{count}})",
 			"liked_empty": "좋아요한 노래가 여기에 나와요.",
+			"liked_folded": "여기에는 좋아요한 노래가 {{count}}곡만 남아 있어요. 예전 노래는 취향 프로필(기억 탭)로 정리되어 더 이상 추가할 수 없어요.",
 			"filter": "기분으로 거르기",
 			"all_moods": "전체",
 			"pick_shown": "보이는 곡 모두 선택 ({{count}})",
@@ -2795,6 +2804,7 @@ var CATALOGS = {
 			"error": "Não deu certo ({{code}}).",
 			"liked_title": "Das músicas que você curtiu ({{count}})",
 			"liked_empty": "As músicas curtidas aparecem aqui.",
+			"liked_folded": "Restam aqui só {{count}} músicas curtidas: as mais antigas foram para o seu perfil de gosto (Memória) e não podem mais ser adicionadas.",
 			"filter": "Filtrar por humor",
 			"all_moods": "Todas",
 			"pick_shown": "Marcar todas as mostradas ({{count}})",
@@ -3075,6 +3085,7 @@ var CATALOGS = {
 			"error": "Не получилось ({{code}}).",
 			"liked_title": "Из понравившихся песен ({{count}})",
 			"liked_empty": "Здесь появятся песни, отмеченные «Нравится».",
+			"liked_folded": "Здесь осталось только {{count}} понравившихся песен: более старые свёрнуты в ваш профиль вкуса (вкладка «Память») и добавить их уже нельзя.",
 			"filter": "Фильтр по настроению",
 			"all_moods": "Все",
 			"pick_shown": "Отметить все показанные ({{count}})",
@@ -3355,6 +3366,7 @@ var CATALOGS = {
 			"error": "没能完成（{{code}}）。",
 			"liked_title": "从喜欢的歌里选（{{count}}）",
 			"liked_empty": "点过喜欢的歌会出现在这里。",
+			"liked_folded": "这里只剩 {{count}} 首喜欢的歌：更早的已归入你的口味画像（记忆页），不能再加进歌单。",
 			"filter": "按心情筛选",
 			"all_moods": "全部",
 			"pick_shown": "勾选显示的全部（{{count}}）",
@@ -5596,6 +5608,7 @@ function PlaylistsTab({ api, state, busy, onPlay }) {
 		}
 	};
 	const liked = useMemo(() => likedSongs(state), [state]);
+	const pruned = state?.profile?.pruned ?? 0;
 	const moods = useMemo(() => [...new Set(liked.flatMap((s) => s.tags))], [liked]);
 	const shown = mood ? liked.filter((s) => s.tags.includes(mood)) : liked;
 	const chosen = liked.filter((s) => picked.has(s.key));
@@ -5688,95 +5701,104 @@ function PlaylistsTab({ api, state, busy, onPlay }) {
 				className: "flex flex-col gap-3 rounded-2xl border border-[var(--border)] p-4",
 				style: CARD_STYLE,
 				"data-testid": "pl-from-liked",
-				children: [/* @__PURE__ */ jsx("h3", {
-					id: "pl-liked",
-					className: heading,
-					children: t("playlists.liked_title", { count: liked.length })
-				}), liked.length === 0 ? /* @__PURE__ */ jsx("p", {
-					className: "text-sm text-[var(--muted)]",
-					children: t("playlists.liked_empty")
-				}) : /* @__PURE__ */ jsxs(Fragment, { children: [
-					moods.length > 0 && /* @__PURE__ */ jsxs("div", {
-						role: "group",
-						"aria-label": t("playlists.filter"),
-						className: "flex flex-wrap gap-2",
-						children: [/* @__PURE__ */ jsx("button", {
-							type: "button",
-							"aria-pressed": mood === null,
-							onClick: () => setMood(null),
-							className: chipClass(mood === null),
-							children: t("playlists.all_moods")
-						}), moods.map((m) => /* @__PURE__ */ jsx("button", {
-							type: "button",
-							"aria-pressed": mood === m,
-							onClick: () => setMood(mood === m ? null : m),
-							className: chipClass(mood === m),
-							children: m
-						}, m))]
+				children: [
+					/* @__PURE__ */ jsx("h3", {
+						id: "pl-liked",
+						className: heading,
+						children: t("playlists.liked_title", { count: liked.length })
 					}),
-					/* @__PURE__ */ jsxs("div", {
-						className: "flex flex-wrap gap-2",
-						children: [/* @__PURE__ */ jsx(Btn, {
-							type: "button",
-							onClick: () => setPicked((p) => /* @__PURE__ */ new Set([...p, ...shown.map((s) => s.key)])),
-							children: t("playlists.pick_shown", { count: shown.length })
-						}), /* @__PURE__ */ jsx(Btn, {
-							type: "button",
-							disabled: picked.size === 0,
-							onClick: () => setPicked(/* @__PURE__ */ new Set()),
-							children: t("playlists.pick_none")
-						})]
+					pruned > 0 && /* @__PURE__ */ jsx("p", {
+						role: "note",
+						className: "text-xs text-[var(--muted)]",
+						"data-testid": "pl-liked-folded",
+						children: t("playlists.liked_folded", { count: liked.length })
 					}),
-					/* @__PURE__ */ jsx("ul", {
-						className: "flex max-h-72 flex-col gap-1 overflow-y-auto pr-1",
-						"data-testid": "pl-liked-list",
-						children: shown.map((s) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("label", {
-							className: "flex items-center gap-2 rounded-lg px-2 py-1 text-sm text-[var(--text)] hover:bg-[var(--bg-hover)]",
-							children: [
-								/* @__PURE__ */ jsx("input", {
-									type: "checkbox",
-									checked: picked.has(s.key),
-									onChange: () => toggle(s.key)
-								}),
-								/* @__PURE__ */ jsx("span", {
-									className: "min-w-0 flex-1 truncate",
-									children: s.artist ? `${s.title} — ${s.artist}` : s.title
-								}),
-								s.tags.length > 0 && /* @__PURE__ */ jsx("span", {
-									className: "shrink-0 text-[11px] text-[var(--muted)]",
-									children: s.tags.slice(0, 2).join(" · ")
-								})
-							]
-						}) }, s.key))
-					}),
-					/* @__PURE__ */ jsx("label", {
-						htmlFor: "pl-name",
-						className: "sr-only",
-						children: t("playlists.name_label")
-					}),
-					/* @__PURE__ */ jsxs("div", {
-						className: "flex flex-wrap gap-2",
-						children: [/* @__PURE__ */ jsx("input", {
-							id: "pl-name",
-							value: name,
-							onChange: (e) => setName(e.target.value),
-							maxLength: 80,
-							placeholder: defaultName(mood ? [mood] : moodTags),
-							className: inputClass
-						}), /* @__PURE__ */ jsx(Btn, {
-							type: "submit",
-							primary: true,
-							disabled: working || !chosen.length || tooMany || full,
-							children: t("playlists.create", { count: chosen.length })
-						})]
-					}),
-					tooMany && /* @__PURE__ */ jsx("p", {
-						role: "status",
-						className: "text-xs text-[var(--accent)]",
-						"data-testid": "pl-too-many",
-						children: t("playlists.too_many", { count: limits.songs })
-					})
-				] })]
+					liked.length === 0 ? pruned > 0 ? null : /* @__PURE__ */ jsx("p", {
+						className: "text-sm text-[var(--muted)]",
+						children: t("playlists.liked_empty")
+					}) : /* @__PURE__ */ jsxs(Fragment, { children: [
+						moods.length > 0 && /* @__PURE__ */ jsxs("div", {
+							role: "group",
+							"aria-label": t("playlists.filter"),
+							className: "flex flex-wrap gap-2",
+							children: [/* @__PURE__ */ jsx("button", {
+								type: "button",
+								"aria-pressed": mood === null,
+								onClick: () => setMood(null),
+								className: chipClass(mood === null),
+								children: t("playlists.all_moods")
+							}), moods.map((m) => /* @__PURE__ */ jsx("button", {
+								type: "button",
+								"aria-pressed": mood === m,
+								onClick: () => setMood(mood === m ? null : m),
+								className: chipClass(mood === m),
+								children: m
+							}, m))]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex flex-wrap gap-2",
+							children: [/* @__PURE__ */ jsx(Btn, {
+								type: "button",
+								onClick: () => setPicked((p) => /* @__PURE__ */ new Set([...p, ...shown.map((s) => s.key)])),
+								children: t("playlists.pick_shown", { count: shown.length })
+							}), /* @__PURE__ */ jsx(Btn, {
+								type: "button",
+								disabled: picked.size === 0,
+								onClick: () => setPicked(/* @__PURE__ */ new Set()),
+								children: t("playlists.pick_none")
+							})]
+						}),
+						/* @__PURE__ */ jsx("ul", {
+							className: "flex max-h-72 flex-col gap-1 overflow-y-auto pr-1",
+							"data-testid": "pl-liked-list",
+							children: shown.map((s) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("label", {
+								className: "flex items-center gap-2 rounded-lg px-2 py-1 text-sm text-[var(--text)] hover:bg-[var(--bg-hover)]",
+								children: [
+									/* @__PURE__ */ jsx("input", {
+										type: "checkbox",
+										checked: picked.has(s.key),
+										onChange: () => toggle(s.key)
+									}),
+									/* @__PURE__ */ jsx("span", {
+										className: "min-w-0 flex-1 truncate",
+										children: s.artist ? `${s.title} — ${s.artist}` : s.title
+									}),
+									s.tags.length > 0 && /* @__PURE__ */ jsx("span", {
+										className: "shrink-0 text-[11px] text-[var(--muted)]",
+										children: s.tags.slice(0, 2).join(" · ")
+									})
+								]
+							}) }, s.key))
+						}),
+						/* @__PURE__ */ jsx("label", {
+							htmlFor: "pl-name",
+							className: "sr-only",
+							children: t("playlists.name_label")
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex flex-wrap gap-2",
+							children: [/* @__PURE__ */ jsx("input", {
+								id: "pl-name",
+								value: name,
+								onChange: (e) => setName(e.target.value),
+								maxLength: 80,
+								placeholder: defaultName(mood ? [mood] : moodTags),
+								className: inputClass
+							}), /* @__PURE__ */ jsx(Btn, {
+								type: "submit",
+								primary: true,
+								disabled: working || !chosen.length || tooMany || full,
+								children: t("playlists.create", { count: chosen.length })
+							})]
+						}),
+						tooMany && /* @__PURE__ */ jsx("p", {
+							role: "status",
+							className: "text-xs text-[var(--accent)]",
+							"data-testid": "pl-too-many",
+							children: t("playlists.too_many", { count: limits.songs })
+						})
+					] })
+				]
 			}),
 			/* @__PURE__ */ jsxs("section", {
 				"aria-labelledby": "pl-lists",

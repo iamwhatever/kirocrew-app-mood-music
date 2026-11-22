@@ -253,6 +253,7 @@
     "error": "没能完成（{{code}}）。",
     "liked_title": "从喜欢的歌里选（{{count}}）",
     "liked_empty": "点过喜欢的歌会出现在这里。",
+    "liked_folded": "这里只剩 {{count}} 首喜欢的歌：更早的已归入你的口味画像（记忆页），不能再加进歌单。",
     "filter": "按心情筛选",
     "all_moods": "全部",
     "pick_shown": "勾选显示的全部（{{count}}）",

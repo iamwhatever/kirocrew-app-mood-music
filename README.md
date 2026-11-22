@@ -188,7 +188,9 @@ on this page; it is not listed in Kiro Crew's sessions.
    tick. Open a list to see its songs and remove one, rename it, delete it, or
    **Play** it. Playing a list replaces the queue and plays through it in order.
    When it ends, it stops, unless you turn on **When a list ends, ask the buddy for
-   more**. You can keep 50 lists of up to 200 songs each.
+   more**. You can keep 50 lists of up to 200 songs each. Once the taste profile has
+   folded older likes away, only the liked songs still in Memory can be picked, and
+   the tab says so.
 10. The background follows the mood. A chip sets its scene at once. The buddy
    picks a new scene only when your mood clearly shifts, and the scene drifts
    toward its brighter colour as the songs move from stay to lift. To stop the

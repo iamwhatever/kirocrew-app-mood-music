@@ -175,6 +175,7 @@ export default function PlaylistsTab({ api, state, busy, onPlay }: {
   }
 
   const liked = useMemo(() => likedSongs(state), [state])
+  const pruned = state?.profile?.pruned ?? 0
   const moods = useMemo(() => [...new Set(liked.flatMap(s => s.tags))], [liked])
   const shown = mood ? liked.filter(s => s.tags.includes(mood)) : liked
   const chosen = liked.filter(s => picked.has(s.key))
@@ -241,8 +242,14 @@ export default function PlaylistsTab({ api, state, busy, onPlay }: {
 
       <form onSubmit={create} aria-labelledby="pl-liked" className="flex flex-col gap-3 rounded-2xl border border-[var(--border)] p-4" style={CARD_STYLE} data-testid="pl-from-liked">
         <h3 id="pl-liked" className={heading}>{t('playlists.liked_title', { count: liked.length })}</h3>
+        {/* A taste-profile fold (0.2.13) removes older app-recorded likes: only what is left can go in a list. */}
+        {pruned > 0 && (
+          <p role="note" className="text-xs text-[var(--muted)]" data-testid="pl-liked-folded">
+            {t('playlists.liked_folded', { count: liked.length })}
+          </p>
+        )}
         {liked.length === 0 ? (
-          <p className="text-sm text-[var(--muted)]">{t('playlists.liked_empty')}</p>
+          pruned > 0 ? null : <p className="text-sm text-[var(--muted)]">{t('playlists.liked_empty')}</p>
         ) : (
           <>
             {moods.length > 0 && (

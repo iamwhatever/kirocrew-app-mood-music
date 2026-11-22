@@ -253,6 +253,7 @@
     "error": "Das ging nicht ({{code}}).",
     "liked_title": "Aus Songs, die dir gefallen ({{count}})",
     "liked_empty": "Songs mit „Gefällt mir“ erscheinen hier.",
+    "liked_folded": "Hier sind nur noch {{count}} Songs, die dir gefallen: Ältere wurden in dein Geschmacksprofil (Gedächtnis) eingeordnet und lassen sich nicht mehr hinzufügen.",
     "filter": "Nach Stimmung filtern",
     "all_moods": "Alle",
     "pick_shown": "Alle angezeigten wählen ({{count}})",

@@ -253,6 +253,7 @@
     "error": "Impossible ({{code}}).",
     "liked_title": "Parmi les chansons aimées ({{count}})",
     "liked_empty": "Les chansons que tu aimes apparaissent ici.",
+    "liked_folded": "Il ne reste ici que {{count}} chansons aimées : les plus anciennes ont été intégrées à ton profil de goûts (Mémoire) et ne peuvent plus être ajoutées.",
     "filter": "Filtrer par humeur",
     "all_moods": "Toutes",
     "pick_shown": "Cocher toutes celles affichées ({{count}})",

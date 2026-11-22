@@ -253,6 +253,7 @@
     "error": "Could not do that ({{code}}).",
     "liked_title": "From songs you liked ({{count}})",
     "liked_empty": "Like a song and it shows up here.",
+    "liked_folded": "Only {{count}} liked songs are still here: older ones were folded into your taste profile (Memory tab) and can no longer be added.",
     "filter": "Filter by mood",
     "all_moods": "All",
     "pick_shown": "Tick all shown ({{count}})",

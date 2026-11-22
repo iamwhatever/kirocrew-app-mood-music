@@ -151,6 +151,19 @@ describe('the Playlists tab', () => {
     expect(api.createPlaylist).toHaveBeenLastCalledWith('Just B', [expect.objectContaining({ title: 'B' })])
   })
 
+  it('after a taste fold pruned likes, lists only what is left and says so', async () => {
+    const profile = { likes: [], dislikes: [], updated_at: 1, folded: 20, pruned: 15 }
+    renderTab(state({ memory: [liked('A'), liked('B')], profile }))
+    await flush()
+    expect(screen.getByTestId('pl-liked-folded')).toHaveTextContent(t('playlists.liked_folded', { count: 2 }))
+    expect(within(screen.getByTestId('pl-liked-list')).getAllByRole('checkbox')).toHaveLength(2)
+    cleanup()
+    // Nothing folded yet: no note.
+    renderTab(state({ memory: [liked('A')], profile: null }))
+    await flush()
+    expect(screen.queryByTestId('pl-liked-folded')).toBeNull()
+  })
+
   it('says a list is too long before it is sent', async () => {
     renderTab(state({ memory: Array.from({ length: 201 }, (_, i) => liked(`S${i}`)) }))
     await flush()

@@ -253,6 +253,7 @@
     "error": "No se pudo hacer ({{code}}).",
     "liked_title": "De las canciones que te gustaron ({{count}})",
     "liked_empty": "Las canciones con Me gusta aparecen aquí.",
+    "liked_folded": "Aquí solo quedan {{count}} canciones que te gustaron: las más antiguas pasaron a tu perfil de gustos (Memoria) y ya no se pueden añadir.",
     "filter": "Filtrar por ánimo",
     "all_moods": "Todas",
     "pick_shown": "Marcar todas las mostradas ({{count}})",

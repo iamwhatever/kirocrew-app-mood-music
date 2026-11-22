@@ -253,6 +253,7 @@
     "error": "Não deu certo ({{code}}).",
     "liked_title": "Das músicas que você curtiu ({{count}})",
     "liked_empty": "As músicas curtidas aparecem aqui.",
+    "liked_folded": "Restam aqui só {{count}} músicas curtidas: as mais antigas foram para o seu perfil de gosto (Memória) e não podem mais ser adicionadas.",
     "filter": "Filtrar por humor",
     "all_moods": "Todas",
     "pick_shown": "Marcar todas as mostradas ({{count}})",

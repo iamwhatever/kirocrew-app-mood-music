@@ -253,6 +253,7 @@
     "error": "Non è stato possibile ({{code}}).",
     "liked_title": "Dai brani che ti piacciono ({{count}})",
     "liked_empty": "I brani con Mi piace compaiono qui.",
+    "liked_folded": "Qui restano solo {{count}} brani che ti piacciono: i più vecchi sono confluiti nel tuo profilo di gusti (Memoria) e non si possono più aggiungere.",
     "filter": "Filtra per umore",
     "all_moods": "Tutti",
     "pick_shown": "Seleziona tutti quelli mostrati ({{count}})",
