@@ -27,6 +27,8 @@ export interface SavedPending {
   stopped?: boolean
   /** Sent from the one box: its moment is kept only once its picks land, so a command is no moment. */
   say?: boolean
+  /** The person's words were steered into this turn: its reply is read like a box message's. */
+  steered?: boolean
   /** A play request to the buddy (Crew Browser): the song, its site, and whether it asked for more. */
   play?: { pickId: string; site: 'youtube' | 'bilibili'; refill: boolean }
 }
@@ -63,6 +65,7 @@ function readPending(v: unknown): SavedPending | null {
     text: str(p.text, 300),
     stopped: p.stopped === true || undefined,
     say: p.say === true || undefined,
+    steered: p.steered === true || undefined,
     play: readPlay(p.play),
   }
 }

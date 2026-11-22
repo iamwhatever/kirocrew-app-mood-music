@@ -125,7 +125,10 @@
     "record_title": "Ce que fait ton compagnon",
     "latest": "Plus récent",
     "no_next": "Pas de chanson suivante dans la file.",
-    "new_message": "Nouveau message"
+    "new_message": "Nouveau message",
+    "steered": "Interruption",
+    "steer_missed": "Ton compagnon ne l'a pas pris pendant ce tour, donc rien n'a été envoyé. Le texte est toujours dans la zone : renvoie-le quand il a fini.",
+    "steer_placeholder": "Interviens pendant que ton compagnon travaille…"
   },
   "card": {
     "arc_stay": "Rester avec",

@@ -125,7 +125,10 @@
     "record_title": "What your buddy is doing",
     "latest": "Latest",
     "no_next": "No next song in the queue.",
-    "new_message": "New message"
+    "new_message": "New message",
+    "steered": "Cut in",
+    "steer_missed": "Your buddy's turn did not take this, so it was not sent. It is still in the box: send it again when your buddy is done.",
+    "steer_placeholder": "Cut in while your buddy works…"
   },
   "card": {
     "arc_stay": "Stay with it",

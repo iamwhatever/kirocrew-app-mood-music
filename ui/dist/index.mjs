@@ -1,7 +1,7 @@
 import * as sdk from "@kirocrew/app-sdk";
 import { activeLocale, fmtDateTime, useAppApi, useChatLauncher, useLanguageGeneration, useNavigate } from "@kirocrew/app-sdk";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { ArrowDown, ArrowDownUp, Brain, Check, ChevronRight, ExternalLink, Eye, FileText, Globe, Headphones, Heart, Hourglass, Keyboard, MessageCircleQuestion, MessageSquare, MonitorPlay, MousePointerClick, Music, PanelTop, Pause, Pin, PinOff, Play, Repeat, Search, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Undo2, Volume2, Waves, WifiOff } from "lucide-react";
+import { ArrowDown, ArrowDownUp, Brain, Check, ChevronRight, CornerDownRight, ExternalLink, Eye, FileText, Globe, Headphones, Heart, Hourglass, Keyboard, MessageCircleQuestion, MessageSquare, MonitorPlay, MousePointerClick, Music, PanelTop, Pause, Pin, PinOff, Play, Repeat, Search, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Undo2, Volume2, Waves, WifiOff } from "lucide-react";
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from "@kirocrew/app-sdk/ui";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 // src/i18n.ts
@@ -147,7 +147,10 @@ var CATALOGS = {
 			"record_title": "আপনার সঙ্গী কী করছে",
 			"latest": "সর্বশেষ",
 			"no_next": "সারিতে পরের গান নেই।",
-			"new_message": "নতুন বার্তা"
+			"new_message": "নতুন বার্তা",
+			"steered": "মাঝে বলা",
+			"steer_missed": "আপনার সঙ্গী এই পালায় এটি নেয়নি, তাই পাঠানো হয়নি। লেখাটি বক্সেই আছে: সঙ্গী শেষ করলে আবার পাঠান।",
+			"steer_placeholder": "সঙ্গী কাজ করার সময়ও মাঝে বলুন…"
 		},
 		card: {
 			"arc_stay": "পাশে থাকা",
@@ -343,7 +346,10 @@ var CATALOGS = {
 			"record_title": "Was dein Buddy gerade tut",
 			"latest": "Neueste",
 			"no_next": "Kein nächster Song in der Warteschlange.",
-			"new_message": "Neue Nachricht"
+			"new_message": "Neue Nachricht",
+			"steered": "Eingeworfen",
+			"steer_missed": "Dein Buddy hat das in diesem Durchgang nicht aufgenommen, also wurde es nicht gesendet. Es steht noch im Feld: sende es erneut, wenn dein Buddy fertig ist.",
+			"steer_placeholder": "Wirf etwas ein, während dein Buddy arbeitet…"
 		},
 		card: {
 			"arc_stay": "Dabeibleiben",
@@ -539,7 +545,10 @@ var CATALOGS = {
 			"record_title": "What your buddy is doing",
 			"latest": "Latest",
 			"no_next": "No next song in the queue.",
-			"new_message": "New message"
+			"new_message": "New message",
+			"steered": "Cut in",
+			"steer_missed": "Your buddy's turn did not take this, so it was not sent. It is still in the box: send it again when your buddy is done.",
+			"steer_placeholder": "Cut in while your buddy works…"
 		},
 		card: {
 			"arc_stay": "Stay with it",
@@ -735,7 +744,10 @@ var CATALOGS = {
 			"record_title": "Lo que hace tu compañero",
 			"latest": "Lo último",
 			"no_next": "No hay siguiente canción en la cola.",
-			"new_message": "Mensaje nuevo"
+			"new_message": "Mensaje nuevo",
+			"steered": "Interrupción",
+			"steer_missed": "Tu compañero no lo tomó en este turno, así que no se envió. Sigue en el cuadro: envíalo de nuevo cuando termine.",
+			"steer_placeholder": "Interrumpe mientras tu compañero trabaja…"
 		},
 		card: {
 			"arc_stay": "Acompañar",
@@ -931,7 +943,10 @@ var CATALOGS = {
 			"record_title": "Ce que fait ton compagnon",
 			"latest": "Plus récent",
 			"no_next": "Pas de chanson suivante dans la file.",
-			"new_message": "Nouveau message"
+			"new_message": "Nouveau message",
+			"steered": "Interruption",
+			"steer_missed": "Ton compagnon ne l'a pas pris pendant ce tour, donc rien n'a été envoyé. Le texte est toujours dans la zone : renvoie-le quand il a fini.",
+			"steer_placeholder": "Interviens pendant que ton compagnon travaille…"
 		},
 		card: {
 			"arc_stay": "Rester avec",
@@ -1127,7 +1142,10 @@ var CATALOGS = {
 			"record_title": "आपका साथी क्या कर रहा है",
 			"latest": "नया",
 			"no_next": "कतार में अगला गाना नहीं है।",
-			"new_message": "नया संदेश"
+			"new_message": "नया संदेश",
+			"steered": "बीच में",
+			"steer_missed": "आपके साथी ने इस बारी में इसे नहीं लिया, इसलिए यह नहीं भेजा गया। यह अभी भी बॉक्स में है: साथी के पूरा करने पर फिर से भेजें।",
+			"steer_placeholder": "साथी काम कर रहा है, फिर भी बीच में कहें…"
 		},
 		card: {
 			"arc_stay": "साथ रहना",
@@ -1323,7 +1341,10 @@ var CATALOGS = {
 			"record_title": "Cosa sta facendo il tuo compagno",
 			"latest": "Più recenti",
 			"no_next": "Nessun brano successivo in coda.",
-			"new_message": "Nuovo messaggio"
+			"new_message": "Nuovo messaggio",
+			"steered": "Inserito",
+			"steer_missed": "Il tuo compagno non l'ha preso in questo turno, quindi non è stato inviato. È ancora nella casella: rinvialo quando ha finito.",
+			"steer_placeholder": "Intervieni mentre il tuo compagno lavora…"
 		},
 		card: {
 			"arc_stay": "Restare",
@@ -1519,7 +1540,10 @@ var CATALOGS = {
 			"record_title": "バディがしていること",
 			"latest": "最新へ",
 			"no_next": "キューに次の曲がありません。",
-			"new_message": "新しいメッセージ"
+			"new_message": "新しいメッセージ",
+			"steered": "割り込み",
+			"steer_missed": "相棒のこのターンに入らなかったので、送っていません。文字は入力欄に残っています。終わったらもう一度送ってください。",
+			"steer_placeholder": "相棒が作業中でも、割り込めます…"
 		},
 		card: {
 			"arc_stay": "寄り添う",
@@ -1715,7 +1739,10 @@ var CATALOGS = {
 			"record_title": "버디가 하고 있는 일",
 			"latest": "최신",
 			"no_next": "대기열에 다음 곡이 없어요.",
-			"new_message": "새 메시지"
+			"new_message": "새 메시지",
+			"steered": "끼어들기",
+			"steer_missed": "버디의 이번 차례에 들어가지 않아서 보내지 않았어요. 글은 입력창에 그대로 있어요. 끝나면 다시 보내 주세요.",
+			"steer_placeholder": "버디가 일하는 중에도 끼어들 수 있어요…"
 		},
 		card: {
 			"arc_stay": "곁에 머물기",
@@ -1911,7 +1938,10 @@ var CATALOGS = {
 			"record_title": "O que seu parceiro está fazendo",
 			"latest": "Mais recente",
 			"no_next": "Não há próxima música na fila.",
-			"new_message": "Nova mensagem"
+			"new_message": "Nova mensagem",
+			"steered": "Interrupção",
+			"steer_missed": "Seu parceiro não pegou isso neste turno, então não foi enviado. Continua na caixa: envie de novo quando ele terminar.",
+			"steer_placeholder": "Interrompa enquanto seu parceiro trabalha…"
 		},
 		card: {
 			"arc_stay": "Ficar junto",
@@ -2107,7 +2137,10 @@ var CATALOGS = {
 			"record_title": "Что делает ваш напарник",
 			"latest": "К новым",
 			"no_next": "В очереди нет следующей песни.",
-			"new_message": "Новое сообщение"
+			"new_message": "Новое сообщение",
+			"steered": "Вставка",
+			"steer_missed": "Напарник не принял это в текущем ходе, поэтому сообщение не отправлено. Текст остался в поле: отправьте снова, когда он закончит.",
+			"steer_placeholder": "Можно вставить слово, пока напарник работает…"
 		},
 		card: {
 			"arc_stay": "Побыть рядом",
@@ -2303,7 +2336,10 @@ var CATALOGS = {
 			"record_title": "搭子在做什么",
 			"latest": "最新",
 			"no_next": "队列里没有下一首了。",
-			"new_message": "新消息"
+			"new_message": "新消息",
+			"steered": "插话",
+			"steer_missed": "没插进去：搭子这一轮没收下这句话，所以没有发出。文字还在框里，等它说完再发一次。",
+			"steer_placeholder": "搭子在忙，也可以插一句…"
 		},
 		card: {
 			"arc_stay": "陪着",
@@ -2940,14 +2976,22 @@ function createMoodApi(api) {
 		* Put *message* into the buddy's RUNNING turn, so it changes course now.
 		* The page sends as the person, through the dashboard's own send route
 		* (`POST /api/chat` with `steer`, App Kit "Host Sessions"); an app's backend
-		* cannot steer. True when the gateway steered it; false when it queued it
-		* behind the turn instead (the turn had just ended, or not started yet).
+		* cannot steer. `steered` when the gateway put it in. Otherwise it went as a
+		* turn of its own: `queued` behind the running one (`queueId` set when it can
+		* still be taken back with {@link cancelQueued}), or, the turn having just
+		* ended, started at once.
 		*/
 		steer: (key, message) => api.post("/api/chat?ws=1", {
 			message,
 			slot: key,
 			steer: true
-		}).then((r) => r?.steered === true),
+		}).then((r) => ({
+			steered: r?.steered === true,
+			queued: r?.queued === true,
+			queueId: typeof r?.queue_id === "string" ? r.queue_id : ""
+		})),
+		/** Take a queued message back before it runs. False when it could not be (it already ran, or the call failed). */
+		cancelQueued: (key, queueId) => api.del(`/api/chat/slots/${encodeURIComponent(key)}/queue/${encodeURIComponent(queueId)}`).then(() => true, () => false),
 		/** Send one turn through the backend; a refusal rejects. Returns the slot key the turn went to. */
 		ask: async (message) => {
 			return (await api.post(`${BASE}/buddy/send`, { message }).catch(plainRefusal)).key;
@@ -4504,10 +4548,17 @@ var HEADS = [
 	"Play in Crew Browser"
 ];
 var msgs = (slot) => slot?.messages ?? [];
-/** Rows after the newest `user` row: the current turn. */
+/** A person's row the gateway put into a running turn: it starts no turn of its own. */
+var isSteer = (m) => m.role === "user" && m.meta?.steer === true;
+/**
+* A steer row the transcript does not draw: its own turn wrote a fresh row
+* (`superseded`), or it was taken back (`retracted`).
+*/
+var hiddenSteer = (m) => isSteer(m) && (m.meta?.steerState === "superseded" || m.meta?.steerState === "retracted");
+/** Rows after the newest `user` row that started a turn: the current turn. */
 function currentTurn(slot) {
 	const all = msgs(slot);
-	for (let i = all.length - 1; i >= 0; i--) if (all[i].role === "user") return all.slice(i + 1);
+	for (let i = all.length - 1; i >= 0; i--) if (all[i].role === "user" && !isSteer(all[i])) return all.slice(i + 1);
 	return all;
 }
 /** 'web_search', 'web_fetch' or ''. A live row may carry only its title ("🔧 Fetch URL"). */
@@ -4584,6 +4635,19 @@ function stepsOf(rows) {
 	}
 	return out;
 }
+/**
+* Whether the newest steer of *words* was not read by its turn: the turn
+* ended first, so the gateway runs the words as a turn of their own.
+*/
+function steerRequeued(slot, words) {
+	const all = msgs(slot);
+	for (let i = all.length - 1; i >= 0; i--) {
+		const m = all[i];
+		if (!isSteer(m) || typeof m.content !== "string" || personText(m.content) !== words) continue;
+		return m.meta?.steerState === "requeued" || m.meta?.steerState === "superseded";
+	}
+	return false;
+}
 /** What the running turn has done so far. */
 function liveSteps(slot) {
 	return slot?.running ? stepsOf(currentTurn(slot)) : [];
@@ -4626,8 +4690,19 @@ function conversation(slot) {
 			turn.push(m);
 			continue;
 		}
-		if (typeof m.content !== "string" || !m.content.trim()) continue;
-		if (m.role === "user") {
+		if (typeof m.content !== "string" || !m.content.trim() || hiddenSteer(m)) continue;
+		if (isSteer(m)) {
+			if (last) {
+				turn.push(last);
+				last = null;
+			}
+			const into = m.meta?.steerState !== "requeued";
+			out.push({
+				who: "you",
+				text: personText(m.content),
+				...into ? { steered: true } : {}
+			});
+		} else if (m.role === "user") {
 			flush();
 			out.push({
 				who: "you",
@@ -4744,6 +4819,7 @@ function readPending(v) {
 		text: str(p.text, 300),
 		stopped: p.stopped === true || void 0,
 		say: p.say === true || void 0,
+		steered: p.steered === true || void 0,
 		play: readPlay(p.play)
 	};
 }
@@ -4817,6 +4893,8 @@ function saveView(view) {
 * browser and reports the steps that worked, which the app keeps per site and
 * sends back next time. A song picked while a turn runs is steered into that
 * turn (`api.ts` `steer`), so the buddy switches at once instead of after it.
+* Words typed in the box while a turn runs are steered in the same way and
+* marked "cut in"; words the turn did not take are never queued (`steerIn`).
 * Pause, seek and volume go straight to the tab. With
 * continuous play on, a song's end (read by this page's poll) wakes the buddy
 * once for the next song, and asks for more when the queue runs low. The
@@ -5145,8 +5223,21 @@ function MoodMusicPage() {
 			setBusy(false);
 		}
 	}, []);
-	const send = (kind, words) => {
-		if (!words || pending || busy) return;
+	/**
+	* Send the person's words. While the buddy works they go INTO its running
+	* turn (`steerIn`); otherwise as a turn of their own. `sent` runs once they
+	* are in, so words that did not get in stay where they were typed.
+	*/
+	const send = (kind, words, sent) => {
+		if (!words) return;
+		if (pending) {
+			steerIn(kind, words).then((ok) => {
+				if (ok) sent?.();
+			});
+			return;
+		}
+		if (busy) return;
+		sent?.();
 		momentRef.current = "";
 		run(async () => {
 			const { ids } = memorySummary(state?.memory ?? []);
@@ -5172,14 +5263,15 @@ function MoodMusicPage() {
 	const submitBox = (e) => {
 		e.preventDefault();
 		const typed = text.trim();
-		if (!typed || pending || busy) return;
-		if (openQuestion) send("answer", typed);
+		if (!typed || !canSend) return;
+		if (openQuestion) send("answer", typed, () => setText(""));
 		else {
 			const look = chip && typed.startsWith(moodLabel(chip)) ? chip : moodLookFor([typed]);
-			if (look !== "neutral") setScene(presetScene(look));
-			send("say", typed);
+			send("say", typed, () => {
+				if (look !== "neutral") setScene(presetScene(look));
+				setText("");
+			});
 		}
-		setText("");
 	};
 	/** A chip puts its mood at the start of the box, in place of another chip's, and leaves the rest typed. */
 	const pickChip = (key) => {
@@ -5249,18 +5341,22 @@ function MoodMusicPage() {
 			const fresh = !!reply && !sameReply(pending.baseline, read);
 			if (!failed && !fresh && !pending.stopped) return;
 			live = false;
-			const queuedSwitch = pending.stopped ? null : switchQueuedRef.current;
-			switchQueuedRef.current = null;
-			setPending(queuedSwitch ? {
+			const requeued = pending.steered && steerRequeued(read, pending.text);
+			const turn = requeued ? {
+				...pending,
+				say: void 0,
+				steered: void 0
+			} : pending;
+			const next = pending.stopped ? null : requeued ? {
 				momentId: "",
-				baseline: replyMark(read),
-				memoryIds: [],
-				text: queuedSwitch.text,
-				play: {
-					pickId: queuedSwitch.pickId,
-					site: queuedSwitch.site,
-					refill: false
-				}
+				memoryIds: pending.memoryIds,
+				text: pending.text,
+				say: pending.say
+			} : nextRef.current;
+			nextRef.current = null;
+			setPending(next ? {
+				...next,
+				baseline: replyMark(read)
 			} : null);
 			setStuck(false);
 			if (pending.stopped) {
@@ -5272,9 +5368,15 @@ function MoodMusicPage() {
 				return;
 			}
 			const parsed = parseDjReply(reply);
-			if (pending.play) {
-				await afterPlay(pending.play, parsed, source);
-				return;
+			if (turn.play) {
+				if (!turn.steered) {
+					await afterPlay(turn.play, parsed, source);
+					return;
+				}
+				if (parsed?.play) await afterPlay(turn.play, {
+					...parsed,
+					picks: []
+				}, source);
 			}
 			if (!parsed) {
 				setError("unreadable");
@@ -5308,14 +5410,14 @@ function MoodMusicPage() {
 					return;
 				}
 				if (dropped > 0) setNotice(t("page.dropped", { count: dropped }));
-				const momentId = pending.say ? (await moodApi.addMoment(pending.text)).id : pending.momentId;
+				const momentId = turn.say ? (await moodApi.addMoment(turn.text)).id : turn.momentId;
 				const { queue: next } = await moodApi.setQueue({
 					source,
 					moment_id: momentId || void 0,
 					mood_tags: parsed.moodTags,
 					picks: checked.picks
 				});
-				queueMemoryRef.current = pending.memoryIds;
+				queueMemoryRef.current = turn.memoryIds;
 				setState(await moodApi.state());
 				setCurrentId(next[0]?.id ?? null);
 				if (parsed.action === "play" && next[0]) setAction({
@@ -5436,7 +5538,70 @@ function MoodMusicPage() {
 			run(() => askPlay(pick, "start"));
 		}
 	};
-	const switchQueuedRef = useRef(null);
+	const nextRef = useRef(null);
+	const [steering, setSteering] = useState(false);
+	/**
+	* The person's words while the buddy works: they go INTO the running turn (a
+	* steer), and the turn's reply is then read like a box message's (scene,
+	* picks, moment, memory). Never queued: words the gateway queued behind a
+	* turn still running are taken back, and the page says they did not get in.
+	* Words it ran as a turn of their own because the turn had just ended (too
+	* late to take back, or already started) are a normal message, waited on next.
+	* True when the words went in.
+	*/
+	const steerIn = async (kind, words) => {
+		const key = slotRef.current;
+		if (!key || steering) return false;
+		setSteering(true);
+		setNotice(null);
+		const { ids } = memorySummary(state?.memory ?? []);
+		const nowPlaying = current ? {
+			title: current.title,
+			artist: current.artist
+		} : null;
+		const message = buildRequest({
+			kind,
+			text: words,
+			state,
+			explore,
+			stayOnly,
+			nowPlaying
+		});
+		const say = kind === "say" || void 0;
+		try {
+			const r = await moodApi.steer(key, message);
+			if (!r.steered && r.queued) {
+				const read = await moodApi.getSlot(key).catch(() => void 0);
+				if ((!read || read.running) && r.queueId && await moodApi.cancelQueued(key, r.queueId)) {
+					setNotice(t("chat.steer_missed"));
+					return false;
+				}
+			}
+			lastAskRef.current = message;
+			lastShownRef.current = words;
+			if (r.steered) setPending((p) => p ? {
+				...p,
+				text: words,
+				say,
+				steered: true,
+				memoryIds: [.../* @__PURE__ */ new Set([...p.memoryIds, ...ids])]
+			} : p);
+			else nextRef.current = {
+				momentId: "",
+				memoryIds: ids,
+				text: words,
+				say
+			};
+			stickRef.current = true;
+			setAtBottom(true);
+			return true;
+		} catch {
+			setNotice(t("chat.steer_missed"));
+			return false;
+		} finally {
+			setSteering(false);
+		}
+	};
 	/**
 	* The person picked *pick* while the buddy works: the play request goes INTO
 	* the running turn (a steer), so the buddy switches now instead of after it.
@@ -5463,16 +5628,19 @@ function MoodMusicPage() {
 		lastAskRef.current = message;
 		lastShownRef.current = shown;
 		try {
-			if (await moodApi.steer(key, message)) {
-				switchQueuedRef.current = null;
+			if ((await moodApi.steer(key, message)).steered) {
+				if (nextRef.current?.play) nextRef.current = null;
 				setPending((p) => p ? {
 					...p,
 					play,
-					text: shown
+					text: shown,
+					steered: void 0
 				} : p);
-			} else switchQueuedRef.current = {
-				...play,
-				text: shown
+			} else nextRef.current = {
+				momentId: "",
+				memoryIds: [],
+				text: shown,
+				play
 			};
 			stickRef.current = true;
 			setAtBottom(true);
@@ -5653,6 +5821,14 @@ function MoodMusicPage() {
 	};
 	const errorText = error === null ? null : error === "unreadable" ? t("page.error_unreadable") : error === "old_host" ? t("page.error_old_host") : error === "hidden_refused" ? t("page.error_hidden_refused") : error === "all_dropped" ? t("chat.all_dropped", { count: droppedAll }) : t("page.error_generic", { code: error });
 	const working = busy || !!pending;
+	const steeredMark = /* @__PURE__ */ jsxs("span", {
+		className: "mr-1.5 inline-flex items-center gap-0.5 rounded-full border border-[var(--accent)] px-1.5 align-[1px] text-[10px] font-semibold leading-4 text-[var(--accent)]",
+		"data-testid": "mood-steered",
+		children: [/* @__PURE__ */ jsx(CornerDownRight, {
+			size: 10,
+			"aria-hidden": "true"
+		}), t("chat.steered")]
+	});
 	const moving = !reduceMotion && !motionPaused;
 	const status = pending || checking ? buddyStatus(slot, checking) ?? {
 		phase: "thinking",
@@ -5662,10 +5838,12 @@ function MoodMusicPage() {
 	const approval = pending ? pendingApproval(slot) : null;
 	const lines = conversation(slot);
 	const lastBuddy = [...lines].reverse().find((l) => l.who === "buddy");
-	const lastParsed = !pending && lastBuddy?.reply ? parseDjReply(lastBuddy.reply) : null;
+	const replyOpen = !pending || !!pending.play && !pending.steered;
+	const lastParsed = replyOpen && lastBuddy?.reply ? parseDjReply(lastBuddy.reply) : null;
 	const showYou = pending && pending.text && !(lines.length && lines[lines.length - 1].who === "you" && lines[lines.length - 1].text === pending.text);
 	const remember = lastParsed?.remember && lastParsed.remember !== dismissedRemember ? lastParsed.remember : "";
-	const openQuestion = lastParsed?.question && !pending ? lastParsed.question : "";
+	const openQuestion = lastParsed?.question ?? "";
+	const canSend = !steering && (pending ? !pending.stopped : !busy);
 	const recordKey = `${tab}|${lines.length}|${activityKey(slot)}|${status?.phase ?? ""}|${openQuestion}|${queue.length}|${!!approval}`;
 	const toEnd = (el) => {
 		if (typeof el.scrollTo === "function") el.scrollTo({
@@ -5856,10 +6034,14 @@ function MoodMusicPage() {
 														}),
 														lines.slice(-30).map((line, i) => line.who === "you" ? /* @__PURE__ */ jsxs("p", {
 															className: "mm-row self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]",
-															children: [/* @__PURE__ */ jsxs("span", {
-																className: "sr-only",
-																children: [t("chat.you"), ": "]
-															}), line.text]
+															children: [
+																/* @__PURE__ */ jsxs("span", {
+																	className: "sr-only",
+																	children: [t("chat.you"), ": "]
+																}),
+																line.steered && steeredMark,
+																line.text
+															]
 														}, i) : /* @__PURE__ */ jsxs("div", {
 															className: "mm-row max-w-[95%]",
 															children: [
@@ -5890,9 +6072,9 @@ function MoodMusicPage() {
 																})
 															]
 														}, i)),
-														showYou && /* @__PURE__ */ jsx("p", {
+														showYou && /* @__PURE__ */ jsxs("p", {
 															className: "mm-row self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]",
-															children: pending.text
+															children: [pending.steered && steeredMark, pending.text]
 														}),
 														status && /* @__PURE__ */ jsx(BuddySteps, {
 															steps: liveSteps(slot),
@@ -6037,19 +6219,19 @@ function MoodMusicPage() {
 										className: "mm-composer flex flex-col gap-2",
 										"data-testid": "mood-composer",
 										children: [
-											!pending && ((lastParsed?.followUps.length ?? 0) > 0 || remember) && /* @__PURE__ */ jsxs("div", {
+											replyOpen && ((lastParsed?.followUps.length ?? 0) > 0 || remember) && /* @__PURE__ */ jsxs("div", {
 												role: "group",
 												"aria-label": t("chat.follow_ups"),
 												className: "flex flex-wrap gap-2",
 												"data-testid": "mood-follow-ups",
 												children: [lastParsed.followUps.map((f) => /* @__PURE__ */ jsx(Btn, {
 													type: "button",
-													disabled: working,
+													disabled: !canSend,
 													onClick: () => send("follow", f),
 													children: f
 												}, f)), remember && /* @__PURE__ */ jsx(Btn, {
 													type: "button",
-													disabled: working,
+													disabled: busy,
 													onClick: () => {
 														setDismissedRemember(remember);
 														moodApi.addMemory({
@@ -6081,34 +6263,38 @@ function MoodMusicPage() {
 											}),
 											/* @__PURE__ */ jsxs("div", {
 												className: "flex gap-2",
-												children: [/* @__PURE__ */ jsx("input", {
-													ref: inputRef,
-													id: "mood-input",
-													"aria-labelledby": "mood-input-label",
-													value: text,
-													onChange: (e) => setText(e.target.value),
-													maxLength: 200,
-													placeholder: openQuestion ? t("page.answer_placeholder") : t("chat.placeholder"),
-													className: "min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-												}), pending ? /* @__PURE__ */ jsxs(Btn, {
-													type: "button",
-													className: "shrink-0 whitespace-nowrap",
-													onClick: stop,
-													disabled: pending.stopped,
-													children: [/* @__PURE__ */ jsx(Square, {
-														size: 14,
-														"aria-hidden": "true"
-													}), t("chat.stop")]
-												}) : /* @__PURE__ */ jsxs(Btn, {
-													type: "submit",
-													primary: true,
-													className: "shrink-0 whitespace-nowrap",
-													disabled: working || !text.trim(),
-													children: [/* @__PURE__ */ jsx(Send, {
-														size: 14,
-														"aria-hidden": "true"
-													}), t("chat.send")]
-												})]
+												children: [
+													/* @__PURE__ */ jsx("input", {
+														ref: inputRef,
+														id: "mood-input",
+														"aria-labelledby": "mood-input-label",
+														value: text,
+														onChange: (e) => setText(e.target.value),
+														maxLength: 200,
+														placeholder: openQuestion ? t("page.answer_placeholder") : pending ? t("chat.steer_placeholder") : t("chat.placeholder"),
+														className: "min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+													}),
+													/* @__PURE__ */ jsxs(Btn, {
+														type: "submit",
+														primary: true,
+														className: "shrink-0 whitespace-nowrap",
+														disabled: !canSend || !text.trim(),
+														children: [/* @__PURE__ */ jsx(Send, {
+															size: 14,
+															"aria-hidden": "true"
+														}), t("chat.send")]
+													}),
+													pending && /* @__PURE__ */ jsxs(Btn, {
+														type: "button",
+														className: "shrink-0 whitespace-nowrap",
+														onClick: stop,
+														disabled: pending.stopped,
+														children: [/* @__PURE__ */ jsx(Square, {
+															size: 14,
+															"aria-hidden": "true"
+														}), t("chat.stop")]
+													})
+												]
 											}),
 											/* @__PURE__ */ jsx(ErrorNotice, { message: errorText }),
 											(error === "unreadable" || error === "all_dropped") && lastAskRef.current && !working && /* @__PURE__ */ jsx(Btn, {
@@ -6117,7 +6303,9 @@ function MoodMusicPage() {
 												children: t("page.retry")
 											}),
 											notice && /* @__PURE__ */ jsx("p", {
+												role: "status",
 												className: "text-xs text-[var(--muted)]",
+												"data-testid": "mood-notice",
 												children: notice
 											})
 										]

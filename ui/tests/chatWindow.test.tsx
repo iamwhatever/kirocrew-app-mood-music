@@ -73,7 +73,7 @@ beforeEach(() => {
   api.openSlot.mockResolvedValue({ key: KEY })
   api.getSlot.mockResolvedValue({ running: false, messages: [] })
   api.ask.mockResolvedValue(KEY)
-  api.steer.mockResolvedValue(true)
+  api.steer.mockResolvedValue({ steered: true, queued: false, queueId: '' })
   api.addMoment.mockResolvedValue(MOMENT)
   api.verifyPicks.mockImplementation(async (picks: unknown[]) => ({ picks, dropped: {} }))
   api.setQueue.mockResolvedValue({ queue: QUEUE })
@@ -132,7 +132,7 @@ describe('a song picked while the buddy works', () => {
 
   it('waits on the queued turn when the gateway queued it instead', async () => {
     await playingFirst()
-    api.steer.mockResolvedValue(false)
+    api.steer.mockResolvedValue({ steered: false, queued: true, queueId: '' })
     fireEvent.click(row(2))
     await flush()
     const message = api.steer.mock.calls[0][1] as string

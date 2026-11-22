@@ -24,6 +24,8 @@
  * browser and reports the steps that worked, which the app keeps per site and
  * sends back next time. A song picked while a turn runs is steered into that
  * turn (`api.ts` `steer`), so the buddy switches at once instead of after it.
+ * Words typed in the box while a turn runs are steered in the same way and
+ * marked "cut in"; words the turn did not take are never queued (`steerIn`).
  * Pause, seek and volume go straight to the tab. With
  * continuous play on, a song's end (read by this page's poll) wakes the buddy
  * once for the next song, and asks for more when the queue runs low. The
@@ -39,7 +41,7 @@
  * playable left.
  */
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent, type UIEvent } from 'react'
-import { ArrowDown, ExternalLink, Headphones, MessageCircleQuestion, Play, Send, ShieldCheck, Square, TriangleAlert, Volume2, Waves, WifiOff } from 'lucide-react'
+import { ArrowDown, CornerDownRight, ExternalLink, Headphones, MessageCircleQuestion, Play, Send, ShieldCheck, Square, TriangleAlert, Volume2, Waves, WifiOff } from 'lucide-react'
 import { useAppApi, useChatLauncher, useNavigate } from '@kirocrew/app-sdk'
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from '@kirocrew/app-sdk/ui'
 import { t } from './i18n'
@@ -59,7 +61,7 @@ import { parseDjReply, replySource, type DjReply, type ReplyAction } from './rep
 import { usePrefersReducedMotion } from './reducedMotion'
 import { CARD_STYLE } from './cardStyle'
 import SongCard from './SongCard'
-import { activityKey, buddyStatus, conversation, liveSteps, pendingApproval, turnError, type BuddyStatus } from './turnState'
+import { activityKey, buddyStatus, conversation, liveSteps, pendingApproval, steerRequeued, turnError, type BuddyStatus } from './turnState'
 import { loadView, saveView, type PageView, type SavedPending, type Tab } from './pageMemory'
 
 const errMessage = (e: unknown): string => (e instanceof Error ? e.message : typeof e === 'string' ? e : '')
@@ -394,8 +396,19 @@ export default function MoodMusicPage() {
     }
   }, [])
 
-  const send = (kind: Kind, words: string) => {
-    if (!words || pending || busy) return
+  /**
+   * Send the person's words. While the buddy works they go INTO its running
+   * turn (`steerIn`); otherwise as a turn of their own. `sent` runs once they
+   * are in, so words that did not get in stay where they were typed.
+   */
+  const send = (kind: Kind, words: string, sent?: () => void) => {
+    if (!words) return
+    if (pending) {
+      void steerIn(kind, words).then(ok => { if (ok) sent?.() })
+      return
+    }
+    if (busy) return
+    sent?.()
     // A box message keeps its moment only once its picks land (a command is no moment).
     momentRef.current = ''
     void run(async () => {
@@ -413,15 +426,16 @@ export default function MoodMusicPage() {
   const submitBox = (e: FormEvent) => {
     e.preventDefault()
     const typed = text.trim()
-    if (!typed || pending || busy) return
+    if (!typed || !canSend) return
     if (openQuestion) {
-      send('answer', typed)
+      send('answer', typed, () => setText(''))
     } else {
       const look: MoodLook = chip && typed.startsWith(moodLabel(chip)) ? chip : moodLookFor([typed])
-      if (look !== 'neutral') setScene(presetScene(look))
-      send('say', typed)
+      send('say', typed, () => {
+        if (look !== 'neutral') setScene(presetScene(look))
+        setText('')
+      })
     }
-    setText('')
   }
 
   /** A chip puts its mood at the start of the box, in place of another chip's, and leaves the rest typed. */
@@ -496,17 +510,25 @@ export default function MoodMusicPage() {
       const fresh = !!reply && !sameReply(pending.baseline, read)
       if (!failed && !fresh && !pending.stopped) return
       live = false
-      // A song picked during this turn that was queued behind it runs next: wait on that turn.
-      const queuedSwitch = pending.stopped ? null : switchQueuedRef.current
-      switchQueuedRef.current = null
-      setPending(queuedSwitch
-        ? { momentId: '', baseline: replyMark(read), memoryIds: [], text: queuedSwitch.text, play: { pickId: queuedSwitch.pickId, site: queuedSwitch.site, refill: false } }
-        : null)
+      // Steered words the turn ended without reading run as their own turn:
+      // this reply is the turn's own, and the page waits on theirs next.
+      const requeued = pending.steered && steerRequeued(read, pending.text)
+      const turn: Pending = requeued ? { ...pending, say: undefined, steered: undefined } : pending
+      // A song picked, or words sent, during this turn that ran as a turn of its own runs next: wait on that turn.
+      const next = pending.stopped ? null
+        : requeued ? { momentId: '', memoryIds: pending.memoryIds, text: pending.text, say: pending.say }
+          : nextRef.current
+      nextRef.current = null
+      setPending(next ? { ...next, baseline: replyMark(read) } : null)
       setStuck(false)
       if (pending.stopped) { setNotice(t('chat.stopped')); return }
       if (failed && !fresh) { setTurnFailed(failed); return }
       const parsed = parseDjReply(reply)
-      if (pending.play) { await afterPlay(pending.play, parsed, source); return }
+      if (turn.play) {
+        if (!turn.steered) { await afterPlay(turn.play, parsed, source); return }
+        // Words steered into a play: the play's own result is kept, then the reply is read like theirs.
+        if (parsed?.play) await afterPlay(turn.play, { ...parsed, picks: [] }, source)
+      }
       if (!parsed) { setError('unreadable'); return }
       if (parsed.scene) {
         // The buddy marked a big mood shift: its scene replaces the current one.
@@ -534,11 +556,11 @@ export default function MoodMusicPage() {
         if (checked.picks.length === 0) { setDroppedAll(dropped); setError('all_dropped'); return }
         if (dropped > 0) setNotice(t('page.dropped', { count: dropped }))
         // A box message that brought songs was a feeling worth keeping as a moment.
-        const momentId = pending.say ? (await moodApi.addMoment(pending.text)).id : pending.momentId
+        const momentId = turn.say ? (await moodApi.addMoment(turn.text)).id : turn.momentId
         const { queue: next } = await moodApi.setQueue({
           source, moment_id: momentId || undefined, mood_tags: parsed.moodTags, picks: checked.picks,
         })
-        queueMemoryRef.current = pending.memoryIds
+        queueMemoryRef.current = turn.memoryIds
         setState(await moodApi.state())
         setCurrentId(next[0]?.id ?? null)
         // "Play this song now": the first pick goes straight to the browser.
@@ -651,10 +673,58 @@ export default function MoodMusicPage() {
     }
   }
 
-  // A song the person picked while a turn ran, which the gateway queued behind
-  // that turn instead of steering it in: once that turn is over, the page waits
-  // on this one.
-  const switchQueuedRef = useRef<NonNullable<Pending['play']> & { text: string } | null>(null)
+  // A song picked, or words sent, while a turn ran, that the gateway ran as a
+  // turn of its own instead of steering it in: once that turn is over, the page
+  // waits on this one.
+  const nextRef = useRef<Omit<Pending, 'baseline'> | null>(null)
+  // A steer on its way: one at a time, so a double press sends nothing twice.
+  const [steering, setSteering] = useState(false)
+
+  /**
+   * The person's words while the buddy works: they go INTO the running turn (a
+   * steer), and the turn's reply is then read like a box message's (scene,
+   * picks, moment, memory). Never queued: words the gateway queued behind a
+   * turn still running are taken back, and the page says they did not get in.
+   * Words it ran as a turn of their own because the turn had just ended (too
+   * late to take back, or already started) are a normal message, waited on next.
+   * True when the words went in.
+   */
+  const steerIn = async (kind: Kind, words: string): Promise<boolean> => {
+    const key = slotRef.current
+    if (!key || steering) return false
+    setSteering(true)
+    setNotice(null)
+    const { ids } = memorySummary(state?.memory ?? [])
+    const nowPlaying = current ? { title: current.title, artist: current.artist } : null
+    const message = buildRequest({ kind, text: words, state, explore, stayOnly, nowPlaying })
+    const say = kind === 'say' || undefined
+    try {
+      const r = await moodApi.steer(key, message)
+      if (!r.steered && r.queued) {
+        const read = await moodApi.getSlot(key).catch(() => undefined)
+        // Still running: queued means after it, which is not what was asked.
+        if ((!read || read.running) && r.queueId && (await moodApi.cancelQueued(key, r.queueId))) {
+          setNotice(t('chat.steer_missed'))
+          return false
+        }
+      }
+      lastAskRef.current = message
+      lastShownRef.current = words
+      if (r.steered) {
+        setPending(p => (p ? { ...p, text: words, say, steered: true, memoryIds: [...new Set([...p.memoryIds, ...ids])] } : p))
+      } else {
+        nextRef.current = { momentId: '', memoryIds: ids, text: words, say }
+      }
+      stickRef.current = true
+      setAtBottom(true)
+      return true
+    } catch {
+      setNotice(t('chat.steer_missed'))
+      return false
+    } finally {
+      setSteering(false)
+    }
+  }
 
   /**
    * The person picked *pick* while the buddy works: the play request goes INTO
@@ -673,11 +743,11 @@ export default function MoodMusicPage() {
     lastAskRef.current = message
     lastShownRef.current = shown
     try {
-      if (await moodApi.steer(key, message)) {
-        switchQueuedRef.current = null
-        setPending(p => (p ? { ...p, play, text: shown } : p))
+      if ((await moodApi.steer(key, message)).steered) {
+        if (nextRef.current?.play) nextRef.current = null
+        setPending(p => (p ? { ...p, play, text: shown, steered: undefined } : p))
       } else {
-        switchQueuedRef.current = { ...play, text: shown }
+        nextRef.current = { momentId: '', memoryIds: [], text: shown, play }
       }
       stickRef.current = true
       setAtBottom(true)
@@ -873,16 +943,30 @@ export default function MoodMusicPage() {
       : error === 'all_dropped' ? t('chat.all_dropped', { count: droppedAll })
         : t('page.error_generic', { code: error })
   const working = busy || !!pending
+  // On the person's words that went into a running turn.
+  const steeredMark = (
+    <span className="mr-1.5 inline-flex items-center gap-0.5 rounded-full border border-[var(--accent)] px-1.5 align-[1px] text-[10px] font-semibold leading-4 text-[var(--accent)]" data-testid="mood-steered">
+      <CornerDownRight size={10} aria-hidden="true" />
+      {t('chat.steered')}
+    </span>
+  )
   const moving = !reduceMotion && !motionPaused
   const status = pending || checking ? buddyStatus(slot, checking) ?? { phase: 'thinking' as const, searches: 0, pages: 0 } : null
   const approval = pending ? pendingApproval(slot) : null
   const lines = conversation(slot)
   const lastBuddy = [...lines].reverse().find(l => l.who === 'buddy')
-  const lastParsed = !pending && lastBuddy?.reply ? parseDjReply(lastBuddy.reply) : null
+  // A turn the page woke for a song does not close the buddy's last reply: its
+  // question and follow-ups stay open, and an answer goes into that turn.
+  // The person's own words (sent or steered) do close it.
+  const replyOpen = !pending || (!!pending.play && !pending.steered)
+  const lastParsed = replyOpen && lastBuddy?.reply ? parseDjReply(lastBuddy.reply) : null
   const showYou = pending && pending.text && !(lines.length && lines[lines.length - 1].who === 'you' && lines[lines.length - 1].text === pending.text)
   const remember = lastParsed?.remember && lastParsed.remember !== dismissedRemember ? lastParsed.remember : ''
   // The buddy's open question: the one box answers it.
-  const openQuestion = lastParsed?.question && !pending ? lastParsed.question : ''
+  const openQuestion = lastParsed?.question ?? ''
+  // While the buddy works the box still sends, into its turn; not while a send is
+  // on its way, or once Stop was pressed.
+  const canSend = !steering && (pending ? !pending.stopped : !busy)
 
   // New rows in the record: follow them down, unless the person scrolled up.
   const recordKey = `${tab}|${lines.length}|${activityKey(slot)}|${status?.phase ?? ''}|${openQuestion}|${queue.length}|${!!approval}`
@@ -1027,7 +1111,7 @@ export default function MoodMusicPage() {
                       {lines.slice(-30).map((line, i) => (
                         line.who === 'you' ? (
                           <p key={i} className="mm-row self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]">
-                            <span className="sr-only">{t('chat.you')}: </span>{line.text}
+                            <span className="sr-only">{t('chat.you')}: </span>{line.steered && steeredMark}{line.text}
                           </p>
                         ) : (
                           <div key={i} className="mm-row max-w-[95%]">
@@ -1057,7 +1141,7 @@ export default function MoodMusicPage() {
                         )
                       ))}
                       {showYou && (
-                        <p className="mm-row self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]">{pending.text}</p>
+                        <p className="mm-row self-end max-w-[85%] rounded-2xl bg-[var(--accent-subtle)] px-3 py-1.5 text-sm text-[var(--text)]">{pending.steered && steeredMark}{pending.text}</p>
                       )}
                       {status && <BuddySteps steps={liveSteps(slot)} live testId="mood-live-steps" />}
                       {status && (
@@ -1124,15 +1208,15 @@ export default function MoodMusicPage() {
 
                 {/* The one box: feelings and commands alike, into the same conversation. */}
                 <form onSubmit={submitBox} className="mm-composer flex flex-col gap-2" data-testid="mood-composer">
-                  {!pending && ((lastParsed?.followUps.length ?? 0) > 0 || remember) && (
+                  {replyOpen && ((lastParsed?.followUps.length ?? 0) > 0 || remember) && (
                     <div role="group" aria-label={t('chat.follow_ups')} className="flex flex-wrap gap-2" data-testid="mood-follow-ups">
                       {lastParsed!.followUps.map(f => (
-                        <Btn key={f} type="button" disabled={working} onClick={() => send('follow', f)}>{f}</Btn>
+                        <Btn key={f} type="button" disabled={!canSend} onClick={() => send('follow', f)}>{f}</Btn>
                       ))}
                       {remember && (
                         <Btn
                           type="button"
-                          disabled={working}
+                          disabled={busy}
                           onClick={() => {
                             setDismissedRemember(remember)
                             void moodApi.addMemory({ kind: 'note', text: remember, origin: 'user' }).then(refresh)
@@ -1169,18 +1253,17 @@ export default function MoodMusicPage() {
                       value={text}
                       onChange={e => setText(e.target.value)}
                       maxLength={200}
-                      placeholder={openQuestion ? t('page.answer_placeholder') : t('chat.placeholder')}
+                      placeholder={openQuestion ? t('page.answer_placeholder') : pending ? t('chat.steer_placeholder') : t('chat.placeholder')}
                       className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                     />
-                    {pending ? (
+                    <Btn type="submit" primary className="shrink-0 whitespace-nowrap" disabled={!canSend || !text.trim()}>
+                      <Send size={14} aria-hidden="true" />
+                      {t('chat.send')}
+                    </Btn>
+                    {pending && (
                       <Btn type="button" className="shrink-0 whitespace-nowrap" onClick={stop} disabled={pending.stopped}>
                         <Square size={14} aria-hidden="true" />
                         {t('chat.stop')}
-                      </Btn>
-                    ) : (
-                      <Btn type="submit" primary className="shrink-0 whitespace-nowrap" disabled={working || !text.trim()}>
-                        <Send size={14} aria-hidden="true" />
-                        {t('chat.send')}
                       </Btn>
                     )}
                   </div>
@@ -1188,7 +1271,7 @@ export default function MoodMusicPage() {
                   {(error === 'unreadable' || error === 'all_dropped') && lastAskRef.current && !working && (
                     <Btn type="button" onClick={retry}>{t('page.retry')}</Btn>
                   )}
-                  {notice && <p className="text-xs text-[var(--muted)]">{notice}</p>}
+                  {notice && <p role="status" className="text-xs text-[var(--muted)]" data-testid="mood-notice">{notice}</p>}
                 </form>
               </div>
 
