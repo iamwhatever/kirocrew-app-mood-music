@@ -1,0 +1,162 @@
+{
+  "wide-light": {
+    "viewport": [
+      1440,
+      900
+    ],
+    "theme": "light",
+    "reduced": false,
+    "liveBeforeSwitch": [
+      "打开页面",
+      "查看页面",
+      "搜索页出来了，找标题对得上的那一个。",
+      "滚动",
+      "点击"
+    ],
+    "switchCalls": [
+      "06:54:41 api POST /api/chat?ws=1 msg=\"[Mood Music]\\nPlay in Crew Browser: \\\"后来\\\" - 刘若英\\n\\nThe person picked this song while you were still working: dr"
+    ],
+    "nowPlaying": "正在播放\n后来\n刘若英\n为什么适合:\n回头看那年夏天，有遗憾，也有暖。",
+    "folds": [
+      "搭子做了什么（7）",
+      "搭子做了什么（8）"
+    ],
+    "afterScrollUp": [
+      0,
+      685,
+      585
+    ],
+    "btnAfterScrollUp": 1,
+    "afterReply": [
+      0,
+      1445,
+      547
+    ],
+    "latestText": "新消息",
+    "latestAfterClick": 0,
+    "animation": "mm-in",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  "wide-dark": {
+    "viewport": [
+      1440,
+      900
+    ],
+    "theme": "dark",
+    "reduced": false,
+    "liveBeforeSwitch": [
+      "打开页面",
+      "查看页面",
+      "搜索页出来了，找标题对得上的那一个。",
+      "滚动",
+      "点击"
+    ],
+    "switchCalls": [
+      "06:55:20 api POST /api/chat?ws=1 msg=\"[Mood Music]\\nPlay in Crew Browser: \\\"后来\\\" - 刘若英\\n\\nThe person picked this song while you were still working: dr"
+    ],
+    "nowPlaying": "正在播放\n后来\n刘若英\n为什么适合:\n回头看那年夏天，有遗憾，也有暖。",
+    "folds": [
+      "搭子做了什么（7）",
+      "搭子做了什么（8）"
+    ],
+    "afterScrollUp": [
+      0,
+      685,
+      585
+    ],
+    "btnAfterScrollUp": 1,
+    "afterReply": [
+      0,
+      1445,
+      547
+    ],
+    "latestText": "新消息",
+    "latestAfterClick": 0,
+    "animation": "mm-in",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  "narrow-light": {
+    "viewport": [
+      420,
+      860
+    ],
+    "theme": "light",
+    "reduced": false,
+    "liveBeforeSwitch": [
+      "打开页面",
+      "查看页面",
+      "搜索页出来了，找标题对得上的那一个。",
+      "滚动",
+      "点击"
+    ],
+    "switchCalls": [
+      "06:56:00 api POST /api/chat?ws=1 msg=\"[Mood Music]\\nPlay in Crew Browser: \\\"后来\\\" - 刘若英\\n\\nThe person picked this song while you were still working: dr"
+    ],
+    "nowPlaying": "正在播放\n后来\n刘若英\n为什么适合:\n回头看那年夏天，有遗憾，也有暖。",
+    "folds": [
+      "搭子做了什么（7）",
+      "搭子做了什么（8）"
+    ],
+    "afterScrollUp": [
+      0,
+      625,
+      516
+    ],
+    "btnAfterScrollUp": 1,
+    "afterReply": [
+      0,
+      1524,
+      516
+    ],
+    "latestText": "新消息",
+    "latestAfterClick": 0,
+    "animation": "mm-in",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  "narrow-dark": {
+    "viewport": [
+      420,
+      860
+    ],
+    "theme": "dark",
+    "reduced": true,
+    "liveBeforeSwitch": [
+      "打开页面",
+      "查看页面",
+      "搜索页出来了，找标题对得上的那一个。",
+      "滚动",
+      "点击"
+    ],
+    "switchCalls": [
+      "06:56:34 api POST /api/chat?ws=1 msg=\"[Mood Music]\\nPlay in Crew Browser: \\\"后来\\\" - 刘若英\\n\\nThe person picked this song while you were still working: dr"
+    ],
+    "nowPlaying": "正在播放\n后来\n刘若英\n为什么适合:\n回头看那年夏天，有遗憾，也有暖。",
+    "folds": [
+      "搭子做了什么（7）",
+      "搭子做了什么（8）"
+    ],
+    "afterScrollUp": [
+      0,
+      625,
+      516
+    ],
+    "btnAfterScrollUp": 1,
+    "afterReply": [
+      0,
+      1524,
+      516
+    ],
+    "latestText": "新消息",
+    "latestAfterClick": 0,
+    "animation": "none",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  }
+}
