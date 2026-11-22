@@ -124,7 +124,8 @@
     "status_playing": "搭子正在 Kiro Crew 的浏览器里打开这首歌…",
     "record_title": "搭子在做什么",
     "latest": "最新",
-    "no_next": "队列里没有下一首了。"
+    "no_next": "队列里没有下一首了。",
+    "new_message": "新消息"
   },
   "card": {
     "arc_stay": "陪着",
@@ -163,7 +164,8 @@
     "unready_old_host": "这个 Kiro Crew 版本太旧。请把 Kiro Crew 更新到支持应用浏览器网站的版本（含 KiroCrew#38333，比 v0.13.0-rc.3 新），再打开这个页面。",
     "unready_not_approved": "请先为情绪音乐批准这几个音乐网站。只需在应用页面批准一次。",
     "unready_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。",
-    "find_play": "查找并播放"
+    "find_play": "查找并播放",
+    "playback_unsaved": "没能告诉情绪音乐现在放的是哪首，下一首可能不会自己开始。请点下一首播放。"
   },
   "view": {
     "title": "Kiro Crew 的浏览器",
@@ -188,6 +190,7 @@
     "tab": "切换标签页",
     "key": "按键",
     "browser": "使用浏览器",
-    "other": "执行一步"
+    "other": "执行一步",
+    "folded": "搭子做了什么（{{count}}）"
   }
 }

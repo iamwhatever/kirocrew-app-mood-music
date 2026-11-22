@@ -85,6 +85,28 @@ export function readiness(media: BrowserMedia): BrowserReadiness {
   }
 }
 
+/** How near its end a reading must be for a lost source next to count as an ending. */
+export const NEAR_END_S = 2
+
+/**
+ * Whether the song ended between two readings although no reading said
+ * `ended`: the last one was within {@link NEAR_END_S} of the end, and now the
+ * length is gone, or the clock is back at 0 with the video stopped. YouTube
+ * drops the video's source at its end screen, so `ended` may never show.
+ * shortcut: a stopgap for hosts that report only `ended`; drop it once Kiro Crew
+ * counts endings itself.
+ */
+export function endedBetween(prev: BrowserMediaState | null, now: BrowserMediaState | null): boolean {
+  if (!prev || !now || prev.ended || typeof prev.duration !== 'number' || !(prev.duration > 0)) return false
+  if (prev.duration - prev.currentTime > NEAR_END_S) return false
+  return now.duration === null || (now.currentTime === 0 && now.paused)
+}
+
+/** Whether the tab still shows a song over: `ended`, or stopped with no length or at 0. */
+export function stillEnded(media: BrowserMediaState | null): boolean {
+  return !!media && (media.ended || (media.paused && (media.duration === null || media.currentTime === 0)))
+}
+
 /** m:ss, for the progress bar. */
 export function clock(seconds: number | null | undefined): string {
   if (typeof seconds !== 'number' || !Number.isFinite(seconds) || seconds < 0) return '--:--'

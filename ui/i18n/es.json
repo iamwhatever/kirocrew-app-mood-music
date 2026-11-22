@@ -124,7 +124,8 @@
     "status_playing": "Tu compañero está abriendo la canción en el navegador de Kiro Crew…",
     "record_title": "Lo que hace tu compañero",
     "latest": "Lo último",
-    "no_next": "No hay siguiente canción en la cola."
+    "no_next": "No hay siguiente canción en la cola.",
+    "new_message": "Mensaje nuevo"
   },
   "card": {
     "arc_stay": "Acompañar",
@@ -163,7 +164,8 @@
     "unready_old_host": "Este Kiro Crew es demasiado antiguo. Actualiza Kiro Crew a una versión con sitios de navegador para apps (KiroCrew#38333, más nueva que v0.13.0-rc.3) y vuelve a abrir esta página.",
     "unready_not_approved": "Primero aprueba los sitios de música para Mood Music. Se aprueban una vez, en la página de la app.",
     "unready_browse_off": "Una política de este equipo tiene apagado el navegador de Kiro Crew.",
-    "find_play": "Buscar y reproducir"
+    "find_play": "Buscar y reproducir",
+    "playback_unsaved": "No se pudo decir a Mood Music qué canción suena, así que la siguiente quizá no empiece sola. Pulsa reproducir en la siguiente."
   },
   "view": {
     "title": "Navegador de Kiro Crew",
@@ -188,6 +190,7 @@
     "tab": "Cambió de pestaña",
     "key": "Pulsó una tecla",
     "browser": "Usó el navegador",
-    "other": "Hizo un paso"
+    "other": "Hizo un paso",
+    "folded": "Lo que hizo tu compañero ({{count}})"
   }
 }

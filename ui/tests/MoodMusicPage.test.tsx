@@ -86,7 +86,7 @@ afterEach(() => {
 })
 
 describe('MoodMusicPage', () => {
-  it('always shows what the buddy did, in plain words, with the full record closed', async () => {
+  it('folds what the buddy did into one row that opens to plain words, with the full record closed', async () => {
     const steps: SlotData = {
       running: false,
       messages: [
@@ -105,6 +105,12 @@ describe('MoodMusicPage', () => {
     await flush()
     const chat = screen.getByTestId('mood-chat')
     const list = within(chat).getByTestId('mood-steps')
+    // The finished turn's steps rest folded: one row with how many, nothing else.
+    const fold = within(list).getByRole('button', { name: tr('steps.folded', { count: 4 }) })
+    expect(fold).toHaveAttribute('aria-expanded', 'false')
+    expect(within(list).queryByRole('listitem')).toBeNull()
+    fireEvent.click(fold)
+    expect(fold).toHaveAttribute('aria-expanded', 'true')
     expect(list).toHaveTextContent(tr('steps.times', { step: tr('steps.search'), count: 2 }))
     expect(list).toHaveTextContent(tr('steps.read'))
     expect(list).toHaveTextContent(tr('steps.open'))

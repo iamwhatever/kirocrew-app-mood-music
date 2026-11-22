@@ -188,12 +188,46 @@ def test_the_hook_first_refuses_the_page_claim(ctx) -> None:
     assert _call(ctx, "POST", "/playback/ended", {"pick_id": q[0]["id"]}) == (200, {"claimed": False})
 
 
-def test_a_turn_already_out_wins(ctx) -> None:
-    queue(ctx)
+def busy_ending(ctx: Any, monkeypatch: Any, meanwhile: Any = None) -> None:
+    """An ending while a turn runs; *meanwhile* runs during that turn, then the turn ends."""
+    monkeypatch.setattr(playback, "BUSY_POLL_S", 0.01)
     ctx.chat_slots.slot.running = True
-    fire(ctx, ended())
+
+    async def go() -> None:
+        await playback.on_media_ended(ctx, ended())
+        await asyncio.sleep(0.05)
+        # A turn already out goes first: nothing sent, nothing claimed yet.
+        assert ctx.chat_slots.sent == []
+        assert store(ctx).snapshot()["playback"]["ended_for"] == ""
+        if meanwhile:
+            meanwhile()
+        ctx.chat_slots.slot.running = False
+        await asyncio.gather(*ctx.chat_slots.tracked)
+        await asyncio.gather(*ctx.chat_slots.tracked)
+
+    asyncio.run(go())
+
+
+def test_an_ending_during_a_turn_wakes_the_buddy_once_that_turn_is_over(ctx, monkeypatch) -> None:
+    q = queue(ctx)
+    ctx.chat_slots.reply = played()
+    busy_ending(ctx, monkeypatch)
+    assert len(ctx.chat_slots.sent) == 1
+    assert 'Play in Crew Browser: "Song 2" - Artist 2' in ctx.chat_slots.sent[0]
+    assert store(ctx).snapshot()["playback"]["pick_id"] == q[1]["id"]
+
+
+def test_an_ending_during_a_turn_the_page_claimed_meanwhile_wakes_nobody_twice(ctx, monkeypatch) -> None:
+    q = queue(ctx)
+    busy_ending(ctx, monkeypatch, lambda: store(ctx).claim_ended(q[0]["id"]))
     assert ctx.chat_slots.sent == []
-    # Nothing was claimed, so the page may still take this ending.
+
+
+def test_an_ending_during_a_turn_that_played_another_song_is_not_claimed_for_it(ctx, monkeypatch) -> None:
+    q = queue(ctx)
+    # The running turn was the person picking Song 3: its ending is not Song 1's.
+    busy_ending(ctx, monkeypatch, lambda: store(ctx).set_playback(pick_id=q[2]["id"]))
+    assert ctx.chat_slots.sent == []
     assert store(ctx).snapshot()["playback"]["ended_for"] == ""
 
 
