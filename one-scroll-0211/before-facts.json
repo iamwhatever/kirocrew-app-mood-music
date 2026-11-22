@@ -1,0 +1,65 @@
+[
+ {
+  "name": "before-wide-light",
+  "scrollers": [
+   "mood-player-column",
+   "mood-queue"
+  ],
+  "rightOverflowY": "auto",
+  "listOverflowY": "auto",
+  "rightScrolls": true,
+  "listScrolls": true,
+  "listBox": [
+   789,
+   1301
+  ],
+  "lastRow": [
+   1220,
+   1301
+  ],
+  "viewportH": 900,
+  "lastVisible": false
+ },
+ {
+  "name": "before-wide-dark",
+  "scrollers": [
+   "mood-player-column",
+   "mood-queue"
+  ],
+  "rightOverflowY": "auto",
+  "listOverflowY": "auto",
+  "rightScrolls": true,
+  "listScrolls": true,
+  "listBox": [
+   789,
+   1301
+  ],
+  "lastRow": [
+   1220,
+   1301
+  ],
+  "viewportH": 900,
+  "lastVisible": false
+ },
+ {
+  "name": "before-wide-recording",
+  "scrollers": [
+   "mood-player-column",
+   "mood-queue"
+  ],
+  "rightOverflowY": "auto",
+  "listOverflowY": "auto",
+  "rightScrolls": true,
+  "listScrolls": true,
+  "listBox": [
+   789,
+   1301
+  ],
+  "lastRow": [
+   1220,
+   1301
+  ],
+  "viewportH": 900,
+  "lastVisible": false
+ }
+]

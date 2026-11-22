@@ -1,0 +1,182 @@
+[
+ {
+  "name": "after-wide-light",
+  "scrollers": [
+   "mood-queue"
+  ],
+  "rightOverflowY": "hidden",
+  "listOverflowY": "auto",
+  "rightScrolls": false,
+  "listScrolls": true,
+  "listBox": [
+   816,
+   976
+  ],
+  "lastRow": [
+   895,
+   976
+  ],
+  "viewportH": 1000,
+  "lastVisible": true
+ },
+ {
+  "name": "after-wide-dark",
+  "scrollers": [
+   "mood-queue"
+  ],
+  "rightOverflowY": "hidden",
+  "listOverflowY": "auto",
+  "rightScrolls": false,
+  "listScrolls": true,
+  "listBox": [
+   816,
+   976
+  ],
+  "lastRow": [
+   895,
+   976
+  ],
+  "viewportH": 1000,
+  "lastVisible": true
+ },
+ {
+  "name": "after-wide-short-light",
+  "scrollers": [
+   "mood-player-column"
+  ],
+  "rightOverflowY": "auto",
+  "listOverflowY": "visible",
+  "rightScrolls": true,
+  "listScrolls": false,
+  "listBox": [
+   -515,
+   736
+  ],
+  "lastRow": [
+   656,
+   736
+  ],
+  "viewportH": 760,
+  "lastVisible": true
+ },
+ {
+  "name": "after-wide-short-dark",
+  "scrollers": [
+   "mood-player-column"
+  ],
+  "rightOverflowY": "auto",
+  "listOverflowY": "visible",
+  "rightScrolls": true,
+  "listScrolls": false,
+  "listBox": [
+   -515,
+   736
+  ],
+  "lastRow": [
+   656,
+   736
+  ],
+  "viewportH": 760,
+  "lastVisible": true
+ },
+ {
+  "name": "after-wide-view-hidden-light",
+  "scrollers": [
+   "mood-queue"
+  ],
+  "rightOverflowY": "hidden",
+  "listOverflowY": "auto",
+  "rightScrolls": false,
+  "listScrolls": true,
+  "listBox": [
+   603,
+   856
+  ],
+  "lastRow": [
+   775,
+   856
+  ],
+  "viewportH": 880,
+  "lastVisible": true
+ },
+ {
+  "name": "after-wide-view-hidden-dark",
+  "scrollers": [
+   "mood-queue"
+  ],
+  "rightOverflowY": "hidden",
+  "listOverflowY": "auto",
+  "rightScrolls": false,
+  "listScrolls": true,
+  "listBox": [
+   603,
+   856
+  ],
+  "lastRow": [
+   775,
+   856
+  ],
+  "viewportH": 880,
+  "lastVisible": true
+ },
+ {
+  "name": "after-narrow-light",
+  "scrollers": [
+   "mood-scroll"
+  ],
+  "rightOverflowY": "visible",
+  "listOverflowY": "visible",
+  "rightScrolls": false,
+  "listScrolls": false,
+  "listBox": [
+   -375,
+   876
+  ],
+  "lastRow": [
+   795,
+   876
+  ],
+  "viewportH": 900,
+  "lastVisible": true
+ },
+ {
+  "name": "after-narrow-dark",
+  "scrollers": [
+   "mood-scroll"
+  ],
+  "rightOverflowY": "visible",
+  "listOverflowY": "visible",
+  "rightScrolls": false,
+  "listScrolls": false,
+  "listBox": [
+   -375,
+   876
+  ],
+  "lastRow": [
+   795,
+   876
+  ],
+  "viewportH": 900,
+  "lastVisible": true
+ },
+ {
+  "name": "after-wide-recording",
+  "scrollers": [
+   "mood-player-column"
+  ],
+  "rightOverflowY": "auto",
+  "listOverflowY": "visible",
+  "rightScrolls": true,
+  "listScrolls": false,
+  "listBox": [
+   -375,
+   876
+  ],
+  "lastRow": [
+   795,
+   876
+  ],
+  "viewportH": 900,
+  "lastVisible": true
+ }
+]
