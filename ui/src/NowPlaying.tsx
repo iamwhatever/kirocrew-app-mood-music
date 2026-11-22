@@ -12,9 +12,11 @@ import { t } from './i18n'
 import { CARD_STYLE } from './cardStyle'
 import type { QueuedPick } from './api'
 
-export default function NowPlaying({ pick, busy, onLike, onSkip, onMore, stage }: {
+export default function NowPlaying({ pick, busy, onLike, onSkip, onMore, stage, fromOldList = false }: {
   pick: QueuedPick
   busy: boolean
+  /** Still playing from a list the buddy since replaced: it is in no queue, so it cannot be liked here. */
+  fromOldList?: boolean
   onLike: () => void
   onSkip: () => void
   onMore: () => void
@@ -32,6 +34,7 @@ export default function NowPlaying({ pick, busy, onLike, onSkip, onMore, stage }
     >
       <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)]">
         {t('page.now_playing')}
+        {fromOldList && <span className="ml-2 font-normal normal-case tracking-normal" data-testid="mood-now-old-list">{t('page.from_old_list')}</span>}
       </p>
       {stage}
       <h2 className="mt-3 text-lg font-semibold leading-snug text-[var(--text)]">{pick.title}</h2>
@@ -52,10 +55,12 @@ export default function NowPlaying({ pick, busy, onLike, onSkip, onMore, stage }
         </p>
       )}
       <div className="mt-3 flex flex-wrap gap-2">
-        <Btn onClick={onLike} disabled={busy} aria-pressed={liked} primary={liked}>
-          <Heart size={14} aria-hidden="true" fill={liked ? 'currentColor' : 'none'} />
-          {liked ? t('page.liked') : t('page.like')}
-        </Btn>
+        {!fromOldList && (
+          <Btn onClick={onLike} disabled={busy} aria-pressed={liked} primary={liked}>
+            <Heart size={14} aria-hidden="true" fill={liked ? 'currentColor' : 'none'} />
+            {liked ? t('page.liked') : t('page.like')}
+          </Btn>
+        )}
         <Btn onClick={onSkip} disabled={busy}>
           <SkipForward size={14} aria-hidden="true" />
           {t('page.skip')}

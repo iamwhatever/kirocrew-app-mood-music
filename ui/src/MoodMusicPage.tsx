@@ -51,6 +51,7 @@ import BrowserControls from './BrowserControls'
 import BrowserView from './BrowserView'
 import BuddySteps from './BuddySteps'
 import { APPROVE_PATH, endedBetween, hostBrowserView, readiness, stillEnded, useCrewBrowser } from './crewBrowser'
+import type { BrowserMedia } from '@kirocrew/app-sdk'
 import MemoryTab from './MemoryTab'
 import MomentsTab from './MomentsTab'
 import MoodBackdrop from './MoodBackdrop'
@@ -173,6 +174,9 @@ export const SPLIT_CSS = `
 }
 `
 
+/** Whether the tab still has a song on (playing or paused mid-way); unknown until a reading says otherwise. */
+const songOn = (b: BrowserMedia) => (b.media ? !stillEnded(b.media) : b.error !== 'no_tab' && b.error !== 'no_media')
+
 const songKey = (title = '', artist = '') => `${title.trim().toLowerCase()}|${artist.trim().toLowerCase()}`
 
 function statusText(s: BuddyStatus): string {
@@ -232,6 +236,11 @@ export default function MoodMusicPage() {
   const [browserPick, setBrowserPick] = useState<string | null>(saved?.browserPick ?? null)
   const [endedFor, setEndedFor] = useState<string | null>(saved?.endedFor ?? null)
   const endedForRef = useRef(endedFor)
+  // The song still playing in the tab after the buddy replaced the list it came
+  // from: it is in no queue now, so the page keeps it to show until it ends.
+  const [held, setHeld] = useState<QueuedPick | null>(saved?.held ?? null)
+  const browserPickRef = useRef(browserPick)
+  browserPickRef.current = browserPick
   // Set by the person's pause: no song end wakes the buddy until they press play.
   const stoppedRef = useRef(false)
   // Set once the saved view is applied; nothing is saved before, so a page
@@ -295,7 +304,7 @@ export default function MoodMusicPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [moodApi])
 
-  const view: PageView = { tab, text, chip, stayOnly, scene, currentId, slotKey, scroll: 0, pending, browserPick, endedFor }
+  const view: PageView = { tab, text, chip, stayOnly, scene, currentId, slotKey, scroll: 0, pending, browserPick, endedFor, held }
   const viewRef = useRef(view)
   viewRef.current = view
   const persist = useCallback(() => {
@@ -319,7 +328,7 @@ export default function MoodMusicPage() {
     setAtBottom(stickRef.current)
     persist()
   }
-  useEffect(persist, [persist, tab, text, chip, stayOnly, scene, currentId, slotKey, pending, browserPick, endedFor])
+  useEffect(persist, [persist, tab, text, chip, stayOnly, scene, currentId, slotKey, pending, browserPick, endedFor, held])
 
   // Back where they were on the page, once what it shows is drawn again.
   useEffect(() => {
@@ -335,6 +344,13 @@ export default function MoodMusicPage() {
   }, [restored])
 
   const queue = state?.queue ?? []
+  const queueRef = useRef(queue)
+  queueRef.current = queue
+  // A new song in the tab ends the old list's song.
+  useEffect(() => {
+    if (held && browserPick !== held.id) setHeld(null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [browserPick])
   const explore: ExploreLevel = state?.settings?.explore ?? 'balanced'
   const viewOpen = state?.settings?.view_open ?? true
   // The host's live view of the buddy's tab (level 11); absent on an older host.
@@ -350,6 +366,8 @@ export default function MoodMusicPage() {
   const crew = useCrewBrowser(slotKey ?? '', !!browserPick || !!pending?.play, () => onEndedRef.current())
   const crewMediaRef = useRef(crew.media)
   crewMediaRef.current = crew.media
+  const crewRef = useRef(crew)
+  crewRef.current = crew
   const browserReady = readiness(crew)
   // `unknown` (no answer about this chat yet) still lets a play go out: the buddy
   // then says what went wrong, so nothing waits in silence.
@@ -359,7 +377,13 @@ export default function MoodMusicPage() {
     setState(s => (s ? { ...s, settings: { ...s.settings, ...patch } } : s))
     void moodApi.setSettings(patch).catch(e => setError(errMessage(e) || 'unknown'))
   }
-  const current = queue.find(p => p.id === currentId) ?? queue.find(p => p.feedback !== 'skipped') ?? null
+  // The tab still plays a song from a list since replaced: it stays the one
+  // playing, and no new pick is marked playing until it really starts.
+  const playingOld = !!browserPick && !queue.some(p => p.id === browserPick) && songOn(crew)
+  const heldNow = playingOld && held?.id === browserPick ? held : null
+  const current = queue.find(p => p.id === currentId)
+    ?? heldNow
+    ?? (playingOld ? null : queue.find(p => p.feedback !== 'skipped') ?? null)
   const knownSongs = useMemo(
     () => new Set((state?.memory ?? []).filter(m => m.kind === 'known').map(m => songKey(m.title, m.artist))),
     [state?.memory],
@@ -586,12 +610,18 @@ export default function MoodMusicPage() {
         if (dropped > 0) setNotice(t('page.dropped', { count: dropped }))
         // A box message that brought songs was a feeling worth keeping as a moment.
         const momentId = turn.say ? (await moodApi.addMoment(turn.text)).id : turn.momentId
+        // The song in the tab plays on through a new list: it stays the current
+        // one, kept aside, and its end moves on to the new list's first pick.
+        const playing = browserPickRef.current
+        const before = queueRef.current.find(p => p.id === playing)
+        const playsOn = !!playing && (songOn(crewRef.current) || playing === turn.play?.pickId)
         const { queue: next } = await moodApi.setQueue({
           source, moment_id: momentId || undefined, mood_tags: parsed.moodTags, picks: checked.picks,
         })
         queueMemoryRef.current = turn.memoryIds
+        if (playsOn) setHeld(h => before ?? h)
         setState(await moodApi.state())
-        setCurrentId(next[0]?.id ?? null)
+        setCurrentId(playsOn ? playing : next[0]?.id ?? null)
         // "Play this song now": the first pick goes straight to the browser.
         if (parsed.action === 'play' && next[0]) setAction({ kind: 'play', pickId: next[0].id })
       } catch (e) {
@@ -615,6 +645,8 @@ export default function MoodMusicPage() {
     // so the buttons reach it. Its steps are not known, so none are kept.
     const inTabNow = !result && !!crewMediaRef.current && !crewMediaRef.current.ended
     if (result?.played || inTabNow) {
+      // Read at once by a reply in the same turn that replaces the list.
+      browserPickRef.current = play.pickId
       setBrowserPick(play.pickId)
       // The backend learns which song plays, so it can play the next one with the page closed.
       void tellPlaying(play.pickId)
@@ -671,6 +703,12 @@ export default function MoodMusicPage() {
   }, [moodApi])
 
   const giveFeedback = (pick: QueuedPick, verdict: Verdict) => {
+    // The old list's song is in no queue to mark: Skip just goes on to the new list.
+    if (pick === heldNow) {
+      const first = queue.find(p => p.feedback !== 'skipped')
+      if (verdict === 'skipped' && first) playPick(first)
+      return
+    }
     void run(async () => {
       const updated = await moodApi.feedback(pick.id, verdict)
       if (verdict === 'liked') markUsed()
@@ -799,9 +837,9 @@ export default function MoodMusicPage() {
     if (pendingRef.current || busy) { setOwedEnd(id); return }
     endedForRef.current = id
     setEndedFor(id)
-    const playable = queue.filter(p => p.feedback !== 'skipped')
-    const at = playable.findIndex(p => p.id === id)
-    const next = at >= 0 ? playable[at + 1] : undefined
+    // The next one not skipped after it; a song from a replaced list goes on to the new list's first.
+    const at = queue.findIndex(p => p.id === id)
+    const next = queue.slice(at + 1).find(p => p.feedback !== 'skipped')
     if (!next) return
     void run(async () => {
       // The backend hears endings too (a Kiro Crew with the hook): one claim
@@ -1331,6 +1369,7 @@ export default function MoodMusicPage() {
                         />
                       )}
                       busy={working}
+                      fromOldList={!!heldNow && current === heldNow}
                       onLike={() => giveFeedback(current, current.feedback === 'liked' ? '' : 'liked')}
                       onSkip={() => giveFeedback(current, 'skipped')}
                       onMore={() => moreLike(current)}

@@ -58,12 +58,17 @@ def _gateway_state(ctx: Any) -> Any:
 
 
 def next_pick(snapshot: dict[str, Any], pick_id: str) -> tuple[dict[str, Any] | None, bool]:
-    """The pick after *pick_id* that is not skipped, and whether to ask for more."""
-    playable = [p for p in snapshot.get("queue", []) if p.get("feedback") != "skipped"]
-    at = next((i for i, p in enumerate(playable) if p.get("id") == pick_id), -1)
-    if at < 0 or at + 1 >= len(playable):
+    """The pick after *pick_id* that is not skipped, and whether to ask for more.
+
+    A song no longer in the queue came from a list since replaced: the new
+    list's first pick is next.
+    """
+    queue = snapshot.get("queue", [])
+    at = next((i for i, p in enumerate(queue) if p.get("id") == pick_id), -1)
+    after = [p for p in queue[at + 1:] if p.get("feedback") != "skipped"]
+    if not after:
         return None, False
-    return playable[at + 1], len(playable) - (at + 2) <= REFILL_AT
+    return after[0], len(after) - 1 <= REFILL_AT
 
 
 def play_message(

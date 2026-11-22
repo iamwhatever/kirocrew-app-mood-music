@@ -51,6 +51,7 @@ var CATALOGS = {
 			"empty_title": "এখনো কিছু বাজছে না",
 			"empty_body": "আপনার মুড বলুন, বা ওপর থেকে একটি বেছে নিন।",
 			"now_playing": "এখন বাজছে",
+			"from_old_list": "আগের তালিকা থেকে",
 			"why": "কেন মানায়",
 			"like": "পছন্দ",
 			"liked": "পছন্দ করেছেন",
@@ -250,6 +251,7 @@ var CATALOGS = {
 			"empty_title": "Noch läuft nichts",
 			"empty_body": "Sag, wie du dich fühlst, oder wähle oben eine Stimmung.",
 			"now_playing": "Läuft gerade",
+			"from_old_list": "aus der vorigen Liste",
 			"why": "Warum es passt",
 			"like": "Gefällt mir",
 			"liked": "Gefällt dir",
@@ -449,6 +451,7 @@ var CATALOGS = {
 			"empty_title": "Nothing playing yet",
 			"empty_body": "Say how you feel, or pick a mood above.",
 			"now_playing": "Now playing",
+			"from_old_list": "from the previous list",
 			"why": "Why it fits",
 			"like": "Like",
 			"liked": "Liked",
@@ -648,6 +651,7 @@ var CATALOGS = {
 			"empty_title": "Aún no suena nada",
 			"empty_body": "Di cómo te sientes o elige un estado de ánimo arriba.",
 			"now_playing": "Sonando ahora",
+			"from_old_list": "de la lista anterior",
 			"why": "Por qué encaja",
 			"like": "Me gusta",
 			"liked": "Te gusta",
@@ -847,6 +851,7 @@ var CATALOGS = {
 			"empty_title": "Rien en lecture pour l’instant",
 			"empty_body": "Dis ce que tu ressens, ou choisis une humeur ci-dessus.",
 			"now_playing": "En lecture",
+			"from_old_list": "de la liste précédente",
 			"why": "Pourquoi ça colle",
 			"like": "J’aime",
 			"liked": "Aimé",
@@ -1046,6 +1051,7 @@ var CATALOGS = {
 			"empty_title": "अभी कुछ नहीं चल रहा",
 			"empty_body": "अपना मूड बताइए, या ऊपर से कोई चुनें।",
 			"now_playing": "अभी चल रहा है",
+			"from_old_list": "पिछली सूची से",
 			"why": "क्यों जमता है",
 			"like": "पसंद",
 			"liked": "पसंद किया",
@@ -1245,6 +1251,7 @@ var CATALOGS = {
 			"empty_title": "Ancora niente in riproduzione",
 			"empty_body": "Di’ come ti senti o scegli un umore qui sopra.",
 			"now_playing": "In riproduzione",
+			"from_old_list": "dall'elenco precedente",
 			"why": "Perché si adatta",
 			"like": "Mi piace",
 			"liked": "Ti piace",
@@ -1444,6 +1451,7 @@ var CATALOGS = {
 			"empty_title": "まだ何も再生していません",
 			"empty_body": "気持ちを伝えるか、上の気分を選んでください。",
 			"now_playing": "再生中",
+			"from_old_list": "前のリストから",
 			"why": "合う理由",
 			"like": "いいね",
 			"liked": "いいね済み",
@@ -1643,6 +1651,7 @@ var CATALOGS = {
 			"empty_title": "아직 재생 중인 곡이 없습니다",
 			"empty_body": "기분을 말하거나 위에서 하나를 고르세요.",
 			"now_playing": "재생 중",
+			"from_old_list": "이전 목록에서",
 			"why": "어울리는 이유",
 			"like": "좋아요",
 			"liked": "좋아요 함",
@@ -1842,6 +1851,7 @@ var CATALOGS = {
 			"empty_title": "Nada tocando ainda",
 			"empty_body": "Diga como você se sente ou escolha um humor acima.",
 			"now_playing": "Tocando agora",
+			"from_old_list": "da lista anterior",
 			"why": "Por que combina",
 			"like": "Curtir",
 			"liked": "Curtida",
@@ -2041,6 +2051,7 @@ var CATALOGS = {
 			"empty_title": "Пока ничего не играет",
 			"empty_body": "Расскажите о настроении или выберите его выше.",
 			"now_playing": "Сейчас играет",
+			"from_old_list": "из прошлого списка",
 			"why": "Почему подходит",
 			"like": "Нравится",
 			"liked": "Понравилось",
@@ -2240,6 +2251,7 @@ var CATALOGS = {
 			"empty_title": "还没有在播放",
 			"empty_body": "说说你的心情，或在上面选一个。",
 			"now_playing": "正在播放",
+			"from_old_list": "来自上一张歌单",
 			"why": "为什么适合",
 			"like": "喜欢",
 			"liked": "已喜欢",
@@ -4068,7 +4080,7 @@ function MoodBackdrop({ scene, playing, moving, reduced }) {
 	});
 }
 // src/NowPlaying.tsx
-function NowPlaying({ pick, busy, onLike, onSkip, onMore, stage }) {
+function NowPlaying({ pick, busy, onLike, onSkip, onMore, stage, fromOldList = false }) {
 	const liked = pick.feedback === "liked";
 	return /* @__PURE__ */ jsxs("section", {
 		"aria-label": t("page.now_playing"),
@@ -4076,9 +4088,13 @@ function NowPlaying({ pick, busy, onLike, onSkip, onMore, stage }) {
 		style: CARD_STYLE,
 		"data-testid": "mood-now-playing",
 		children: [
-			/* @__PURE__ */ jsx("p", {
+			/* @__PURE__ */ jsxs("p", {
 				className: "text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)]",
-				children: t("page.now_playing")
+				children: [t("page.now_playing"), fromOldList && /* @__PURE__ */ jsx("span", {
+					className: "ml-2 font-normal normal-case tracking-normal",
+					"data-testid": "mood-now-old-list",
+					children: t("page.from_old_list")
+				})]
 			}),
 			stage,
 			/* @__PURE__ */ jsx("h2", {
@@ -4111,7 +4127,7 @@ function NowPlaying({ pick, busy, onLike, onSkip, onMore, stage }) {
 			/* @__PURE__ */ jsxs("div", {
 				className: "mt-3 flex flex-wrap gap-2",
 				children: [
-					/* @__PURE__ */ jsxs(Btn, {
+					!fromOldList && /* @__PURE__ */ jsxs(Btn, {
 						onClick: onLike,
 						disabled: busy,
 						"aria-pressed": liked,
@@ -4833,6 +4849,23 @@ function readPlay(v) {
 		refill: p.refill === true
 	};
 }
+function readHeld(v) {
+	const p = v;
+	if (!p || typeof p !== "object" || typeof p.id !== "string" || typeof p.title !== "string") return null;
+	if (p.source !== "youtube" && p.source !== "bilibili") return null;
+	return {
+		id: p.id.slice(0, 64),
+		title: str(p.title, 200),
+		artist: str(p.artist, 200),
+		why: str(p.why, 400),
+		tags: [],
+		source: p.source,
+		feedback: "",
+		...typeof p.video_id === "string" ? { video_id: p.video_id.slice(0, 64) } : {},
+		...typeof p.url === "string" ? { url: p.url.slice(0, 500) } : {},
+		...typeof p.listen_for === "string" ? { listen_for: p.listen_for.slice(0, 300) } : {}
+	};
+}
 /** The saved view, or null when there is none or it does not read. */
 function loadView() {
 	try {
@@ -4852,7 +4885,8 @@ function loadView() {
 			recordScroll: typeof v.recordScroll === "number" && v.recordScroll > 0 ? v.recordScroll : 0,
 			pending: readPending(v.pending),
 			browserPick: typeof v.browserPick === "string" ? v.browserPick.slice(0, 64) : null,
-			endedFor: typeof v.endedFor === "string" ? v.endedFor.slice(0, 64) : null
+			endedFor: typeof v.endedFor === "string" ? v.endedFor.slice(0, 64) : null,
+			held: readHeld(v.held)
 		};
 	} catch {
 		return null;
@@ -4998,6 +5032,8 @@ var SPLIT_CSS = `
   .mm-deck { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
 }
 `;
+/** Whether the tab still has a song on (playing or paused mid-way); unknown until a reading says otherwise. */
+var songOn = (b) => b.media ? !stillEnded(b.media) : b.error !== "no_tab" && b.error !== "no_media";
 var songKey = (title = "", artist = "") => `${title.trim().toLowerCase()}|${artist.trim().toLowerCase()}`;
 function statusText(s) {
 	switch (s.phase) {
@@ -5049,6 +5085,9 @@ function MoodMusicPage() {
 	const [browserPick, setBrowserPick] = useState(saved?.browserPick ?? null);
 	const [endedFor, setEndedFor] = useState(saved?.endedFor ?? null);
 	const endedForRef = useRef(endedFor);
+	const [held, setHeld] = useState(saved?.held ?? null);
+	const browserPickRef = useRef(browserPick);
+	browserPickRef.current = browserPick;
 	const stoppedRef = useRef(false);
 	const [restored, setRestored] = useState(false);
 	const scrollRef = useRef(null);
@@ -5111,7 +5150,8 @@ function MoodMusicPage() {
 		scroll: 0,
 		pending,
 		browserPick,
-		endedFor
+		endedFor,
+		held
 	};
 	const viewRef = useRef(view);
 	viewRef.current = view;
@@ -5148,7 +5188,8 @@ function MoodMusicPage() {
 		slotKey,
 		pending,
 		browserPick,
-		endedFor
+		endedFor,
+		held
 	]);
 	useEffect(() => {
 		if (!restored) return;
@@ -5161,6 +5202,11 @@ function MoodMusicPage() {
 		}
 	}, [restored]);
 	const queue = state?.queue ?? [];
+	const queueRef = useRef(queue);
+	queueRef.current = queue;
+	useEffect(() => {
+		if (held && browserPick !== held.id) setHeld(null);
+	}, [browserPick]);
 	const explore = state?.settings?.explore ?? "balanced";
 	const viewOpen = state?.settings?.view_open ?? true;
 	const HostView = hostBrowserView();
@@ -5169,6 +5215,8 @@ function MoodMusicPage() {
 	const crew = useCrewBrowser(slotKey ?? "", !!browserPick || !!pending?.play, () => onEndedRef.current());
 	const crewMediaRef = useRef(crew.media);
 	crewMediaRef.current = crew.media;
+	const crewRef = useRef(crew);
+	crewRef.current = crew;
 	const browserReady = readiness(crew);
 	const browserMode = browserReady === "ready" || browserReady === "unknown";
 	const saveSettings = (patch) => {
@@ -5181,7 +5229,9 @@ function MoodMusicPage() {
 		} : s);
 		moodApi.setSettings(patch).catch((e) => setError(errMessage(e) || "unknown"));
 	};
-	const current = queue.find((p) => p.id === currentId) ?? queue.find((p) => p.feedback !== "skipped") ?? null;
+	const playingOld = !!browserPick && !queue.some((p) => p.id === browserPick) && songOn(crew);
+	const heldNow = playingOld && held?.id === browserPick ? held : null;
+	const current = queue.find((p) => p.id === currentId) ?? heldNow ?? (playingOld ? null : queue.find((p) => p.feedback !== "skipped") ?? null);
 	const knownSongs = useMemo(() => new Set((state?.memory ?? []).filter((m) => m.kind === "known").map((m) => songKey(m.title, m.artist))), [state?.memory]);
 	/** Send one turn to the buddy and start waiting for its reply. */
 	const ask = useCallback(async (message, shown, memoryIds, play, say) => {
@@ -5440,6 +5490,9 @@ function MoodMusicPage() {
 				}
 				if (dropped > 0) setNotice(t("page.dropped", { count: dropped }));
 				const momentId = turn.say ? (await moodApi.addMoment(turn.text)).id : turn.momentId;
+				const playing = browserPickRef.current;
+				const before = queueRef.current.find((p) => p.id === playing);
+				const playsOn = !!playing && (songOn(crewRef.current) || playing === turn.play?.pickId);
 				const { queue: next } = await moodApi.setQueue({
 					source,
 					moment_id: momentId || void 0,
@@ -5447,8 +5500,9 @@ function MoodMusicPage() {
 					picks: checked.picks
 				});
 				queueMemoryRef.current = turn.memoryIds;
+				if (playsOn) setHeld((h) => before ?? h);
 				setState(await moodApi.state());
-				setCurrentId(next[0]?.id ?? null);
+				setCurrentId(playsOn ? playing : next[0]?.id ?? null);
 				if (parsed.action === "play" && next[0]) setAction({
 					kind: "play",
 					pickId: next[0].id
@@ -5474,6 +5528,7 @@ function MoodMusicPage() {
 		const result = parsed?.play;
 		const inTabNow = !result && !!crewMediaRef.current && !crewMediaRef.current.ended;
 		if (result?.played || inTabNow) {
+			browserPickRef.current = play.pickId;
 			setBrowserPick(play.pickId);
 			tellPlaying(play.pickId);
 			const heard = queue.find((p) => p.id === play.pickId);
@@ -5533,6 +5588,11 @@ function MoodMusicPage() {
 		if (ids.length) moodApi.markUsed(ids).catch(() => void 0);
 	}, [moodApi]);
 	const giveFeedback = (pick, verdict) => {
+		if (pick === heldNow) {
+			const first = queue.find((p) => p.feedback !== "skipped");
+			if (verdict === "skipped" && first) playPick(first);
+			return;
+		}
 		run(async () => {
 			const updated = await moodApi.feedback(pick.id, verdict);
 			if (verdict === "liked") markUsed();
@@ -5693,9 +5753,8 @@ function MoodMusicPage() {
 		}
 		endedForRef.current = id;
 		setEndedFor(id);
-		const playable = queue.filter((p) => p.feedback !== "skipped");
-		const at = playable.findIndex((p) => p.id === id);
-		const next = at >= 0 ? playable[at + 1] : void 0;
+		const at = queue.findIndex((p) => p.id === id);
+		const next = queue.slice(at + 1).find((p) => p.feedback !== "skipped");
 		if (!next) return;
 		run(async () => {
 			if (!await moodApi.claimEnded(id)) {
@@ -6371,6 +6430,7 @@ function MoodMusicPage() {
 												onContinuous: setContinuous
 											}),
 											busy: working,
+											fromOldList: !!heldNow && current === heldNow,
 											onLike: () => giveFeedback(current, current.feedback === "liked" ? "" : "liked"),
 											onSkip: () => giveFeedback(current, "skipped"),
 											onMore: () => moreLike(current)

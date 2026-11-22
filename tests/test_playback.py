@@ -349,6 +349,29 @@ def test_an_empty_queue_after_the_next_song_asks_for_more(ctx) -> None:
     assert (song, refill) == (None, False)
 
 
+# ── a queue replaced while a song plays ──
+
+
+def test_a_song_from_a_replaced_list_ends_into_the_new_lists_first_pick(ctx) -> None:
+    queue(ctx)
+    # The person asked for a fresh list while Song 1 still plays: the tab keeps it.
+    new = store(ctx).set_queue([pick(11), pick(12), pick(13), pick(14), pick(15)], source="r1")
+    ctx.chat_slots.reply = played()
+    fire(ctx, ended())
+    sent = ctx.chat_slots.sent
+    assert len(sent) == 1
+    assert 'Play in Crew Browser: "Song 11" - Artist 11' in sent[0]
+    assert store(ctx).snapshot()["playback"]["pick_id"] == new[0]["id"]
+
+
+def test_a_skipped_song_that_ends_goes_on_to_the_one_after_it(ctx) -> None:
+    q = queue(ctx)
+    store(ctx).set_feedback(q[1]["id"], "skipped")
+    store(ctx).set_playback(pick_id=q[1]["id"])
+    song, _ = playback.next_pick(store(ctx).snapshot(), q[1]["id"])
+    assert song is not None and song["id"] == q[2]["id"]
+
+
 # ── an older Kiro Crew ──
 
 
