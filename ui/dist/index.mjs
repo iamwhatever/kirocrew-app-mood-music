@@ -1,7 +1,7 @@
 import * as sdk from "@kirocrew/app-sdk";
 import { activeLocale, fmtDateTime, useAppApi, useChatLauncher, useLanguageGeneration, useNavigate } from "@kirocrew/app-sdk";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { ArrowDown, ArrowDownUp, Brain, Check, ChevronRight, CornerDownRight, ExternalLink, Eye, FileText, Globe, Headphones, Heart, Hourglass, Keyboard, MessageCircleQuestion, MessageSquare, MonitorPlay, MousePointerClick, Music, PanelTop, Pause, Pin, PinOff, Play, RefreshCw, Repeat, Search, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Undo2, Volume2, Waves, WifiOff } from "lucide-react";
+import { ArrowDown, ArrowDownUp, Brain, Check, ChevronRight, CornerDownRight, ExternalLink, Eye, FileText, Globe, Headphones, Heart, Hourglass, Keyboard, ListMusic, MessageCircleQuestion, MessageSquare, MonitorPlay, MousePointerClick, Music, PanelTop, Pause, Pencil, Pin, PinOff, Play, RefreshCw, Repeat, Save, Search, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Undo2, Volume2, Waves, WifiOff, X } from "lucide-react";
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from "@kirocrew/app-sdk/ui";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 // src/i18n.ts
@@ -260,6 +260,44 @@ var CATALOGS = {
 			"delete": "মুছুন",
 			"delete_confirm": "পুরো সারাংশ মুছবেন, আপনার বদলগুলোও?",
 			"delete_yes": "মুছুন"
+		},
+		playlists: {
+			"tab": "প্লেলিস্ট",
+			"save_title": "সংরক্ষণ",
+			"save_queue": "প্লেলিস্ট হিসেবে রাখুন",
+			"saved": "“{{name}}” নামে রাখা হয়েছে",
+			"queue_count": "এখন সারিতে {{count}}টি গান",
+			"then_buddy": "তালিকা শেষ হলে সঙ্গীর কাছে আরও চান",
+			"then_buddy_hint": "বন্ধ: তালিকা শেষ গানে থামে। চালু: সঙ্গী একই মুডের আরও গান বাছে।",
+			"default_name": "প্লেলিস্ট",
+			"error_full": "আপনার {{count}}টি প্লেলিস্ট আছে, এটাই সীমা। নতুন রাখতে একটি মুছুন।",
+			"too_many": "একটি প্লেলিস্টে সর্বোচ্চ {{count}}টি গান থাকে। কিছু টিক সরান।",
+			"error": "করা গেল না ({{code}})।",
+			"liked_title": "পছন্দের গান থেকে ({{count}})",
+			"liked_empty": "পছন্দ করা গান এখানে দেখা যায়।",
+			"filter": "মুড দিয়ে বাছুন",
+			"all_moods": "সব",
+			"pick_shown": "দেখানো সব বাছুন ({{count}})",
+			"pick_none": "সব বাছাই সরান",
+			"name_label": "প্লেলিস্টের নাম",
+			"create": "প্লেলিস্ট বানান ({{count}})",
+			"lists_title": "আপনার প্লেলিস্ট ({{max}}টির মধ্যে {{count}})",
+			"empty_title": "এখনো কোনো প্লেলিস্ট নেই",
+			"empty_body": "সারি রাখুন, বা পছন্দের গান থেকে একটি বানান।",
+			"open": "{{name}} খুলুন",
+			"close": "{{name}} বন্ধ করুন",
+			"save": "সংরক্ষণ",
+			"cancel": "বাতিল",
+			"song_count": "{{count}}টি গান",
+			"playing": "বাজছে",
+			"play": "{{name}} বাজান",
+			"play_short": "বাজান",
+			"rename": "{{name}} নাম বদলান",
+			"delete": "{{name}} মুছুন",
+			"delete_confirm": "“{{name}}” মুছবেন? গানগুলো আপনার স্মৃতিতে থাকবে।",
+			"delete_yes": "মুছুন",
+			"remove_song": "{{song}} সরান",
+			"no_songs": "আর কোনো গান নেই।"
 		}
 	},
 	de: {
@@ -502,6 +540,44 @@ var CATALOGS = {
 			"delete": "Löschen",
 			"delete_confirm": "Die ganze Zusammenfassung löschen, auch deine Änderungen?",
 			"delete_yes": "Löschen"
+		},
+		playlists: {
+			"tab": "Playlists",
+			"save_title": "Speichern",
+			"save_queue": "Als Playlist speichern",
+			"saved": "Gespeichert als „{{name}}“",
+			"queue_count": "Gerade {{count}} Songs in der Warteschlange",
+			"then_buddy": "Wenn eine Liste endet, den Buddy um mehr bitten",
+			"then_buddy_hint": "Aus: Die Liste endet mit dem letzten Song. An: Der Buddy wählt mehr in derselben Stimmung.",
+			"default_name": "Playlist",
+			"error_full": "Du hast {{count}} Playlists, das Maximum. Lösche eine, um eine neue zu speichern.",
+			"too_many": "Eine Playlist fasst höchstens {{count}} Songs. Wähle weniger aus.",
+			"error": "Das ging nicht ({{code}}).",
+			"liked_title": "Aus Songs, die dir gefallen ({{count}})",
+			"liked_empty": "Songs mit „Gefällt mir“ erscheinen hier.",
+			"filter": "Nach Stimmung filtern",
+			"all_moods": "Alle",
+			"pick_shown": "Alle angezeigten wählen ({{count}})",
+			"pick_none": "Auswahl aufheben",
+			"name_label": "Name der Playlist",
+			"create": "Playlist erstellen ({{count}})",
+			"lists_title": "Deine Playlists ({{count}} von {{max}})",
+			"empty_title": "Noch keine Playlists",
+			"empty_body": "Speichere die Warteschlange oder erstelle eine aus Songs, die dir gefallen.",
+			"open": "{{name}} öffnen",
+			"close": "{{name}} schließen",
+			"save": "Speichern",
+			"cancel": "Abbrechen",
+			"song_count": "{{count}} Songs",
+			"playing": "Läuft",
+			"play": "{{name}} abspielen",
+			"play_short": "Abspielen",
+			"rename": "{{name}} umbenennen",
+			"delete": "{{name}} löschen",
+			"delete_confirm": "„{{name}}“ löschen? Die Songs bleiben in deinem Gedächtnis.",
+			"delete_yes": "Löschen",
+			"remove_song": "{{song}} entfernen",
+			"no_songs": "Keine Songs mehr."
 		}
 	},
 	en: {
@@ -744,6 +820,44 @@ var CATALOGS = {
 			"delete": "Delete it",
 			"delete_confirm": "Delete the whole summary, your own edits too?",
 			"delete_yes": "Delete"
+		},
+		playlists: {
+			"tab": "Playlists",
+			"save_title": "Save",
+			"save_queue": "Save as playlist",
+			"saved": "Saved as “{{name}}”",
+			"queue_count": "{{count}} songs in the queue now",
+			"then_buddy": "When a list ends, ask the buddy for more",
+			"then_buddy_hint": "Off: a list stops at its last song. On: the buddy picks more in the same mood.",
+			"default_name": "Playlist",
+			"error_full": "You have {{count}} playlists, the most it keeps. Delete one to save another.",
+			"too_many": "A playlist holds at most {{count}} songs. Untick some.",
+			"error": "Could not do that ({{code}}).",
+			"liked_title": "From songs you liked ({{count}})",
+			"liked_empty": "Like a song and it shows up here.",
+			"filter": "Filter by mood",
+			"all_moods": "All",
+			"pick_shown": "Tick all shown ({{count}})",
+			"pick_none": "Untick all",
+			"name_label": "Playlist name",
+			"create": "Create playlist ({{count}})",
+			"lists_title": "Your playlists ({{count}} of {{max}})",
+			"empty_title": "No playlists yet",
+			"empty_body": "Save the queue, or make one from songs you liked.",
+			"open": "Open {{name}}",
+			"close": "Close {{name}}",
+			"save": "Save",
+			"cancel": "Cancel",
+			"song_count": "{{count}} songs",
+			"playing": "Playing",
+			"play": "Play {{name}}",
+			"play_short": "Play",
+			"rename": "Rename {{name}}",
+			"delete": "Delete {{name}}",
+			"delete_confirm": "Delete “{{name}}”? Its songs stay in your memory.",
+			"delete_yes": "Delete",
+			"remove_song": "Remove {{song}}",
+			"no_songs": "No songs left."
 		}
 	},
 	es: {
@@ -986,6 +1100,44 @@ var CATALOGS = {
 			"delete": "Borrarlo",
 			"delete_confirm": "¿Borrar todo el resumen, también tus cambios?",
 			"delete_yes": "Borrar"
+		},
+		playlists: {
+			"tab": "Listas",
+			"save_title": "Guardar",
+			"save_queue": "Guardar como lista",
+			"saved": "Guardada como «{{name}}»",
+			"queue_count": "Ahora hay {{count}} canciones en la cola",
+			"then_buddy": "Cuando una lista termine, pedir más al compañero",
+			"then_buddy_hint": "Desactivado: la lista se detiene en su última canción. Activado: el compañero elige más con el mismo ánimo.",
+			"default_name": "Lista",
+			"error_full": "Tienes {{count}} listas, el máximo. Borra una para guardar otra.",
+			"too_many": "Una lista admite como máximo {{count}} canciones. Desmarca algunas.",
+			"error": "No se pudo hacer ({{code}}).",
+			"liked_title": "De las canciones que te gustaron ({{count}})",
+			"liked_empty": "Las canciones con Me gusta aparecen aquí.",
+			"filter": "Filtrar por ánimo",
+			"all_moods": "Todas",
+			"pick_shown": "Marcar todas las mostradas ({{count}})",
+			"pick_none": "Desmarcar todas",
+			"name_label": "Nombre de la lista",
+			"create": "Crear lista ({{count}})",
+			"lists_title": "Tus listas ({{count}} de {{max}})",
+			"empty_title": "Aún no hay listas",
+			"empty_body": "Guarda la cola o crea una con canciones que te gustaron.",
+			"open": "Abrir {{name}}",
+			"close": "Cerrar {{name}}",
+			"save": "Guardar",
+			"cancel": "Cancelar",
+			"song_count": "{{count}} canciones",
+			"playing": "Sonando",
+			"play": "Reproducir {{name}}",
+			"play_short": "Reproducir",
+			"rename": "Renombrar {{name}}",
+			"delete": "Borrar {{name}}",
+			"delete_confirm": "¿Borrar «{{name}}»? Sus canciones siguen en tu memoria.",
+			"delete_yes": "Borrar",
+			"remove_song": "Quitar {{song}}",
+			"no_songs": "No quedan canciones."
 		}
 	},
 	fr: {
@@ -1228,6 +1380,44 @@ var CATALOGS = {
 			"delete": "Le supprimer",
 			"delete_confirm": "Supprimer tout le résumé, tes modifications aussi ?",
 			"delete_yes": "Supprimer"
+		},
+		playlists: {
+			"tab": "Playlists",
+			"save_title": "Enregistrer",
+			"save_queue": "Enregistrer en playlist",
+			"saved": "Enregistrée sous « {{name}} »",
+			"queue_count": "{{count}} chansons dans la file en ce moment",
+			"then_buddy": "Quand une liste se termine, demander plus au compagnon",
+			"then_buddy_hint": "Désactivé : la liste s’arrête à sa dernière chanson. Activé : le compagnon en choisit d’autres dans la même humeur.",
+			"default_name": "Playlist",
+			"error_full": "Tu as {{count}} playlists, le maximum. Supprimes-en une pour en enregistrer une autre.",
+			"too_many": "Une playlist contient au plus {{count}} chansons. Décoche-en quelques-unes.",
+			"error": "Impossible ({{code}}).",
+			"liked_title": "Parmi les chansons aimées ({{count}})",
+			"liked_empty": "Les chansons que tu aimes apparaissent ici.",
+			"filter": "Filtrer par humeur",
+			"all_moods": "Toutes",
+			"pick_shown": "Cocher toutes celles affichées ({{count}})",
+			"pick_none": "Tout décocher",
+			"name_label": "Nom de la playlist",
+			"create": "Créer la playlist ({{count}})",
+			"lists_title": "Tes playlists ({{count}} sur {{max}})",
+			"empty_title": "Pas encore de playlist",
+			"empty_body": "Enregistre la file, ou crées-en une à partir des chansons aimées.",
+			"open": "Ouvrir {{name}}",
+			"close": "Fermer {{name}}",
+			"save": "Enregistrer",
+			"cancel": "Annuler",
+			"song_count": "{{count}} chansons",
+			"playing": "En lecture",
+			"play": "Lire {{name}}",
+			"play_short": "Lire",
+			"rename": "Renommer {{name}}",
+			"delete": "Supprimer {{name}}",
+			"delete_confirm": "Supprimer « {{name}} » ? Ses chansons restent dans ta mémoire.",
+			"delete_yes": "Supprimer",
+			"remove_song": "Retirer {{song}}",
+			"no_songs": "Plus aucune chanson."
 		}
 	},
 	hi: {
@@ -1470,6 +1660,44 @@ var CATALOGS = {
 			"delete": "हटाएँ",
 			"delete_confirm": "पूरा सार हटाएँ, आपके बदलाव भी?",
 			"delete_yes": "हटाएँ"
+		},
+		playlists: {
+			"tab": "प्लेलिस्ट",
+			"save_title": "सहेजें",
+			"save_queue": "प्लेलिस्ट के रूप में सहेजें",
+			"saved": "“{{name}}” के रूप में सहेजा गया",
+			"queue_count": "अभी कतार में {{count}} गाने",
+			"then_buddy": "सूची खत्म होने पर साथी से और माँगें",
+			"then_buddy_hint": "बंद: सूची आखिरी गाने पर रुक जाती है। चालू: साथी उसी मूड के और गाने चुनता है।",
+			"default_name": "प्लेलिस्ट",
+			"error_full": "आपके पास {{count}} प्लेलिस्ट हैं, यही सीमा है। नई सहेजने के लिए एक हटाएँ।",
+			"too_many": "एक प्लेलिस्ट में ज़्यादा से ज़्यादा {{count}} गाने होते हैं। कुछ का निशान हटाएँ।",
+			"error": "यह नहीं हो सका ({{code}})।",
+			"liked_title": "पसंद किए गानों से ({{count}})",
+			"liked_empty": "पसंद किए गाने यहाँ दिखते हैं।",
+			"filter": "मूड से छाँटें",
+			"all_moods": "सभी",
+			"pick_shown": "दिख रहे सभी चुनें ({{count}})",
+			"pick_none": "सभी का चुनाव हटाएँ",
+			"name_label": "प्लेलिस्ट का नाम",
+			"create": "प्लेलिस्ट बनाएँ ({{count}})",
+			"lists_title": "आपकी प्लेलिस्ट ({{max}} में से {{count}})",
+			"empty_title": "अभी कोई प्लेलिस्ट नहीं",
+			"empty_body": "कतार सहेजें, या पसंद किए गानों से एक बनाएँ।",
+			"open": "{{name}} खोलें",
+			"close": "{{name}} बंद करें",
+			"save": "सहेजें",
+			"cancel": "रद्द करें",
+			"song_count": "{{count}} गाने",
+			"playing": "चल रहा है",
+			"play": "{{name}} चलाएँ",
+			"play_short": "चलाएँ",
+			"rename": "{{name}} का नाम बदलें",
+			"delete": "{{name}} हटाएँ",
+			"delete_confirm": "“{{name}}” हटाएँ? गाने आपकी याद में बने रहेंगे।",
+			"delete_yes": "हटाएँ",
+			"remove_song": "{{song}} निकालें",
+			"no_songs": "कोई गाना नहीं बचा।"
 		}
 	},
 	it: {
@@ -1712,6 +1940,44 @@ var CATALOGS = {
 			"delete": "Eliminalo",
 			"delete_confirm": "Eliminare tutto il riepilogo, anche le tue modifiche?",
 			"delete_yes": "Elimina"
+		},
+		playlists: {
+			"tab": "Playlist",
+			"save_title": "Salva",
+			"save_queue": "Salva come playlist",
+			"saved": "Salvata come «{{name}}»",
+			"queue_count": "Ora ci sono {{count}} brani in coda",
+			"then_buddy": "Quando una lista finisce, chiedi altro al compagno",
+			"then_buddy_hint": "No: la lista si ferma all’ultimo brano. Sì: il compagno ne sceglie altri con lo stesso umore.",
+			"default_name": "Playlist",
+			"error_full": "Hai {{count}} playlist, il massimo. Eliminane una per salvarne un’altra.",
+			"too_many": "Una playlist contiene al massimo {{count}} brani. Togli qualche spunta.",
+			"error": "Non è stato possibile ({{code}}).",
+			"liked_title": "Dai brani che ti piacciono ({{count}})",
+			"liked_empty": "I brani con Mi piace compaiono qui.",
+			"filter": "Filtra per umore",
+			"all_moods": "Tutti",
+			"pick_shown": "Seleziona tutti quelli mostrati ({{count}})",
+			"pick_none": "Deseleziona tutti",
+			"name_label": "Nome della playlist",
+			"create": "Crea playlist ({{count}})",
+			"lists_title": "Le tue playlist ({{count}} di {{max}})",
+			"empty_title": "Ancora nessuna playlist",
+			"empty_body": "Salva la coda, o creane una dai brani che ti piacciono.",
+			"open": "Apri {{name}}",
+			"close": "Chiudi {{name}}",
+			"save": "Salva",
+			"cancel": "Annulla",
+			"song_count": "{{count}} brani",
+			"playing": "In riproduzione",
+			"play": "Riproduci {{name}}",
+			"play_short": "Riproduci",
+			"rename": "Rinomina {{name}}",
+			"delete": "Elimina {{name}}",
+			"delete_confirm": "Eliminare «{{name}}»? I brani restano nella tua memoria.",
+			"delete_yes": "Elimina",
+			"remove_song": "Togli {{song}}",
+			"no_songs": "Nessun brano rimasto."
 		}
 	},
 	ja: {
@@ -1954,6 +2220,44 @@ var CATALOGS = {
 			"delete": "まとめを削除",
 			"delete_confirm": "まとめを全部削除しますか？あなたの編集も消えます。",
 			"delete_yes": "削除"
+		},
+		playlists: {
+			"tab": "プレイリスト",
+			"save_title": "保存",
+			"save_queue": "プレイリストに保存",
+			"saved": "「{{name}}」として保存しました",
+			"queue_count": "今キューに {{count}} 曲",
+			"then_buddy": "リストが終わったらバディにもっと頼む",
+			"then_buddy_hint": "オフ：最後の曲で止まります。オン：同じ気分の曲をバディが選びます。",
+			"default_name": "プレイリスト",
+			"error_full": "プレイリストは {{count}} 個までです。1 つ削除してから保存してください。",
+			"too_many": "1 つのプレイリストは最大 {{count}} 曲です。チェックを減らしてください。",
+			"error": "できませんでした（{{code}}）。",
+			"liked_title": "いいねした曲から（{{count}}）",
+			"liked_empty": "いいねした曲がここに出ます。",
+			"filter": "気分で絞り込む",
+			"all_moods": "すべて",
+			"pick_shown": "表示中をすべて選択（{{count}}）",
+			"pick_none": "選択をすべて外す",
+			"name_label": "プレイリスト名",
+			"create": "プレイリストを作成（{{count}}）",
+			"lists_title": "マイプレイリスト（{{count}} / {{max}}）",
+			"empty_title": "まだプレイリストはありません",
+			"empty_body": "キューを保存するか、いいねした曲から作りましょう。",
+			"open": "{{name}} を開く",
+			"close": "{{name}} を閉じる",
+			"save": "保存",
+			"cancel": "キャンセル",
+			"song_count": "{{count}} 曲",
+			"playing": "再生中",
+			"play": "{{name}} を再生",
+			"play_short": "再生",
+			"rename": "{{name}} の名前を変更",
+			"delete": "{{name}} を削除",
+			"delete_confirm": "「{{name}}」を削除しますか？曲はメモリーに残ります。",
+			"delete_yes": "削除",
+			"remove_song": "{{song}} を外す",
+			"no_songs": "曲がありません。"
 		}
 	},
 	ko: {
@@ -2196,6 +2500,44 @@ var CATALOGS = {
 			"delete": "요약 삭제",
 			"delete_confirm": "요약 전체를 지울까요? 직접 수정한 줄도 지워져요.",
 			"delete_yes": "삭제"
+		},
+		playlists: {
+			"tab": "플레이리스트",
+			"save_title": "저장",
+			"save_queue": "플레이리스트로 저장",
+			"saved": "“{{name}}”(으)로 저장했어요",
+			"queue_count": "지금 대기열에 {{count}}곡",
+			"then_buddy": "목록이 끝나면 버디에게 더 부탁하기",
+			"then_buddy_hint": "끄기: 마지막 곡에서 멈춰요. 켜기: 같은 기분의 곡을 버디가 더 골라요.",
+			"default_name": "플레이리스트",
+			"error_full": "플레이리스트는 최대 {{count}}개예요. 하나를 지운 뒤 저장하세요.",
+			"too_many": "플레이리스트 하나에는 최대 {{count}}곡이에요. 선택을 줄여 주세요.",
+			"error": "하지 못했어요({{code}}).",
+			"liked_title": "좋아요한 노래에서 ({{count}})",
+			"liked_empty": "좋아요한 노래가 여기에 나와요.",
+			"filter": "기분으로 거르기",
+			"all_moods": "전체",
+			"pick_shown": "보이는 곡 모두 선택 ({{count}})",
+			"pick_none": "선택 모두 해제",
+			"name_label": "플레이리스트 이름",
+			"create": "플레이리스트 만들기 ({{count}})",
+			"lists_title": "내 플레이리스트 ({{count}} / {{max}})",
+			"empty_title": "아직 플레이리스트가 없어요",
+			"empty_body": "대기열을 저장하거나 좋아요한 노래로 만들어 보세요.",
+			"open": "{{name}} 열기",
+			"close": "{{name}} 닫기",
+			"save": "저장",
+			"cancel": "취소",
+			"song_count": "{{count}}곡",
+			"playing": "재생 중",
+			"play": "{{name}} 재생",
+			"play_short": "재생",
+			"rename": "{{name}} 이름 바꾸기",
+			"delete": "{{name}} 삭제",
+			"delete_confirm": "“{{name}}”을(를) 삭제할까요? 노래는 기억에 남아요.",
+			"delete_yes": "삭제",
+			"remove_song": "{{song}} 빼기",
+			"no_songs": "노래가 없어요."
 		}
 	},
 	pt: {
@@ -2438,6 +2780,44 @@ var CATALOGS = {
 			"delete": "Apagar",
 			"delete_confirm": "Apagar o resumo todo, até suas edições?",
 			"delete_yes": "Apagar"
+		},
+		playlists: {
+			"tab": "Playlists",
+			"save_title": "Salvar",
+			"save_queue": "Salvar como playlist",
+			"saved": "Salva como “{{name}}”",
+			"queue_count": "{{count}} músicas na fila agora",
+			"then_buddy": "Quando uma lista acabar, pedir mais ao parceiro",
+			"then_buddy_hint": "Desligado: a lista para na última música. Ligado: o parceiro escolhe mais no mesmo humor.",
+			"default_name": "Playlist",
+			"error_full": "Você tem {{count}} playlists, o máximo. Apague uma para salvar outra.",
+			"too_many": "Uma playlist tem no máximo {{count}} músicas. Desmarque algumas.",
+			"error": "Não deu certo ({{code}}).",
+			"liked_title": "Das músicas que você curtiu ({{count}})",
+			"liked_empty": "As músicas curtidas aparecem aqui.",
+			"filter": "Filtrar por humor",
+			"all_moods": "Todas",
+			"pick_shown": "Marcar todas as mostradas ({{count}})",
+			"pick_none": "Desmarcar todas",
+			"name_label": "Nome da playlist",
+			"create": "Criar playlist ({{count}})",
+			"lists_title": "Suas playlists ({{count}} de {{max}})",
+			"empty_title": "Nenhuma playlist ainda",
+			"empty_body": "Salve a fila ou crie uma com as músicas que você curtiu.",
+			"open": "Abrir {{name}}",
+			"close": "Fechar {{name}}",
+			"save": "Salvar",
+			"cancel": "Cancelar",
+			"song_count": "{{count}} músicas",
+			"playing": "Tocando",
+			"play": "Tocar {{name}}",
+			"play_short": "Tocar",
+			"rename": "Renomear {{name}}",
+			"delete": "Apagar {{name}}",
+			"delete_confirm": "Apagar “{{name}}”? As músicas continuam na sua memória.",
+			"delete_yes": "Apagar",
+			"remove_song": "Tirar {{song}}",
+			"no_songs": "Não há mais músicas."
 		}
 	},
 	ru: {
@@ -2680,6 +3060,44 @@ var CATALOGS = {
 			"delete": "Удалить",
 			"delete_confirm": "Удалить всё описание, и ваши правки тоже?",
 			"delete_yes": "Удалить"
+		},
+		playlists: {
+			"tab": "Плейлисты",
+			"save_title": "Сохранить",
+			"save_queue": "Сохранить как плейлист",
+			"saved": "Сохранено как «{{name}}»",
+			"queue_count": "Сейчас в очереди песен: {{count}}",
+			"then_buddy": "Когда список закончится, попросить напарника о новых",
+			"then_buddy_hint": "Выкл.: список останавливается на последней песне. Вкл.: напарник подберёт ещё в том же настроении.",
+			"default_name": "Плейлист",
+			"error_full": "У вас {{count}} плейлистов — это предел. Удалите один, чтобы сохранить новый.",
+			"too_many": "В плейлисте не больше {{count}} песен. Снимите часть отметок.",
+			"error": "Не получилось ({{code}}).",
+			"liked_title": "Из понравившихся песен ({{count}})",
+			"liked_empty": "Здесь появятся песни, отмеченные «Нравится».",
+			"filter": "Фильтр по настроению",
+			"all_moods": "Все",
+			"pick_shown": "Отметить все показанные ({{count}})",
+			"pick_none": "Снять все отметки",
+			"name_label": "Название плейлиста",
+			"create": "Создать плейлист ({{count}})",
+			"lists_title": "Ваши плейлисты ({{count}} из {{max}})",
+			"empty_title": "Плейлистов пока нет",
+			"empty_body": "Сохраните очередь или соберите плейлист из понравившихся песен.",
+			"open": "Открыть {{name}}",
+			"close": "Свернуть {{name}}",
+			"save": "Сохранить",
+			"cancel": "Отмена",
+			"song_count": "Песен: {{count}}",
+			"playing": "Играет",
+			"play": "Включить {{name}}",
+			"play_short": "Включить",
+			"rename": "Переименовать {{name}}",
+			"delete": "Удалить {{name}}",
+			"delete_confirm": "Удалить «{{name}}»? Песни останутся в памяти.",
+			"delete_yes": "Удалить",
+			"remove_song": "Убрать {{song}}",
+			"no_songs": "Песен не осталось."
 		}
 	},
 	"zh-CN": {
@@ -2922,6 +3340,44 @@ var CATALOGS = {
 			"delete": "删掉小结",
 			"delete_confirm": "删掉整个小结，连你改过的也删？",
 			"delete_yes": "删掉"
+		},
+		playlists: {
+			"tab": "歌单",
+			"save_title": "保存",
+			"save_queue": "存为歌单",
+			"saved": "已存为“{{name}}”",
+			"queue_count": "队列里现在有 {{count}} 首",
+			"then_buddy": "歌单放完后，让助手再找一些",
+			"then_buddy_hint": "关：放完最后一首就停。开：助手按同样的心情再挑几首。",
+			"default_name": "歌单",
+			"error_full": "已有 {{count}} 个歌单，到上限了。删掉一个才能再存。",
+			"too_many": "一个歌单最多 {{count}} 首。请少勾几首。",
+			"error": "没能完成（{{code}}）。",
+			"liked_title": "从喜欢的歌里选（{{count}}）",
+			"liked_empty": "点过喜欢的歌会出现在这里。",
+			"filter": "按心情筛选",
+			"all_moods": "全部",
+			"pick_shown": "勾选显示的全部（{{count}}）",
+			"pick_none": "全部取消",
+			"name_label": "歌单名",
+			"create": "建歌单（{{count}}）",
+			"lists_title": "我的歌单（{{count}} / {{max}}）",
+			"empty_title": "还没有歌单",
+			"empty_body": "把队列存下来，或从喜欢的歌里建一个。",
+			"open": "打开 {{name}}",
+			"close": "收起 {{name}}",
+			"save": "保存",
+			"cancel": "取消",
+			"song_count": "{{count}} 首",
+			"playing": "正在播放",
+			"play": "播放 {{name}}",
+			"play_short": "播放",
+			"rename": "重命名 {{name}}",
+			"delete": "删除 {{name}}",
+			"delete_confirm": "删除“{{name}}”？歌还留在记忆里。",
+			"delete_yes": "删除",
+			"remove_song": "移除 {{song}}",
+			"no_songs": "没有歌了。"
 		}
 	}
 };
@@ -3486,6 +3942,22 @@ function createMoodApi(api) {
 		deleteProfile: () => api.del(`${BASE}/profile`),
 		/** Fold the profile again now, in the background. */
 		runProfile: () => api.post(`${BASE}/profile/run`),
+		playlists: () => api.get(`${BASE}/playlists`),
+		createPlaylist: (name, songs) => api.post(`${BASE}/playlists`, {
+			name,
+			songs
+		}),
+		renamePlaylist: (id, name) => api.put(`${BASE}/playlists/${encodeURIComponent(id)}`, { name }),
+		deletePlaylist: (id) => api.del(`${BASE}/playlists/${encodeURIComponent(id)}`),
+		removePlaylistSong: (id, songId) => api.del(`${BASE}/playlists/${encodeURIComponent(id)}/songs/${encodeURIComponent(songId)}`),
+		/** Replace the queue with the list's first part. */
+		playPlaylist: (id) => api.post(`${BASE}/playlists/${encodeURIComponent(id)}/play`),
+		/**
+		* Before asking the buddy for more: a playing list adds its next part after
+		* *pickId* instead. `active` false: no list plays, refill as before.
+		*/
+		playlistNext: (pickId) => api.post(`${BASE}/playlists-next`, { pick_id: pickId }),
+		setPlaylistThenBuddy: (on) => api.put(`${BASE}/playlists-settings`, { then_buddy: on }),
 		openSlot,
 		getSlot: (key) => api.get(`/api/chat/slots/${encodeURIComponent(key)}`),
 		/** Answer one tool approval once: never Trust, which would approve every later call too. */
@@ -3987,7 +4459,7 @@ var KINDS = [
 	"mood"
 ];
 var kindName = (kind) => KINDS.includes(kind) ? t(`memory.kind_${kind}`) : kind;
-var errText = (e) => {
+var errText$1 = (e) => {
 	const body = e?.body;
 	if (typeof body === "string" && body.includes("memory_full")) {
 		let kind = "";
@@ -4056,7 +4528,7 @@ function MemoryTab({ memory, api, onChanged, profile = null, room, taste }) {
 			await work();
 			await onChanged();
 		} catch (e) {
-			setError(errText(e));
+			setError(errText$1(e));
 		} finally {
 			setBusy(false);
 		}
@@ -4976,6 +5448,530 @@ function NowPlaying({ pick, busy, onLike, onSkip, onMore, stage, fromOldList = f
 		]
 	});
 }
+/** The backend's caps, until the first read says otherwise. */
+var LIMITS = {
+	lists: 50,
+	songs: 200
+};
+var key = (title = "", artist = "") => `${title.trim().toLowerCase()}|${artist.trim().toLowerCase()}`;
+/**
+* Every liked song in memory, newest first. A song still in the queue keeps its
+* link. Its mood words are the tags its pick carried (feedback) and the moods of
+* the moments it was picked for. With no link, it plays on the site that last
+* worked (`play_steps`), else YouTube: the buddy searches that site for it.
+*/
+function likedSongs(state) {
+	if (!state) return [];
+	const steps = state.play_steps ?? {};
+	const site = (steps.bilibili?.updated_at ?? -1) > (steps.youtube?.updated_at ?? -1) ? "bilibili" : "youtube";
+	const queued = new Map(state.queue.map((p) => [key(p.title, p.artist), p]));
+	const tags = /* @__PURE__ */ new Map();
+	const addTags = (k, words) => {
+		const set = tags.get(k) ?? /* @__PURE__ */ new Set();
+		for (const w of words) if (w.trim()) set.add(w.trim());
+		tags.set(k, set);
+	};
+	for (const f of state.feedback) addTags(key(f.title, f.artist), f.tags ?? []);
+	for (const m of state.moments) for (const s of m.songs ?? []) addTags(key(s.title, s.artist), m.tags ?? []);
+	const out = [];
+	const seen = /* @__PURE__ */ new Set();
+	for (const m of state.memory) {
+		if (m.kind !== "liked" || !m.title) continue;
+		const k = key(m.title, m.artist);
+		if (seen.has(k)) continue;
+		seen.add(k);
+		const q = queued.get(k);
+		out.push({
+			key: k,
+			title: m.title,
+			artist: m.artist ?? "",
+			tags: [...tags.get(k) ?? []].slice(0, 8),
+			source: q?.source ?? site,
+			...q?.video_id ? { video_id: q.video_id } : {},
+			...q?.url ? { url: q.url } : {}
+		});
+	}
+	return out;
+}
+/** "平静 · Nov 22": the newest moment's mood words and today's date. */
+function defaultName(moodTags, now = /* @__PURE__ */ new Date()) {
+	const date = new Intl.DateTimeFormat(activeLocale(), {
+		month: "short",
+		day: "numeric"
+	}).format(now);
+	return `${moodTags.filter((w) => w.trim()).slice(0, 2).join(" · ") || t("playlists.default_name")} · ${date}`.slice(0, 80);
+}
+/** A queued pick as a song to save: its queue id and feedback stay behind. */
+function fromQueue(p) {
+	return {
+		title: p.title,
+		artist: p.artist,
+		why: p.why,
+		tags: p.tags,
+		source: p.source,
+		...p.video_id ? { video_id: p.video_id } : {},
+		...p.url ? { url: p.url } : {}
+	};
+}
+function errText(e, limits = LIMITS) {
+	const body = e?.body;
+	if (typeof body === "string") {
+		if (body.includes("playlists_full")) return t("playlists.error_full", { count: limits.lists });
+		if (body.includes("too_many_songs")) return t("playlists.too_many", { count: limits.songs });
+	}
+	return t("playlists.error", { code: e instanceof Error ? e.message : "unknown" });
+}
+/** Save the queue on screen as a list, in one press, under the default name. */
+function SaveQueueButton({ api, queue, moodTags, onSaved }) {
+	const [busy, setBusy] = useState(false);
+	const [said, setSaid] = useState(null);
+	const save = async () => {
+		setBusy(true);
+		setSaid(null);
+		const name = defaultName(moodTags);
+		try {
+			await api.createPlaylist(name, queue.map(fromQueue));
+			setSaid({
+				ok: true,
+				text: t("playlists.saved", { name })
+			});
+			onSaved?.();
+		} catch (e) {
+			setSaid({
+				ok: false,
+				text: errText(e)
+			});
+		} finally {
+			setBusy(false);
+		}
+	};
+	return /* @__PURE__ */ jsxs("span", {
+		className: "inline-flex flex-wrap items-center gap-2 normal-case tracking-normal",
+		children: [/* @__PURE__ */ jsxs("button", {
+			type: "button",
+			onClick: () => void save(),
+			disabled: busy || queue.length === 0,
+			className: "mm-press inline-flex items-center gap-1 rounded-full border border-[var(--border)] px-2 py-0.5 text-[11px] font-medium text-[var(--text)] hover:bg-[var(--bg-hover)] disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]",
+			"data-testid": "mood-save-queue",
+			children: [/* @__PURE__ */ jsx(Save, {
+				size: 12,
+				"aria-hidden": "true"
+			}), t("playlists.save_queue")]
+		}), said && /* @__PURE__ */ jsx("span", {
+			role: "status",
+			className: `text-[11px] font-normal ${said.ok ? "text-[var(--muted)]" : "text-[var(--danger,var(--accent))]"}`,
+			"data-testid": "mood-save-queue-status",
+			children: said.text
+		})]
+	});
+}
+function PlaylistsTab({ api, state, busy, onPlay }) {
+	const [data, setData] = useState(null);
+	const [working, setWorking] = useState(false);
+	const [error, setError] = useState(null);
+	const [open, setOpen] = useState(null);
+	const [renaming, setRenaming] = useState(null);
+	const [confirmDelete, setConfirmDelete] = useState(null);
+	const [mood, setMood] = useState(null);
+	const [picked, setPicked] = useState(/* @__PURE__ */ new Set());
+	const moodTags = state?.moments?.[0]?.tags ?? [];
+	const [name, setName] = useState("");
+	const limits = data?.limits ?? LIMITS;
+	const load = useCallback(async () => {
+		setData(await api.playlists());
+	}, [api]);
+	useEffect(() => {
+		load().catch((e) => setError(errText(e)));
+	}, [load]);
+	const act = async (work) => {
+		setWorking(true);
+		setError(null);
+		try {
+			await work();
+			await load();
+		} catch (e) {
+			setError(errText(e, limits));
+		} finally {
+			setWorking(false);
+		}
+	};
+	const liked = useMemo(() => likedSongs(state), [state]);
+	const moods = useMemo(() => [...new Set(liked.flatMap((s) => s.tags))], [liked]);
+	const shown = mood ? liked.filter((s) => s.tags.includes(mood)) : liked;
+	const chosen = liked.filter((s) => picked.has(s.key));
+	const lists = data?.lists ?? [];
+	const full = lists.length >= limits.lists;
+	const tooMany = chosen.length > limits.songs;
+	const toggle = (k) => setPicked((p) => {
+		const next = new Set(p);
+		if (next.has(k)) next.delete(k);
+		else next.add(k);
+		return next;
+	});
+	const create = (e) => {
+		e.preventDefault();
+		if (!chosen.length || tooMany || full) return;
+		const listName = name.trim() || defaultName(mood ? [mood] : moodTags);
+		act(async () => {
+			await api.createPlaylist(listName, chosen.map(({ key: _k, ...song }) => song));
+			setPicked(/* @__PURE__ */ new Set());
+			setName("");
+		});
+	};
+	const saveRename = (e) => {
+		e.preventDefault();
+		if (!renaming || !renaming.name.trim()) return;
+		const { id, name: next } = renaming;
+		act(async () => {
+			await api.renamePlaylist(id, next.trim());
+			setRenaming(null);
+		});
+	};
+	const heading = "text-xs font-semibold uppercase tracking-wide text-[var(--muted)]";
+	const chipClass = (on) => `mm-press rounded-full border px-3 py-1 text-xs transition-colors ${on ? "border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold text-[var(--accent)]" : "border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-hover)]"}`;
+	const inputClass = "min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]";
+	return /* @__PURE__ */ jsxs("div", {
+		className: "flex flex-col gap-4",
+		"data-testid": "mood-playlists",
+		children: [
+			/* @__PURE__ */ jsxs("section", {
+				"aria-labelledby": "pl-save",
+				className: "flex flex-col gap-3 rounded-2xl border border-[var(--border)] p-4",
+				style: CARD_STYLE,
+				children: [
+					/* @__PURE__ */ jsx("h3", {
+						id: "pl-save",
+						className: heading,
+						children: t("playlists.save_title")
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-wrap items-center gap-2",
+						children: [/* @__PURE__ */ jsx(SaveQueueButton, {
+							api,
+							queue: state?.queue ?? [],
+							moodTags,
+							onSaved: () => void load()
+						}), /* @__PURE__ */ jsx("span", {
+							className: "text-xs text-[var(--muted)]",
+							children: t("playlists.queue_count", { count: state?.queue.length ?? 0 })
+						})]
+					}),
+					/* @__PURE__ */ jsxs("label", {
+						className: "flex items-start gap-2 text-sm text-[var(--text)]",
+						children: [/* @__PURE__ */ jsx("input", {
+							type: "checkbox",
+							className: "mt-0.5",
+							checked: data?.then_buddy ?? false,
+							disabled: !data || working,
+							onChange: (e) => {
+								const on = e.target.checked;
+								act(() => api.setPlaylistThenBuddy(on));
+							},
+							"data-testid": "pl-then-buddy"
+						}), /* @__PURE__ */ jsxs("span", { children: [t("playlists.then_buddy"), /* @__PURE__ */ jsx("span", {
+							className: "block text-xs text-[var(--muted)]",
+							children: t("playlists.then_buddy_hint")
+						})] })]
+					}),
+					full && /* @__PURE__ */ jsx("p", {
+						role: "status",
+						className: "text-xs text-[var(--accent)]",
+						"data-testid": "pl-full",
+						children: t("playlists.error_full", { count: limits.lists })
+					}),
+					/* @__PURE__ */ jsx(ErrorNotice, { message: error })
+				]
+			}),
+			/* @__PURE__ */ jsxs("form", {
+				onSubmit: create,
+				"aria-labelledby": "pl-liked",
+				className: "flex flex-col gap-3 rounded-2xl border border-[var(--border)] p-4",
+				style: CARD_STYLE,
+				"data-testid": "pl-from-liked",
+				children: [/* @__PURE__ */ jsx("h3", {
+					id: "pl-liked",
+					className: heading,
+					children: t("playlists.liked_title", { count: liked.length })
+				}), liked.length === 0 ? /* @__PURE__ */ jsx("p", {
+					className: "text-sm text-[var(--muted)]",
+					children: t("playlists.liked_empty")
+				}) : /* @__PURE__ */ jsxs(Fragment, { children: [
+					moods.length > 0 && /* @__PURE__ */ jsxs("div", {
+						role: "group",
+						"aria-label": t("playlists.filter"),
+						className: "flex flex-wrap gap-2",
+						children: [/* @__PURE__ */ jsx("button", {
+							type: "button",
+							"aria-pressed": mood === null,
+							onClick: () => setMood(null),
+							className: chipClass(mood === null),
+							children: t("playlists.all_moods")
+						}), moods.map((m) => /* @__PURE__ */ jsx("button", {
+							type: "button",
+							"aria-pressed": mood === m,
+							onClick: () => setMood(mood === m ? null : m),
+							className: chipClass(mood === m),
+							children: m
+						}, m))]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-wrap gap-2",
+						children: [/* @__PURE__ */ jsx(Btn, {
+							type: "button",
+							onClick: () => setPicked((p) => /* @__PURE__ */ new Set([...p, ...shown.map((s) => s.key)])),
+							children: t("playlists.pick_shown", { count: shown.length })
+						}), /* @__PURE__ */ jsx(Btn, {
+							type: "button",
+							disabled: picked.size === 0,
+							onClick: () => setPicked(/* @__PURE__ */ new Set()),
+							children: t("playlists.pick_none")
+						})]
+					}),
+					/* @__PURE__ */ jsx("ul", {
+						className: "flex max-h-72 flex-col gap-1 overflow-y-auto pr-1",
+						"data-testid": "pl-liked-list",
+						children: shown.map((s) => /* @__PURE__ */ jsx("li", { children: /* @__PURE__ */ jsxs("label", {
+							className: "flex items-center gap-2 rounded-lg px-2 py-1 text-sm text-[var(--text)] hover:bg-[var(--bg-hover)]",
+							children: [
+								/* @__PURE__ */ jsx("input", {
+									type: "checkbox",
+									checked: picked.has(s.key),
+									onChange: () => toggle(s.key)
+								}),
+								/* @__PURE__ */ jsx("span", {
+									className: "min-w-0 flex-1 truncate",
+									children: s.artist ? `${s.title} — ${s.artist}` : s.title
+								}),
+								s.tags.length > 0 && /* @__PURE__ */ jsx("span", {
+									className: "shrink-0 text-[11px] text-[var(--muted)]",
+									children: s.tags.slice(0, 2).join(" · ")
+								})
+							]
+						}) }, s.key))
+					}),
+					/* @__PURE__ */ jsx("label", {
+						htmlFor: "pl-name",
+						className: "sr-only",
+						children: t("playlists.name_label")
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-wrap gap-2",
+						children: [/* @__PURE__ */ jsx("input", {
+							id: "pl-name",
+							value: name,
+							onChange: (e) => setName(e.target.value),
+							maxLength: 80,
+							placeholder: defaultName(mood ? [mood] : moodTags),
+							className: inputClass
+						}), /* @__PURE__ */ jsx(Btn, {
+							type: "submit",
+							primary: true,
+							disabled: working || !chosen.length || tooMany || full,
+							children: t("playlists.create", { count: chosen.length })
+						})]
+					}),
+					tooMany && /* @__PURE__ */ jsx("p", {
+						role: "status",
+						className: "text-xs text-[var(--accent)]",
+						"data-testid": "pl-too-many",
+						children: t("playlists.too_many", { count: limits.songs })
+					})
+				] })]
+			}),
+			/* @__PURE__ */ jsxs("section", {
+				"aria-labelledby": "pl-lists",
+				className: "flex flex-col gap-3",
+				children: [
+					/* @__PURE__ */ jsx("h3", {
+						id: "pl-lists",
+						className: heading,
+						children: t("playlists.lists_title", {
+							count: lists.length,
+							max: limits.lists
+						})
+					}),
+					data && lists.length === 0 && /* @__PURE__ */ jsx(EmptyState, {
+						icon: /* @__PURE__ */ jsx(ListMusic, { size: 28 }),
+						title: t("playlists.empty_title"),
+						subtitle: t("playlists.empty_body")
+					}),
+					/* @__PURE__ */ jsx("ul", {
+						className: "flex flex-col gap-2",
+						"data-testid": "pl-lists",
+						children: lists.map((p) => {
+							const isOpen = open === p.id;
+							const playing = data?.active?.id === p.id && state?.last_source?.startsWith(`playlist:${p.id}:`);
+							return /* @__PURE__ */ jsxs("li", {
+								className: "rounded-2xl border border-[var(--border)] p-3",
+								style: CARD_STYLE,
+								"data-testid": "pl-list",
+								children: [
+									/* @__PURE__ */ jsxs("div", {
+										className: "flex flex-wrap items-center gap-2",
+										children: [
+											/* @__PURE__ */ jsx("button", {
+												type: "button",
+												"aria-expanded": isOpen,
+												"aria-label": t(isOpen ? "playlists.close" : "playlists.open", { name: p.name }),
+												onClick: () => setOpen(isOpen ? null : p.id),
+												className: "mm-press rounded-full p-1 text-[var(--muted)] hover:bg-[var(--bg-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]",
+												children: /* @__PURE__ */ jsx(ChevronRight, {
+													size: 14,
+													"aria-hidden": "true",
+													className: "mm-chevron",
+													"data-open": isOpen
+												})
+											}),
+											renaming?.id === p.id ? /* @__PURE__ */ jsxs("form", {
+												onSubmit: saveRename,
+												className: "flex min-w-0 flex-1 gap-2",
+												children: [
+													/* @__PURE__ */ jsx("input", {
+														"aria-label": t("playlists.name_label"),
+														value: renaming.name,
+														onChange: (e) => setRenaming({
+															id: p.id,
+															name: e.target.value
+														}),
+														maxLength: 80,
+														className: inputClass,
+														autoFocus: true
+													}),
+													/* @__PURE__ */ jsx(Btn, {
+														type: "submit",
+														primary: true,
+														disabled: working || !renaming.name.trim(),
+														children: t("playlists.save")
+													}),
+													/* @__PURE__ */ jsx(Btn, {
+														type: "button",
+														onClick: () => setRenaming(null),
+														children: t("playlists.cancel")
+													})
+												]
+											}) : /* @__PURE__ */ jsxs("span", {
+												className: "min-w-0 flex-1",
+												children: [/* @__PURE__ */ jsx("span", {
+													className: "block truncate text-sm font-semibold text-[var(--text)]",
+													children: p.name
+												}), /* @__PURE__ */ jsxs("span", {
+													className: "block text-xs text-[var(--muted)]",
+													children: [t("playlists.song_count", { count: p.songs.length }), playing && /* @__PURE__ */ jsx("span", {
+														className: "ml-2 font-semibold text-[var(--accent)]",
+														"data-testid": "pl-playing",
+														children: t("playlists.playing")
+													})]
+												})]
+											}),
+											renaming?.id !== p.id && /* @__PURE__ */ jsxs("span", {
+												className: "flex shrink-0 flex-wrap gap-1",
+												children: [
+													/* @__PURE__ */ jsxs(Btn, {
+														type: "button",
+														primary: true,
+														disabled: busy || working || p.songs.length === 0,
+														"aria-label": t("playlists.play", { name: p.name }),
+														onClick: () => void act(() => onPlay(p.id)),
+														children: [/* @__PURE__ */ jsx(Play, {
+															size: 13,
+															"aria-hidden": "true"
+														}), t("playlists.play_short")]
+													}),
+													/* @__PURE__ */ jsx(Btn, {
+														type: "button",
+														disabled: working,
+														"aria-label": t("playlists.rename", { name: p.name }),
+														onClick: () => setRenaming({
+															id: p.id,
+															name: p.name
+														}),
+														children: /* @__PURE__ */ jsx(Pencil, {
+															size: 13,
+															"aria-hidden": "true"
+														})
+													}),
+													/* @__PURE__ */ jsx(Btn, {
+														type: "button",
+														disabled: working,
+														"aria-label": t("playlists.delete", { name: p.name }),
+														onClick: () => setConfirmDelete(p.id),
+														children: /* @__PURE__ */ jsx(Trash2, {
+															size: 13,
+															"aria-hidden": "true"
+														})
+													})
+												]
+											})
+										]
+									}),
+									confirmDelete === p.id && /* @__PURE__ */ jsxs("div", {
+										role: "alertdialog",
+										"aria-label": t("playlists.delete_confirm", { name: p.name }),
+										className: "mt-2 flex flex-wrap items-center gap-2 rounded-xl border border-[var(--border)] px-3 py-2",
+										children: [
+											/* @__PURE__ */ jsx("span", {
+												className: "flex-1 text-sm text-[var(--text)]",
+												children: t("playlists.delete_confirm", { name: p.name })
+											}),
+											/* @__PURE__ */ jsx(Btn, {
+												type: "button",
+												primary: true,
+												onClick: () => {
+													setConfirmDelete(null);
+													act(() => api.deletePlaylist(p.id));
+												},
+												children: t("playlists.delete_yes")
+											}),
+											/* @__PURE__ */ jsx(Btn, {
+												type: "button",
+												onClick: () => setConfirmDelete(null),
+												children: t("playlists.cancel")
+											})
+										]
+									}),
+									isOpen && /* @__PURE__ */ jsxs("ol", {
+										className: "mt-2 flex flex-col gap-1",
+										"data-testid": "pl-songs",
+										children: [p.songs.map((s, i) => /* @__PURE__ */ jsxs("li", {
+											className: "flex items-center gap-2 rounded-lg px-2 py-1 text-sm text-[var(--text)]",
+											children: [
+												/* @__PURE__ */ jsx("span", {
+													className: "w-6 shrink-0 text-right text-xs tabular-nums text-[var(--muted)]",
+													children: i + 1
+												}),
+												/* @__PURE__ */ jsx("span", {
+													className: "min-w-0 flex-1 truncate",
+													children: s.artist ? `${s.title} — ${s.artist}` : s.title
+												}),
+												/* @__PURE__ */ jsx("span", {
+													className: "shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
+													children: s.source === "youtube" ? t("page.source_youtube") : t("page.source_bilibili")
+												}),
+												/* @__PURE__ */ jsx(Btn, {
+													type: "button",
+													disabled: working,
+													"aria-label": t("playlists.remove_song", { song: s.title }),
+													onClick: () => void act(() => api.removePlaylistSong(p.id, s.id)),
+													children: /* @__PURE__ */ jsx(X, {
+														size: 13,
+														"aria-hidden": "true"
+													})
+												})
+											]
+										}, s.id)), p.songs.length === 0 && /* @__PURE__ */ jsx("li", {
+											className: "px-2 text-sm text-[var(--muted)]",
+											children: t("playlists.no_songs")
+										})]
+									})
+								]
+							}, p.id);
+						})
+					})
+				]
+			})
+		]
+	});
+}
 // src/request.prompt.ts
 /**
 * Design §2.5: what the summary may carry, at most (`SUMMARY_LIMITS` in
@@ -5694,7 +6690,8 @@ var PAGE_KEY = "mood-music:page";
 var TABS = [
 	"listen",
 	"moments",
-	"memory"
+	"memory",
+	"playlists"
 ];
 var str = (v, max) => typeof v === "string" ? v.slice(0, max) : "";
 function readPending(v) {
@@ -6135,7 +7132,14 @@ function MoodMusicPage() {
 	const askPlay = async (pick, why) => {
 		if (pendingRef.current) return;
 		const playable = queue.filter((p) => p.feedback !== "skipped");
-		const refill = playable.slice(playable.findIndex((p) => p.id === pick.id) + 1).length <= 1;
+		let refill = playable.slice(playable.findIndex((p) => p.id === pick.id) + 1).length <= 1;
+		if (refill) {
+			const part = await (async () => moodApi.playlistNext(pick.id))().catch(() => null);
+			if (part?.active) {
+				refill = part.ask_buddy;
+				if (part.added) setState(await moodApi.state());
+			}
+		}
 		const moodTags = state?.moments?.[0]?.tags ?? [];
 		const { ids } = memorySummary(state?.memory ?? []);
 		const message = buildPlayRequest({
@@ -6478,6 +7482,17 @@ function MoodMusicPage() {
 					await askPlay(rest[0], "start");
 				}
 			}
+		});
+	};
+	/** Play a saved list: it replaces the queue, and its first song plays as a queued pick does. */
+	const playList = async (id) => {
+		const { queue: next } = await moodApi.playPlaylist(id);
+		setState(await moodApi.state());
+		setTab("listen");
+		setCurrentId(next[0]?.id ?? null);
+		if (next[0]) setAction({
+			kind: "play",
+			pickId: next[0].id
 		});
 	};
 	const markKnown = (pick, origin) => {
@@ -6891,6 +7906,10 @@ function MoodMusicPage() {
 								{
 									key: "memory",
 									label: t("page.tab_memory")
+								},
+								{
+									key: "playlists",
+									label: t("playlists.tab")
 								}
 							]
 						})
@@ -6900,7 +7919,15 @@ function MoodMusicPage() {
 						onScroll: onScrolled,
 						className: `mm-scroll flex-1 overflow-y-auto px-4 pb-6 ${tab === "listen" ? "mm-split" : ""}`,
 						"data-testid": "mood-scroll",
-						children: tab === "memory" ? /* @__PURE__ */ jsx("div", {
+						children: tab === "playlists" ? /* @__PURE__ */ jsx("div", {
+							className: "mx-auto max-w-5xl",
+							children: /* @__PURE__ */ jsx(PlaylistsTab, {
+								api: moodApi,
+								state,
+								busy: working,
+								onPlay: playList
+							})
+						}) : tab === "memory" ? /* @__PURE__ */ jsx("div", {
 							className: "mx-auto max-w-5xl",
 							children: /* @__PURE__ */ jsx(MemoryTab, {
 								memory: state?.memory ?? [],
@@ -7320,11 +8347,22 @@ function MoodMusicPage() {
 											"data-testid": "mood-queue-section",
 											children: [/* @__PURE__ */ jsxs("h3", {
 												className: "mb-2 flex items-baseline gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]",
-												children: [t("page.queue"), /* @__PURE__ */ jsx("span", {
-													className: "font-normal tabular-nums",
-													"data-testid": "mood-queue-count",
-													children: queue.length
-												})]
+												children: [
+													t("page.queue"),
+													/* @__PURE__ */ jsx("span", {
+														className: "font-normal tabular-nums",
+														"data-testid": "mood-queue-count",
+														children: queue.length
+													}),
+													/* @__PURE__ */ jsx("span", {
+														className: "ml-auto",
+														children: /* @__PURE__ */ jsx(SaveQueueButton, {
+															api: moodApi,
+															queue,
+															moodTags: state?.moments?.[0]?.tags ?? []
+														})
+													})
+												]
 											}), /* @__PURE__ */ jsx("ul", {
 												className: "mm-queue-list flex flex-col gap-2",
 												"data-testid": "mood-queue",

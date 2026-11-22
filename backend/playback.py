@@ -35,7 +35,7 @@ import logging
 import re
 from typing import Any
 
-from . import buddy, links, verify
+from . import buddy, links, playlists, verify
 from .play_request import REFILL_AT, build_play_request, memory_summary, reply_source
 from .store import PLAY_SITES, MemoryFull
 
@@ -307,6 +307,12 @@ async def _wake(ctx: Any, state: Any, slots: Any, pick_id: str) -> str:
     song, refill = next_pick(snapshot, pick_id)
     if song is None:
         return "done"
+    if refill:
+        # A saved playlist playing: its next part comes first, and the buddy is
+        # asked for more only once it ran out and the person allowed it.
+        part = await asyncio.to_thread(lambda: playlists.extend_for(ctx, song["id"]))
+        if part["active"]:
+            refill = part["ask_buddy"]
     message, memory_ids = play_message(snapshot, song, refill)
     try:
         turn = slots.send(state, slot, message,

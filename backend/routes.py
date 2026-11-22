@@ -27,6 +27,7 @@ the access its manifest grant gives it.
   POST /buddy/send          -> send the buddy one turn there
   PUT  /playback            -> the song now in the tab, or the person's pause / play
   POST /playback/ended      -> claim one song's ending, so only one side wakes the buddy
+  /playlists...             -> saved playlists, in their own file (``playlists.py``)
 
 The manifest's ``backend.hooks.on_browser_media_ended`` is ``playback.on_media_ended``:
 with the page closed, the backend wakes the buddy for the next song itself.
@@ -50,7 +51,7 @@ from typing import Any
 
 from aiohttp import web
 
-from . import _host, buddy, links, taste, verify
+from . import _host, buddy, links, playlists, taste, verify
 from .store import (
     EXPLORE_LEVELS,
     MAX_QUEUE,
@@ -634,4 +635,6 @@ def register_routes(ctx: Any) -> list[_host.Route]:
         route("POST", "/buddy/send", _owner_only("send_buddy", buddy.handle_send)),
         route("PUT", "/playback", _owner_only("playback", _handle_playback)),
         route("POST", "/playback/ended", _owner_only("playback_ended", _handle_ended)),
+        # Saved playlists (playlists.py), each behind the same owner gate.
+        *playlists.routes(route, _owner_only),
     ]
