@@ -204,6 +204,37 @@ export function grantCause(e: unknown): GrantCause | 'other' | null {
   }
 }
 
+/** A song in a saved playlist: what it takes to show and to play it (`backend/playlists.py`). */
+export interface PlaylistSong {
+  id: string
+  title: string
+  artist: string
+  why?: string
+  tags: string[]
+  source: PickSource
+  video_id?: string
+  url?: string
+}
+
+export interface Playlist {
+  id: string
+  name: string
+  created_at: number
+  songs: PlaylistSong[]
+}
+
+export interface Playlists {
+  lists: Playlist[]
+  /** The list now playing, and the index of its next part. */
+  active: { id: string; next: number } | null
+  /** Once a playing list runs out, ask the buddy for more. Off by default. */
+  then_buddy: boolean
+  limits: { lists: number; songs: number }
+}
+
+/** A song to save: a queued pick, or a liked song with the site it plays on. */
+export type NewPlaylistSong = Omit<PlaylistSong, 'id'>
+
 export type MoodApi = ReturnType<typeof createMoodApi>
 
 export function createMoodApi(api: AppApi) {
@@ -247,6 +278,21 @@ export function createMoodApi(api: AppApi) {
     deleteProfile: () => api.del<{ deleted: boolean }>(`${BASE}/profile`),
     /** Fold the profile again now, in the background. */
     runProfile: () => api.post<{ started: boolean }>(`${BASE}/profile/run`),
+    playlists: () => api.get<Playlists>(`${BASE}/playlists`),
+    createPlaylist: (name: string, songs: NewPlaylistSong[]) => api.post<Playlist>(`${BASE}/playlists`, { name, songs }),
+    renamePlaylist: (id: string, name: string) => api.put<Playlist>(`${BASE}/playlists/${encodeURIComponent(id)}`, { name }),
+    deletePlaylist: (id: string) => api.del<{ deleted: string }>(`${BASE}/playlists/${encodeURIComponent(id)}`),
+    removePlaylistSong: (id: string, songId: string) =>
+      api.del<Playlist>(`${BASE}/playlists/${encodeURIComponent(id)}/songs/${encodeURIComponent(songId)}`),
+    /** Replace the queue with the list's first part. */
+    playPlaylist: (id: string) => api.post<{ queue: QueuedPick[] }>(`${BASE}/playlists/${encodeURIComponent(id)}/play`),
+    /**
+     * Before asking the buddy for more: a playing list adds its next part after
+     * *pickId* instead. `active` false: no list plays, refill as before.
+     */
+    playlistNext: (pickId: string) =>
+      api.post<{ active: boolean; added: number; ask_buddy: boolean }>(`${BASE}/playlists-next`, { pick_id: pickId }),
+    setPlaylistThenBuddy: (on: boolean) => api.put<{ then_buddy: boolean }>(`${BASE}/playlists-settings`, { then_buddy: on }),
     openSlot,
     getSlot: (key: string) => api.get<SlotData>(`/api/chat/slots/${encodeURIComponent(key)}`),
     /** Answer one tool approval once: never Trust, which would approve every later call too. */

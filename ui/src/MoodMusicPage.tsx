@@ -57,6 +57,7 @@ import MomentsTab from './MomentsTab'
 import MoodBackdrop from './MoodBackdrop'
 import { MOOD_KEYS, moodLookFor, presetScene, type MoodKey, type MoodLook, type Scene } from './moods'
 import NowPlaying from './NowPlaying'
+import PlaylistsTab, { SaveQueueButton } from './PlaylistsTab'
 import { REFILL_AT, buildPlayRequest, buildRequest, memorySummary, type ExploreLevel } from './request.prompt'
 import { parseDjReply, replySource, type DjReply, type ReplyAction } from './replyParse'
 import { usePrefersReducedMotion } from './reducedMotion'
@@ -416,7 +417,16 @@ export default function MoodMusicPage() {
     if (pendingRef.current) return
     const playable = queue.filter(p => p.feedback !== 'skipped')
     const after = playable.slice(playable.findIndex(p => p.id === pick.id) + 1)
-    const refill = after.length <= REFILL_AT
+    let refill = after.length <= REFILL_AT
+    if (refill) {
+      // A saved playlist playing: its next part comes first, and the buddy is
+      // asked for more only once it ran out and the person allowed it.
+      const part = await (async () => moodApi.playlistNext(pick.id))().catch(() => null)
+      if (part?.active) {
+        refill = part.ask_buddy
+        if (part.added) setState(await moodApi.state())
+      }
+    }
     const moodTags = state?.moments?.[0]?.tags ?? []
     const { ids } = memorySummary(state?.memory ?? [])
     const message = buildPlayRequest({
@@ -722,6 +732,15 @@ export default function MoodMusicPage() {
         }
       }
     })
+  }
+
+  /** Play a saved list: it replaces the queue, and its first song plays as a queued pick does. */
+  const playList = async (id: string) => {
+    const { queue: next } = await moodApi.playPlaylist(id)
+    setState(await moodApi.state())
+    setTab('listen')
+    setCurrentId(next[0]?.id ?? null)
+    if (next[0]) setAction({ kind: 'play', pickId: next[0].id })
   }
 
   const markKnown = (pick: QueuedPick, origin: 'user' | 'app') => {
@@ -1101,6 +1120,7 @@ export default function MoodMusicPage() {
               { key: 'listen', label: t('page.tab_listen') },
               { key: 'moments', label: t('page.tab_moments') },
               { key: 'memory', label: t('page.tab_memory') },
+              { key: 'playlists', label: t('playlists.tab') },
             ]}
           />
         </div>
@@ -1111,7 +1131,11 @@ export default function MoodMusicPage() {
           className={`mm-scroll flex-1 overflow-y-auto px-4 pb-6 ${tab === 'listen' ? 'mm-split' : ''}`}
           data-testid="mood-scroll"
         >
-          {tab === 'memory' ? (
+          {tab === 'playlists' ? (
+            <div className="mx-auto max-w-5xl">
+              <PlaylistsTab api={moodApi} state={state} busy={working} onPlay={playList} />
+            </div>
+          ) : tab === 'memory' ? (
             <div className="mx-auto max-w-5xl">
               <MemoryTab memory={state?.memory ?? []} api={moodApi} onChanged={refresh} profile={state?.profile ?? null} room={state?.memory_room} taste={state?.taste_status} />
             </div>
@@ -1383,6 +1407,7 @@ export default function MoodMusicPage() {
                       <h3 className="mb-2 flex items-baseline gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
                         {t('page.queue')}
                         <span className="font-normal tabular-nums" data-testid="mood-queue-count">{queue.length}</span>
+                        <span className="ml-auto"><SaveQueueButton api={moodApi} queue={queue} moodTags={state?.moments?.[0]?.tags ?? []} /></span>
                       </h3>
                       <ul className="mm-queue-list flex flex-col gap-2" data-testid="mood-queue" tabIndex={0} aria-label={t('page.queue')}>
                         {queue.map((p, i) => {

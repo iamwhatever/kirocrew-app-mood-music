@@ -182,7 +182,16 @@ on this page; it is not listed in Kiro Crew's sessions.
    newest of each kind, pinned ones and the ones a line names; the buddy still never
    offers a cleared song as new.
 8. Open **Moments** to see the moods you shared and the songs they brought.
-9. The background follows the mood. A chip sets its scene at once. The buddy
+9. Keep songs as playlists. **Save as playlist** in the **Up next** header saves the
+   queue in one press, named by the mood and the date. On the **Playlists** tab, make
+   one from songs you liked: all of them, the ones a mood word shows, or the ones you
+   tick. Open a list to see its songs and remove one, rename it, delete it, or
+   **Play** it. Playing a list replaces the queue and plays through it in order.
+   When it ends, it stops, unless you turn on **When a list ends, ask the buddy for
+   more**. You can keep 50 lists of up to 200 songs each. Once the taste profile has
+   folded older likes away, only the liked songs still in Memory can be picked, and
+   the tab says so.
+10. The background follows the mood. A chip sets its scene at once. The buddy
    picks a new scene only when your mood clearly shifts, and the scene drifts
    toward its brighter colour as the songs move from stay to lift. To stop the
    background moving, choose **Pause background motion** at the top
@@ -192,7 +201,7 @@ on this page; it is not listed in Kiro Crew's sessions.
 
 - **Where your data lives:** `~/.kiro/crew/apps/mood-music/data/state.json` (or under
   `$KIROCREW_HOME` if you set it). It holds your moods, the current list, your likes
-  and skips, and the Memory tab.
+  and skips, and the Memory tab. Your playlists are in `playlists.json` next to it.
 - **What leaves your computer:** your mood text and a short summary of your memory
   (your notes and "not for me" items, the taste summary, a few songs you liked or
   skipped, songs you know, recent moods) go to the AI model
@@ -266,7 +275,7 @@ No. It plays YouTube and bilibili songs in Kiro Crew's browser.
 | `app.json` | The manifest: page, agent, skill, backend hook, `permissions.chatSlots`, `hiddenSessions`, `browserSites` and `browser: ["view"]` |
 | `agents/taste.json` | The taste summarizer (no tools): `backend/taste.py` opens it in a fresh hidden chat for each run, then closes that chat |
 | `agents/dj.json`, `skills/mood-music/` | The music buddy agent (`web_search` and `web_fetch`, both run without asking, and Kiro Crew's `browser` on the approved `permissions.browserSites` pages) and its reply contract; the page also sends the contract and a bounded memory summary with every request (`ui/src/request.prompt.ts`). It pins no model, so it runs on your default |
-| `backend/` | Routes (`hooks.routes`), the buddy's hidden chat through `ctx.chat_slots` (`buddy.py`), the JSON store with memory, the link checks, and `verify.py` (the YouTube oEmbed / bilibili view lookups) |
+| `backend/` | Routes (`hooks.routes`), the buddy's hidden chat through `ctx.chat_slots` (`buddy.py`), the JSON store with memory, the link checks, `playlists.py` (saved playlists, in their own file) and `verify.py` (the YouTube oEmbed / bilibili view lookups) |
 | `ui/src/`, `ui/dist/index.mjs` | The page, and its committed ESM bundle |
 | `ui/i18n/` | The app's strings in 12 languages |
 | `tests/`, `ui/tests/` | Backend and UI tests |
