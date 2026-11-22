@@ -78,7 +78,7 @@ describe('Listen layout', () => {
     expect(view.compareDocumentPosition(deck) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     expect(within(deck).getByTestId('mood-now-playing')).toBeInTheDocument()
     expect(within(deck).getByTestId('mood-queue')).toBeInTheDocument()
-    expect(SPLIT_CSS).toMatch(/@container \(min-width: 860px\)[\s\S]*grid-template-columns: minmax\(320px, 5fr\) minmax\(0, 7fr\)/)
+    expect(SPLIT_CSS).toMatch(/@container mm-page \(min-width: 860px\)[\s\S]*grid-template-columns: minmax\(320px, 5fr\) minmax\(0, 7fr\)/)
     // A wide right column puts the player and the queue side by side.
     expect(SPLIT_CSS).toMatch(/@container \(min-width: 720px\) \{\s*\.mm-deck \{ grid-template-columns: minmax\(0, 1fr\) minmax\(0, 1fr\)/)
   })
@@ -90,12 +90,86 @@ describe('Listen layout', () => {
   })
 })
 
-describe('Queue', () => {
-  it('has real height with its own scroll', async () => {
+/** SPLIT_CSS cut into its top-level rules and each at-rule block's rules. */
+function blocks(css: string): { at: string; rules: Map<string, string> }[] {
+  const out: { at: string; rules: Map<string, string> }[] = []
+  const clean = css.replace(/\/\*[\s\S]*?\*\//g, '')
+  const parse = (body: string, at: string) => {
+    const rules = new Map<string, string>()
+    let i = 0
+    while (i < body.length) {
+      const open = body.indexOf('{', i)
+      if (open < 0) break
+      const head = body.slice(i, open).trim()
+      let depth = 1
+      let j = open + 1
+      while (depth && j < body.length) { if (body[j] === '{') depth++; else if (body[j] === '}') depth--; j++ }
+      const inner = body.slice(open + 1, j - 1)
+      if (head.startsWith('@')) parse(inner, head)
+      else for (const sel of head.split(',')) rules.set(sel.trim(), (rules.get(sel.trim()) ?? '') + inner)
+      i = j
+    }
+    out.push({ at, rules })
+  }
+  parse(clean, '')
+  return out
+}
+const block = (at: string) => blocks(SPLIT_CSS).find(b => b.at === at)!
+const scrolls = (decl = '') => /overflow(-y)?: (auto|scroll)/.test(decl)
+const WIDE = '@container mm-page (min-width: 860px)'
+
+describe('One scroll on the right', () => {
+  it('wide: the right column holds still and the queue is its only scroll', async () => {
     await open()
+    const right = screen.getByTestId('mood-player-column')
+    expect(right).toHaveClass('mm-player')
     expect(screen.getByTestId('mood-queue')).toHaveClass('mm-queue-list')
-    expect(SPLIT_CSS).toMatch(/\.mm-queue-list \{[^}]*min-height: 12rem;[^}]*max-height: 32rem;[^}]*overflow-y: auto/)
+    const wide = block(WIDE).rules
+    expect(wide.get('.mm-player')).toMatch(/overflow: hidden/)
+    // The wide layout adds one scroll, the queue (the left record scrolls from the base rule).
+    const scrollers = [...wide].filter(([, d]) => scrolls(d)).map(([s]) => s)
+    expect(scrollers).toEqual(['.mm-queue-list'])
+    // It takes the height that is left, and its rows never stretch the column.
+    expect(wide.get('.mm-queue-list')).toMatch(/flex: 1 1 0;[^]*min-height: 10rem;[^]*contain: size/)
+    expect(wide.get('.mm-deck')).toMatch(/flex: 1 1 0/)
+    // The column's height is the page's, not its content's.
+    expect(wide.get('.mm-split > .mm-listen')).toMatch(/grid-template-rows: minmax\(0, 1fr\)/)
   })
+
+  it('narrow: the page scrolls and the queue has no scroll of its own', () => {
+    const base = block('').rules
+    expect(scrolls(base.get('.mm-queue-list'))).toBe(false)
+    expect(base.get('.mm-queue-list')).not.toMatch(/max-height/)
+    expect(scrolls(base.get('.mm-player'))).toBe(false)
+  })
+
+  it('a column too short scrolls as one, and then the queue does not scroll', () => {
+    const short = blocks(SPLIT_CSS).filter(b => b.at.startsWith('@container mm-cols (max-height:'))
+    expect(short.map(b => b.at)).toEqual(['@container mm-cols (max-height: 48rem)', '@container mm-cols (max-height: 42rem)'])
+    for (const { rules } of short) {
+      const [player] = [...rules].filter(([s, d]) => s.includes('.mm-player') && !s.includes(' ') && scrolls(d))
+      expect(player).toBeTruthy()
+      // The same block, under the same class, lets the queue show every row.
+      const scope = player[0] === '.mm-player' ? '' : '.mm-player-view '
+      expect(rules.get(`${scope}.mm-queue-list`)).toMatch(/overflow: visible;[^]*contain: none/)
+      expect(rules.get(`${scope}.mm-deck`)).toMatch(/flex: none/)
+    }
+  })
+
+  it('marks the column while the live view is open, so hiding it lowers the bar', async () => {
+    const { default: BrowserView } = await import('../src/BrowserView')
+    const { rerender } = render(<BrowserView open onToggle={() => undefined} operating={false} live={<div />} />)
+    expect(screen.getByTestId('mood-browser-view')).toHaveClass('mm-view', 'mm-view-open')
+    rerender(<BrowserView open={false} onToggle={() => undefined} operating={false} live={<div />} />)
+    expect(screen.getByTestId('mood-browser-view')).toHaveClass('mm-view')
+    expect(screen.getByTestId('mood-browser-view')).not.toHaveClass('mm-view-open')
+    // The live view gives way before the queue does, down to a floor.
+    expect(block(WIDE).rules.get('.mm-view-open')).toMatch(/min-height: 9rem/)
+    expect(block(WIDE).rules.get('.mm-view .mm-view-body')).toMatch(/flex: 0 1 clamp\(14rem, 42vh, 30rem\)/)
+  })
+})
+
+describe('Queue', () => {
 
   it('shows title, artist and why on every row, and marks the current song', async () => {
     await open()
