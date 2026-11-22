@@ -125,7 +125,10 @@
     "record_title": "버디가 하고 있는 일",
     "latest": "최신",
     "no_next": "대기열에 다음 곡이 없어요.",
-    "new_message": "새 메시지"
+    "new_message": "새 메시지",
+    "steered": "끼어들기",
+    "steer_missed": "버디의 이번 차례에 들어가지 않아서 보내지 않았어요. 글은 입력창에 그대로 있어요. 끝나면 다시 보내 주세요.",
+    "steer_placeholder": "버디가 일하는 중에도 끼어들 수 있어요…"
   },
   "card": {
     "arc_stay": "곁에 머물기",

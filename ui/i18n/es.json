@@ -125,7 +125,10 @@
     "record_title": "Lo que hace tu compañero",
     "latest": "Lo último",
     "no_next": "No hay siguiente canción en la cola.",
-    "new_message": "Mensaje nuevo"
+    "new_message": "Mensaje nuevo",
+    "steered": "Interrupción",
+    "steer_missed": "Tu compañero no lo tomó en este turno, así que no se envió. Sigue en el cuadro: envíalo de nuevo cuando termine.",
+    "steer_placeholder": "Interrumpe mientras tu compañero trabaja…"
   },
   "card": {
     "arc_stay": "Acompañar",

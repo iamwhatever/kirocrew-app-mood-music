@@ -125,7 +125,10 @@
     "record_title": "Cosa sta facendo il tuo compagno",
     "latest": "Più recenti",
     "no_next": "Nessun brano successivo in coda.",
-    "new_message": "Nuovo messaggio"
+    "new_message": "Nuovo messaggio",
+    "steered": "Inserito",
+    "steer_missed": "Il tuo compagno non l'ha preso in questo turno, quindi non è stato inviato. È ancora nella casella: rinvialo quando ha finito.",
+    "steer_placeholder": "Intervieni mentre il tuo compagno lavora…"
   },
   "card": {
     "arc_stay": "Restare",

@@ -135,8 +135,12 @@ export interface SlotMessage {
   type?: string
   content?: string
   /** On a `permission` row: the approval's id, and `resolved` once it is answered.
-   *  On a `tool` row: `input`, the call's arguments (JSON text). */
-  meta?: { approval_id?: unknown; resolved?: unknown; tool_name?: unknown; tool_input?: unknown; input?: unknown; kind?: unknown }
+   *  On a `tool` row: `input`, the call's arguments (JSON text).
+   *  On a `user` row put into a running turn: `steer`, and `steerState` (what became of it). */
+  meta?: {
+    approval_id?: unknown; resolved?: unknown; tool_name?: unknown; tool_input?: unknown; input?: unknown; kind?: unknown
+    steer?: unknown; steerState?: unknown
+  }
 }
 
 export interface SlotData {
@@ -207,11 +211,21 @@ export function createMoodApi(api: AppApi) {
      * Put *message* into the buddy's RUNNING turn, so it changes course now.
      * The page sends as the person, through the dashboard's own send route
      * (`POST /api/chat` with `steer`, App Kit "Host Sessions"); an app's backend
-     * cannot steer. True when the gateway steered it; false when it queued it
-     * behind the turn instead (the turn had just ended, or not started yet).
+     * cannot steer. `steered` when the gateway put it in. Otherwise it went as a
+     * turn of its own: `queued` behind the running one (`queueId` set when it can
+     * still be taken back with {@link cancelQueued}), or, the turn having just
+     * ended, started at once.
      */
     steer: (key: string, message: string) =>
-      api.post<{ steered?: unknown }>('/api/chat?ws=1', { message, slot: key, steer: true }).then(r => r?.steered === true),
+      api.post<{ steered?: unknown; queued?: unknown; queue_id?: unknown }>('/api/chat?ws=1', { message, slot: key, steer: true })
+        .then(r => ({
+          steered: r?.steered === true,
+          queued: r?.queued === true,
+          queueId: typeof r?.queue_id === 'string' ? r.queue_id : '',
+        })),
+    /** Take a queued message back before it runs. False when it could not be (it already ran, or the call failed). */
+    cancelQueued: (key: string, queueId: string) =>
+      api.del(`/api/chat/slots/${encodeURIComponent(key)}/queue/${encodeURIComponent(queueId)}`).then(() => true, () => false),
     /** Send one turn through the backend; a refusal rejects. Returns the slot key the turn went to. */
     ask: async (message: string): Promise<string> => {
       const receipt = await api.post<{ key: string }>(`${BASE}/buddy/send`, { message }).catch(plainRefusal)

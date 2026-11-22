@@ -125,7 +125,10 @@
     "record_title": "搭子在做什么",
     "latest": "最新",
     "no_next": "队列里没有下一首了。",
-    "new_message": "新消息"
+    "new_message": "新消息",
+    "steered": "插话",
+    "steer_missed": "没插进去：搭子这一轮没收下这句话，所以没有发出。文字还在框里，等它说完再发一次。",
+    "steer_placeholder": "搭子在忙，也可以插一句…"
   },
   "card": {
     "arc_stay": "陪着",

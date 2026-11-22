@@ -125,7 +125,10 @@
     "record_title": "O que seu parceiro está fazendo",
     "latest": "Mais recente",
     "no_next": "Não há próxima música na fila.",
-    "new_message": "Nova mensagem"
+    "new_message": "Nova mensagem",
+    "steered": "Interrupção",
+    "steer_missed": "Seu parceiro não pegou isso neste turno, então não foi enviado. Continua na caixa: envie de novo quando ele terminar.",
+    "steer_placeholder": "Interrompa enquanto seu parceiro trabalha…"
   },
   "card": {
     "arc_stay": "Ficar junto",

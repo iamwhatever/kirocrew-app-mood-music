@@ -29,10 +29,23 @@ describe('createMoodApi', () => {
 
   it("steers into the buddy's running turn through the dashboard's send route, as the person", async () => {
     const steered = fakeApi(() => ({ ok: true, steered: true }))
-    await expect(createMoodApi(steered).steer('mood-music-dj', '[Mood Music] switch')).resolves.toBe(true)
+    await expect(createMoodApi(steered).steer('mood-music-dj', '[Mood Music] switch')).resolves.toEqual({ steered: true, queued: false, queueId: '' })
     expect(steered.post).toHaveBeenCalledWith('/api/chat?ws=1', { message: '[Mood Music] switch', slot: 'mood-music-dj', steer: true })
-    // Queued behind the turn instead: the page then waits on that next turn.
-    await expect(createMoodApi(fakeApi(() => ({ ok: true, queued: true }))).steer('mood-music-dj', 'x')).resolves.toBe(false)
+    // Queued behind the turn instead, with the id that takes it back.
+    await expect(createMoodApi(fakeApi(() => ({ ok: true, queued: true, queue_id: 'q1' }))).steer('mood-music-dj', 'x'))
+      .resolves.toEqual({ steered: false, queued: true, queueId: 'q1' })
+    // The turn's teardown requeued it: no id to take back.
+    await expect(createMoodApi(fakeApi(() => ({ ok: true, queued: true }))).steer('mood-music-dj', 'x'))
+      .resolves.toEqual({ steered: false, queued: true, queueId: '' })
+  })
+
+  it("takes a queued message back through the chat's queue route, and says when it could not", async () => {
+    const api = fakeApi(() => ({}))
+    ;(api.del as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ ok: true })
+    await expect(createMoodApi(api).cancelQueued('mood-music-dj', 'q/1')).resolves.toBe(true)
+    expect(api.del).toHaveBeenCalledWith('/api/chat/slots/mood-music-dj/queue/q%2F1')
+    ;(api.del as ReturnType<typeof vi.fn>).mockRejectedValueOnce(Object.assign(new Error('API 409'), { status: 409 }))
+    await expect(createMoodApi(api).cancelQueued('mood-music-dj', 'q1')).resolves.toBe(false)
   })
 
   it.each(['old_host', 'hidden_refused'])('turns a %s refusal into its bare code', async code => {

@@ -40,6 +40,8 @@ export interface Line {
   reply?: string
   /** On a buddy line: what it did in that turn before replying. */
   steps?: Step[]
+  /** On a person's line: put into the buddy's running turn (a steer). */
+  steered?: boolean
 }
 
 /** The heads `request.prompt.ts` writes on the line after `[Mood Music]`. */
@@ -47,10 +49,19 @@ const HEADS = ['Message', 'Mood', 'Answer to your question', 'More like this son
 
 const msgs = (slot: SlotData | undefined): SlotMessage[] => slot?.messages ?? []
 
-/** Rows after the newest `user` row: the current turn. */
+/** A person's row the gateway put into a running turn: it starts no turn of its own. */
+const isSteer = (m: SlotMessage) => m.role === 'user' && m.meta?.steer === true
+
+/**
+ * A steer row the transcript does not draw: its own turn wrote a fresh row
+ * (`superseded`), or it was taken back (`retracted`).
+ */
+const hiddenSteer = (m: SlotMessage) => isSteer(m) && (m.meta?.steerState === 'superseded' || m.meta?.steerState === 'retracted')
+
+/** Rows after the newest `user` row that started a turn: the current turn. */
 function currentTurn(slot: SlotData | undefined): SlotMessage[] {
   const all = msgs(slot)
-  for (let i = all.length - 1; i >= 0; i--) if (all[i].role === 'user') return all.slice(i + 1)
+  for (let i = all.length - 1; i >= 0; i--) if (all[i].role === 'user' && !isSteer(all[i])) return all.slice(i + 1)
   return all
 }
 
@@ -117,6 +128,20 @@ export function stepsOf(rows: SlotMessage[]): Step[] {
   return out
 }
 
+/**
+ * Whether the newest steer of *words* was not read by its turn: the turn
+ * ended first, so the gateway runs the words as a turn of their own.
+ */
+export function steerRequeued(slot: SlotData | undefined, words: string): boolean {
+  const all = msgs(slot)
+  for (let i = all.length - 1; i >= 0; i--) {
+    const m = all[i]
+    if (!isSteer(m) || typeof m.content !== 'string' || personText(m.content) !== words) continue
+    return m.meta?.steerState === 'requeued' || m.meta?.steerState === 'superseded'
+  }
+  return false
+}
+
 /** What the running turn has done so far. */
 export function liveSteps(slot: SlotData | undefined): Step[] {
   return slot?.running ? stepsOf(currentTurn(slot)) : []
@@ -156,8 +181,13 @@ export function conversation(slot: SlotData | undefined): Line[] {
       turn.push(m)
       continue
     }
-    if (typeof m.content !== 'string' || !m.content.trim()) continue
-    if (m.role === 'user') { flush(); out.push({ who: 'you', text: personText(m.content) }) }
+    if (typeof m.content !== 'string' || !m.content.trim() || hiddenSteer(m)) continue
+    if (isSteer(m)) {
+      // Words put into the running turn: the turn goes on, so a note before them stays a step.
+      if (last) { turn.push(last); last = null }
+      const into = m.meta?.steerState !== 'requeued'
+      out.push({ who: 'you', text: personText(m.content), ...(into ? { steered: true } : {}) })
+    } else if (m.role === 'user') { flush(); out.push({ who: 'you', text: personText(m.content) }) }
     else if (m.role === 'assistant') {
       if (last) turn.push(last)
       last = m

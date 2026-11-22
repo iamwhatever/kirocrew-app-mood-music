@@ -125,7 +125,10 @@
     "record_title": "Was dein Buddy gerade tut",
     "latest": "Neueste",
     "no_next": "Kein nächster Song in der Warteschlange.",
-    "new_message": "Neue Nachricht"
+    "new_message": "Neue Nachricht",
+    "steered": "Eingeworfen",
+    "steer_missed": "Dein Buddy hat das in diesem Durchgang nicht aufgenommen, also wurde es nicht gesendet. Es steht noch im Feld: sende es erneut, wenn dein Buddy fertig ist.",
+    "steer_placeholder": "Wirf etwas ein, während dein Buddy arbeitet…"
   },
   "card": {
     "arc_stay": "Dabeibleiben",

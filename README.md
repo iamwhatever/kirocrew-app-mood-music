@@ -40,6 +40,11 @@ It is a rainy evening and you miss home. You click **Missing someone**, or type 
 in your own words. A moment later a song is ready to play, with a short line on why
 it fits, and more songs wait under **Up next**. Click **Like** on the ones that land.
 
+You can type while the buddy is still working. Your words go into what it is doing
+right now, marked **Cut in** in the conversation, and its answer brings songs as
+usual. If the buddy could not take them in, the page says so and leaves your words
+in the box; nothing waits in a line to be sent later.
+
 ![The Missing someone chip is picked, Holocene is playing and marked Liked, and three more songs wait under Up next](docs/media/use-case-1-light.png)
 
 ### 2. Let the buddy play songs in Kiro Crew's browser
