@@ -89,7 +89,7 @@ def play_message(
         refill={
             "mood_tags": (moments[0].get("tags") if moments else None) or [],
             "queued": [
-                {"title": p.get("title", ""), "artist": p.get("artist", "")}
+                {"title": p.get("title", ""), "artist": p.get("artist", ""), "arc": p.get("arc", "")}
                 for p in snapshot.get("queue", [])
             ],
         } if refill else None,
@@ -97,8 +97,9 @@ def play_message(
         explore=settings.get("explore") or "balanced",
         # The page stores its "stay only" switch; off until the person sets it.
         stay_only=settings.get("stay_only") is True,
+        profile=snapshot.get("profile"),
     )
-    return message, (memory_summary(memory)[1] if refill else [])
+    return message, (memory_summary(memory, snapshot.get("profile"))[1] if refill else [])
 
 
 # ── the reply ──

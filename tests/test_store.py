@@ -35,6 +35,9 @@ def test_an_empty_store_reads_empty(tmp_path: Path) -> None:
         },
         "play_steps": {},
         "playback": {"pick_id": "", "ended_for": "", "paused": False},
+        "profile": None,
+        "memory_room": {k: {"count": 0, "cap": cap, "own": 0} for k, cap in store_mod.MEMORY_CAPS.items()},
+        "taste_status": {"pending": 0, "every": store_mod.FOLD_EVERY, "running": False, "error": ""},
     }
 
 

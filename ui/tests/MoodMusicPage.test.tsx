@@ -150,7 +150,7 @@ describe('MoodMusicPage', () => {
     expect(api.addMoment).not.toHaveBeenCalled()
     const sent = api.ask.mock.calls[0][0]
     expect(sent).toContain(`Message: ${t('mood_missing')}`)
-    expect(sent).toContain('Liked: "Old Love" - B')
+    expect(sent).toContain('Liked, recent examples: "Old Love" - B')
     expect(sent).toContain('Explore level: balanced (1 anchor, 4 explore, 0 deep)')
 
     const data = {

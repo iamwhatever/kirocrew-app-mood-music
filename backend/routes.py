@@ -11,11 +11,15 @@ the access its manifest grant gives it.
   POST /queue               -> replace the queue with new picks
   PUT  /queue/{id}/feedback -> like / skip / clear a pick
   POST /verify-picks        -> look each pick up on YouTube / bilibili (``verify.py``)
-  POST /memory              -> remember a note, a song or a mood
-  PUT  /memory/{id}         -> edit a note's text, or pin / unpin an item
+  POST /memory              -> remember a note, a song, a mood or a dislike (a song or a few words)
+  PUT  /memory/{id}         -> edit a note's (or worded dislike's) text, or pin / unpin an item
   DELETE /memory/{id}       -> forget one item
   POST /memory/clear-stale  -> forget every "maybe stale" item
   POST /memory/used         -> mark items as used (keeps them fresh)
+  PUT  /profile/lines/{id}  -> the person's own words for one taste-profile line (never folded over)
+  DELETE /profile/lines/{id} -> forget one line
+  DELETE /profile           -> forget the whole profile
+  POST /profile/run         -> fold the taste profile again now, in the background (``taste.py``)
   PUT  /settings            -> the explore level, continuous play, stay only, and whether the full record is open
   PUT  /play-steps/{site}   -> keep the steps that just played a song in Kiro Crew's browser
   DELETE /play-steps/{site} -> forget them after they failed, so the buddy finds the way again
@@ -46,7 +50,7 @@ from typing import Any
 
 from aiohttp import web
 
-from . import _host, buddy, links, verify
+from . import _host, buddy, links, taste, verify
 from .store import (
     EXPLORE_LEVELS,
     MAX_QUEUE,
@@ -55,7 +59,9 @@ from .store import (
     MEMORY_KINDS,
     ORIGINS,
     PLAY_SITES,
+    PROFILE_LINE_CHARS,
     SONG_KINDS,
+    TASTE_KINDS,
     VERDICTS,
     MemoryFull,
     MoodStore,
@@ -69,7 +75,10 @@ _MAX_TAGS = 8
 _MAX_TAG = 40
 _MAX_SOURCE = 128
 _ID_RE = re.compile(r"[0-9a-f]{32}")
-_MAX_NOTE_TEXT = 60
+#: How long the person's own words may be, per kind (a mood word the app records is shorter still).
+_MAX_NOTE_TEXT = 200
+_MAX_DISLIKE_TEXT = 100
+_MAX_MOOD_TEXT = 60
 _MAX_IDS = 100
 _TIERS = ("anchor", "explore", "deep")
 #: A control character, a code fence or a bracket in a step could fake a section of
@@ -319,6 +328,8 @@ async def _handle_feedback(request: web.Request, ctx: Any) -> web.Response:
     pick = await asyncio.to_thread(lambda: _store(ctx).set_feedback(pick_id, verdict))
     if pick is None:
         return web.json_response({"error": "no such pick", "code": "not_found"}, status=404)
+    if verdict:
+        taste.start(ctx, request.app.get("state"))
     return web.json_response(pick)
 
 
@@ -351,13 +362,18 @@ async def _handle_add_memory(request: web.Request, ctx: Any) -> web.Response:
     if kind not in MEMORY_KINDS or origin not in ORIGINS:
         return _bad_request("kind or origin is not one this app knows", "invalid_field_type")
     fields: dict[str, str] = {}
-    if kind in SONG_KINDS:
+    # A dislike is a song (title, artist) or a few words (text), never both.
+    as_song = kind in SONG_KINDS or (kind == "dislike" and "text" not in body)
+    if kind == "dislike" and "text" in body and ("title" in body or "artist" in body):
+        return _bad_request("a dislike is a song or a few words, not both", "invalid_field_type")
+    if as_song:
         for key, required in (("title", True), ("artist", False)):
             fields[key], err = _text(body, key, _MAX_TEXT, required=required)
             if err is not None:
                 return err
     else:
-        fields["text"], err = _text(body, "text", _MAX_NOTE_TEXT, required=True)
+        limit = {"dislike": _MAX_DISLIKE_TEXT, "mood": _MAX_MOOD_TEXT}.get(kind, _MAX_NOTE_TEXT)
+        fields["text"], err = _text(body, "text", limit, required=True)
         if err is not None:
             return err
     try:
@@ -365,10 +381,18 @@ async def _handle_add_memory(request: web.Request, ctx: Any) -> web.Response:
             lambda: _store(ctx).add_memory(kind, origin=origin, **fields)
         )
     except MemoryFull:
-        return web.json_response(
-            {"error": "memory is full of your own items", "code": "memory_full"}, status=409
-        )
+        return _memory_full(kind)
+    if kind in TASTE_KINDS:
+        taste.start(ctx, request.app.get("state"))
     return web.json_response(item, status=201)
+
+
+def _memory_full(kind: str) -> web.Response:
+    """A 409 naming the kind, so the page says which list is full of the person's own items."""
+    return web.json_response(
+        {"error": f"{kind} memory is full of your own and pinned items", "code": "memory_full", "kind": kind},
+        status=409,
+    )
 
 
 async def _handle_update_memory(request: web.Request, ctx: Any) -> web.Response:
@@ -381,6 +405,7 @@ async def _handle_update_memory(request: web.Request, ctx: Any) -> web.Response:
     assert body is not None
     text = None
     if "text" in body:
+        # The store edits a note's or a worded dislike's text only; both fit this.
         text, err = _text(body, "text", _MAX_NOTE_TEXT, required=True)
         if err is not None:
             return err
@@ -420,6 +445,47 @@ async def _handle_memory_used(request: web.Request, ctx: Any) -> web.Response:
         return _bad_request("ids must be a short list of item ids", "invalid_field_type")
     marked = await asyncio.to_thread(lambda: _store(ctx).mark_used(ids))
     return web.json_response({"marked": marked})
+
+
+def _line_id(request: web.Request) -> str | None:
+    line_id = request.match_info["id"]
+    return line_id if _ID_RE.fullmatch(line_id) else None
+
+
+async def _handle_edit_line(request: web.Request, ctx: Any) -> web.Response:
+    line_id = _line_id(request)
+    if line_id is None:
+        return _bad_request("not a line id", "invalid_field_type")
+    body, err = await _json_object(request)
+    if err is not None:
+        return err
+    assert body is not None
+    if set(body) != {"text"}:
+        return _bad_request("send text only", "invalid_field_type")
+    text, err = _text(body, "text", PROFILE_LINE_CHARS, required=True)
+    if err is not None:
+        return err
+    line = await asyncio.to_thread(lambda: _store(ctx).edit_profile_line(line_id, text))
+    return web.json_response(line) if line is not None else _not_found()
+
+
+async def _handle_delete_line(request: web.Request, ctx: Any) -> web.Response:
+    line_id = _line_id(request)
+    if line_id is None:
+        return _bad_request("not a line id", "invalid_field_type")
+    gone = await asyncio.to_thread(lambda: _store(ctx).delete_profile_line(line_id))
+    return web.json_response({"deleted": line_id}) if gone else _not_found()
+
+
+async def _handle_delete_profile(request: web.Request, ctx: Any) -> web.Response:
+    gone = await asyncio.to_thread(lambda: _store(ctx).delete_profile())
+    return web.json_response({"deleted": gone})
+
+
+async def _handle_run_profile(request: web.Request, ctx: Any) -> web.Response:
+    """Fold again now; the answer is only whether a fold started (it runs in the background)."""
+    started = taste.start(ctx, request.app.get("state"), force=True)
+    return web.json_response({"started": started})
 
 
 async def _handle_settings(request: web.Request, ctx: Any) -> web.Response:
@@ -555,6 +621,10 @@ def register_routes(ctx: Any) -> list[_host.Route]:
         route("DELETE", "/memory/{id}", _owner_only("delete_memory", _handle_delete_memory)),
         route("POST", "/memory/clear-stale", _owner_only("clear_stale", _handle_clear_stale)),
         route("POST", "/memory/used", _owner_only("memory_used", _handle_memory_used)),
+        route("PUT", "/profile/lines/{id}", _owner_only("edit_profile_line", _handle_edit_line)),
+        route("DELETE", "/profile/lines/{id}", _owner_only("delete_profile_line", _handle_delete_line)),
+        route("DELETE", "/profile", _owner_only("delete_profile", _handle_delete_profile)),
+        route("POST", "/profile/run", _owner_only("run_profile", _handle_run_profile)),
         route("PUT", "/settings", _owner_only("settings", _handle_settings)),
         route("PUT", "/play-steps/{site}", _owner_only("set_play_steps", _handle_set_steps)),
         route(

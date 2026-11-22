@@ -423,7 +423,7 @@ export default function MoodMusicPage() {
       song: pick,
       steps: state?.play_steps?.[pick.source]?.steps ?? [],
       why,
-      refill: refill ? { moodTags, queued: queue.map(p => ({ title: p.title, artist: p.artist })) } : null,
+      refill: refill ? { moodTags, queued: queue.map(p => ({ title: p.title, artist: p.artist, arc: p.arc })) } : null,
       state,
       explore,
       stayOnly,
@@ -1113,7 +1113,7 @@ export default function MoodMusicPage() {
         >
           {tab === 'memory' ? (
             <div className="mx-auto max-w-5xl">
-              <MemoryTab memory={state?.memory ?? []} api={moodApi} onChanged={refresh} />
+              <MemoryTab memory={state?.memory ?? []} api={moodApi} onChanged={refresh} profile={state?.profile ?? null} room={state?.memory_room} taste={state?.taste_status} />
             </div>
           ) : tab === 'moments' ? <div className="mx-auto max-w-5xl"><MomentsTab moments={state?.moments ?? []} /></div> : (
             <div className="mm-listen" data-testid="mood-listen">

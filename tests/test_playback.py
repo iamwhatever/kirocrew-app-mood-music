@@ -287,11 +287,13 @@ def test_stay_only_set_on_the_page_then_page_closed_then_refill_follows_it(ctx) 
     assert "Arc: stay only" in ctx.chat_slots.sent[0]
 
 
-def test_a_refill_uses_the_default_arc_when_stay_only_was_never_set(ctx) -> None:
+def test_a_refill_holds_when_stay_only_was_never_set(ctx) -> None:
     queue(ctx, 2)
     assert "stay_only" not in store(ctx).snapshot()["settings"]
     fire(ctx, ended())
-    assert "Arc: stay -> turn -> lift" in ctx.chat_slots.sent[0]
+    # A refill never climbs again from stay: it holds where the queue ended.
+    assert "Arc: hold. Keep the energy where the queue ended" in ctx.chat_slots.sent[0]
+    assert "stay -> turn -> lift" not in ctx.chat_slots.sent[0]
     # Turned off again on the page: the default arc again.
     _call(ctx, "PUT", "/settings", {"stay_only": True})
     _call(ctx, "PUT", "/settings", {"stay_only": False})
@@ -435,8 +437,32 @@ def test_the_play_request_and_reply_id_match_the_page_word_for_word() -> None:
     for case in golden["cases"]:
         i = case["input"]
         out = build_play_request(song=i["song"], steps=i["steps"], why=i["why"], refill=i["refill"],
-                                 memory=i["memory"], explore=i["explore"], stay_only=i["stay_only"])
+                                 memory=i["memory"], explore=i["explore"], stay_only=i["stay_only"],
+                                 profile=i["profile"])
         assert out == case["expected"], case["name"]
-        assert memory_summary(i["memory"])[1] == case["summary_ids"], case["name"]
+        assert memory_summary(i["memory"], i["profile"])[1] == case["summary_ids"], case["name"]
     for source in golden["sources"]:
         assert reply_source(source["content"]) == source["expected"]
+
+
+def test_a_refill_holds_at_the_arc_the_last_queued_song_reached(ctx) -> None:
+    s = store(ctx)
+    s.add_moment("calm", tags=["平静"])
+    q = s.set_queue([pick(1, arc="stay"), pick(2, arc="turn"), pick(3, arc="lift")], source="r0")
+    s.set_playback(pick_id=q[1]["id"])
+    fire(ctx, ended())
+    sent = ctx.chat_slots.sent[0]
+    assert "nearly empty" in sent
+    assert "Arc: hold (the queue ended on a lift song)." in sent
+    assert "never higher than a gentle lift" in sent
+    assert "stay -> turn -> lift" not in sent
+
+
+def test_a_refill_with_stay_only_still_says_stay_only_not_hold(ctx) -> None:
+    s = store(ctx)
+    q = s.set_queue([pick(1, arc="stay"), pick(2, arc="lift")], source="r0")
+    s.set_playback(pick_id=q[0]["id"])
+    s.set_settings(stay_only=True)
+    fire(ctx, ended())
+    assert "Arc: stay only" in ctx.chat_slots.sent[0]
+    assert "Arc: hold" not in ctx.chat_slots.sent[0]
