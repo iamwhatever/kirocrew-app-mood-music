@@ -16,13 +16,13 @@ describe('play request parity with the backend', () => {
         steps: i.steps,
         why: i.why as 'start' | 'ended',
         refill: i.refill ? { moodTags: i.refill.mood_tags, queued: i.refill.queued } : null,
-        state: { memory: i.memory } as unknown as MoodState,
+        state: { memory: i.memory, profile: i.profile } as unknown as MoodState,
         explore: i.explore as ExploreLevel,
         stayOnly: i.stay_only,
       })
       expect(out).toBe(c.expected)
       // The memory a refill carried, which the backend marks used once its picks land.
-      expect(memorySummary(i.memory as never).ids).toEqual(c.summary_ids)
+      expect(memorySummary(i.memory as never, i.profile as never).ids).toEqual(c.summary_ids)
     })
   }
 

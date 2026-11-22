@@ -77,7 +77,7 @@ export interface FeedbackEntry {
   at: number
 }
 
-export type MemoryKind = 'note' | 'liked' | 'skipped' | 'known' | 'mood'
+export type MemoryKind = 'note' | 'liked' | 'skipped' | 'known' | 'mood' | 'dislike'
 
 /** One thing the buddy knows about the person (design §2). */
 export interface MemoryItem {
@@ -97,6 +97,41 @@ export interface MemoryItem {
 export type NewMemory =
   | { kind: 'note' | 'mood'; text: string; origin?: 'user' | 'app' }
   | { kind: 'liked' | 'skipped' | 'known'; title: string; artist?: string; origin?: 'user' | 'app' }
+  /** A dislike is a song (title, artist) or a few words (text). */
+  | { kind: 'dislike'; text: string; origin?: 'user' | 'app' }
+  | { kind: 'dislike'; title: string; artist?: string; origin?: 'user' | 'app' }
+
+/** One line of the taste profile, with the songs (or words) it came from. */
+export interface ProfileLine {
+  id: string
+  text: string
+  /** `user` once the person edited it: no later fold replaces it. */
+  origin: 'user' | 'app'
+  sources: { id: string; title: string; artist: string }[]
+}
+
+/** The taste profile the backend folds from liked, skipped and disliked items (`backend/taste.py`). */
+export interface TasteProfile {
+  likes: ProfileLine[]
+  dislikes: ProfileLine[]
+  updated_at: number
+  /** How many items the last fold read, and how many app songs it then removed. */
+  folded: number
+  pruned: number
+}
+
+/** Per kind: items held, the cap, and how many are the person's own or pinned (never evicted). */
+export type MemoryRoom = Partial<Record<MemoryKind, { count: number; cap: number; own: number }>>
+
+/** Where the next fold stands. */
+export interface TasteStatus {
+  /** New liked / skipped / dislike items since the last fold, and how many start one. */
+  pending: number
+  every: number
+  running: boolean
+  /** Why the last fold kept nothing: `bad_output` or `no_model`; '' when it worked. */
+  error: string
+}
 
 export interface MoodState {
   moments: Moment[]
@@ -109,6 +144,10 @@ export interface MoodState {
   play_steps?: Partial<Record<PickSource, { steps: string[]; updated_at: number }>>
   /** The song in the buddy's tab, as the page or the backend last started it. Absent on an older backend. */
   playback?: Playback
+  /** The taste profile; null before the first fold. Absent on an older backend. */
+  profile?: TasteProfile | null
+  memory_room?: MemoryRoom
+  taste_status?: TasteStatus
 }
 
 /** Shared with the backend, so one song's end wakes the buddy once, page open or closed. */
@@ -201,6 +240,13 @@ export function createMoodApi(api: AppApi) {
     deleteMemory: (id: string) => api.del<{ deleted: string }>(`${BASE}/memory/${encodeURIComponent(id)}`),
     clearStale: () => api.post<{ removed: number }>(`${BASE}/memory/clear-stale`),
     markUsed: (ids: string[]) => api.post<{ marked: number }>(`${BASE}/memory/used`, { ids }),
+    /** The person's own words for one profile line: theirs now, never folded over. */
+    editProfileLine: (id: string, text: string) =>
+      api.put<ProfileLine>(`${BASE}/profile/lines/${encodeURIComponent(id)}`, { text }),
+    deleteProfileLine: (id: string) => api.del<{ deleted: string }>(`${BASE}/profile/lines/${encodeURIComponent(id)}`),
+    deleteProfile: () => api.del<{ deleted: boolean }>(`${BASE}/profile`),
+    /** Fold the profile again now, in the background. */
+    runProfile: () => api.post<{ started: boolean }>(`${BASE}/profile/run`),
     openSlot,
     getSlot: (key: string) => api.get<SlotData>(`/api/chat/slots/${encodeURIComponent(key)}`),
     /** Answer one tool approval once: never Trust, which would approve every later call too. */

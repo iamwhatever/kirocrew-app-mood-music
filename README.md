@@ -171,7 +171,16 @@ on this page; it is not listed in Kiro Crew's sessions.
 7. Open **Memory** to see your own notes and the songs and moods the app recorded.
    Add, edit, pin or delete any of them; **Clear everything out of date** removes
    what the app recorded and has not used for 90 days. What you wrote yourself is
-   never removed for you.
+   never removed for you. Add a **Not for me** item too: a song, or a few words like
+   "太吵的电子". The tab says plainly when a list is nearly full, or full of your own
+   and pinned items (then adding stops with a message until you delete one).
+   **Your taste, in short** at the top is written in the background after about 20
+   new likes, skips or "not for me" items: a few lines of what you like and what is
+   not for you, each naming the songs it came from. Edit a line and it is yours (a
+   later run never changes it), delete a line or the whole summary, or press **Run
+   again**. After a run, older songs the app recorded are cleared, except the 5
+   newest of each kind, pinned ones and the ones a line names; the buddy still never
+   offers a cleared song as new.
 8. Open **Moments** to see the moods you shared and the songs they brought.
 9. The background follows the mood. A chip sets its scene at once. The buddy
    picks a new scene only when your mood clearly shifts, and the scene drifts
@@ -185,8 +194,11 @@ on this page; it is not listed in Kiro Crew's sessions.
   `$KIROCREW_HOME` if you set it). It holds your moods, the current list, your likes
   and skips, and the Memory tab.
 - **What leaves your computer:** your mood text and a short summary of your memory
-  (your notes, songs you liked, skipped or know, recent moods) go to the AI model
-  Kiro Crew uses, so the buddy can pick. The buddy searches the public web. To check
+  (your notes and "not for me" items, the taste summary, a few songs you liked or
+  skipped, songs you know, recent moods) go to the AI model
+  Kiro Crew uses, so the buddy can pick. To write the taste summary, the list of
+  songs you liked, skipped or marked "not for me" goes to the same model, in a
+  hidden chat of its own with no tools. The buddy searches the public web. To check
   song link the buddy gives, the app asks `www.youtube.com/oembed` or
   `api.bilibili.com` about that one video, with no cookie. Songs play on YouTube or
   bilibili in Kiro Crew's browser. Since 0.2.6 the buddy's chat is opened by the app
@@ -252,6 +264,7 @@ No. It plays YouTube and bilibili songs in Kiro Crew's browser.
 | Path | What it is |
 |---|---|
 | `app.json` | The manifest: page, agent, skill, backend hook, `permissions.chatSlots`, `hiddenSessions`, `browserSites` and `browser: ["view"]` |
+| `agents/taste.json` | The taste summarizer (no tools): `backend/taste.py` opens it in a fresh hidden chat for each run, then closes that chat |
 | `agents/dj.json`, `skills/mood-music/` | The music buddy agent (`web_search` and `web_fetch`, both run without asking, and Kiro Crew's `browser` on the approved `permissions.browserSites` pages) and its reply contract; the page also sends the contract and a bounded memory summary with every request (`ui/src/request.prompt.ts`). It pins no model, so it runs on your default |
 | `backend/` | Routes (`hooks.routes`), the buddy's hidden chat through `ctx.chat_slots` (`buddy.py`), the JSON store with memory, the link checks, and `verify.py` (the YouTube oEmbed / bilibili view lookups) |
 | `ui/src/`, `ui/dist/index.mjs` | The page, and its committed ESM bundle |

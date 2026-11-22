@@ -39,10 +39,30 @@ MAX_QUEUE = 12
 VERDICTS = ("liked", "skipped", "")
 
 #: Memory kinds; the song kinds carry ``title`` / ``artist``, the others ``text``.
+#: A ``dislike`` carries either: a song (``title`` / ``artist``) or a few words (``text``).
 SONG_KINDS = ("liked", "skipped", "known")
-MEMORY_KINDS = ("note", *SONG_KINDS, "mood")
+MEMORY_KINDS = ("note", *SONG_KINDS, "mood", "dislike")
 ORIGINS = ("user", "app")
-MEMORY_CAPS = {"note": 100, "liked": 300, "skipped": 300, "known": 300, "mood": 100}
+MEMORY_CAPS = {"note": 100, "liked": 300, "skipped": 300, "known": 300, "mood": 100, "dislike": 100}
+#: A kind this full (share of its cap) is "nearly full" in the Memory tab.
+NEAR_FULL = 0.9
+#: The kinds the taste profile is folded from (``taste.py``).
+TASTE_KINDS = ("liked", "skipped", "dislike")
+#: Fold once this many new liked / skipped / dislike items came in since the last fold.
+FOLD_EVERY = 20
+#: A fold that started this long ago and never finished is given up (the gateway stopped).
+FOLD_TIMEOUT = 10 * 60
+#: Per side ("likes", "dislikes"): lines the model writes, and lines in all.
+PROFILE_MODEL_LINES = 6
+PROFILE_MAX_LINES = 12
+PROFILE_LINE_CHARS = 120
+PROFILE_MAX_SOURCES = 5
+PROFILE_SIDES = ("likes", "dislikes")
+#: After a fold, this many newest app-recorded songs of each folded kind stay as examples.
+KEEP_RECENT = 5
+#: Songs pruned (or evicted) from memory, kept as title / artist so they are never
+#: picked as new again. Oldest leave first.
+MAX_HEARD = 1000
 #: An app item unused this long is "maybe stale".
 STALE_AFTER = 90 * 86400
 #: A song that was an anchor this recently is not an anchor again.
@@ -94,6 +114,9 @@ def _empty() -> dict[str, Any]:
         "settings": dict(DEFAULT_SETTINGS),
         "play_steps": {},
         "playback": dict(_NO_PLAYBACK),
+        "profile": None,
+        "heard": [],
+        "taste": {"pending": 0, "running_at": 0, "started_pending": 0, "error": ""},
     }
 
 
@@ -103,14 +126,84 @@ def _song_key(title: str, artist: str = "") -> tuple[str, str]:
     return song_key(title, artist)
 
 
+def _is_song(kind: str, item: dict[str, Any]) -> bool:
+    return kind in SONG_KINDS or (kind == "dislike" and bool(item.get("title")))
+
+
 def _same_item(item: dict[str, Any], kind: str, text: str, key: tuple[str, str]) -> bool:
     if item.get("kind") != kind:
         return False
-    if kind in SONG_KINDS:
+    if kind == "dislike" and bool(item.get("title")) != bool(key[0]):
+        return False
+    if _is_song(kind, item):
         from .verify import same_song
 
         return same_song(_song_key(item.get("title", ""), item.get("artist", "")), key)
     return str(item.get("text", "")).casefold() == text.casefold()
+
+
+def _room(memory: list[dict[str, Any]]) -> dict[str, dict[str, int]]:
+    """Per kind: how many items, its cap, and how many are the person's own or pinned.
+
+    ``own`` at the cap means the kind is full: nothing can be evicted to add one.
+    """
+    room = {k: {"count": 0, "cap": cap, "own": 0} for k, cap in MEMORY_CAPS.items()}
+    for m in memory:
+        r = room.get(str(m.get("kind")))
+        if r is None:
+            continue
+        r["count"] += 1
+        if m.get("origin") == "user" or m.get("pinned"):
+            r["own"] += 1
+    return room
+
+
+def _fold_running(taste: dict[str, Any], now: float) -> bool:
+    started = float(taste.get("running_at") or 0)
+    return bool(started) and now - started < FOLD_TIMEOUT
+
+
+def _remember_heard(state: dict[str, Any], items: list[dict[str, Any]]) -> None:
+    """Keep the title / artist of songs leaving memory, so they are not picked as new."""
+    heard = [
+        {"title": str(m.get("title")), "artist": str(m.get("artist") or ""), "verdict": str(m.get("kind"))}
+        for m in items
+        if m.get("title")
+    ]
+    if heard:
+        state["heard"] = [*heard, *state["heard"]][:MAX_HEARD]
+
+
+def _read_line(raw: Any) -> dict[str, Any] | None:
+    if not isinstance(raw, dict):
+        return None
+    text, origin, line_id = raw.get("text"), raw.get("origin"), raw.get("id")
+    if not (isinstance(text, str) and 0 < len(text) <= PROFILE_LINE_CHARS and origin in ORIGINS
+            and isinstance(line_id, str) and line_id):
+        return None
+    sources = []
+    for src in raw.get("sources") if isinstance(raw.get("sources"), list) else []:
+        if isinstance(src, dict) and isinstance(src.get("title"), str) and src["title"]:
+            sources.append({
+                "id": str(src.get("id") or ""),
+                "title": src["title"][:200],
+                "artist": str(src.get("artist") or "")[:200],
+            })
+    return {"id": line_id, "text": text, "origin": origin, "sources": sources[:PROFILE_MAX_SOURCES]}
+
+
+def _read_profile(raw: Any) -> dict[str, Any] | None:
+    """A stored profile, each line checked; ``None`` for none or a damaged one."""
+    if not isinstance(raw, dict):
+        return None
+    out: dict[str, Any] = {}
+    for side in PROFILE_SIDES:
+        lines = raw.get(side) if isinstance(raw.get(side), list) else []
+        out[side] = [ln for ln in (_read_line(r) for r in lines) if ln][:PROFILE_MAX_LINES]
+    for key in ("updated_at", "folded", "pruned"):
+        value = raw.get(key)
+        out[key] = value if isinstance(value, (int, float)) and not isinstance(value, bool) else 0
+    return out
 
 
 class MoodStore:
@@ -138,7 +231,7 @@ class MoodStore:
             logger.warning("mood music state was unreadable; moved aside")
             return _empty()
         state = _empty()
-        for key in ("moments", "queue", "feedback", "memory", "anchors"):
+        for key in ("moments", "queue", "feedback", "memory", "anchors", "heard"):
             if isinstance(data.get(key), list):
                 state[key] = [r for r in data[key] if isinstance(r, dict)]
         if isinstance(data.get("last_source"), str):
@@ -179,6 +272,13 @@ class MoodStore:
                 state["playback"][key] = played[key]
         if isinstance(played.get("paused"), bool):
             state["playback"]["paused"] = played["paused"]
+        state["profile"] = _read_profile(data.get("profile"))
+        taste = data.get("taste") if isinstance(data.get("taste"), dict) else {}
+        for key in ("pending", "running_at", "started_pending"):
+            if isinstance(taste.get(key), (int, float)) and not isinstance(taste.get(key), bool):
+                state["taste"][key] = taste[key]
+        if isinstance(taste.get("error"), str):
+            state["taste"]["error"] = taste["error"][:40]
         if not isinstance(data.get("memory"), list):
             # A file from before memory: its likes and skips become memory items.
             for f in reversed(state["feedback"]):
@@ -214,9 +314,17 @@ class MoodStore:
         with self._lock:
             state = self._read()
         now = self._now()
+        state["memory_room"] = _room(state["memory"])
         state["memory"] = [{**m, "stale": self._stale(m, now)} for m in state["memory"]]
-        state.pop("anchors", None)
-        state.pop("continuous_choice", None)
+        taste = state.pop("taste")
+        state["taste_status"] = {
+            "pending": int(taste["pending"]),
+            "every": FOLD_EVERY,
+            "running": _fold_running(taste, now),
+            "error": taste["error"],
+        }
+        for private in ("anchors", "continuous_choice", "heard"):
+            state.pop(private, None)
         return state
 
     def set_play_steps(self, site: str, steps: list[str]) -> dict[str, Any]:
@@ -329,13 +437,16 @@ class MoodStore:
                     raise MemoryFull(kind)
                 oldest = min(evictable, key=lambda m: m.get("last_used_at") or 0)
                 memory.remove(oldest)
+                _remember_heard(state, [oldest])
             item = {"id": uuid.uuid4().hex, "kind": kind, "origin": origin, "pinned": False,
                     "created_at": now, "last_used_at": now}
-            if kind in SONG_KINDS:
+            if kind in SONG_KINDS or (kind == "dislike" and title):
                 item.update(title=title, artist=artist)
             else:
                 item["text"] = text
             memory.insert(0, item)
+        if kind in TASTE_KINDS:
+            state["taste"]["pending"] = int(state["taste"]["pending"]) + 1
         # A newer like replaces an older skip of the same song, and the other way round.
         other = {"liked": "skipped", "skipped": "liked"}.get(kind)
         if other:
@@ -357,13 +468,14 @@ class MoodStore:
     def update_memory(
         self, item_id: str, *, text: str | None = None, pinned: bool | None = None
     ) -> dict[str, Any] | None:
-        """Edit a note's text or any item's pin; ``None`` when there is no such item."""
+        """Edit a note's (or a worded dislike's) text or any item's pin; ``None`` when there is none."""
         with self._lock:
             state = self._read()
             item = next((m for m in state["memory"] if m.get("id") == item_id), None)
             if item is None:
                 return None
-            if text is not None and item.get("kind") == "note":
+            if text is not None and (item.get("kind") == "note"
+                                     or (item.get("kind") == "dislike" and not item.get("title"))):
                 item["text"] = text
             if pinned is not None:
                 item["pinned"] = pinned
@@ -416,7 +528,9 @@ class MoodStore:
         """The songs a check drops (``verify.verify_picks`` keywords).
 
         Liked and known songs are ``known``; a skip a later like replaced no
-        longer counts; anchors from the last 30 days are ``recent_anchors``.
+        longer counts; a disliked song is ``skipped``; the "already heard" list
+        (songs pruned after a fold) keeps its verdict; anchors from the last 30
+        days are ``recent_anchors``.
         """
         with self._lock:
             state = self._read()
@@ -428,10 +542,138 @@ class MoodStore:
                 out["known"].append(key)
             elif m.get("kind") == "skipped" and not m.get("superseded_at"):
                 out["skipped"].append(key)
+            elif m.get("kind") == "dislike" and m.get("title"):
+                out["skipped"].append(key)
+        # Songs pruned after a fold (or evicted at the cap) still count: a liked or
+        # known one is never new again, a skipped or disliked one never comes back.
+        for h in state["heard"]:
+            key = _song_key(str(h.get("title") or ""), str(h.get("artist") or ""))
+            out["skipped" if h.get("verdict") in ("skipped", "dislike") else "known"].append(key)
         for a in state["anchors"]:
             if now - float(a.get("at") or 0) <= ANCHOR_WINDOW:
                 out["recent_anchors"].append(_song_key(a.get("title", ""), a.get("artist", "")))
         return out
+
+    # ── the taste profile (``taste.py``) ──
+
+    def begin_fold(self, *, force: bool = False) -> list[dict[str, Any]] | None:
+        """The liked, skipped and disliked items to fold, and the fold marked running.
+
+        ``None`` when a fold runs already, when fewer than :data:`FOLD_EVERY` new
+        items came in (unless *force*, the person's "run again"), or when there is
+        nothing to fold. A skip a later like replaced is left out.
+        """
+        now = self._now()
+        with self._lock:
+            state = self._read()
+            taste = state["taste"]
+            if _fold_running(taste, now) or (not force and taste["pending"] < FOLD_EVERY):
+                return None
+            items = [m for m in state["memory"]
+                     if m.get("kind") in TASTE_KINDS and not m.get("superseded_at")]
+            if not items:
+                return None
+            taste.update(running_at=now, started_pending=taste["pending"])
+            self._write(state)
+        return items
+
+    def finish_fold(
+        self,
+        lines: dict[str, list[dict[str, Any]]] | None,
+        folded: list[dict[str, Any]],
+        *,
+        error: str = "bad_output",
+    ) -> bool:
+        """Keep the model's checked *lines* and prune the app songs they folded.
+
+        *lines* ``None`` (bad output, or no model to ask: *error* says which):
+        the old profile stays and nothing is pruned. Lines the person edited are theirs and stay; the model's lines
+        replace the model's old ones. Then every app-recorded, unpinned liked /
+        skipped item in *folded* leaves memory, except the :data:`KEEP_RECENT`
+        newest of each kind and every song a line cites; a song that leaves is
+        kept in the "already heard" list. Nothing the person wrote or pinned is
+        removed. Counted either way: the new items it saw no longer wait.
+        """
+        now = self._now()
+        with self._lock:
+            state = self._read()
+            taste = state["taste"]
+            # Items that came in while it ran still wait for the next fold.
+            seen = int(taste["started_pending"] or 0)
+            taste.update(running_at=0, started_pending=0, pending=max(0, int(taste["pending"]) - seen))
+            if lines is None:
+                taste["error"] = error
+                self._write(state)
+                return False
+            taste["error"] = ""
+            old = state["profile"] or {}
+            profile: dict[str, Any] = {}
+            for side in PROFILE_SIDES:
+                mine = [ln for ln in old.get(side, []) if ln.get("origin") == "user"]
+                own_text = {ln["text"].casefold() for ln in mine}
+                fresh = [ln for ln in lines.get(side, []) if ln["text"].casefold() not in own_text]
+                room = max(0, PROFILE_MAX_LINES - len(mine))
+                profile[side] = [*mine, *fresh[:min(room, PROFILE_MODEL_LINES)]]
+            cited = {src["id"] for side in PROFILE_SIDES for ln in profile[side] for src in ln["sources"]}
+            folded_ids = {m.get("id") for m in folded}
+            keep: set[Any] = set()
+            for kind in ("liked", "skipped"):
+                app_items = [m for m in state["memory"] if m.get("kind") == kind and m.get("origin") == "app"]
+                app_items.sort(key=lambda m: -float(m.get("last_used_at") or 0))
+                keep.update(m.get("id") for m in app_items[:KEEP_RECENT])
+            gone = [
+                m for m in state["memory"]
+                if m.get("id") in folded_ids
+                and m.get("kind") in ("liked", "skipped")
+                and m.get("origin") == "app"
+                and not m.get("pinned")
+                and m.get("id") not in cited
+                and m.get("id") not in keep
+            ]
+            gone_ids = {m.get("id") for m in gone}
+            state["memory"] = [m for m in state["memory"] if m.get("id") not in gone_ids]
+            _remember_heard(state, gone)
+            profile.update(updated_at=now, folded=len(folded), pruned=len(gone))
+            state["profile"] = profile
+            self._write(state)
+        return True
+
+    def edit_profile_line(self, line_id: str, text: str) -> dict[str, Any] | None:
+        """The person's words for one line: it is theirs now and no fold replaces it."""
+        with self._lock:
+            state = self._read()
+            profile = state["profile"]
+            for side in PROFILE_SIDES:
+                for line in (profile or {}).get(side, []):
+                    if line["id"] == line_id:
+                        line.update(text=text, origin="user")
+                        self._write(state)
+                        return dict(line)
+        return None
+
+    def delete_profile_line(self, line_id: str) -> bool:
+        with self._lock:
+            state = self._read()
+            profile = state["profile"]
+            if not profile:
+                return False
+            for side in PROFILE_SIDES:
+                rest = [ln for ln in profile[side] if ln["id"] != line_id]
+                if len(rest) != len(profile[side]):
+                    profile[side] = rest
+                    self._write(state)
+                    return True
+        return False
+
+    def delete_profile(self) -> bool:
+        """Forget the whole profile, the person's own lines too (they pressed delete)."""
+        with self._lock:
+            state = self._read()
+            if state["profile"] is None:
+                return False
+            state["profile"] = None
+            self._write(state)
+        return True
 
     # ── writes ──
 

@@ -214,7 +214,11 @@ def test_memory_add_edit_pin_delete_and_clear(ctx) -> None:
         {"kind": "secret", "text": "x"},
         {"kind": "note", "text": "x", "origin": "agent"},
         {"kind": "note", "text": ""},
-        {"kind": "note", "text": "x" * 61},
+        {"kind": "note", "text": "x" * 201},
+        {"kind": "dislike", "text": "x" * 101},
+        {"kind": "dislike", "text": ""},
+        {"kind": "dislike", "text": "loud", "title": "a song"},
+        {"kind": "dislike", "artist": "no title"},
         {"kind": "known", "artist": "no title"},
         {"kind": "note", "text": ["x"]},
     ],
@@ -286,6 +290,10 @@ ROUTES = [
     ("PUT", "/settings", {"explore": "explore"}, "settings"),
     ("PUT", "/play-steps/bilibili", {"steps": ["open search"]}, "set_play_steps"),
     ("DELETE", "/play-steps/bilibili", None, "forget_play_steps"),
+    ("PUT", f"/profile/lines/{'0' * 32}", {"text": "quiet piano"}, "edit_profile_line"),
+    ("DELETE", f"/profile/lines/{'0' * 32}", None, "delete_profile_line"),
+    ("DELETE", "/profile", None, "delete_profile"),
+    ("POST", "/profile/run", None, "run_profile"),
 ]
 
 
