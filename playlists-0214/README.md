@@ -1,0 +1,1 @@
+FAKE DATA. Real Mood Music page code (feat/playlists-0.2.14) with Kiro Crew dashboard CSS; SDK, chat slot, live browser view, media and backend are stand-ins. facts.json: per shot, the save message, whether Create is enabled, the queue after Play and the row marked now playing.

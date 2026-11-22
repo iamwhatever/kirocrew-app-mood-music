@@ -1,0 +1,82 @@
+{
+  "wide-light": {
+    "viewport": [
+      1440,
+      900
+    ],
+    "theme": "light",
+    "saved": "已存为“想念 · 温暖 · 11月22日”",
+    "createLabel": "建歌单（4）",
+    "createEnabled": true,
+    "lists": 3,
+    "queue": [
+      "正在播放 | Holocene | Bon Iver",
+      "2 | 晴天 | 周杰伦",
+      "3 | 夜空中最亮的星 | 逃跑计划"
+    ],
+    "marker": "正在播放\nHolocene\nBon Iver\nYouTube",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  "wide-dark": {
+    "viewport": [
+      1440,
+      900
+    ],
+    "theme": "dark",
+    "saved": "已存为“想念 · 温暖 · 11月22日”",
+    "createLabel": "建歌单（4）",
+    "createEnabled": true,
+    "lists": 3,
+    "queue": [
+      "正在播放 | Holocene | Bon Iver",
+      "2 | 晴天 | 周杰伦",
+      "3 | 夜空中最亮的星 | 逃跑计划"
+    ],
+    "marker": "正在播放\nHolocene\nBon Iver\nYouTube",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  "narrow-light": {
+    "viewport": [
+      420,
+      860
+    ],
+    "theme": "light",
+    "saved": "已存为“想念 · 温暖 · 11月22日”",
+    "createLabel": "建歌单（4）",
+    "createEnabled": true,
+    "lists": 3,
+    "queue": [
+      "正在播放 | Holocene | Bon Iver",
+      "2 | 晴天 | 周杰伦",
+      "3 | 夜空中最亮的星 | 逃跑计划"
+    ],
+    "marker": "正在播放\nHolocene\nBon Iver\nYouTube",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  "narrow-dark": {
+    "viewport": [
+      420,
+      860
+    ],
+    "theme": "dark",
+    "saved": "已存为“想念 · 温暖 · 11月22日”",
+    "createLabel": "建歌单（4）",
+    "createEnabled": true,
+    "lists": 3,
+    "queue": [
+      "正在播放 | Holocene | Bon Iver",
+      "2 | 晴天 | 周杰伦",
+      "3 | 夜空中最亮的星 | 逃跑计划"
+    ],
+    "marker": "正在播放\nHolocene\nBon Iver\nYouTube",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  }
+}
