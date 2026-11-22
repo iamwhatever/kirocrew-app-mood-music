@@ -1,0 +1,106 @@
+{
+  "wide-light": {
+    "viewport": [
+      1440,
+      900
+    ],
+    "theme": "light",
+    "reduced": false,
+    "busy": {
+      "inputDisabled": false,
+      "sendDisabled": false,
+      "stop": 1,
+      "placeholder": "搭子在忙，也可以插一句…"
+    },
+    "cutInCalls": [
+      "07:33:01 api POST /api/chat?ws=1 msg=\"[Mood Music]\\nMessage: 要暖一点的，别太伤感\\n\\nThe person typed this in the one box on the page. It may be a fee",
+      "07:33:02 api GET /api/chat/slots/dashboard%3Amood-music-buddy",
+      "07:33:03 api GET /api/chat/slots/dashboard%3Amood-music-buddy"
+    ],
+    "marks": 1,
+    "boxAfter": "",
+    "cards": 4,
+    "marksAfter": 1,
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  "wide-dark": {
+    "viewport": [
+      1440,
+      900
+    ],
+    "theme": "dark",
+    "reduced": false,
+    "busy": {
+      "inputDisabled": false,
+      "sendDisabled": false,
+      "stop": 1,
+      "placeholder": "搭子在忙，也可以插一句…"
+    },
+    "cutInCalls": [
+      "07:33:17 api POST /api/chat?ws=1 msg=\"[Mood Music]\\nMessage: 要暖一点的，别太伤感\\n\\nThe person typed this in the one box on the page. It may be a fee",
+      "07:33:18 api GET /api/chat/slots/dashboard%3Amood-music-buddy",
+      "07:33:19 api GET /api/chat/slots/dashboard%3Amood-music-buddy"
+    ],
+    "marks": 1,
+    "boxAfter": "",
+    "cards": 4,
+    "marksAfter": 1,
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  "narrow-light": {
+    "viewport": [
+      420,
+      860
+    ],
+    "theme": "light",
+    "reduced": false,
+    "busy": {
+      "inputDisabled": false,
+      "sendDisabled": false,
+      "stop": 1,
+      "placeholder": "搭子在忙，也可以插一句…"
+    },
+    "cutInCalls": [
+      "07:33:33 api POST /api/chat?ws=1 msg=\"[Mood Music]\\nMessage: 要暖一点的，别太伤感\\n\\nThe person typed this in the one box on the page. It may be a fee",
+      "07:33:34 api GET /api/chat/slots/dashboard%3Amood-music-buddy",
+      "07:33:35 api GET /api/chat/slots/dashboard%3Amood-music-buddy"
+    ],
+    "marks": 1,
+    "boxAfter": "",
+    "cards": 4,
+    "marksAfter": 1,
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  "narrow-dark": {
+    "viewport": [
+      420,
+      860
+    ],
+    "theme": "dark",
+    "reduced": true,
+    "busy": {
+      "inputDisabled": false,
+      "sendDisabled": false,
+      "stop": 1,
+      "placeholder": "搭子在忙，也可以插一句…"
+    },
+    "cutInCalls": [
+      "07:33:48 api POST /api/chat?ws=1 msg=\"[Mood Music]\\nMessage: 要暖一点的，别太伤感\\n\\nThe person typed this in the one box on the page. It may be a fee",
+      "07:33:49 api GET /api/chat/slots/dashboard%3Amood-music-buddy",
+      "07:33:50 api GET /api/chat/slots/dashboard%3Amood-music-buddy"
+    ],
+    "marks": 1,
+    "boxAfter": "",
+    "cards": 4,
+    "marksAfter": 1,
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  }
+}
