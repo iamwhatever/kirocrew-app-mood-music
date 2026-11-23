@@ -7022,42 +7022,46 @@ function SitesTab({ sites }) {
 				className: "flex flex-col gap-2",
 				"data-testid": "sites-rows",
 				children: rows.map((row) => /* @__PURE__ */ jsxs("li", {
-					className: "flex flex-wrap items-center gap-2 rounded-xl border border-[var(--border)] px-3 py-2",
+					className: "flex flex-col gap-2 rounded-xl border border-[var(--border)] px-3 py-2",
 					"data-testid": "site-row",
 					"data-site": row.site,
 					"data-status": row.status,
-					children: [
-						/* @__PURE__ */ jsx(Globe, {
+					children: [/* @__PURE__ */ jsxs("span", {
+						className: "flex min-w-0 items-center gap-2",
+						children: [/* @__PURE__ */ jsx(Globe, {
 							size: 14,
 							"aria-hidden": "true",
 							className: "shrink-0 text-[var(--muted)]"
-						}),
-						/* @__PURE__ */ jsx("code", {
+						}), /* @__PURE__ */ jsx("code", {
 							className: "min-w-0 flex-1 break-all font-mono text-[13px] text-[var(--text)]",
 							children: row.site
-						}),
-						/* @__PURE__ */ jsx("span", {
-							className: `${badge} border-[var(--border)] text-[var(--muted)]`,
-							"data-testid": "site-source",
-							children: row.source === "app" ? t("sites.source_app") : t("sites.source_owner")
-						}),
-						/* @__PURE__ */ jsx("span", {
-							className: `${badge} ${STATUS_CLASS[row.status] ?? ""}`,
-							"data-testid": "site-status",
-							children: t(`sites.status_${row.status}`)
-						}),
-						/* @__PURE__ */ jsx("span", {
-							className: "flex shrink-0 flex-wrap gap-1",
-							children: rowActions(row).map((a) => /* @__PURE__ */ jsx(Btn, {
-								type: "button",
-								primary: a.primary,
-								disabled: busy,
-								"aria-label": t(`${a.label}_named`, { site: row.site }),
-								onClick: () => void run(a.action, row.site),
-								children: t(a.label)
-							}, a.action))
-						})
-					]
+						})]
+					}), /* @__PURE__ */ jsxs("span", {
+						className: "flex flex-wrap items-center gap-2",
+						children: [
+							/* @__PURE__ */ jsx("span", {
+								className: `${badge} border-[var(--border)] text-[var(--muted)]`,
+								"data-testid": "site-source",
+								children: row.source === "app" ? t("sites.source_app") : t("sites.source_owner")
+							}),
+							/* @__PURE__ */ jsx("span", {
+								className: `${badge} ${STATUS_CLASS[row.status] ?? ""}`,
+								"data-testid": "site-status",
+								children: t(`sites.status_${row.status}`)
+							}),
+							/* @__PURE__ */ jsx("span", {
+								className: "ml-auto flex shrink-0 flex-wrap gap-1",
+								children: rowActions(row).map((a) => /* @__PURE__ */ jsx(Btn, {
+									type: "button",
+									primary: a.primary,
+									disabled: busy,
+									"aria-label": t(`${a.label}_named`, { site: row.site }),
+									onClick: () => void run(a.action, row.site),
+									children: t(a.label)
+								}, a.action))
+							})
+						]
+					})]
 				}, row.site))
 			})]
 		}), /* @__PURE__ */ jsxs("div", {

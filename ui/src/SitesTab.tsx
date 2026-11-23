@@ -135,14 +135,17 @@ export default function SitesTab({ sites }: { sites: BrowserSites | null }) {
         ) : (
           <ul className="flex flex-col gap-2" data-testid="sites-rows">
             {rows.map(row => (
-              <li key={row.site} className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--border)] px-3 py-2" data-testid="site-row" data-site={row.site} data-status={row.status}>
-                <Globe size={14} aria-hidden="true" className="shrink-0 text-[var(--muted)]" />
-                <code className="min-w-0 flex-1 break-all font-mono text-[13px] text-[var(--text)]">{row.site}</code>
+              <li key={row.site} className="flex flex-col gap-2 rounded-xl border border-[var(--border)] px-3 py-2" data-testid="site-row" data-site={row.site} data-status={row.status}>
+                <span className="flex min-w-0 items-center gap-2">
+                  <Globe size={14} aria-hidden="true" className="shrink-0 text-[var(--muted)]" />
+                  <code className="min-w-0 flex-1 break-all font-mono text-[13px] text-[var(--text)]">{row.site}</code>
+                </span>
+                <span className="flex flex-wrap items-center gap-2">
                 <span className={`${badge} border-[var(--border)] text-[var(--muted)]`} data-testid="site-source">
                   {row.source === 'app' ? t('sites.source_app') : t('sites.source_owner')}
                 </span>
                 <span className={`${badge} ${STATUS_CLASS[row.status] ?? ''}`} data-testid="site-status">{t(`sites.status_${row.status}`)}</span>
-                <span className="flex shrink-0 flex-wrap gap-1">
+                <span className="ml-auto flex shrink-0 flex-wrap gap-1">
                   {rowActions(row).map(a => (
                     <Btn
                       key={a.action}
@@ -155,6 +158,7 @@ export default function SitesTab({ sites }: { sites: BrowserSites | null }) {
                       {t(a.label)}
                     </Btn>
                   ))}
+                </span>
                 </span>
               </li>
             ))}
