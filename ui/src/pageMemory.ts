@@ -18,7 +18,7 @@ export const PAGE_KEY = 'mood-music:page'
 /** Larger than this, the saved view is dropped rather than stored in part. */
 export const PAGE_MAX_BYTES = 8 * 1024
 
-export type Tab = 'listen' | 'moments' | 'memory' | 'playlists'
+export type Tab = 'listen' | 'moments' | 'memory' | 'playlists' | 'sites'
 
 export interface SavedPending {
   momentId: string
@@ -55,7 +55,7 @@ export interface PageView {
   held?: QueuedPick | null
 }
 
-const TABS: Tab[] = ['listen', 'moments', 'memory', 'playlists']
+const TABS: Tab[] = ['listen', 'moments', 'memory', 'playlists', 'sites']
 const str = (v: unknown, max: number) => (typeof v === 'string' ? v.slice(0, max) : '')
 
 function readPending(v: unknown): SavedPending | null {

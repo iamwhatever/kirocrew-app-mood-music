@@ -62,8 +62,8 @@ a pause here counts as play. Turn it off and the page remembers. Click **More li
 close to the one you are hearing.
 
 The first time, approve the music sites on the app's page (**Approve the sites**
-takes you there). Mood Music may only open bilibili and YouTube search and video
-pages. Continuous play goes on with the Mood Music page closed, on a Kiro Crew that
+takes you there). By default Mood Music may only open bilibili and YouTube search
+and video pages; the **Sites** tab changes that list (see How to use it). Continuous play goes on with the Mood Music page closed, on a Kiro Crew that
 tells the app when a song ends (KiroCrew#40261): the app wakes the buddy once for the
 next song, and asks for more when the list runs low. **Pause** and turning continuous
 play off hold there too. On an older Kiro Crew it works only while the page is open:
@@ -191,7 +191,17 @@ on this page; it is not listed in Kiro Crew's sessions.
    more**. You can keep 50 lists of up to 200 songs each. Once the taste profile has
    folded older likes away, only the liked songs still in Memory can be picked, and
    the tab says so.
-10. The background follows the mood. A chip sets its scene at once. The buddy
+10. Choose where the buddy may browse on the **Sites** tab. It lists every site,
+   whether it is a default (from the app) or one you added, and whether it is on,
+   waiting for approval, off or removed. **Add** a page address (`https://` and a
+   path, such as `https://music.example.com/song/*`): Kiro Crew asks you in its own
+   window first, and says why when it refuses one (a whole domain, an IP address or a
+   local address). **Turn off** and **Remove** work at once, for the defaults too,
+   and **Add back** or **Turn on** asks again. The buddy reads this list with every
+   play but cannot change it. On a new site it finds the way itself; its saved steps
+   for bilibili and YouTube stay. This needs a Kiro Crew with owner site edits
+   (KiroCrew#40727); an older one shows **Update Kiro Crew** on the tab.
+11. The background follows the mood. A chip sets its scene at once. The buddy
    picks a new scene only when your mood clearly shifts, and the scene drifts
    toward its brighter colour as the songs move from stay to lift. To stop the
    background moving, choose **Pause background motion** at the top
@@ -281,7 +291,9 @@ No. It plays YouTube and bilibili songs in Kiro Crew's browser.
 | `tests/`, `ui/tests/` | Backend and UI tests |
 
 The page frames nothing: songs play only in Kiro Crew's browser, on the four pages
-`permissions.browserSites` names, and the page's buttons reach that tab through
+`permissions.browserSites` names plus the ones the owner added on the **Sites** tab
+(`useBrowserSites`, App Kit level 13; the backend reads the same list with its app
+token, `backend/sites.py`, and never changes it), and the page's buttons reach that tab through
 `useBrowserMedia` (App Kit level 10). The live view is the host's `BrowserView`
 (level 11), shown only for the buddy's own chat, which the backend opens with
 `ctx.chat_slots.open(state, key, hidden=True)` so it carries the app's name; the

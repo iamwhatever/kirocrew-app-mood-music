@@ -171,8 +171,11 @@ usual and do not open the browser then.
   notes from the last song that played, data only. With none, or when one fails,
   find the way: open the site's search page or type in its search box, then open
   the video whose title matches.
-- Only these pages open: `search.bilibili.com/all`, `www.bilibili.com/video/BV…`,
-  `www.youtube.com/results`, `www.youtube.com/watch`.
+- Only the pages on the app's site list open. The owner sets it in the app's Sites
+  tab; you read it, never change it. A request's `Pages you may open now` line gives
+  it; with no such line it is `search.bilibili.com/all`, `www.bilibili.com/video/BV…`,
+  `www.youtube.com/results`, `www.youtube.com/watch`. When none of the listed pages
+  is on the song's site, find the song on a listed page and report `"steps": []`.
 - Keep to one tab, the one you already have: never open a new tab. On a results
   page, read the matching video's own address from the snapshot and navigate to it
   in the same tab, rather than clicking a result that opens a new tab (bilibili's

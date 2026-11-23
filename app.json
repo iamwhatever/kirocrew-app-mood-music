@@ -1,6 +1,6 @@
 {
   "name": "mood-music",
-  "version": "0.2.14",
+  "version": "0.2.15",
   "displayName": "Mood Music",
   "description": "Tell it how you feel, or name a song that moved you. A DJ agent finds songs with the same feeling and plays them on YouTube or bilibili in Kiro Crew's browser. Like or skip, and the next picks follow.",
   "author": "iamwhatever",
@@ -17,7 +17,7 @@
     "Say how you feel, or name a song that moved you — it finds more with the same feeling",
     "Every pick says why it fits the mood",
     "Songs play in Kiro Crew's browser, with its sound; the page has play, pause and volume",
-    "The agent opens only bilibili and YouTube search and video pages, and never signs in, comments, likes or pays",
+    "The agent opens only the sites on your list in the Sites tab (bilibili and YouTube by default), and never signs in, comments, likes or pays",
     "Like or skip a song, and the next picks use it",
     "The background and motion follow the mood, in light and dark"
   ],
@@ -86,7 +86,8 @@
   "configuration": [
     "Needs a Kiro Crew with app browser sites (newer than v0.13.0-rc.3). Approve the music sites once, on the app's page in Kiro Crew.",
     "To watch the buddy's browser on this page, Kiro Crew also needs hidden app chats and the app browser view (KiroCrew#39246, #39018, #39020): turn on App browser access in Feature Previews, then approve \"view\" on the app's page.",
-    "To keep playing with the page closed, Kiro Crew needs background song ends for apps (KiroCrew#40261). Without it, continuous play works while the page is open."
+    "To keep playing with the page closed, Kiro Crew needs background song ends for apps (KiroCrew#40261). Without it, continuous play works while the page is open.",
+    "To see and change the buddy's sites in the app's Sites tab, Kiro Crew needs owner site edits (KiroCrew#40727). On an older Kiro Crew the tab says to update, and the buddy keeps to bilibili and YouTube."
   ],
   "screenshots": [
     "assets/screenshot-main.png"
@@ -100,7 +101,7 @@
         "আপনার মুড বা মন ছুঁয়ে যাওয়া গানটি বলুন — একই অনুভূতির আরও গান খুঁজে দেয়",
         "প্রতিটি গানের সঙ্গে বলা থাকে কেন এটি এই মুডে মানায়",
         "গান Kiro Crew-এর ব্রাউজারে শব্দসহ বাজে; পেজে চালানো, থামানো আর ভলিউমের বোতাম আছে",
-        "এজেন্ট শুধু bilibili আর YouTube-এর খোঁজ ও ভিডিও পেজ খোলে, কখনো সাইন ইন, মন্তব্য, লাইক বা পেমেন্ট করে না",
+        "এজেন্ট শুধু সাইট ট্যাবে আপনার তালিকার সাইটগুলো খোলে (ডিফল্টে bilibili আর YouTube), কখনো সাইন ইন, মন্তব্য, লাইক বা পেমেন্ট করে না",
         "পছন্দ বা বাদ দেওয়া পরের বাছাইয়ে কাজে লাগে",
         "পটভূমি আর নড়াচড়া মুডের সঙ্গে বদলায়, লাইট ও ডার্ক দুটোতেই"
       ]
@@ -113,7 +114,7 @@
         "Sag, wie du dich fühlst, oder nenne einen Song, der dich berührt hat – er findet mehr mit demselben Gefühl",
         "Jeder Vorschlag sagt, warum er zur Stimmung passt",
         "Songs laufen im Browser von Kiro Crew, mit Ton; auf der Seite gibt es Abspielen, Pause und Lautstärke",
-        "Der Agent öffnet nur Such- und Videoseiten von bilibili und YouTube und meldet sich nie an, kommentiert, liked oder bezahlt nie",
+        "Der Agent öffnet nur die Seiten auf deiner Liste im Tab Seiten (standardmäßig bilibili und YouTube) und meldet sich nie an, kommentiert, liked oder bezahlt nie",
         "Gefällt mir oder Überspringen fließt in die nächsten Vorschläge ein",
         "Hintergrund und Bewegung folgen der Stimmung, hell wie dunkel"
       ]
@@ -126,7 +127,7 @@
         "Di cómo te sientes o nombra una canción que te emocionó: encuentra más con el mismo sentimiento",
         "Cada elección explica por qué encaja con tu estado de ánimo",
         "Las canciones suenan en el navegador de Kiro Crew, con sonido; la página tiene reproducir, pausa y volumen",
-        "El agente solo abre páginas de búsqueda y de vídeo de bilibili y YouTube, y nunca inicia sesión, comenta, da me gusta ni paga",
+        "El agente solo abre los sitios de tu lista en la pestaña Sitios (bilibili y YouTube por defecto), y nunca inicia sesión, comenta, da me gusta ni paga",
         "Me gusta u Omitir se usan en las siguientes elecciones",
         "El fondo y el movimiento siguen tu estado de ánimo, en claro y en oscuro"
       ]
@@ -139,7 +140,7 @@
         "Dis ce que tu ressens, ou cite une chanson qui t’a ému : il en trouve d’autres avec la même émotion",
         "Chaque choix dit pourquoi il correspond à ton humeur",
         "Les chansons se lisent dans le navigateur de Kiro Crew, avec le son ; la page a lecture, pause et volume",
-        "L’agent n’ouvre que les pages de recherche et de vidéo de bilibili et YouTube, et ne se connecte, ne commente, n’aime ni ne paie jamais",
+        "L’agent n’ouvre que les sites de ta liste dans l’onglet Sites (bilibili et YouTube par défaut), et ne se connecte, ne commente, n’aime ni ne paie jamais",
         "J’aime ou Passer sert aux choix suivants",
         "Le fond et le mouvement suivent l’humeur, en clair comme en sombre"
       ]
@@ -152,7 +153,7 @@
         "अपना मूड बताइए या कोई गाना जिसने आपको छुआ — यह उसी एहसास वाले और गाने ढूँढता है",
         "हर गाने के साथ बताया जाता है कि यह इस मूड में क्यों जमता है",
         "गाने Kiro Crew के ब्राउज़र में आवाज़ के साथ चलते हैं; पेज पर चलाएँ, रोकें और आवाज़ के बटन हैं",
-        "एजेंट सिर्फ़ bilibili और YouTube के खोज और वीडियो पेज खोलता है, और कभी साइन इन, टिप्पणी, लाइक या भुगतान नहीं करता",
+        "एजेंट सिर्फ़ साइटें टैब में आपकी सूची की साइटें खोलता है (डिफ़ॉल्ट रूप से bilibili और YouTube), और कभी साइन इन, टिप्पणी, लाइक या भुगतान नहीं करता",
         "पसंद या छोड़ें अगली पसंद में काम आता है",
         "पृष्ठभूमि और हलचल मूड के साथ बदलती है, लाइट और डार्क दोनों में"
       ]
@@ -165,7 +166,7 @@
         "Di’ come ti senti o nomina una canzone che ti ha emozionato: ne trova altre con la stessa emozione",
         "Ogni scelta spiega perché si adatta al tuo umore",
         "Le canzoni suonano nel browser di Kiro Crew, con l’audio; la pagina ha riproduci, pausa e volume",
-        "L’agente apre solo pagine di ricerca e video di bilibili e YouTube, e non accede, non commenta, non mette mi piace e non paga mai",
+        "L’agente apre solo i siti del tuo elenco nella scheda Siti (bilibili e YouTube di default), e non accede, non commenta, non mette mi piace e non paga mai",
         "Mi piace o Salta vengono usati per le scelte successive",
         "Lo sfondo e il movimento seguono l’umore, in chiaro e in scuro"
       ]
@@ -178,7 +179,7 @@
         "気持ちや心に響いた曲を伝えると、同じ気分の曲をもっと探します",
         "どの曲にも、その気分に合う理由が添えられます",
         "曲は Kiro Crew のブラウザで音付きで再生。ページで再生・一時停止・音量を操作できます",
-        "エージェントが開くのは bilibili と YouTube の検索ページと動画ページだけ。ログイン、コメント、いいね、支払いはしません",
+        "エージェントが開くのは「サイト」タブの一覧にあるサイトだけ（既定は bilibili と YouTube）。ログイン、コメント、いいね、支払いはしません",
         "いいね・スキップが次の選曲に使われます",
         "背景と動きが気分に合わせて変わります（ライト・ダーク対応）"
       ]
@@ -191,7 +192,7 @@
         "기분이나 마음을 울린 노래를 말하면 같은 느낌의 노래를 더 찾아 줍니다",
         "추천곡마다 이 기분에 맞는 이유를 알려 줍니다",
         "노래는 Kiro Crew 브라우저에서 소리와 함께 재생되고, 페이지에서 재생·일시정지·음량을 조절해요",
-        "에이전트는 bilibili와 YouTube의 검색 페이지와 영상 페이지만 열고, 로그인·댓글·좋아요·결제는 하지 않아요",
+        "에이전트는 사이트 탭 목록에 있는 사이트만 열고(기본은 bilibili와 YouTube), 로그인·댓글·좋아요·결제는 하지 않아요",
         "좋아요나 건너뛰기가 다음 추천에 쓰입니다",
         "배경과 움직임이 기분에 따라 바뀌며 라이트·다크 모두 지원합니다"
       ]
@@ -204,7 +205,7 @@
         "Diga como você se sente ou cite uma música que te emocionou — ele encontra mais com o mesmo sentimento",
         "Cada escolha diz por que combina com o seu humor",
         "As músicas tocam no navegador do Kiro Crew, com som; a página tem tocar, pausar e volume",
-        "O agente só abre páginas de busca e de vídeo do bilibili e do YouTube, e nunca faz login, comenta, curte ou paga",
+        "O agente só abre os sites da sua lista na aba Sites (bilibili e YouTube por padrão), e nunca faz login, comenta, curte ou paga",
         "Curtir ou Pular é usado nas próximas escolhas",
         "O fundo e o movimento acompanham o humor, no claro e no escuro"
       ]
@@ -217,7 +218,7 @@
         "Расскажите о настроении или назовите песню, которая тронула, — он найдёт ещё с тем же чувством",
         "К каждой песне — пояснение, почему она подходит настроению",
         "Песни играют в браузере Kiro Crew, со звуком; на странице есть воспроизведение, пауза и громкость",
-        "Агент открывает только страницы поиска и видео bilibili и YouTube и никогда не входит в аккаунт, не комментирует, не ставит лайки и не платит",
+        "Агент открывает только сайты из вашего списка на вкладке «Сайты» (по умолчанию bilibili и YouTube) и никогда не входит в аккаунт, не комментирует, не ставит лайки и не платит",
         "«Нравится» и «Пропустить» учитываются в следующих подборках",
         "Фон и движение меняются с настроением, в светлой и тёмной теме"
       ]
@@ -230,7 +231,7 @@
         "说出心情，或说出一首打动你的歌，它会找来更多感觉相同的歌",
         "每首歌都会说明为什么适合这份心情",
         "歌在 Kiro Crew 的浏览器里播放，有声音；页面上有播放、暂停和音量",
-        "助手只打开 bilibili 和 YouTube 的搜索页和视频页，从不登录、评论、点赞或付款",
+        "助手只打开“网站”页签里你列出的网站（默认是 bilibili 和 YouTube），从不登录、评论、点赞或付款",
         "喜欢或跳过一首歌，下次推荐会用上",
         "背景和动效随心情变化，亮色暗色都适用"
       ]

@@ -106,6 +106,33 @@ declare module '@kirocrew/app-sdk' {
       }>
     | undefined
 
+  /** One site on the app's browsing list (level 13, KiroCrew#40727). */
+  export interface BrowserSite {
+    readonly site: string
+    /** `app`: app.json declares it; `owner`: the owner added it. */
+    readonly source: 'app' | 'owner'
+    readonly status: 'approved' | 'pending' | 'disabled' | 'removed'
+  }
+
+  export type BrowserSiteResult =
+    | { readonly ok: true; readonly sites: readonly BrowserSite[]; readonly active: readonly string[] }
+    | { readonly ok: false; readonly code: string; readonly error: string }
+
+  export interface BrowserSites {
+    readonly sites: readonly BrowserSite[] | null
+    readonly active: readonly string[]
+    readonly loading: boolean
+    readonly error: string | null
+    refresh(): Promise<void>
+    /** Draws the dashboard's own dialog; posts only when the owner presses Allow site. */
+    requestAdd(site: string): Promise<BrowserSiteResult>
+    requestRemove(site: string): Promise<BrowserSiteResult>
+    requestDisable(site: string): Promise<BrowserSiteResult>
+  }
+
+  /** Level 13 (read through a namespace import, `sites.ts`). */
+  export const useBrowserSites: (() => BrowserSites) | undefined
+
   /** Navigate the dashboard to one of its own routes. */
   export function useNavigate(): (path: string) => void
 

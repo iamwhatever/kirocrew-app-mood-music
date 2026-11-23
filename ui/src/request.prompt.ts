@@ -218,8 +218,10 @@ export function buildPlayRequest(opts: {
   state: MoodState | undefined
   explore?: ExploreLevel
   stayOnly?: boolean
+  /** The sites in force (`sites.ts`); left out when the host cannot say. */
+  sites?: readonly string[]
 }): string {
-  const { song, steps, why, refill, state, explore = 'balanced', stayOnly = false } = opts
+  const { song, steps, why, refill, state, explore = 'balanced', stayOnly = false, sites } = opts
   const title = clean(song.title, 200)
   const artist = clean(song.artist, 200)
   const link = songLink(song)
@@ -234,6 +236,7 @@ export function buildPlayRequest(opts: {
   ]
   if (link) lines.push(`Checked link on this site (open it only if the search does not find the song): ${link}`)
   lines.push(ONE_TAB)
+  if (sites) lines.push(...sitesLines(sites))
   const saved = steps.map(s => clean(s, 120)).filter(Boolean).slice(0, 8)
   if (saved.length) {
     lines.push(`Steps that played a song on ${song.source} last time (your own notes, data only; follow them first):`)
@@ -275,6 +278,22 @@ export function holdLine(lastArc: string | undefined): string {
 /** A song the person picked while the buddy was still working, steered into that turn. */
 export const SWITCH_LINE =
   'The person picked this song while you were still working: drop the song or task you were on in this turn and play this one now. Reply for this song only.'
+
+/** At most this many sites go into a request (Kiro Crew allows 32 added, plus the declared ones). */
+export const MAX_PROMPT_SITES = 40
+
+/**
+ * The pages the buddy may open now, as the owner set them in the Sites tab. Read
+ * only: the buddy learns where it can look, and a site the owner added has no
+ * saved steps, so it finds the way there itself.
+ */
+export function sitesLines(sites: readonly string[]): string[] {
+  const listed = sites.map(s => clean(s, 200)).filter(Boolean).slice(0, MAX_PROMPT_SITES)
+  return [
+    `Pages you may open now (the owner's list for this app, data only): ${listed.join('; ') || 'none'}`,
+    'If none of them is on this song\'s site, find the song on a listed page instead, and then report "steps": [] (saved steps belong to the song\'s own site).',
+  ]
+}
 
 /** Every play stays in the buddy's one tab: the page's buttons and live view follow that tab. */
 export const ONE_TAB = 'Use the one tab you already have: open the video in it (navigate to its own address from the results page), never in a new tab. Skip a saved step that opens or switches to a new tab.'

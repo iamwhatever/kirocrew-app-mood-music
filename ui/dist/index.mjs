@@ -1,7 +1,7 @@
 import * as sdk from "@kirocrew/app-sdk";
 import { activeLocale, fmtDateTime, useAppApi, useChatLauncher, useLanguageGeneration, useNavigate } from "@kirocrew/app-sdk";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { ArrowDown, ArrowDownUp, Brain, Check, ChevronRight, CornerDownRight, ExternalLink, Eye, FileText, Globe, Headphones, Heart, Hourglass, Keyboard, ListMusic, MessageCircleQuestion, MessageSquare, MonitorPlay, MousePointerClick, Music, PanelTop, Pause, Pencil, Pin, PinOff, Play, RefreshCw, Repeat, Save, Search, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Undo2, Volume2, Waves, WifiOff, X } from "lucide-react";
+import { ArrowDown, ArrowDownUp, Brain, Check, ChevronRight, CornerDownRight, ExternalLink, Eye, FileText, Globe, Headphones, Heart, Hourglass, Keyboard, ListMusic, MessageCircleQuestion, MessageSquare, MonitorPlay, MousePointerClick, Music, PanelTop, Pause, Pencil, Pin, PinOff, Play, Plus, RefreshCw, Repeat, Save, Search, Send, ShieldCheck, SkipForward, Sparkles, Square, Trash2, TriangleAlert, Undo2, Volume2, Waves, WifiOff, X } from "lucide-react";
 import { Btn, EmptyState, ErrorNotice, PageHeader, SegmentedControl } from "@kirocrew/app-sdk/ui";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 // src/i18n.ts
@@ -28,7 +28,7 @@ var CATALOGS = {
 			"highlight_1": "আপনার মুড বা মন ছুঁয়ে যাওয়া গানটি বলুন — একই অনুভূতির আরও গান খুঁজে দেয়",
 			"highlight_2": "প্রতিটি গানের সঙ্গে বলা থাকে কেন এটি এই মুডে মানায়",
 			"highlight_3": "গান Kiro Crew-এর ব্রাউজারে শব্দসহ বাজে; পেজে চালানো, থামানো আর ভলিউমের বোতাম আছে",
-			"highlight_4": "এজেন্ট শুধু bilibili আর YouTube-এর খোঁজ ও ভিডিও পেজ খোলে, কখনো সাইন ইন, মন্তব্য, লাইক বা পেমেন্ট করে না",
+			"highlight_4": "এজেন্ট শুধু সাইট ট্যাবে আপনার তালিকার সাইটগুলো খোলে (ডিফল্টে bilibili আর YouTube), কখনো সাইন ইন, মন্তব্য, লাইক বা পেমেন্ট করে না",
 			"highlight_5": "পছন্দ বা বাদ দেওয়া পরের বাছাইয়ে কাজে লাগে",
 			"highlight_6": "পটভূমি আর নড়াচড়া মুডের সঙ্গে বদলায়, লাইট ও ডার্ক দুটোতেই",
 			"use_case_1": "এখনকার মুডের সঙ্গে মেলে এমন গান খুঁজে বাজান, আর মন ছুঁয়ে যাওয়া মুহূর্তগুলো রেখে দিন।",
@@ -299,6 +299,51 @@ var CATALOGS = {
 			"delete_yes": "মুছুন",
 			"remove_song": "{{song}} সরান",
 			"no_songs": "আর কোনো গান নেই।"
+		},
+		sites: {
+			"tab": "সাইট",
+			"old_host_title": "এখানে সাইট সামলাতে Kiro Crew আপডেট করুন",
+			"old_host_body": "এই Kiro Crew এখনও আপনার সঙ্গীর সাইট দেখাতে বা বদলাতে পারে না। Kiro Crew আপডেট করুন (KiroCrew#40727 বা নতুন), তারপর এই ট্যাব আবার খুলুন। ততদিন সঙ্গী bilibili আর YouTube ব্যবহার করে।",
+			"list_title": "সঙ্গী কোথায় ব্রাউজ করতে পারে",
+			"active_count": "এখন {{count}}টি চালু",
+			"read_error": "সাইটের তালিকা পড়া গেল না ({{code}})।",
+			"retry": "আবার চেষ্টা করুন",
+			"loading": "তালিকা পড়া হচ্ছে…",
+			"empty": "এখনও কোনো সাইট নেই। ডানদিকে একটি যোগ করুন।",
+			"source_app": "ডিফল্ট",
+			"source_owner": "আপনি যোগ করেছেন",
+			"status_approved": "চালু",
+			"status_pending": "অনুমোদনের অপেক্ষায়",
+			"status_disabled": "বন্ধ",
+			"status_removed": "সরানো হয়েছে",
+			"turn_off": "বন্ধ করুন",
+			"turn_off_named": "{{site}} বন্ধ করুন",
+			"remove": "সরান",
+			"remove_named": "{{site}} সরান",
+			"allow": "অনুমতি দিন",
+			"allow_named": "{{site}}-কে অনুমতি দিন",
+			"turn_on": "চালু করুন",
+			"turn_on_named": "{{site}} চালু করুন",
+			"add_back": "আবার যোগ করুন",
+			"add_back_named": "{{site}} আবার যোগ করুন",
+			"add_title": "সাইট যোগ করুন",
+			"add_label": "একটি পেজের ঠিকানা যা সঙ্গী খুলতে পারে",
+			"add": "যোগ করুন",
+			"add_rules": "https:// দিয়ে শুরু হবে আর একটি পাথ থাকবে, যেমন https://music.example.com/song/*। পুরো ডোমেন, IP ঠিকানা বা লোকাল ঠিকানা মানা হয় না।",
+			"added": "যোগ হয়েছে: {{site}}। সঙ্গী এখন এটি খুলতে পারে।",
+			"removed_now": "সরানো হয়েছে: {{site}}।",
+			"disabled_now": "বন্ধ হয়েছে: {{site}}।",
+			"declined": "যোগ হয়নি: {{site}}।",
+			"refused_bad_site": "Kiro Crew এই সাইটটি মানেনি।",
+			"refused_too_many": "Kiro Crew যত সাইট দেয়, তত যোগ করা হয়ে গেছে। আগে একটি সরান।",
+			"refused_not_listed": "এই সাইটটি তালিকায় নেই।",
+			"refused_owner": "এই তালিকা শুধু আপনি, Kiro Crew-এ, বদলাতে পারেন।",
+			"refused_other": "Kiro Crew তালিকা বদলাতে পারেনি ({{code}})।",
+			"crew_said": "Kiro Crew বলেছে: {{reason}}",
+			"how_title": "কীভাবে কাজ করে",
+			"how_buddy": "সঙ্গী শুধু চালু সাইটগুলো খোলে। সে এই তালিকা পড়তে পারে, বদলাতে পারে না।",
+			"how_add": "সাইট যোগ করার আগে Kiro Crew নিজের জানালায় আপনাকে জিজ্ঞেস করে। বন্ধ করা বা সরানো সঙ্গে সঙ্গে কাজ করে।",
+			"how_new": "নতুন সাইটে সঙ্গী প্রথমবার নিজেই পথ খুঁজে নেয়। bilibili আর YouTube-এর জন্য তার সংরক্ষিত ধাপ যেমন ছিল তেমনই থাকে।"
 		}
 	},
 	de: {
@@ -309,7 +354,7 @@ var CATALOGS = {
 			"highlight_1": "Sag, wie du dich fühlst, oder nenne einen Song, der dich berührt hat – er findet mehr mit demselben Gefühl",
 			"highlight_2": "Jeder Vorschlag sagt, warum er zur Stimmung passt",
 			"highlight_3": "Songs laufen im Browser von Kiro Crew, mit Ton; auf der Seite gibt es Abspielen, Pause und Lautstärke",
-			"highlight_4": "Der Agent öffnet nur Such- und Videoseiten von bilibili und YouTube und meldet sich nie an, kommentiert, liked oder bezahlt nie",
+			"highlight_4": "Der Agent öffnet nur die Seiten auf deiner Liste im Tab Seiten (standardmäßig bilibili und YouTube) und meldet sich nie an, kommentiert, liked oder bezahlt nie",
 			"highlight_5": "Gefällt mir oder Überspringen fließt in die nächsten Vorschläge ein",
 			"highlight_6": "Hintergrund und Bewegung folgen der Stimmung, hell wie dunkel",
 			"use_case_1": "Songs finden und abspielen, die zu deiner jetzigen Stimmung passen, und die Momente festhalten, die dich berührt haben.",
@@ -580,6 +625,51 @@ var CATALOGS = {
 			"delete_yes": "Löschen",
 			"remove_song": "{{song}} entfernen",
 			"no_songs": "Keine Songs mehr."
+		},
+		sites: {
+			"tab": "Seiten",
+			"old_host_title": "Aktualisiere Kiro Crew, um Seiten hier zu verwalten",
+			"old_host_body": "Dieses Kiro Crew kann die Seiten deines Buddys noch nicht zeigen oder ändern. Aktualisiere Kiro Crew (KiroCrew#40727 oder neuer) und öffne diesen Tab erneut. Bis dahin nutzt der Buddy bilibili und YouTube.",
+			"list_title": "Wo der Buddy surfen darf",
+			"active_count": "{{count}} jetzt an",
+			"read_error": "Die Seitenliste konnte nicht gelesen werden ({{code}}).",
+			"retry": "Erneut versuchen",
+			"loading": "Liste wird gelesen…",
+			"empty": "Noch keine Seiten. Füge rechts eine hinzu.",
+			"source_app": "Standard",
+			"source_owner": "Von dir hinzugefügt",
+			"status_approved": "An",
+			"status_pending": "Wartet auf Freigabe",
+			"status_disabled": "Aus",
+			"status_removed": "Entfernt",
+			"turn_off": "Ausschalten",
+			"turn_off_named": "{{site}} ausschalten",
+			"remove": "Entfernen",
+			"remove_named": "{{site}} entfernen",
+			"allow": "Erlauben",
+			"allow_named": "{{site}} erlauben",
+			"turn_on": "Einschalten",
+			"turn_on_named": "{{site}} einschalten",
+			"add_back": "Wieder hinzufügen",
+			"add_back_named": "{{site}} wieder hinzufügen",
+			"add_title": "Seite hinzufügen",
+			"add_label": "Eine Seitenadresse, die der Buddy öffnen darf",
+			"add": "Hinzufügen",
+			"add_rules": "Beginnt mit https:// und nennt einen Pfad, etwa https://music.example.com/song/*. Eine ganze Domain, eine IP-Adresse oder eine lokale Adresse wird abgelehnt.",
+			"added": "Hinzugefügt: {{site}}. Der Buddy darf sie jetzt öffnen.",
+			"removed_now": "Entfernt: {{site}}.",
+			"disabled_now": "Ausgeschaltet: {{site}}.",
+			"declined": "Nicht hinzugefügt: {{site}}.",
+			"refused_bad_site": "Kiro Crew hat diese Seite abgelehnt.",
+			"refused_too_many": "Du hast so viele Seiten hinzugefügt, wie Kiro Crew erlaubt. Entferne zuerst eine.",
+			"refused_not_listed": "Diese Seite steht nicht auf der Liste.",
+			"refused_owner": "Nur du, in Kiro Crew, kannst diese Liste ändern.",
+			"refused_other": "Kiro Crew konnte die Liste nicht ändern ({{code}}).",
+			"crew_said": "Kiro Crew sagt: {{reason}}",
+			"how_title": "So funktioniert es",
+			"how_buddy": "Der Buddy öffnet nur Seiten, die an sind. Er kann diese Liste lesen, aber nicht ändern.",
+			"how_add": "Beim Hinzufügen fragt Kiro Crew dich zuerst in einem eigenen Fenster. Ausschalten oder Entfernen wirkt sofort.",
+			"how_new": "Auf einer neuen Seite findet der Buddy beim ersten Mal selbst den Weg. Seine gespeicherten Schritte für bilibili und YouTube bleiben, wie sie sind."
 		}
 	},
 	en: {
@@ -590,7 +680,7 @@ var CATALOGS = {
 			"highlight_1": "Say how you feel, or name a song that moved you — it finds more with the same feeling",
 			"highlight_2": "Every pick says why it fits the mood",
 			"highlight_3": "Songs play in Kiro Crew's browser, with its sound; the page has play, pause and volume",
-			"highlight_4": "The agent opens only bilibili and YouTube search and video pages, and never signs in, comments, likes or pays",
+			"highlight_4": "The agent opens only the sites on your list in the Sites tab (bilibili and YouTube by default), and never signs in, comments, likes or pays",
 			"highlight_5": "Like or skip a song, and the next picks use it",
 			"highlight_6": "The background and motion follow the mood, in light and dark",
 			"use_case_1": "Find and play songs that match how you feel right now, and keep a history of the moments that moved you.",
@@ -861,6 +951,51 @@ var CATALOGS = {
 			"delete_yes": "Delete",
 			"remove_song": "Remove {{song}}",
 			"no_songs": "No songs left."
+		},
+		sites: {
+			"tab": "Sites",
+			"old_host_title": "Update Kiro Crew to manage sites here",
+			"old_host_body": "This Kiro Crew cannot show or change your buddy's sites yet. Update Kiro Crew (KiroCrew#40727 or newer), then open this tab again. Until then the buddy uses bilibili and YouTube.",
+			"list_title": "Where the buddy may browse",
+			"active_count": "{{count}} on now",
+			"read_error": "The site list could not be read ({{code}}).",
+			"retry": "Try again",
+			"loading": "Reading the list…",
+			"empty": "No sites yet. Add one on the right.",
+			"source_app": "Default",
+			"source_owner": "Added by you",
+			"status_approved": "On",
+			"status_pending": "Waiting for approval",
+			"status_disabled": "Off",
+			"status_removed": "Removed",
+			"turn_off": "Turn off",
+			"turn_off_named": "Turn off {{site}}",
+			"remove": "Remove",
+			"remove_named": "Remove {{site}}",
+			"allow": "Allow",
+			"allow_named": "Allow {{site}}",
+			"turn_on": "Turn on",
+			"turn_on_named": "Turn on {{site}}",
+			"add_back": "Add back",
+			"add_back_named": "Add back {{site}}",
+			"add_title": "Add a site",
+			"add_label": "A page address the buddy may open",
+			"add": "Add",
+			"add_rules": "Starts with https:// and names a path, like https://music.example.com/song/*. A whole domain, an IP address or a local address is refused.",
+			"added": "Added: {{site}}. The buddy may open it now.",
+			"removed_now": "Removed: {{site}}.",
+			"disabled_now": "Turned off: {{site}}.",
+			"declined": "Not added: {{site}}.",
+			"refused_bad_site": "Kiro Crew refused this site.",
+			"refused_too_many": "You have added as many sites as Kiro Crew allows. Remove one first.",
+			"refused_not_listed": "That site is not on the list.",
+			"refused_owner": "Only you, in Kiro Crew, can change this list.",
+			"refused_other": "Kiro Crew could not change the list ({{code}}).",
+			"crew_said": "Kiro Crew said: {{reason}}",
+			"how_title": "How it works",
+			"how_buddy": "The buddy opens only the sites that are on. It can read this list, but it cannot change it.",
+			"how_add": "Adding a site asks you first, in Kiro Crew's own window. Turning a site off or removing it works at once.",
+			"how_new": "On a new site the buddy finds the way itself the first time. Its saved steps for bilibili and YouTube stay as they are."
 		}
 	},
 	es: {
@@ -871,7 +1006,7 @@ var CATALOGS = {
 			"highlight_1": "Di cómo te sientes o nombra una canción que te emocionó: encuentra más con el mismo sentimiento",
 			"highlight_2": "Cada elección explica por qué encaja con tu estado de ánimo",
 			"highlight_3": "Las canciones suenan en el navegador de Kiro Crew, con sonido; la página tiene reproducir, pausa y volumen",
-			"highlight_4": "El agente solo abre páginas de búsqueda y de vídeo de bilibili y YouTube, y nunca inicia sesión, comenta, da me gusta ni paga",
+			"highlight_4": "El agente solo abre los sitios de tu lista en la pestaña Sitios (bilibili y YouTube por defecto), y nunca inicia sesión, comenta, da me gusta ni paga",
 			"highlight_5": "Me gusta u Omitir se usan en las siguientes elecciones",
 			"highlight_6": "El fondo y el movimiento siguen tu estado de ánimo, en claro y en oscuro",
 			"use_case_1": "Encuentra y reproduce canciones que encajan con cómo te sientes ahora y guarda los momentos que te emocionaron.",
@@ -1142,6 +1277,51 @@ var CATALOGS = {
 			"delete_yes": "Borrar",
 			"remove_song": "Quitar {{song}}",
 			"no_songs": "No quedan canciones."
+		},
+		sites: {
+			"tab": "Sitios",
+			"old_host_title": "Actualiza Kiro Crew para gestionar sitios aquí",
+			"old_host_body": "Este Kiro Crew aún no puede mostrar ni cambiar los sitios de tu compañero. Actualiza Kiro Crew (KiroCrew#40727 o posterior) y vuelve a abrir esta pestaña. Hasta entonces, el compañero usa bilibili y YouTube.",
+			"list_title": "Dónde puede navegar el compañero",
+			"active_count": "{{count}} activos ahora",
+			"read_error": "No se pudo leer la lista de sitios ({{code}}).",
+			"retry": "Reintentar",
+			"loading": "Leyendo la lista…",
+			"empty": "Aún no hay sitios. Añade uno a la derecha.",
+			"source_app": "Predeterminado",
+			"source_owner": "Añadido por ti",
+			"status_approved": "Activo",
+			"status_pending": "Esperando aprobación",
+			"status_disabled": "Desactivado",
+			"status_removed": "Quitado",
+			"turn_off": "Desactivar",
+			"turn_off_named": "Desactivar {{site}}",
+			"remove": "Quitar",
+			"remove_named": "Quitar {{site}}",
+			"allow": "Permitir",
+			"allow_named": "Permitir {{site}}",
+			"turn_on": "Activar",
+			"turn_on_named": "Activar {{site}}",
+			"add_back": "Volver a añadir",
+			"add_back_named": "Volver a añadir {{site}}",
+			"add_title": "Añadir un sitio",
+			"add_label": "Una dirección de página que el compañero puede abrir",
+			"add": "Añadir",
+			"add_rules": "Empieza por https:// e indica una ruta, como https://music.example.com/song/*. Se rechaza un dominio entero, una dirección IP o una dirección local.",
+			"added": "Añadido: {{site}}. El compañero ya puede abrirlo.",
+			"removed_now": "Quitado: {{site}}.",
+			"disabled_now": "Desactivado: {{site}}.",
+			"declined": "No añadido: {{site}}.",
+			"refused_bad_site": "Kiro Crew rechazó este sitio.",
+			"refused_too_many": "Ya añadiste tantos sitios como permite Kiro Crew. Quita uno primero.",
+			"refused_not_listed": "Ese sitio no está en la lista.",
+			"refused_owner": "Solo tú, en Kiro Crew, puedes cambiar esta lista.",
+			"refused_other": "Kiro Crew no pudo cambiar la lista ({{code}}).",
+			"crew_said": "Kiro Crew dijo: {{reason}}",
+			"how_title": "Cómo funciona",
+			"how_buddy": "El compañero solo abre los sitios activos. Puede leer esta lista, pero no cambiarla.",
+			"how_add": "Al añadir un sitio, Kiro Crew te pregunta primero en su propia ventana. Desactivar o quitar un sitio surte efecto al instante.",
+			"how_new": "En un sitio nuevo, el compañero encuentra el camino por sí mismo la primera vez. Sus pasos guardados para bilibili y YouTube se quedan como están."
 		}
 	},
 	fr: {
@@ -1152,7 +1332,7 @@ var CATALOGS = {
 			"highlight_1": "Dis ce que tu ressens, ou cite une chanson qui t’a ému : il en trouve d’autres avec la même émotion",
 			"highlight_2": "Chaque choix dit pourquoi il correspond à ton humeur",
 			"highlight_3": "Les chansons se lisent dans le navigateur de Kiro Crew, avec le son ; la page a lecture, pause et volume",
-			"highlight_4": "L’agent n’ouvre que les pages de recherche et de vidéo de bilibili et YouTube, et ne se connecte, ne commente, n’aime ni ne paie jamais",
+			"highlight_4": "L’agent n’ouvre que les sites de ta liste dans l’onglet Sites (bilibili et YouTube par défaut), et ne se connecte, ne commente, n’aime ni ne paie jamais",
 			"highlight_5": "J’aime ou Passer sert aux choix suivants",
 			"highlight_6": "Le fond et le mouvement suivent l’humeur, en clair comme en sombre",
 			"use_case_1": "Trouver et écouter des chansons qui correspondent à ce que tu ressens maintenant, et garder les moments qui t’ont ému.",
@@ -1423,6 +1603,51 @@ var CATALOGS = {
 			"delete_yes": "Supprimer",
 			"remove_song": "Retirer {{song}}",
 			"no_songs": "Plus aucune chanson."
+		},
+		sites: {
+			"tab": "Sites",
+			"old_host_title": "Mets à jour Kiro Crew pour gérer les sites ici",
+			"old_host_body": "Ce Kiro Crew ne peut pas encore afficher ni modifier les sites de ton compagnon. Mets à jour Kiro Crew (KiroCrew#40727 ou plus récent), puis rouvre cet onglet. D’ici là, le compagnon utilise bilibili et YouTube.",
+			"list_title": "Où le compagnon peut naviguer",
+			"active_count": "{{count}} actifs",
+			"read_error": "La liste des sites n’a pas pu être lue ({{code}}).",
+			"retry": "Réessayer",
+			"loading": "Lecture de la liste…",
+			"empty": "Aucun site pour l’instant. Ajoutes-en un à droite.",
+			"source_app": "Par défaut",
+			"source_owner": "Ajouté par toi",
+			"status_approved": "Actif",
+			"status_pending": "En attente d’accord",
+			"status_disabled": "Désactivé",
+			"status_removed": "Retiré",
+			"turn_off": "Désactiver",
+			"turn_off_named": "Désactiver {{site}}",
+			"remove": "Retirer",
+			"remove_named": "Retirer {{site}}",
+			"allow": "Autoriser",
+			"allow_named": "Autoriser {{site}}",
+			"turn_on": "Activer",
+			"turn_on_named": "Activer {{site}}",
+			"add_back": "Rajouter",
+			"add_back_named": "Rajouter {{site}}",
+			"add_title": "Ajouter un site",
+			"add_label": "Une adresse de page que le compagnon peut ouvrir",
+			"add": "Ajouter",
+			"add_rules": "Commence par https:// et indique un chemin, comme https://music.example.com/song/*. Un domaine entier, une adresse IP ou une adresse locale est refusé.",
+			"added": "Ajouté : {{site}}. Le compagnon peut l’ouvrir dès maintenant.",
+			"removed_now": "Retiré : {{site}}.",
+			"disabled_now": "Désactivé : {{site}}.",
+			"declined": "Non ajouté : {{site}}.",
+			"refused_bad_site": "Kiro Crew a refusé ce site.",
+			"refused_too_many": "Tu as ajouté autant de sites que Kiro Crew le permet. Retires-en un d’abord.",
+			"refused_not_listed": "Ce site n’est pas dans la liste.",
+			"refused_owner": "Toi seul, dans Kiro Crew, peux modifier cette liste.",
+			"refused_other": "Kiro Crew n’a pas pu modifier la liste ({{code}}).",
+			"crew_said": "Kiro Crew a dit : {{reason}}",
+			"how_title": "Comment ça marche",
+			"how_buddy": "Le compagnon n’ouvre que les sites actifs. Il peut lire cette liste, mais pas la modifier.",
+			"how_add": "Pour ajouter un site, Kiro Crew te demande d’abord dans sa propre fenêtre. Désactiver ou retirer un site agit tout de suite.",
+			"how_new": "Sur un nouveau site, le compagnon trouve seul le chemin la première fois. Ses étapes enregistrées pour bilibili et YouTube restent telles quelles."
 		}
 	},
 	hi: {
@@ -1433,7 +1658,7 @@ var CATALOGS = {
 			"highlight_1": "अपना मूड बताइए या कोई गाना जिसने आपको छुआ — यह उसी एहसास वाले और गाने ढूँढता है",
 			"highlight_2": "हर गाने के साथ बताया जाता है कि यह इस मूड में क्यों जमता है",
 			"highlight_3": "गाने Kiro Crew के ब्राउज़र में आवाज़ के साथ चलते हैं; पेज पर चलाएँ, रोकें और आवाज़ के बटन हैं",
-			"highlight_4": "एजेंट सिर्फ़ bilibili और YouTube के खोज और वीडियो पेज खोलता है, और कभी साइन इन, टिप्पणी, लाइक या भुगतान नहीं करता",
+			"highlight_4": "एजेंट सिर्फ़ साइटें टैब में आपकी सूची की साइटें खोलता है (डिफ़ॉल्ट रूप से bilibili और YouTube), और कभी साइन इन, टिप्पणी, लाइक या भुगतान नहीं करता",
 			"highlight_5": "पसंद या छोड़ें अगली पसंद में काम आता है",
 			"highlight_6": "पृष्ठभूमि और हलचल मूड के साथ बदलती है, लाइट और डार्क दोनों में",
 			"use_case_1": "अभी के मूड से मेल खाते गाने ढूँढें और चलाएँ, और दिल छूने वाले पल सहेजें।",
@@ -1704,6 +1929,51 @@ var CATALOGS = {
 			"delete_yes": "हटाएँ",
 			"remove_song": "{{song}} निकालें",
 			"no_songs": "कोई गाना नहीं बचा।"
+		},
+		sites: {
+			"tab": "साइटें",
+			"old_host_title": "यहाँ साइटें संभालने के लिए Kiro Crew अपडेट करें",
+			"old_host_body": "यह Kiro Crew अभी आपके साथी की साइटें दिखा या बदल नहीं सकता। Kiro Crew अपडेट करें (KiroCrew#40727 या नया), फिर यह टैब दोबारा खोलें। तब तक साथी bilibili और YouTube इस्तेमाल करता है।",
+			"list_title": "साथी कहाँ ब्राउज़ कर सकता है",
+			"active_count": "अभी {{count}} चालू",
+			"read_error": "साइटों की सूची पढ़ी नहीं जा सकी ({{code}})।",
+			"retry": "फिर कोशिश करें",
+			"loading": "सूची पढ़ी जा रही है…",
+			"empty": "अभी कोई साइट नहीं। दाईं ओर एक जोड़ें।",
+			"source_app": "डिफ़ॉल्ट",
+			"source_owner": "आपने जोड़ी",
+			"status_approved": "चालू",
+			"status_pending": "मंज़ूरी बाकी",
+			"status_disabled": "बंद",
+			"status_removed": "हटाई गई",
+			"turn_off": "बंद करें",
+			"turn_off_named": "{{site}} बंद करें",
+			"remove": "हटाएँ",
+			"remove_named": "{{site}} हटाएँ",
+			"allow": "अनुमति दें",
+			"allow_named": "{{site}} की अनुमति दें",
+			"turn_on": "चालू करें",
+			"turn_on_named": "{{site}} चालू करें",
+			"add_back": "वापस जोड़ें",
+			"add_back_named": "{{site}} वापस जोड़ें",
+			"add_title": "साइट जोड़ें",
+			"add_label": "एक पेज पता जिसे साथी खोल सकता है",
+			"add": "जोड़ें",
+			"add_rules": "https:// से शुरू हो और कोई पाथ बताए, जैसे https://music.example.com/song/*। पूरा डोमेन, IP पता या लोकल पता मना कर दिया जाता है।",
+			"added": "जोड़ी गई: {{site}}। साथी अब इसे खोल सकता है।",
+			"removed_now": "हटाई गई: {{site}}।",
+			"disabled_now": "बंद की गई: {{site}}।",
+			"declined": "नहीं जोड़ी गई: {{site}}।",
+			"refused_bad_site": "Kiro Crew ने यह साइट मना कर दी।",
+			"refused_too_many": "आप उतनी साइटें जोड़ चुके हैं जितनी Kiro Crew देता है। पहले एक हटाएँ।",
+			"refused_not_listed": "यह साइट सूची में नहीं है।",
+			"refused_owner": "यह सूची सिर्फ़ आप, Kiro Crew में, बदल सकते हैं।",
+			"refused_other": "Kiro Crew सूची नहीं बदल सका ({{code}})।",
+			"crew_said": "Kiro Crew ने कहा: {{reason}}",
+			"how_title": "यह कैसे काम करता है",
+			"how_buddy": "साथी सिर्फ़ चालू साइटें खोलता है। वह यह सूची पढ़ सकता है, बदल नहीं सकता।",
+			"how_add": "साइट जोड़ते समय Kiro Crew पहले अपनी खिड़की में आपसे पूछता है। बंद करना या हटाना तुरंत लागू होता है।",
+			"how_new": "नई साइट पर साथी पहली बार खुद रास्ता ढूँढता है। bilibili और YouTube के लिए उसके सहेजे कदम वैसे ही रहते हैं।"
 		}
 	},
 	it: {
@@ -1714,7 +1984,7 @@ var CATALOGS = {
 			"highlight_1": "Di’ come ti senti o nomina una canzone che ti ha emozionato: ne trova altre con la stessa emozione",
 			"highlight_2": "Ogni scelta spiega perché si adatta al tuo umore",
 			"highlight_3": "Le canzoni suonano nel browser di Kiro Crew, con l’audio; la pagina ha riproduci, pausa e volume",
-			"highlight_4": "L’agente apre solo pagine di ricerca e video di bilibili e YouTube, e non accede, non commenta, non mette mi piace e non paga mai",
+			"highlight_4": "L’agente apre solo i siti del tuo elenco nella scheda Siti (bilibili e YouTube di default), e non accede, non commenta, non mette mi piace e non paga mai",
 			"highlight_5": "Mi piace o Salta vengono usati per le scelte successive",
 			"highlight_6": "Lo sfondo e il movimento seguono l’umore, in chiaro e in scuro",
 			"use_case_1": "Trova e riproduci canzoni adatte a come ti senti ora e conserva i momenti che ti hanno emozionato.",
@@ -1985,6 +2255,51 @@ var CATALOGS = {
 			"delete_yes": "Elimina",
 			"remove_song": "Togli {{song}}",
 			"no_songs": "Nessun brano rimasto."
+		},
+		sites: {
+			"tab": "Siti",
+			"old_host_title": "Aggiorna Kiro Crew per gestire i siti qui",
+			"old_host_body": "Questo Kiro Crew non può ancora mostrare o cambiare i siti del tuo compagno. Aggiorna Kiro Crew (KiroCrew#40727 o successivo), poi riapri questa scheda. Fino ad allora il compagno usa bilibili e YouTube.",
+			"list_title": "Dove può navigare il compagno",
+			"active_count": "{{count}} attivi ora",
+			"read_error": "Non è stato possibile leggere l’elenco dei siti ({{code}}).",
+			"retry": "Riprova",
+			"loading": "Lettura dell’elenco…",
+			"empty": "Ancora nessun sito. Aggiungine uno a destra.",
+			"source_app": "Predefinito",
+			"source_owner": "Aggiunto da te",
+			"status_approved": "Attivo",
+			"status_pending": "In attesa di approvazione",
+			"status_disabled": "Spento",
+			"status_removed": "Rimosso",
+			"turn_off": "Spegni",
+			"turn_off_named": "Spegni {{site}}",
+			"remove": "Rimuovi",
+			"remove_named": "Rimuovi {{site}}",
+			"allow": "Consenti",
+			"allow_named": "Consenti {{site}}",
+			"turn_on": "Accendi",
+			"turn_on_named": "Accendi {{site}}",
+			"add_back": "Aggiungi di nuovo",
+			"add_back_named": "Aggiungi di nuovo {{site}}",
+			"add_title": "Aggiungi un sito",
+			"add_label": "Un indirizzo di pagina che il compagno può aprire",
+			"add": "Aggiungi",
+			"add_rules": "Inizia con https:// e indica un percorso, come https://music.example.com/song/*. Un dominio intero, un indirizzo IP o un indirizzo locale viene rifiutato.",
+			"added": "Aggiunto: {{site}}. Il compagno può aprirlo da ora.",
+			"removed_now": "Rimosso: {{site}}.",
+			"disabled_now": "Spento: {{site}}.",
+			"declined": "Non aggiunto: {{site}}.",
+			"refused_bad_site": "Kiro Crew ha rifiutato questo sito.",
+			"refused_too_many": "Hai aggiunto tutti i siti che Kiro Crew consente. Rimuovine uno prima.",
+			"refused_not_listed": "Quel sito non è nell’elenco.",
+			"refused_owner": "Solo tu, in Kiro Crew, puoi cambiare questo elenco.",
+			"refused_other": "Kiro Crew non è riuscito a cambiare l’elenco ({{code}}).",
+			"crew_said": "Kiro Crew ha detto: {{reason}}",
+			"how_title": "Come funziona",
+			"how_buddy": "Il compagno apre solo i siti attivi. Può leggere questo elenco, ma non cambiarlo.",
+			"how_add": "Quando aggiungi un sito, Kiro Crew te lo chiede prima nella sua finestra. Spegnere o rimuovere un sito ha effetto subito.",
+			"how_new": "Su un sito nuovo il compagno trova da solo la strada la prima volta. I passi salvati per bilibili e YouTube restano come sono."
 		}
 	},
 	ja: {
@@ -1995,7 +2310,7 @@ var CATALOGS = {
 			"highlight_1": "気持ちや心に響いた曲を伝えると、同じ気分の曲をもっと探します",
 			"highlight_2": "どの曲にも、その気分に合う理由が添えられます",
 			"highlight_3": "曲は Kiro Crew のブラウザで音付きで再生。ページで再生・一時停止・音量を操作できます",
-			"highlight_4": "エージェントが開くのは bilibili と YouTube の検索ページと動画ページだけ。ログイン、コメント、いいね、支払いはしません",
+			"highlight_4": "エージェントが開くのは「サイト」タブの一覧にあるサイトだけ（既定は bilibili と YouTube）。ログイン、コメント、いいね、支払いはしません",
 			"highlight_5": "いいね・スキップが次の選曲に使われます",
 			"highlight_6": "背景と動きが気分に合わせて変わります（ライト・ダーク対応）",
 			"use_case_1": "今の気持ちに合う曲を探して再生し、心に残った瞬間を記録します。",
@@ -2266,6 +2581,51 @@ var CATALOGS = {
 			"delete_yes": "削除",
 			"remove_song": "{{song}} を外す",
 			"no_songs": "曲がありません。"
+		},
+		sites: {
+			"tab": "サイト",
+			"old_host_title": "ここでサイトを管理するには Kiro Crew を更新してください",
+			"old_host_body": "この Kiro Crew では、相棒のサイトを表示・変更できません。Kiro Crew を更新（KiroCrew#40727 以降）してから、このタブを開き直してください。それまで相棒は bilibili と YouTube を使います。",
+			"list_title": "相棒が開けるサイト",
+			"active_count": "いまオン：{{count}} 件",
+			"read_error": "サイトの一覧を読めませんでした（{{code}}）。",
+			"retry": "もう一度",
+			"loading": "一覧を読み込み中…",
+			"empty": "まだサイトがありません。右側で追加してください。",
+			"source_app": "既定",
+			"source_owner": "あなたが追加",
+			"status_approved": "オン",
+			"status_pending": "承認待ち",
+			"status_disabled": "オフ",
+			"status_removed": "削除済み",
+			"turn_off": "オフにする",
+			"turn_off_named": "{{site}} をオフにする",
+			"remove": "削除",
+			"remove_named": "{{site}} を削除",
+			"allow": "許可",
+			"allow_named": "{{site}} を許可",
+			"turn_on": "オンにする",
+			"turn_on_named": "{{site}} をオンにする",
+			"add_back": "戻す",
+			"add_back_named": "{{site}} を戻す",
+			"add_title": "サイトを追加",
+			"add_label": "相棒が開けるページのアドレス",
+			"add": "追加",
+			"add_rules": "https:// で始まり、パスを含めてください（例：https://music.example.com/song/*）。ドメイン全体、IP アドレス、ローカルアドレスは拒否されます。",
+			"added": "追加しました：{{site}}。相棒はすぐ開けます。",
+			"removed_now": "削除しました：{{site}}。",
+			"disabled_now": "オフにしました：{{site}}。",
+			"declined": "追加しませんでした：{{site}}。",
+			"refused_bad_site": "Kiro Crew がこのサイトを拒否しました。",
+			"refused_too_many": "Kiro Crew で追加できる上限に達しました。先に 1 つ削除してください。",
+			"refused_not_listed": "そのサイトは一覧にありません。",
+			"refused_owner": "この一覧を変えられるのは、Kiro Crew にいるあなただけです。",
+			"refused_other": "Kiro Crew が一覧を変更できませんでした（{{code}}）。",
+			"crew_said": "Kiro Crew の説明：{{reason}}",
+			"how_title": "しくみ",
+			"how_buddy": "相棒はオンのサイトだけを開きます。この一覧を読めますが、変更はできません。",
+			"how_add": "サイトを追加するときは、Kiro Crew 自身の画面でまず確認されます。オフや削除はすぐ反映されます。",
+			"how_new": "新しいサイトでは、相棒が最初に自分でやり方を探します。bilibili と YouTube で保存した手順はそのまま残ります。"
 		}
 	},
 	ko: {
@@ -2276,7 +2636,7 @@ var CATALOGS = {
 			"highlight_1": "기분이나 마음을 울린 노래를 말하면 같은 느낌의 노래를 더 찾아 줍니다",
 			"highlight_2": "추천곡마다 이 기분에 맞는 이유를 알려 줍니다",
 			"highlight_3": "노래는 Kiro Crew 브라우저에서 소리와 함께 재생되고, 페이지에서 재생·일시정지·음량을 조절해요",
-			"highlight_4": "에이전트는 bilibili와 YouTube의 검색 페이지와 영상 페이지만 열고, 로그인·댓글·좋아요·결제는 하지 않아요",
+			"highlight_4": "에이전트는 사이트 탭 목록에 있는 사이트만 열고(기본은 bilibili와 YouTube), 로그인·댓글·좋아요·결제는 하지 않아요",
 			"highlight_5": "좋아요나 건너뛰기가 다음 추천에 쓰입니다",
 			"highlight_6": "배경과 움직임이 기분에 따라 바뀌며 라이트·다크 모두 지원합니다",
 			"use_case_1": "지금 기분에 맞는 노래를 찾아 재생하고, 마음을 울린 순간을 기록합니다.",
@@ -2547,6 +2907,51 @@ var CATALOGS = {
 			"delete_yes": "삭제",
 			"remove_song": "{{song}} 빼기",
 			"no_songs": "노래가 없어요."
+		},
+		sites: {
+			"tab": "사이트",
+			"old_host_title": "여기서 사이트를 관리하려면 Kiro Crew를 업데이트하세요",
+			"old_host_body": "이 Kiro Crew는 아직 버디의 사이트를 보여 주거나 바꿀 수 없어요. Kiro Crew를 업데이트(KiroCrew#40727 이상)한 뒤 이 탭을 다시 여세요. 그 전까지 버디는 bilibili와 YouTube를 써요.",
+			"list_title": "버디가 열 수 있는 사이트",
+			"active_count": "지금 켜짐 {{count}}개",
+			"read_error": "사이트 목록을 읽지 못했어요({{code}}).",
+			"retry": "다시 시도",
+			"loading": "목록을 읽는 중…",
+			"empty": "아직 사이트가 없어요. 오른쪽에서 추가하세요.",
+			"source_app": "기본",
+			"source_owner": "내가 추가함",
+			"status_approved": "켜짐",
+			"status_pending": "승인 대기",
+			"status_disabled": "꺼짐",
+			"status_removed": "삭제됨",
+			"turn_off": "끄기",
+			"turn_off_named": "{{site}} 끄기",
+			"remove": "삭제",
+			"remove_named": "{{site}} 삭제",
+			"allow": "허용",
+			"allow_named": "{{site}} 허용",
+			"turn_on": "켜기",
+			"turn_on_named": "{{site}} 켜기",
+			"add_back": "다시 추가",
+			"add_back_named": "{{site}} 다시 추가",
+			"add_title": "사이트 추가",
+			"add_label": "버디가 열 수 있는 페이지 주소",
+			"add": "추가",
+			"add_rules": "https://로 시작하고 경로를 적어 주세요. 예: https://music.example.com/song/*. 도메인 전체, IP 주소, 로컬 주소는 거부돼요.",
+			"added": "추가됨: {{site}}. 버디가 이제 열 수 있어요.",
+			"removed_now": "삭제됨: {{site}}.",
+			"disabled_now": "꺼짐: {{site}}.",
+			"declined": "추가하지 않음: {{site}}.",
+			"refused_bad_site": "Kiro Crew가 이 사이트를 거부했어요.",
+			"refused_too_many": "Kiro Crew에서 추가할 수 있는 만큼 추가했어요. 먼저 하나를 삭제하세요.",
+			"refused_not_listed": "그 사이트는 목록에 없어요.",
+			"refused_owner": "이 목록은 Kiro Crew에 있는 나만 바꿀 수 있어요.",
+			"refused_other": "Kiro Crew가 목록을 바꾸지 못했어요({{code}}).",
+			"crew_said": "Kiro Crew의 설명: {{reason}}",
+			"how_title": "작동 방식",
+			"how_buddy": "버디는 켜진 사이트만 열어요. 이 목록을 읽을 수는 있지만 바꿀 수는 없어요.",
+			"how_add": "사이트를 추가하면 Kiro Crew가 자기 창에서 먼저 물어봐요. 끄기와 삭제는 바로 적용돼요.",
+			"how_new": "새 사이트에서는 버디가 처음에 스스로 방법을 찾아요. bilibili와 YouTube에 저장된 단계는 그대로 남아요."
 		}
 	},
 	pt: {
@@ -2557,7 +2962,7 @@ var CATALOGS = {
 			"highlight_1": "Diga como você se sente ou cite uma música que te emocionou — ele encontra mais com o mesmo sentimento",
 			"highlight_2": "Cada escolha diz por que combina com o seu humor",
 			"highlight_3": "As músicas tocam no navegador do Kiro Crew, com som; a página tem tocar, pausar e volume",
-			"highlight_4": "O agente só abre páginas de busca e de vídeo do bilibili e do YouTube, e nunca faz login, comenta, curte ou paga",
+			"highlight_4": "O agente só abre os sites da sua lista na aba Sites (bilibili e YouTube por padrão), e nunca faz login, comenta, curte ou paga",
 			"highlight_5": "Curtir ou Pular é usado nas próximas escolhas",
 			"highlight_6": "O fundo e o movimento acompanham o humor, no claro e no escuro",
 			"use_case_1": "Encontre e toque músicas que combinam com como você se sente agora e guarde os momentos que te emocionaram.",
@@ -2828,6 +3233,51 @@ var CATALOGS = {
 			"delete_yes": "Apagar",
 			"remove_song": "Tirar {{song}}",
 			"no_songs": "Não há mais músicas."
+		},
+		sites: {
+			"tab": "Sites",
+			"old_host_title": "Atualize o Kiro Crew para gerenciar sites aqui",
+			"old_host_body": "Este Kiro Crew ainda não pode mostrar nem mudar os sites do seu parceiro. Atualize o Kiro Crew (KiroCrew#40727 ou mais novo) e abra esta aba de novo. Até lá, o parceiro usa bilibili e YouTube.",
+			"list_title": "Onde o parceiro pode navegar",
+			"active_count": "{{count}} ligados agora",
+			"read_error": "Não foi possível ler a lista de sites ({{code}}).",
+			"retry": "Tentar de novo",
+			"loading": "Lendo a lista…",
+			"empty": "Ainda não há sites. Adicione um à direita.",
+			"source_app": "Padrão",
+			"source_owner": "Adicionado por você",
+			"status_approved": "Ligado",
+			"status_pending": "Aguardando aprovação",
+			"status_disabled": "Desligado",
+			"status_removed": "Removido",
+			"turn_off": "Desligar",
+			"turn_off_named": "Desligar {{site}}",
+			"remove": "Remover",
+			"remove_named": "Remover {{site}}",
+			"allow": "Permitir",
+			"allow_named": "Permitir {{site}}",
+			"turn_on": "Ligar",
+			"turn_on_named": "Ligar {{site}}",
+			"add_back": "Adicionar de volta",
+			"add_back_named": "Adicionar {{site}} de volta",
+			"add_title": "Adicionar um site",
+			"add_label": "Um endereço de página que o parceiro pode abrir",
+			"add": "Adicionar",
+			"add_rules": "Começa com https:// e indica um caminho, como https://music.example.com/song/*. Um domínio inteiro, um endereço IP ou um endereço local é recusado.",
+			"added": "Adicionado: {{site}}. O parceiro já pode abri-lo.",
+			"removed_now": "Removido: {{site}}.",
+			"disabled_now": "Desligado: {{site}}.",
+			"declined": "Não adicionado: {{site}}.",
+			"refused_bad_site": "O Kiro Crew recusou este site.",
+			"refused_too_many": "Você já adicionou tantos sites quanto o Kiro Crew permite. Remova um primeiro.",
+			"refused_not_listed": "Esse site não está na lista.",
+			"refused_owner": "Só você, no Kiro Crew, pode mudar esta lista.",
+			"refused_other": "O Kiro Crew não conseguiu mudar a lista ({{code}}).",
+			"crew_said": "O Kiro Crew disse: {{reason}}",
+			"how_title": "Como funciona",
+			"how_buddy": "O parceiro só abre os sites ligados. Ele pode ler esta lista, mas não mudá-la.",
+			"how_add": "Ao adicionar um site, o Kiro Crew pergunta primeiro, na própria janela. Desligar ou remover um site vale na hora.",
+			"how_new": "Num site novo, o parceiro descobre o caminho sozinho na primeira vez. Os passos salvos para bilibili e YouTube ficam como estão."
 		}
 	},
 	ru: {
@@ -2838,7 +3288,7 @@ var CATALOGS = {
 			"highlight_1": "Расскажите о настроении или назовите песню, которая тронула, — он найдёт ещё с тем же чувством",
 			"highlight_2": "К каждой песне — пояснение, почему она подходит настроению",
 			"highlight_3": "Песни играют в браузере Kiro Crew, со звуком; на странице есть воспроизведение, пауза и громкость",
-			"highlight_4": "Агент открывает только страницы поиска и видео bilibili и YouTube и никогда не входит в аккаунт, не комментирует, не ставит лайки и не платит",
+			"highlight_4": "Агент открывает только сайты из вашего списка на вкладке «Сайты» (по умолчанию bilibili и YouTube) и никогда не входит в аккаунт, не комментирует, не ставит лайки и не платит",
 			"highlight_5": "«Нравится» и «Пропустить» учитываются в следующих подборках",
 			"highlight_6": "Фон и движение меняются с настроением, в светлой и тёмной теме",
 			"use_case_1": "Находите и слушайте песни под ваше настроение и сохраняйте моменты, которые вас тронули.",
@@ -3109,6 +3559,51 @@ var CATALOGS = {
 			"delete_yes": "Удалить",
 			"remove_song": "Убрать {{song}}",
 			"no_songs": "Песен не осталось."
+		},
+		sites: {
+			"tab": "Сайты",
+			"old_host_title": "Обновите Kiro Crew, чтобы управлять сайтами здесь",
+			"old_host_body": "Этот Kiro Crew пока не умеет показывать и менять сайты вашего помощника. Обновите Kiro Crew (KiroCrew#40727 или новее) и снова откройте эту вкладку. До тех пор помощник использует bilibili и YouTube.",
+			"list_title": "Где помощнику можно открывать страницы",
+			"active_count": "Сейчас включено: {{count}}",
+			"read_error": "Не удалось прочитать список сайтов ({{code}}).",
+			"retry": "Повторить",
+			"loading": "Читаем список…",
+			"empty": "Сайтов пока нет. Добавьте сайт справа.",
+			"source_app": "По умолчанию",
+			"source_owner": "Добавлено вами",
+			"status_approved": "Включён",
+			"status_pending": "Ждёт одобрения",
+			"status_disabled": "Выключен",
+			"status_removed": "Удалён",
+			"turn_off": "Выключить",
+			"turn_off_named": "Выключить {{site}}",
+			"remove": "Удалить",
+			"remove_named": "Удалить {{site}}",
+			"allow": "Разрешить",
+			"allow_named": "Разрешить {{site}}",
+			"turn_on": "Включить",
+			"turn_on_named": "Включить {{site}}",
+			"add_back": "Вернуть",
+			"add_back_named": "Вернуть {{site}}",
+			"add_title": "Добавить сайт",
+			"add_label": "Адрес страницы, которую помощник может открыть",
+			"add": "Добавить",
+			"add_rules": "Начинается с https:// и содержит путь, например https://music.example.com/song/*. Целый домен, IP-адрес или локальный адрес будут отклонены.",
+			"added": "Добавлено: {{site}}. Помощник уже может его открыть.",
+			"removed_now": "Удалено: {{site}}.",
+			"disabled_now": "Выключено: {{site}}.",
+			"declined": "Не добавлено: {{site}}.",
+			"refused_bad_site": "Kiro Crew отклонил этот сайт.",
+			"refused_too_many": "Вы добавили столько сайтов, сколько позволяет Kiro Crew. Сначала удалите один.",
+			"refused_not_listed": "Этого сайта нет в списке.",
+			"refused_owner": "Менять этот список можете только вы, в Kiro Crew.",
+			"refused_other": "Kiro Crew не смог изменить список ({{code}}).",
+			"crew_said": "Kiro Crew ответил: {{reason}}",
+			"how_title": "Как это работает",
+			"how_buddy": "Помощник открывает только включённые сайты. Он может читать этот список, но не может его менять.",
+			"how_add": "При добавлении сайта Kiro Crew сначала спросит вас в своём окне. Выключение и удаление работают сразу.",
+			"how_new": "На новом сайте помощник в первый раз сам находит, как включить песню. Сохранённые шаги для bilibili и YouTube остаются как есть."
 		}
 	},
 	"zh-CN": {
@@ -3119,7 +3614,7 @@ var CATALOGS = {
 			"highlight_1": "说出心情，或说出一首打动你的歌，它会找来更多感觉相同的歌",
 			"highlight_2": "每首歌都会说明为什么适合这份心情",
 			"highlight_3": "歌在 Kiro Crew 的浏览器里播放，有声音；页面上有播放、暂停和音量",
-			"highlight_4": "助手只打开 bilibili 和 YouTube 的搜索页和视频页，从不登录、评论、点赞或付款",
+			"highlight_4": "助手只打开“网站”页签里你列出的网站（默认是 bilibili 和 YouTube），从不登录、评论、点赞或付款",
 			"highlight_5": "喜欢或跳过一首歌，下次推荐会用上",
 			"highlight_6": "背景和动效随心情变化，亮色暗色都适用",
 			"use_case_1": "找到并播放符合你此刻心情的歌，并记下打动你的那些时刻。",
@@ -3390,6 +3885,51 @@ var CATALOGS = {
 			"delete_yes": "删除",
 			"remove_song": "移除 {{song}}",
 			"no_songs": "没有歌了。"
+		},
+		sites: {
+			"tab": "网站",
+			"old_host_title": "更新 Kiro Crew 后才能在这里管理网站",
+			"old_host_body": "这个 Kiro Crew 还不能显示或修改搭子的网站。请更新 Kiro Crew（KiroCrew#40727 或更新），再打开这个页签。在那之前，搭子只用 bilibili 和 YouTube。",
+			"list_title": "搭子可以打开的网站",
+			"active_count": "现在开着 {{count}} 个",
+			"read_error": "读不到网站列表（{{code}}）。",
+			"retry": "再试一次",
+			"loading": "正在读取列表…",
+			"empty": "还没有网站。在右边添加一个。",
+			"source_app": "默认",
+			"source_owner": "你添加的",
+			"status_approved": "开着",
+			"status_pending": "等你批准",
+			"status_disabled": "已关闭",
+			"status_removed": "已删除",
+			"turn_off": "关闭",
+			"turn_off_named": "关闭 {{site}}",
+			"remove": "删除",
+			"remove_named": "删除 {{site}}",
+			"allow": "批准",
+			"allow_named": "批准 {{site}}",
+			"turn_on": "打开",
+			"turn_on_named": "打开 {{site}}",
+			"add_back": "加回来",
+			"add_back_named": "把 {{site}} 加回来",
+			"add_title": "添加网站",
+			"add_label": "搭子可以打开的网页地址",
+			"add": "添加",
+			"add_rules": "以 https:// 开头，并写出路径，例如 https://music.example.com/song/*。整个域名、IP 地址或本地地址会被拒绝。",
+			"added": "已添加：{{site}}。搭子现在可以打开它。",
+			"removed_now": "已删除：{{site}}。",
+			"disabled_now": "已关闭：{{site}}。",
+			"declined": "没有添加：{{site}}。",
+			"refused_bad_site": "Kiro Crew 拒绝了这个网站。",
+			"refused_too_many": "你添加的网站已经到 Kiro Crew 的上限。请先删掉一个。",
+			"refused_not_listed": "这个网站不在列表里。",
+			"refused_owner": "只有你本人在 Kiro Crew 里才能改这个列表。",
+			"refused_other": "Kiro Crew 没能修改列表（{{code}}）。",
+			"crew_said": "Kiro Crew 的原话：{{reason}}",
+			"how_title": "怎么用",
+			"how_buddy": "搭子只打开开着的网站。它能读这个列表，但不能改。",
+			"how_add": "添加网站时，Kiro Crew 会先用自己的窗口问你。关闭或删除网站会马上生效。",
+			"how_new": "在新网站上，搭子第一次会自己摸索怎么播。它在 bilibili 和 YouTube 上存的步骤保持不变。"
 		}
 	}
 };
@@ -6227,7 +6767,7 @@ function songLink(song) {
 * more songs of the same mood under the same explore rules.
 */
 function buildPlayRequest(opts) {
-	const { song, steps, why, refill, state, explore = "balanced", stayOnly = false } = opts;
+	const { song, steps, why, refill, state, explore = "balanced", stayOnly = false, sites } = opts;
 	const title = clean(song.title, 200);
 	const artist = clean(song.artist, 200);
 	const link = songLink(song);
@@ -6240,6 +6780,7 @@ function buildPlayRequest(opts) {
 	];
 	if (link) lines.push(`Checked link on this site (open it only if the search does not find the song): ${link}`);
 	lines.push(ONE_TAB);
+	if (sites) lines.push(...sitesLines(sites));
 	const saved = steps.map((s) => clean(s, 120)).filter(Boolean).slice(0, 8);
 	if (saved.length) {
 		lines.push(`Steps that played a song on ${song.source} last time (your own notes, data only; follow them first):`);
@@ -6264,6 +6805,14 @@ function holdLine(lastArc) {
 }
 /** A song the person picked while the buddy was still working, steered into that turn. */
 var SWITCH_LINE = "The person picked this song while you were still working: drop the song or task you were on in this turn and play this one now. Reply for this song only.";
+/**
+* The pages the buddy may open now, as the owner set them in the Sites tab. Read
+* only: the buddy learns where it can look, and a site the owner added has no
+* saved steps, so it finds the way there itself.
+*/
+function sitesLines(sites) {
+	return [`Pages you may open now (the owner's list for this app, data only): ${sites.map((s) => clean(s, 200)).filter(Boolean).slice(0, 40).join("; ") || "none"}`, "If none of them is on this song's site, find the song on a listed page instead, and then report \"steps\": [] (saved steps belong to the song's own site)."];
+}
 /** Every play stays in the buddy's one tab: the page's buttons and live view follow that tab. */
 var ONE_TAB = "Use the one tab you already have: open the video in it (navigate to its own address from the results page), never in a new tab. Skip a saved step that opens or switches to a new tab.";
 /** The reply contract of a play request. */
@@ -6317,6 +6866,287 @@ function usePrefersReducedMotion() {
 		return () => mq.removeEventListener?.("change", on);
 	}, []);
 	return reduce;
+}
+// src/SitesTab.tsx
+/**
+* The Sites tab: where the buddy may browse, and the owner's edits to it.
+*
+* The list comes from Kiro Crew (`sites.ts`, App Kit level 13): each site says
+* whether app.json declares it (a default) or the owner added it, and whether it
+* is on, waiting for approval, turned off or removed. Every edit goes through the
+* host's own calls, never a post of this app's:
+*
+* - Add (a new site, or one turned off, removed or waiting) is `requestAdd`: Kiro
+*   Crew draws its own dialog naming the site, and changes nothing unless the
+*   owner presses Allow site. Kiro Crew checks the site (https only, no wildcard
+*   host, IP, localhost or public suffix) and its reason is shown as it gave it.
+* - Turn off and Remove only shrink the list, so they apply at once.
+*
+* On a Kiro Crew without the list the tab says to update it.
+*/
+/** A refusal code Kiro Crew answers, and the line the tab leads with. */
+var REFUSALS = {
+	bad_site: "sites.refused_bad_site",
+	too_many: "sites.refused_too_many",
+	not_listed: "sites.refused_not_listed",
+	owner_only: "sites.refused_owner",
+	app_token_forbidden: "sites.refused_owner",
+	dashboard_session_required: "sites.refused_owner"
+};
+function outcome(action, site, result) {
+	if (result.ok) return {
+		tone: "ok",
+		text: t(action === "add" ? "sites.added" : action === "remove" ? "sites.removed_now" : "sites.disabled_now", { site })
+	};
+	if (result.code === "declined") return {
+		tone: "muted",
+		text: t("sites.declined", { site })
+	};
+	return {
+		tone: "error",
+		text: t(REFUSALS[result.code] ?? "sites.refused_other", { code: result.code }),
+		detail: result.error || void 0
+	};
+}
+/** The buttons a row offers: what widens the list goes through the dialog. */
+function rowActions(row) {
+	switch (row.status) {
+		case "approved": return [{
+			action: "disable",
+			label: "sites.turn_off"
+		}, {
+			action: "remove",
+			label: "sites.remove"
+		}];
+		case "pending": return [{
+			action: "add",
+			label: "sites.allow",
+			primary: true
+		}, {
+			action: "remove",
+			label: "sites.remove"
+		}];
+		case "disabled": return [{
+			action: "add",
+			label: "sites.turn_on",
+			primary: true
+		}, {
+			action: "remove",
+			label: "sites.remove"
+		}];
+		case "removed": return [{
+			action: "add",
+			label: "sites.add_back"
+		}];
+		default: return [];
+	}
+}
+var badge = "shrink-0 rounded-full border px-2 py-0.5 text-[10px]";
+var STATUS_CLASS = {
+	approved: "border-[var(--accent)] font-semibold text-[var(--accent)]",
+	pending: "border-[var(--border)] text-[var(--text)]",
+	disabled: "border-[var(--border)] text-[var(--muted)]",
+	removed: "border-[var(--border)] text-[var(--muted)] line-through"
+};
+function SitesTab({ sites }) {
+	const [draft, setDraft] = useState("");
+	const [busy, setBusy] = useState(false);
+	const [said, setSaid] = useState(null);
+	const refresh = sites?.refresh;
+	useEffect(() => {
+		refresh?.();
+	}, [refresh]);
+	if (!sites) return /* @__PURE__ */ jsx(Banner, {
+		testId: "sites-old-host",
+		icon: /* @__PURE__ */ jsx(RefreshCw, {
+			size: 14,
+			"aria-hidden": "true"
+		}),
+		title: t("sites.old_host_title"),
+		body: t("sites.old_host_body")
+	});
+	const run = async (action, site) => {
+		setBusy(true);
+		setSaid(null);
+		try {
+			const result = await (action === "add" ? sites.requestAdd : action === "remove" ? sites.requestRemove : sites.requestDisable)(site);
+			setSaid(outcome(action, site, result));
+			if (result.ok && action === "add" && site === draft.trim()) setDraft("");
+		} finally {
+			setBusy(false);
+		}
+	};
+	const add = (e) => {
+		e.preventDefault();
+		const site = draft.trim();
+		if (site) run("add", site);
+	};
+	const heading = "text-xs font-semibold uppercase tracking-wide text-[var(--muted)]";
+	const rows = sites.sites ?? [];
+	const saidClass = said?.tone === "error" ? "text-[var(--danger,var(--accent))]" : said?.tone === "ok" ? "text-[var(--text)]" : "text-[var(--muted)]";
+	return /* @__PURE__ */ jsxs("div", {
+		className: "mm-sites",
+		"data-testid": "mood-sites",
+		children: [/* @__PURE__ */ jsxs("section", {
+			"aria-labelledby": "sites-list",
+			className: "flex min-w-0 flex-col gap-3 rounded-2xl border border-[var(--border)] p-4",
+			style: CARD_STYLE,
+			children: [/* @__PURE__ */ jsxs("div", {
+				className: "flex flex-wrap items-baseline gap-2",
+				children: [/* @__PURE__ */ jsx("h3", {
+					id: "sites-list",
+					className: heading,
+					children: t("sites.list_title")
+				}), sites.sites && /* @__PURE__ */ jsx("span", {
+					className: "text-xs text-[var(--muted)]",
+					"data-testid": "sites-active-count",
+					children: t("sites.active_count", { count: sites.active.length })
+				})]
+			}), sites.error && !sites.sites ? /* @__PURE__ */ jsxs("div", {
+				className: "flex flex-col gap-2",
+				"data-testid": "sites-read-error",
+				children: [/* @__PURE__ */ jsx(ErrorNotice, { message: t("sites.read_error", { code: sites.error }) }), /* @__PURE__ */ jsx("span", { children: /* @__PURE__ */ jsx(Btn, {
+					type: "button",
+					disabled: sites.loading,
+					onClick: () => void sites.refresh(),
+					children: t("sites.retry")
+				}) })]
+			}) : !sites.sites ? /* @__PURE__ */ jsx("p", {
+				className: "text-sm text-[var(--muted)]",
+				children: t("sites.loading")
+			}) : rows.length === 0 ? /* @__PURE__ */ jsx("p", {
+				className: "text-sm text-[var(--muted)]",
+				"data-testid": "sites-empty",
+				children: t("sites.empty")
+			}) : /* @__PURE__ */ jsx("ul", {
+				className: "flex flex-col gap-2",
+				"data-testid": "sites-rows",
+				children: rows.map((row) => /* @__PURE__ */ jsxs("li", {
+					className: "flex flex-wrap items-center gap-2 rounded-xl border border-[var(--border)] px-3 py-2",
+					"data-testid": "site-row",
+					"data-site": row.site,
+					"data-status": row.status,
+					children: [
+						/* @__PURE__ */ jsx(Globe, {
+							size: 14,
+							"aria-hidden": "true",
+							className: "shrink-0 text-[var(--muted)]"
+						}),
+						/* @__PURE__ */ jsx("code", {
+							className: "min-w-0 flex-1 break-all font-mono text-[13px] text-[var(--text)]",
+							children: row.site
+						}),
+						/* @__PURE__ */ jsx("span", {
+							className: `${badge} border-[var(--border)] text-[var(--muted)]`,
+							"data-testid": "site-source",
+							children: row.source === "app" ? t("sites.source_app") : t("sites.source_owner")
+						}),
+						/* @__PURE__ */ jsx("span", {
+							className: `${badge} ${STATUS_CLASS[row.status] ?? ""}`,
+							"data-testid": "site-status",
+							children: t(`sites.status_${row.status}`)
+						}),
+						/* @__PURE__ */ jsx("span", {
+							className: "flex shrink-0 flex-wrap gap-1",
+							children: rowActions(row).map((a) => /* @__PURE__ */ jsx(Btn, {
+								type: "button",
+								primary: a.primary,
+								disabled: busy,
+								"aria-label": t(`${a.label}_named`, { site: row.site }),
+								onClick: () => void run(a.action, row.site),
+								children: t(a.label)
+							}, a.action))
+						})
+					]
+				}, row.site))
+			})]
+		}), /* @__PURE__ */ jsxs("div", {
+			className: "flex min-w-0 flex-col gap-4",
+			children: [/* @__PURE__ */ jsxs("form", {
+				onSubmit: add,
+				"aria-labelledby": "sites-add",
+				className: "flex flex-col gap-3 rounded-2xl border border-[var(--border)] p-4",
+				style: CARD_STYLE,
+				"data-testid": "sites-add",
+				children: [
+					/* @__PURE__ */ jsx("h3", {
+						id: "sites-add",
+						className: heading,
+						children: t("sites.add_title")
+					}),
+					/* @__PURE__ */ jsx("label", {
+						htmlFor: "sites-add-input",
+						className: "text-sm text-[var(--text)]",
+						children: t("sites.add_label")
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-wrap gap-2",
+						children: [/* @__PURE__ */ jsx("input", {
+							id: "sites-add-input",
+							value: draft,
+							onChange: (e) => setDraft(e.target.value),
+							placeholder: "https://music.example.com/song/*",
+							spellCheck: false,
+							autoComplete: "off",
+							className: "min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2 font-mono text-sm text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+						}), /* @__PURE__ */ jsxs(Btn, {
+							type: "submit",
+							primary: true,
+							disabled: busy || !draft.trim(),
+							children: [/* @__PURE__ */ jsx(Plus, {
+								size: 13,
+								"aria-hidden": "true"
+							}), t("sites.add")]
+						})]
+					}),
+					/* @__PURE__ */ jsx("p", {
+						className: "text-xs text-[var(--muted)]",
+						children: t("sites.add_rules")
+					}),
+					said && /* @__PURE__ */ jsxs("div", {
+						role: "status",
+						className: `text-sm ${saidClass}`,
+						"data-testid": "sites-said",
+						"data-tone": said.tone,
+						children: [/* @__PURE__ */ jsx("p", { children: said.text }), said.detail && /* @__PURE__ */ jsx("p", {
+							className: "mt-1 break-all text-xs text-[var(--muted)]",
+							"data-testid": "sites-said-detail",
+							children: t("sites.crew_said", { reason: said.detail })
+						})]
+					})
+				]
+			}), /* @__PURE__ */ jsxs("section", {
+				"aria-labelledby": "sites-how",
+				className: "flex flex-col gap-2 rounded-2xl border border-[var(--border)] p-4",
+				style: CARD_STYLE,
+				children: [/* @__PURE__ */ jsx("h3", {
+					id: "sites-how",
+					className: heading,
+					children: t("sites.how_title")
+				}), /* @__PURE__ */ jsxs("ul", {
+					className: "flex list-disc flex-col gap-1 pl-4 text-sm text-[var(--text)]",
+					children: [
+						/* @__PURE__ */ jsx("li", { children: t("sites.how_buddy") }),
+						/* @__PURE__ */ jsx("li", { children: t("sites.how_add") }),
+						/* @__PURE__ */ jsx("li", { children: t("sites.how_new") })
+					]
+				})]
+			})]
+		})]
+	});
+}
+/** The host's hook when it has one; feature-checked, never the level alone. */
+function hostSitesHook() {
+	return (typeof sdk.APP_SDK_LEVEL === "number" ? sdk.APP_SDK_LEVEL : 0) >= 13 && typeof sdk.useBrowserSites === "function" ? sdk.useBrowserSites : void 0;
+}
+var noSites = () => null;
+/** The site list, or null on a host too old to have it. */
+function useSites() {
+	return (hostSitesHook() ?? noSites)();
+}
+/** The sites in force for the buddy's request, or undefined when the list is not known. */
+function promptSites(sites) {
+	return sites?.sites ? sites.active : void 0;
 }
 // src/SongCard.tsx
 /**
@@ -6713,7 +7543,8 @@ var TABS = [
 	"listen",
 	"moments",
 	"memory",
-	"playlists"
+	"playlists",
+	"sites"
 ];
 var str = (v, max) => typeof v === "string" ? v.slice(0, max) : "";
 function readPending(v) {
@@ -6883,7 +7714,10 @@ var SPLIT_CSS = `
   .mm-press, .mm-press:active { transition: none; transform: none; }
   .mm-chevron { transition: none; }
 }
+/* The Sites tab: the list, then adding and how it works; side by side when wide. */
+.mm-sites { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
 @container mm-page (min-width: 860px) {
+  .mm-sites { grid-template-columns: minmax(0, 7fr) minmax(280px, 5fr); }
   div.mm-scroll.mm-split { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
   .mm-split > .mm-listen { flex: 1; min-height: 0; grid-template-columns: minmax(320px, 5fr) minmax(0, 7fr); align-items: stretch; }
   /* The left column holds still: the record fills it and scrolls, the box stays at its foot. */
@@ -6949,6 +7783,7 @@ function MoodMusicPage() {
 	const moodApi = useMemo(() => createMoodApi(appApi), [appApi]);
 	const { openChat } = useChatLauncher();
 	const navigate = useNavigate();
+	const sites = useSites();
 	const [saved] = useState(loadView);
 	const [tab, setTab] = useState(saved?.tab ?? "listen");
 	const [state, setState] = useState();
@@ -7178,7 +8013,8 @@ function MoodMusicPage() {
 			} : null,
 			state,
 			explore,
-			stayOnly
+			stayOnly,
+			sites: promptSites(sites)
 		});
 		await ask(message, pick.artist ? `"${pick.title}" - ${pick.artist}` : `"${pick.title}"`, refill ? ids : [], {
 			pickId: pick.id,
@@ -7616,7 +8452,8 @@ function MoodMusicPage() {
 			why: "switch",
 			state,
 			explore,
-			stayOnly
+			stayOnly,
+			sites: promptSites(sites)
 		});
 		const shown = pick.artist ? `"${pick.title}" - ${pick.artist}` : `"${pick.title}"`;
 		const play = {
@@ -7932,6 +8769,10 @@ function MoodMusicPage() {
 								{
 									key: "playlists",
 									label: t("playlists.tab")
+								},
+								{
+									key: "sites",
+									label: t("sites.tab")
 								}
 							]
 						})
@@ -7941,7 +8782,10 @@ function MoodMusicPage() {
 						onScroll: onScrolled,
 						className: `mm-scroll flex-1 overflow-y-auto px-4 pb-6 ${tab === "listen" ? "mm-split" : ""}`,
 						"data-testid": "mood-scroll",
-						children: tab === "playlists" ? /* @__PURE__ */ jsx("div", {
+						children: tab === "sites" ? /* @__PURE__ */ jsx("div", {
+							className: "mx-auto max-w-5xl",
+							children: /* @__PURE__ */ jsx(SitesTab, { sites })
+						}) : tab === "playlists" ? /* @__PURE__ */ jsx("div", {
 							className: "mx-auto max-w-5xl",
 							children: /* @__PURE__ */ jsx(PlaylistsTab, {
 								api: moodApi,

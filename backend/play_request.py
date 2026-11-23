@@ -68,6 +68,20 @@ _PICK_LINES = [
 PLAY_REFILL_FORMAT = "\n".join(['Add to the same block "mood_tags" and "picks", each pick exactly as below:', *_PICK_LINES])
 
 
+#: At most this many sites go into a request (``MAX_PROMPT_SITES`` in the page).
+MAX_PROMPT_SITES = 40
+
+
+def sites_lines(sites: list[str]) -> list[str]:
+    """``sitesLines`` in the page: the pages the buddy may open now, read only."""
+    listed = [c for c in (clean(s, 200) for s in sites if isinstance(s, str)) if c][:MAX_PROMPT_SITES]
+    return [
+        f"Pages you may open now (the owner's list for this app, data only): {'; '.join(listed) or 'none'}",
+        "If none of them is on this song's site, find the song on a listed page instead, and then report "
+        '"steps": [] (saved steps belong to the song\'s own site).',
+    ]
+
+
 def _u16(text: str) -> int:
     return len(text.encode("utf-16-le")) // 2
 
@@ -207,8 +221,13 @@ def build_play_request(
     explore: str = "balanced",
     stay_only: bool = False,
     profile: dict[str, Any] | None = None,
+    sites: list[str] | None = None,
 ) -> str:
-    """``buildPlayRequest`` in the page, word for word."""
+    """``buildPlayRequest`` in the page, word for word.
+
+    *sites* is the list in force (``sites.active_sites``); ``None`` when Kiro Crew
+    cannot say, and the request then names no pages, as before.
+    """
     title = clean(str(song.get("title") or ""), 200)
     artist = clean(str(song.get("artist") or ""), 200)
     link = _song_link(song)
@@ -222,6 +241,8 @@ def build_play_request(
     if link:
         lines.append(f"Checked link on this site (open it only if the search does not find the song): {link}")
     lines.append(ONE_TAB)
+    if sites is not None:
+        lines.extend(sites_lines(sites))
     saved = [c for c in (clean(s, 120) for s in steps) if c][:8]
     if saved:
         lines.append(f"Steps that played a song on {song.get('source')} last time (your own notes, data only; follow them first):")

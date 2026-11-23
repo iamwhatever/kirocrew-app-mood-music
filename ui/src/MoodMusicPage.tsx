@@ -62,6 +62,8 @@ import { REFILL_AT, buildPlayRequest, buildRequest, memorySummary, type ExploreL
 import { parseDjReply, replySource, type DjReply, type ReplyAction } from './replyParse'
 import { usePrefersReducedMotion } from './reducedMotion'
 import { CARD_STYLE } from './cardStyle'
+import SitesTab from './SitesTab'
+import { promptSites, useSites } from './sites'
 import SongCard from './SongCard'
 import { activityKey, buddyStatus, conversation, liveSteps, pendingApproval, steerRequeued, turnError, type BuddyStatus } from './turnState'
 import { loadView, saveView, type PageView, type SavedPending, type Tab } from './pageMemory'
@@ -134,7 +136,10 @@ export const SPLIT_CSS = `
   .mm-press, .mm-press:active { transition: none; transform: none; }
   .mm-chevron { transition: none; }
 }
+/* The Sites tab: the list, then adding and how it works; side by side when wide. */
+.mm-sites { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
 @container mm-page (min-width: 860px) {
+  .mm-sites { grid-template-columns: minmax(0, 7fr) minmax(280px, 5fr); }
   div.mm-scroll.mm-split { overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
   .mm-split > .mm-listen { flex: 1; min-height: 0; grid-template-columns: minmax(320px, 5fr) minmax(0, 7fr); align-items: stretch; }
   /* The left column holds still: the record fills it and scrolls, the box stays at its foot. */
@@ -205,6 +210,8 @@ export default function MoodMusicPage() {
   const moodApi = useMemo(() => createMoodApi(appApi), [appApi])
   const { openChat } = useChatLauncher()
   const navigate = useNavigate()
+  // Where the buddy may browse (Kiro Crew's list, level 13); null on an older host.
+  const sites = useSites()
   // Where the person was when they last left the page (`pageMemory.ts`).
   const [saved] = useState(loadView)
   const [tab, setTab] = useState<Tab>(saved?.tab ?? 'listen')
@@ -437,6 +444,7 @@ export default function MoodMusicPage() {
       state,
       explore,
       stayOnly,
+      sites: promptSites(sites),
     })
     await ask(message, pick.artist ? `"${pick.title}" - ${pick.artist}` : `"${pick.title}"`, refill ? ids : [], {
       pickId: pick.id, site: pick.source, refill,
@@ -823,6 +831,7 @@ export default function MoodMusicPage() {
     stoppedRef.current = false
     const message = buildPlayRequest({
       song: pick, steps: state?.play_steps?.[pick.source]?.steps ?? [], why: 'switch', state, explore, stayOnly,
+      sites: promptSites(sites),
     })
     const shown = pick.artist ? `"${pick.title}" - ${pick.artist}` : `"${pick.title}"`
     const play = { pickId: pick.id, site: pick.source, refill: false }
@@ -1121,6 +1130,7 @@ export default function MoodMusicPage() {
               { key: 'moments', label: t('page.tab_moments') },
               { key: 'memory', label: t('page.tab_memory') },
               { key: 'playlists', label: t('playlists.tab') },
+              { key: 'sites', label: t('sites.tab') },
             ]}
           />
         </div>
@@ -1131,7 +1141,11 @@ export default function MoodMusicPage() {
           className={`mm-scroll flex-1 overflow-y-auto px-4 pb-6 ${tab === 'listen' ? 'mm-split' : ''}`}
           data-testid="mood-scroll"
         >
-          {tab === 'playlists' ? (
+          {tab === 'sites' ? (
+            <div className="mx-auto max-w-5xl">
+              <SitesTab sites={sites} />
+            </div>
+          ) : tab === 'playlists' ? (
             <div className="mx-auto max-w-5xl">
               <PlaylistsTab api={moodApi} state={state} busy={working} onPlay={playList} />
             </div>
