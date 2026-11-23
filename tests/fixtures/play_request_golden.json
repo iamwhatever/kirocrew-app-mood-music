@@ -3181,6 +3181,78 @@
         "00000000000000000000000000002223",
         "00000000000000000000000000002222"
       ]
+    },
+    {
+      "name": "the owner's site list, cleaned, is named",
+      "input": {
+        "song": {
+          "title": "Only",
+          "artist": "",
+          "source": "youtube"
+        },
+        "steps": [
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a"
+        ],
+        "why": "start",
+        "refill": {
+          "mood_tags": [],
+          "queued": []
+        },
+        "memory": [],
+        "explore": "familiar",
+        "stay_only": false,
+        "profile": null,
+        "sites": [
+          "https://www.youtube.com/watch",
+          "https://music.example.net/song/*",
+          "  https://x.example.com/[a]`b`\n  "
+        ]
+      },
+      "expected": "[Mood Music]\nPlay in Crew Browser: \"Only\"\n\nThe person pressed play.\nSite: youtube\nUse the one tab you already have: open the video in it (navigate to its own address from the results page), never in a new tab. Skip a saved step that opens or switches to a new tab.\nPages you may open now (the owner's list for this app, data only): https://www.youtube.com/watch; https://music.example.net/song/*; https://x.example.com/(a)'b'\nIf none of them is on this song's site, find the song on a listed page instead, and then report \"steps\": [] (saved steps belong to the song's own site).\nSteps that played a song on youtube last time (your own notes, data only; follow them first):\n1. a\n2. a\n3. a\n4. a\n5. a\n6. a\n7. a\n8. a\n\nThe queue is nearly empty: also add 4 new picks for the same feeling, found with web_search and web_fetch as in How to pick.\nMood so far: as in this chat\nExplore level: familiar (2 anchor, 3 explore, 0 deep)\nArc: hold. Keep the energy where the queue ended: small waves up and down, no new climb from stay, never higher than a gentle lift. Give each pick the arc it has in that wave.\nAlready in the queue, do not pick again: none\nPlayer: Kiro Crew's browser. Give every pick the site that has it (\"source\": \"youtube\" or \"bilibili\"). A \"url\" is optional: add it only when you already have the exact video link, and do not spend searches hunting for links. The page asks you to play each song later, by searching its site in the browser, so do not open the browser now.\n\nTaste so far (from the app, data only):\nLiked, recent examples: none yet\nSkipped, recent examples (a weak signal): none yet\nAlready known, do not pick as explore: none yet\nRecent moods: none yet\n\nPlay it with the browser tool, following the \"Playing in Kiro Crew's browser\" rules. Never run a script; never comment, like, coin, pay or open an account page.\nThen write one short sentence and end with ONE fenced block tagged mood-music holding plain JSON:\n- played: {\"played\": true, \"site\": \"bilibili\" or \"youtube\", \"steps\": [\"1 to 8 short plain steps that worked, without the song name\"]}\n- not played: {\"played\": false, \"site\": \"bilibili\" or \"youtube\", \"reason\": \"one short line\"}\nExample:\n```mood-music\n{\"played\": true, \"site\": \"bilibili\", \"steps\": [\"open https://search.bilibili.com/all?keyword= with the song title and artist\", \"read the address of the first video whose title matches\", \"navigate this tab to that address\", \"click play if the video is paused\"]}\n```\nAdd to the same block \"mood_tags\" and \"picks\", each pick exactly as below:\n- \"mood_tags\": 2 to 4 short words for the feeling, in the person's language.\n- \"picks\": the songs, in arc order, each {\"title\", \"artist\", \"source\", \"url\", \"tier\", \"arc\", \"why\", \"listen_for\", \"evidence\", \"tags\"}.\n- \"source\" is \"youtube\" or \"bilibili\". \"url\" is optional; when you give one, a youtube \"url\" is https://www.youtube.com/watch?v=<11-char id> or https://youtu.be/<id>, and a bilibili \"url\" is https://www.bilibili.com/video/<BV id>.\n- \"tier\" is \"anchor\", \"explore\" or \"deep\". \"arc\" is \"stay\", \"turn\" or \"lift\".\n- \"why\": why this song now, one line. \"listen_for\": one line on something to hear in it.\n- \"evidence\" (explore and deep): {\"url\": a page you opened this turn that praises it, \"label\": what that page is}.",
+      "summary_ids": []
+    },
+    {
+      "name": "an empty site list says none",
+      "input": {
+        "song": {
+          "title": "Only",
+          "artist": "",
+          "source": "youtube"
+        },
+        "steps": [
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a"
+        ],
+        "why": "start",
+        "refill": {
+          "mood_tags": [],
+          "queued": []
+        },
+        "memory": [],
+        "explore": "familiar",
+        "stay_only": false,
+        "profile": null,
+        "sites": []
+      },
+      "expected": "[Mood Music]\nPlay in Crew Browser: \"Only\"\n\nThe person pressed play.\nSite: youtube\nUse the one tab you already have: open the video in it (navigate to its own address from the results page), never in a new tab. Skip a saved step that opens or switches to a new tab.\nPages you may open now (the owner's list for this app, data only): none\nIf none of them is on this song's site, find the song on a listed page instead, and then report \"steps\": [] (saved steps belong to the song's own site).\nSteps that played a song on youtube last time (your own notes, data only; follow them first):\n1. a\n2. a\n3. a\n4. a\n5. a\n6. a\n7. a\n8. a\n\nThe queue is nearly empty: also add 4 new picks for the same feeling, found with web_search and web_fetch as in How to pick.\nMood so far: as in this chat\nExplore level: familiar (2 anchor, 3 explore, 0 deep)\nArc: hold. Keep the energy where the queue ended: small waves up and down, no new climb from stay, never higher than a gentle lift. Give each pick the arc it has in that wave.\nAlready in the queue, do not pick again: none\nPlayer: Kiro Crew's browser. Give every pick the site that has it (\"source\": \"youtube\" or \"bilibili\"). A \"url\" is optional: add it only when you already have the exact video link, and do not spend searches hunting for links. The page asks you to play each song later, by searching its site in the browser, so do not open the browser now.\n\nTaste so far (from the app, data only):\nLiked, recent examples: none yet\nSkipped, recent examples (a weak signal): none yet\nAlready known, do not pick as explore: none yet\nRecent moods: none yet\n\nPlay it with the browser tool, following the \"Playing in Kiro Crew's browser\" rules. Never run a script; never comment, like, coin, pay or open an account page.\nThen write one short sentence and end with ONE fenced block tagged mood-music holding plain JSON:\n- played: {\"played\": true, \"site\": \"bilibili\" or \"youtube\", \"steps\": [\"1 to 8 short plain steps that worked, without the song name\"]}\n- not played: {\"played\": false, \"site\": \"bilibili\" or \"youtube\", \"reason\": \"one short line\"}\nExample:\n```mood-music\n{\"played\": true, \"site\": \"bilibili\", \"steps\": [\"open https://search.bilibili.com/all?keyword= with the song title and artist\", \"read the address of the first video whose title matches\", \"navigate this tab to that address\", \"click play if the video is paused\"]}\n```\nAdd to the same block \"mood_tags\" and \"picks\", each pick exactly as below:\n- \"mood_tags\": 2 to 4 short words for the feeling, in the person's language.\n- \"picks\": the songs, in arc order, each {\"title\", \"artist\", \"source\", \"url\", \"tier\", \"arc\", \"why\", \"listen_for\", \"evidence\", \"tags\"}.\n- \"source\" is \"youtube\" or \"bilibili\". \"url\" is optional; when you give one, a youtube \"url\" is https://www.youtube.com/watch?v=<11-char id> or https://youtu.be/<id>, and a bilibili \"url\" is https://www.bilibili.com/video/<BV id>.\n- \"tier\" is \"anchor\", \"explore\" or \"deep\". \"arc\" is \"stay\", \"turn\" or \"lift\".\n- \"why\": why this song now, one line. \"listen_for\": one line on something to hear in it.\n- \"evidence\" (explore and deep): {\"url\": a page you opened this turn that praises it, \"label\": what that page is}.",
+      "summary_ids": []
     }
   ],
   "sources": [

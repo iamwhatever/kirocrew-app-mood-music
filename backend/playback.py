@@ -35,7 +35,7 @@ import logging
 import re
 from typing import Any
 
-from . import buddy, links, playlists, verify
+from . import buddy, links, playlists, sites, verify
 from .play_request import REFILL_AT, build_play_request, memory_summary, reply_source
 from .store import PLAY_SITES, MemoryFull
 
@@ -72,9 +72,12 @@ def next_pick(snapshot: dict[str, Any], pick_id: str) -> tuple[dict[str, Any] | 
 
 
 def play_message(
-    snapshot: dict[str, Any], song: dict[str, Any], refill: bool
+    snapshot: dict[str, Any], song: dict[str, Any], refill: bool,
+    active: list[str] | None = None,
 ) -> tuple[str, list[str]]:
     """The page's play request for *song* after an ending, built from the stored state.
+
+    *active* is the site list in force (``sites.active_sites``), or ``None``.
 
     With the ids of the memory items a refill request carried, marked used once
     its picks land, as the page marks the memory behind a queue.
@@ -98,6 +101,7 @@ def play_message(
         # The page stores its "stay only" switch; off until the person sets it.
         stay_only=settings.get("stay_only") is True,
         profile=snapshot.get("profile"),
+        sites=active,
     )
     return message, (memory_summary(memory, snapshot.get("profile"))[1] if refill else [])
 
@@ -295,6 +299,8 @@ async def _wake(ctx: Any, state: Any, slots: Any, pick_id: str) -> str:
         return "done"
     if getattr(slot, "running", False):
         return "busy"
+    # Read before the slot is held: the pages the owner allows now (read only).
+    active = await sites.active_sites(ctx)
     reserve = getattr(slots, "reserve", None)
     # Held across the awaits below, so a page send meanwhile queues behind this wake.
     reservation = reserve(state, slot) if callable(reserve) else None
@@ -313,7 +319,7 @@ async def _wake(ctx: Any, state: Any, slots: Any, pick_id: str) -> str:
         part = await asyncio.to_thread(lambda: playlists.extend_for(ctx, song["id"]))
         if part["active"]:
             refill = part["ask_buddy"]
-    message, memory_ids = play_message(snapshot, song, refill)
+    message, memory_ids = play_message(snapshot, song, refill, active)
     try:
         turn = slots.send(state, slot, message,
                           **({"reservation": reservation} if reservation is not None else {}))

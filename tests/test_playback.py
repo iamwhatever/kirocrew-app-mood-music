@@ -438,7 +438,7 @@ def test_the_play_request_and_reply_id_match_the_page_word_for_word() -> None:
         i = case["input"]
         out = build_play_request(song=i["song"], steps=i["steps"], why=i["why"], refill=i["refill"],
                                  memory=i["memory"], explore=i["explore"], stay_only=i["stay_only"],
-                                 profile=i["profile"])
+                                 profile=i["profile"], sites=i.get("sites"))
         assert out == case["expected"], case["name"]
         assert memory_summary(i["memory"], i["profile"])[1] == case["summary_ids"], case["name"]
     for source in golden["sources"]:

@@ -9,7 +9,7 @@
 
 import { vi } from 'vitest'
 import { createElement, useEffect, useReducer, type KeyboardEvent } from 'react'
-import type { AppApi, BrowserMedia, BrowserMediaState, ChatLaunchOptions, NumberOptions } from '@kirocrew/app-sdk'
+import type { AppApi, BrowserMedia, BrowserMediaState, BrowserSite, BrowserSiteResult, BrowserSites, ChatLaunchOptions, NumberOptions } from '@kirocrew/app-sdk'
 
 let locale = 'en'
 
@@ -127,6 +127,54 @@ export function useBrowserMedia(
     setVolume: (v: number) => stubMedia.setVolume(v),
     refresh: () => stubMedia.refresh(),
   }
+}
+
+type SiteFn = (site: string) => Promise<BrowserSiteResult>
+
+/**
+ * What the stub `useBrowserSites` (level 13) answers. The stub's level stays 10, so
+ * a test that wants the hook raises `APP_SDK_LEVEL` with `vi.mock`.
+ */
+export const stubSites: {
+  sites: BrowserSite[] | null
+  active: string[]
+  error: string | null
+  loading: boolean
+  refresh: ReturnType<typeof vi.fn<() => Promise<void>>>
+  requestAdd: ReturnType<typeof vi.fn<SiteFn>>
+  requestRemove: ReturnType<typeof vi.fn<SiteFn>>
+  requestDisable: ReturnType<typeof vi.fn<SiteFn>>
+} = {
+  sites: null, active: [], error: null, loading: false,
+  refresh: vi.fn(async () => undefined),
+  requestAdd: vi.fn<SiteFn>(),
+  requestRemove: vi.fn<SiteFn>(),
+  requestDisable: vi.fn<SiteFn>(),
+}
+
+export function resetStubSites(): void {
+  stubSites.sites = null
+  stubSites.active = []
+  stubSites.error = null
+  stubSites.loading = false
+  stubSites.refresh = vi.fn(async () => undefined)
+  const ok: SiteFn = async () => ({ ok: true, sites: stubSites.sites ?? [], active: stubSites.active })
+  stubSites.requestAdd = vi.fn<SiteFn>(ok)
+  stubSites.requestRemove = vi.fn<SiteFn>(ok)
+  stubSites.requestDisable = vi.fn<SiteFn>(ok)
+}
+resetStubSites()
+
+// Stable, as the host's are (its hook memoizes them per app).
+const siteCalls = {
+  refresh: () => stubSites.refresh(),
+  requestAdd: (s: string) => stubSites.requestAdd(s),
+  requestRemove: (s: string) => stubSites.requestRemove(s),
+  requestDisable: (s: string) => stubSites.requestDisable(s),
+}
+
+export function useBrowserSites(): BrowserSites {
+  return { sites: stubSites.sites, active: stubSites.active, error: stubSites.error, loading: stubSites.loading, ...siteCalls }
 }
 
 /** Stands in for the host's native transcript: names the slot it was given. */

@@ -19,6 +19,7 @@ describe('play request parity with the backend', () => {
         state: { memory: i.memory, profile: i.profile } as unknown as MoodState,
         explore: i.explore as ExploreLevel,
         stayOnly: i.stay_only,
+        sites: 'sites' in i ? (i as { sites: string[] }).sites : undefined,
       })
       expect(out).toBe(c.expected)
       // The memory a refill carried, which the backend marks used once its picks land.
