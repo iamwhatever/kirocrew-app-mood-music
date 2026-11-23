@@ -73,9 +73,8 @@ Above the player, **Kiro Crew's browser** shows the buddy's browser tab live, th
 picture a chat shows under a browser step. The line beside it says **Using the
 browser…** while the buddy searches and opens the song. Choose **Take over** to use
 the tab yourself and **Hand back** when you are done; **Hide** folds the box away and
-the page remembers. The box keeps showing the tab after the buddy finishes, on a
-Kiro Crew whose browser view can stay live; an older one shows **Show live page**
-instead, and one click streams the tab again. This needs a Kiro Crew with the app browser view (KiroCrew#39246,
+the page remembers. When the buddy finishes, the box folds the way a chat's browser
+card does: it shows **Show the live page**, and one click streams the tab again. This needs a Kiro Crew with the app browser view (KiroCrew#39246,
 #39018, #39020), **App browser access** on in **Settings → Feature Previews**, and
 **view** approved on the app's page. On an older Kiro Crew the box says to update.
 
