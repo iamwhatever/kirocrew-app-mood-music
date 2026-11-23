@@ -11,13 +11,13 @@ import { t } from '../src/i18n'
 import type { MoodState, QueuedPick } from '../src/api'
 
 // The host level, read live through a getter so one file covers old and new hosts.
-const host = vi.hoisted(() => ({ level: 13, hasHook: true }))
+const host = vi.hoisted(() => ({ level: 13, hasHook: true as boolean | 'not a function' }))
 vi.mock('@kirocrew/app-sdk', async orig => {
   const real = await orig<typeof import('./stubs/app-sdk')>()
   return {
     ...real,
     get APP_SDK_LEVEL() { return host.level },
-    get useBrowserSites() { return host.hasHook ? real.useBrowserSites : undefined },
+    get useBrowserSites() { return host.hasHook === true ? real.useBrowserSites : host.hasHook ? {} : undefined },
   }
 })
 
@@ -197,7 +197,8 @@ describe('an older Kiro Crew', () => {
   it.each([
     ['level 12', 12, true],
     ['level 13 without the export', 13, false],
-  ])('%s: no hook, and the tab says to update', (_name, level, hasHook) => {
+    ['level 13 with an export that is no hook', 13, 'not a function'],
+  ] as const)('%s: no hook, and the tab says to update', (_name, level, hasHook) => {
     host.level = level
     host.hasHook = hasHook
     expect(hostSitesHook()).toBeUndefined()

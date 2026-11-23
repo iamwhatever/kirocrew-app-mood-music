@@ -93,6 +93,8 @@ def test_no_token_means_no_call() -> None:
 
 def test_a_refusal_or_a_bad_answer_is_unknown() -> None:
     assert _read(status=403, body={"code": "app_token_required"})[0] is None
+    # Only a 200 is the list, whatever another answer carries.
+    assert _read(status=500, body={"active": ["https://x.example.com/a"]})[0] is None
     assert _read(status=200, body="not json")[0] is None
     assert _read(status=200, body={"active": "https://x.example.com/a"})[0] is None
     assert _read(status=200, body=["https://x.example.com/a"])[0] is None
