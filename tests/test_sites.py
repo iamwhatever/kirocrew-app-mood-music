@@ -154,7 +154,8 @@ def test_the_buddy_gets_no_new_tool() -> None:
     assert "you can read it but never change it" in dj["prompt"]
 
 
-def test_the_permissions_are_those_of_0_2_14() -> None:
+def test_the_permissions_are_those_of_0_2_14_plus_the_music_sites() -> None:
+    """0.2.18 adds only default browserSites entries; every other permission is 0.2.14's."""
     manifest = json.loads((ROOT / "app.json").read_text(encoding="utf-8"))
     assert manifest["permissions"] == {
         "api": ["/api/apps/mood-music", "/api/apps/mood-music/*", "/api/chat", "/api/chat/*", "/api/browser/media"],
@@ -169,6 +170,15 @@ def test_the_permissions_are_those_of_0_2_14() -> None:
             "https://www.bilibili.com/video/BV*",
             "https://www.youtube.com/results",
             "https://www.youtube.com/watch",
+            "https://open.spotify.com/search/*",
+            "https://open.spotify.com/track/*",
+            "https://music.amazon.com/search/*",
+            "https://music.amazon.com/albums/*",
+            "https://music.amazon.com/tracks/*",
+            "https://music.apple.com/*/search",
+            "https://music.apple.com/*/song/*",
+            "https://soundcloud.com/search/sounds",
+            "https://w.soundcloud.com/player/",
         ],
         "browser": ["view"],
     }

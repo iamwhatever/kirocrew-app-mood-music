@@ -31,7 +31,7 @@ describe('parseDjReply', () => {
       picks: [
         { title: 'A', artist: 'x', source: 'youtube' },
         { title: 'B', artist: 'y', source: 'bilibili', url: '' },
-        { title: 'C', source: 'spotify' },
+        { title: 'C', source: 'netease' },
         { title: 'D', source: 'youtube', video_id: 'bad' },
       ],
     }))
@@ -40,6 +40,24 @@ describe('parseDjReply', () => {
       { title: 'B', artist: 'y', why: '', tags: [], source: 'bilibili' },
     ])
     expect(r?.dropped).toBe(2)
+  })
+
+  it('keeps a pick on a music site by its site, and drops any link it gave (0.2.18)', () => {
+    const r = parseDjReply(block({
+      picks: [
+        { title: 'S', source: 'spotify', url: 'https://open.spotify.com/track/x' },
+        { title: 'M', source: 'amazon_music', video_id: ID },
+        { title: 'P', platform: 'apple_music', url: 'javascript:alert(1)' },
+        { title: 'C', source: 'soundcloud' },
+      ],
+    }))
+    expect(r?.picks).toEqual([
+      { title: 'S', artist: '', why: '', tags: [], source: 'spotify' },
+      { title: 'M', artist: '', why: '', tags: [], source: 'amazon_music' },
+      { title: 'P', artist: '', why: '', tags: [], source: 'apple_music' },
+      { title: 'C', artist: '', why: '', tags: [], source: 'soundcloud' },
+    ])
+    expect(r?.dropped).toBe(0)
   })
 
   it('reads a real reply that said platform and moods', () => {
@@ -59,7 +77,7 @@ describe('parseDjReply', () => {
       picks: [
         { title: 'A', platform: 'youtube', url: `https://www.youtube.com/watch?v=${ID}Q` },
         { title: 'B', platform: 'bilibili', url: 'https://bilibili.com.evil.com/x' },
-        { title: 'C', platform: 'spotify', url: 'https://open.spotify.com/track/x' },
+        { title: 'C', platform: 'netease', url: 'https://music.163.com/x' },
       ],
     }))
     expect(r?.picks).toEqual([])
@@ -129,8 +147,15 @@ describe('parseDjReply: a play report', () => {
     expect(r?.play).toEqual({ played: false, site: 'youtube', steps: [], reason: 'no result' })
   })
 
+  it('reads a play report from each music site (0.2.18)', () => {
+    for (const site of ['spotify', 'amazon_music', 'apple_music', 'soundcloud']) {
+      expect(parseDjReply(block({ played: true, site, steps: ['open the search page'] }))?.play)
+        .toEqual({ played: true, site, steps: ['open the search page'], reason: '' })
+    }
+  })
+
   it('is no play report without a known site or a true/false played', () => {
-    expect(parseDjReply(block({ played: true, site: 'spotify', steps: ['x'] }))?.play).toBeUndefined()
+    expect(parseDjReply(block({ played: true, site: 'netease', steps: ['x'] }))?.play).toBeUndefined()
     expect(parseDjReply(block({ played: 'yes', site: 'youtube' }))?.play).toBeUndefined()
     expect(parseDjReply(block({ picks: [] }))?.play).toBeUndefined()
   })

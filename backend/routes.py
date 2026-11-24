@@ -214,6 +214,9 @@ def _pick(raw: Any) -> tuple[dict[str, Any] | None, str]:
         if checked is None:
             return None, "invalid_bilibili_url"
         out["url"] = checked
+    elif source in PLAY_SITES:
+        # A site with no link check: any link given is dropped, never opened.
+        out["source"] = source
     else:
         return None, "invalid_source"
     return out, ""
@@ -522,7 +525,7 @@ def _play_site(request: web.Request) -> str | None:
 async def _handle_set_steps(request: web.Request, ctx: Any) -> web.Response:
     site = _play_site(request)
     if site is None:
-        return _bad_request("site must be bilibili or youtube", "invalid_field_type")
+        return _bad_request(f"site must be one of {', '.join(PLAY_SITES)}", "invalid_field_type")
     body, err = await _json_object(request)
     if err is not None:
         return err
@@ -547,7 +550,7 @@ async def _handle_set_steps(request: web.Request, ctx: Any) -> web.Response:
 async def _handle_forget_steps(request: web.Request, ctx: Any) -> web.Response:
     site = _play_site(request)
     if site is None:
-        return _bad_request("site must be bilibili or youtube", "invalid_field_type")
+        return _bad_request(f"site must be one of {', '.join(PLAY_SITES)}", "invalid_field_type")
     gone = await asyncio.to_thread(lambda: _store(ctx).forget_play_steps(site))
     return web.json_response({"site": site, "forgotten": gone})
 

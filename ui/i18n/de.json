@@ -6,7 +6,7 @@
     "highlight_1": "Sag, wie du dich fühlst, oder nenne einen Song, der dich berührt hat – er findet mehr mit demselben Gefühl",
     "highlight_2": "Jeder Vorschlag sagt, warum er zur Stimmung passt",
     "highlight_3": "Songs laufen im Browser von Kiro Crew, mit Ton; auf der Seite gibt es Abspielen, Pause und Lautstärke",
-    "highlight_4": "Der Agent öffnet nur die Seiten auf deiner Liste im Tab Seiten (standardmäßig bilibili und YouTube) und meldet sich nie an, kommentiert, liked oder bezahlt nie",
+    "highlight_4": "Der Agent öffnet nur die Seiten auf deiner Liste im Tab Seiten (standardmäßig bilibili, YouTube, Spotify, Amazon Music, Apple Music und SoundCloud) und meldet sich nie an, kommentiert, liked oder bezahlt nie",
     "highlight_5": "Gefällt mir oder Überspringen fließt in die nächsten Vorschläge ein",
     "highlight_6": "Hintergrund und Bewegung folgen der Stimmung, hell wie dunkel",
     "use_case_1": "Songs finden und abspielen, die zu deiner jetzigen Stimmung passen, und die Momente festhalten, die dich berührt haben.",
@@ -47,6 +47,10 @@
     "dropped": "Ausgelassene Songs mit nicht abspielbarem Link: {{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili",
+    "source_spotify": "Spotify",
+    "source_amazon_music": "Amazon Music",
+    "source_apple_music": "Apple Music",
+    "source_soundcloud": "SoundCloud",
     "tab_memory": "Erinnerung",
     "error_old_host": "Dieses Kiro Crew ist zu alt, um den versteckten Chat deines Buddys zu öffnen. Aktualisiere Kiro Crew und öffne diese Seite erneut.",
     "error_hidden_refused": "Kiro Crew hat den versteckten Chat deines Buddys nicht geöffnet. Prüfe auf der App-Seite, ob Mood Music eingeschaltet und vertrauenswürdig ist."
@@ -321,6 +325,6 @@
     "how_title": "So funktioniert es",
     "how_buddy": "Der Buddy öffnet nur Seiten, die an sind. Er kann diese Liste lesen, aber nicht ändern.",
     "how_add": "Beim Hinzufügen fragt Kiro Crew dich zuerst in einem eigenen Fenster. Ausschalten oder Entfernen wirkt sofort.",
-    "how_new": "Auf einer neuen Seite findet der Buddy beim ersten Mal selbst den Weg. Seine gespeicherten Schritte für bilibili und YouTube bleiben, wie sie sind."
+    "how_new": "Auf einer neuen Seite findet der Buddy beim ersten Mal selbst den Weg. Seine gespeicherten Schritte bleiben für jede Seite getrennt."
   }
 }

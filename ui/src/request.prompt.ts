@@ -5,6 +5,7 @@
 // left out of the i18n gate on that basis (`eslint.i18n.config.js`); every
 // label the person reads lives in the catalogs instead.
 import type { MemoryItem, MoodState, ProfileLine, TasteProfile } from './api'
+import type { PickSource } from './replyParse'
 
 /**
  * Design §2.5: what the summary may carry, at most (`SUMMARY_LIMITS` in
@@ -35,7 +36,7 @@ export const EXPLORE_MIX: Readonly<Record<ExploreLevel, readonly [number, number
  * link only when the buddy already has one.
  */
 export const PLAYER_LINE =
-  'Player: Kiro Crew\'s browser. Give every pick the site that has it ("source": "youtube" or "bilibili"). ' +
+  'Player: Kiro Crew\'s browser. Give every pick the site that has it ("source": "youtube", "bilibili", "spotify", "amazon_music", "apple_music" or "soundcloud"). ' +
   'A "url" is optional: add it only when you already have the exact video link, and do not spend searches hunting for links. ' +
   'The page asks you to play each song later, by searching its site in the browser, so do not open the browser now.'
 
@@ -190,7 +191,7 @@ export const REFILL_COUNT = 4
 export interface PlaySong {
   title: string
   artist: string
-  source: 'youtube' | 'bilibili'
+  source: PickSource
   video_id?: string
   url?: string
 }
@@ -302,8 +303,8 @@ export const ONE_TAB = 'Use the one tab you already have: open the video in it (
 export const PLAY_FORMAT = [
   'Play it with the browser tool, following the "Playing in Kiro Crew\'s browser" rules. Never run a script; never comment, like, coin, pay or open an account page.',
   'Then write one short sentence and end with ONE fenced block tagged mood-music holding plain JSON:',
-  '- played: {"played": true, "site": "bilibili" or "youtube", "steps": ["1 to 8 short plain steps that worked, without the song name"]}',
-  '- not played: {"played": false, "site": "bilibili" or "youtube", "reason": "one short line"}',
+  '- played: {"played": true, "site": the Site named above, "steps": ["1 to 8 short plain steps that worked, without the song name"]}',
+  '- not played: {"played": false, "site": the Site named above, "reason": "one short line"}',
   'Example:',
   '```mood-music',
   '{"played": true, "site": "bilibili", "steps": ["open https://search.bilibili.com/all?keyword= with the song title and artist", "read the address of the first video whose title matches", "navigate this tab to that address", "click play if the video is paused"]}',
@@ -324,7 +325,7 @@ const REPLY_LINES = [
   'Write one or two short sentences, then end your reply with ONE fenced block tagged mood-music holding plain JSON, with exactly these field names:',
   '- "mood_tags": 2 to 4 short words for the feeling, in the person\'s language.',
   '- "picks": the songs, in arc order, each {"title", "artist", "source", "url", "tier", "arc", "why", "listen_for", "evidence", "tags"}.',
-  '- "source" is "youtube" or "bilibili". "url" is optional; when you give one, a youtube "url" is https://www.youtube.com/watch?v=<11-char id> or https://youtu.be/<id>, and a bilibili "url" is https://www.bilibili.com/video/<BV id>.',
+  '- "source" is "youtube", "bilibili", "spotify", "amazon_music", "apple_music" or "soundcloud". "url" is optional, for youtube and bilibili only; when you give one, a youtube "url" is https://www.youtube.com/watch?v=<11-char id> or https://youtu.be/<id>, and a bilibili "url" is https://www.bilibili.com/video/<BV id>.',
   '- "tier" is "anchor", "explore" or "deep". "arc" is "stay", "turn" or "lift".',
   '- "why": why this song now, one line. "listen_for": one line on something to hear in it.',
   '- "evidence" (explore and deep): {"url": a page you opened this turn that praises it, "label": what that page is}.',

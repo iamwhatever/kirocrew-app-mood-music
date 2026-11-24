@@ -18,7 +18,7 @@ import { Btn, EmptyState, ErrorNotice } from '@kirocrew/app-sdk/ui'
 import { t } from './i18n'
 import { CARD_STYLE } from './cardStyle'
 import type { MoodApi, MoodState, NewPlaylistSong, Playlists, QueuedPick } from './api'
-import type { PickSource } from './replyParse'
+import { PICK_SOURCES, type PickSource } from './replyParse'
 
 export const NAME_MAX = 80
 /** The backend's caps, until the first read says otherwise. */
@@ -40,7 +40,7 @@ export interface LikedSong extends NewPlaylistSong {
 export function likedSongs(state: MoodState | undefined): LikedSong[] {
   if (!state) return []
   const steps = state.play_steps ?? {}
-  const site: PickSource = (steps.bilibili?.updated_at ?? -1) > (steps.youtube?.updated_at ?? -1) ? 'bilibili' : 'youtube'
+  const site: PickSource = PICK_SOURCES.reduce<PickSource>((a, b) => ((steps[b]?.updated_at ?? -1) > (steps[a]?.updated_at ?? -1) ? b : a), 'youtube')
   const queued = new Map(state.queue.map(p => [key(p.title, p.artist), p]))
   const tags = new Map<string, Set<string>>()
   const addTags = (k: string, words: string[]) => {
@@ -372,7 +372,7 @@ export default function PlaylistsTab({ api, state, busy, onPlay }: {
                         <span className="w-6 shrink-0 text-right text-xs tabular-nums text-[var(--muted)]">{i + 1}</span>
                         <span className="min-w-0 flex-1 truncate">{s.artist ? `${s.title} — ${s.artist}` : s.title}</span>
                         <span className="shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]">
-                          {s.source === 'youtube' ? t('page.source_youtube') : t('page.source_bilibili')}
+                          {t(`page.source_${s.source}`)}
                         </span>
                         <Btn type="button" disabled={working} aria-label={t('playlists.remove_song', { song: s.title })} onClick={() => void act(() => api.removePlaylistSong(p.id, s.id))}>
                           <X size={13} aria-hidden="true" />

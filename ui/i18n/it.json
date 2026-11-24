@@ -6,7 +6,7 @@
     "highlight_1": "Di’ come ti senti o nomina una canzone che ti ha emozionato: ne trova altre con la stessa emozione",
     "highlight_2": "Ogni scelta spiega perché si adatta al tuo umore",
     "highlight_3": "Le canzoni suonano nel browser di Kiro Crew, con l’audio; la pagina ha riproduci, pausa e volume",
-    "highlight_4": "L’agente apre solo i siti del tuo elenco nella scheda Siti (bilibili e YouTube di default), e non accede, non commenta, non mette mi piace e non paga mai",
+    "highlight_4": "L’agente apre solo i siti del tuo elenco nella scheda Siti (di default bilibili, YouTube, Spotify, Amazon Music, Apple Music e SoundCloud), e non accede, non commenta, non mette mi piace e non paga mai",
     "highlight_5": "Mi piace o Salta vengono usati per le scelte successive",
     "highlight_6": "Lo sfondo e il movimento seguono l’umore, in chiaro e in scuro",
     "use_case_1": "Trova e riproduci canzoni adatte a come ti senti ora e conserva i momenti che ti hanno emozionato.",
@@ -47,6 +47,10 @@
     "dropped": "Canzoni escluse per un link non riproducibile: {{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili",
+    "source_spotify": "Spotify",
+    "source_amazon_music": "Amazon Music",
+    "source_apple_music": "Apple Music",
+    "source_soundcloud": "SoundCloud",
     "tab_memory": "Memoria",
     "error_old_host": "Questo Kiro Crew è troppo vecchio per aprire la chat nascosta del tuo compagno. Aggiorna Kiro Crew e riapri questa pagina.",
     "error_hidden_refused": "Kiro Crew non ha aperto la chat nascosta del tuo compagno. Controlla nella pagina dell’app che Mood Music sia attiva e attendibile."
@@ -321,6 +325,6 @@
     "how_title": "Come funziona",
     "how_buddy": "Il compagno apre solo i siti attivi. Può leggere questo elenco, ma non cambiarlo.",
     "how_add": "Quando aggiungi un sito, Kiro Crew te lo chiede prima nella sua finestra. Spegnere o rimuovere un sito ha effetto subito.",
-    "how_new": "Su un sito nuovo il compagno trova da solo la strada la prima volta. I passi salvati per bilibili e YouTube restano come sono."
+    "how_new": "Su un sito nuovo il compagno trova da solo la strada la prima volta. Tiene i passi salvati separati per ogni sito."
   }
 }
