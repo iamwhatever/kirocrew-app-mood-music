@@ -466,3 +466,35 @@ def test_a_refill_with_stay_only_still_says_stay_only_not_hold(ctx) -> None:
     fire(ctx, ended())
     assert "Arc: stay only" in ctx.chat_slots.sent[0]
     assert "Arc: hold" not in ctx.chat_slots.sent[0]
+
+
+def test_a_song_on_spotify_is_asked_for_there_and_its_steps_are_kept(ctx) -> None:
+    """0.2.18: a music-site pick has its own Site line and its own saved steps."""
+    s = store(ctx)
+    s.add_moment("calm", tags=["平静"])
+    spotify = {"title": "Song 2", "artist": "Artist 2", "why": "", "tags": [], "source": "spotify"}
+    q = s.set_queue([pick(1), spotify, pick(3), pick(4)], source="r0")
+    s.set_playback(pick_id=q[0]["id"])
+    s.set_play_steps("spotify", ["open https://open.spotify.com/search/ with the title and artist"])
+    ctx.chat_slots.reply = "Playing.\n```mood-music\n" + json.dumps(
+        {"played": True, "site": "spotify", "steps": ["open the search page", "click the row's Play"]}) + "\n```"
+    fire(ctx, ended())
+    sent = ctx.chat_slots.sent[0]
+    assert "Site: spotify" in sent
+    assert "Steps that played a song on spotify last time" in sent
+    assert "1. open https://open.spotify.com/search/ with the title and artist" in sent
+    assert store(ctx).snapshot()["play_steps"]["spotify"]["steps"] == ["open the search page", "click the row's Play"]
+
+
+def test_a_sign_in_wall_on_a_music_site_forgets_only_that_sites_steps(ctx) -> None:
+    s = store(ctx)
+    s.add_moment("calm", tags=["平静"])
+    q = s.set_queue([pick(1), {"title": "Song 2", "artist": "", "why": "", "tags": [], "source": "apple_music"}], source="r0")
+    s.set_playback(pick_id=q[0]["id"])
+    s.set_play_steps("apple_music", ["old way"])
+    s.set_play_steps("youtube", ["open the results page"])
+    ctx.chat_slots.reply = "```mood-music\n" + json.dumps(
+        {"played": False, "site": "apple_music", "reason": "Sign in to Apple Music in Kiro Crew's browser"}) + "\n```"
+    fire(ctx, ended())
+    steps = store(ctx).snapshot()["play_steps"]
+    assert "apple_music" not in steps and steps["youtube"]["steps"] == ["open the results page"]

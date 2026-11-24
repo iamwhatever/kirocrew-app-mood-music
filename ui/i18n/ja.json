@@ -6,7 +6,7 @@
     "highlight_1": "気持ちや心に響いた曲を伝えると、同じ気分の曲をもっと探します",
     "highlight_2": "どの曲にも、その気分に合う理由が添えられます",
     "highlight_3": "曲は Kiro Crew のブラウザで音付きで再生。ページで再生・一時停止・音量を操作できます",
-    "highlight_4": "エージェントが開くのは「サイト」タブの一覧にあるサイトだけ（既定は bilibili と YouTube）。ログイン、コメント、いいね、支払いはしません",
+    "highlight_4": "エージェントが開くのは「サイト」タブの一覧にあるサイトだけ（既定は bilibili、YouTube、Spotify、Amazon Music、Apple Music、SoundCloud）。ログイン、コメント、いいね、支払いはしません",
     "highlight_5": "いいね・スキップが次の選曲に使われます",
     "highlight_6": "背景と動きが気分に合わせて変わります（ライト・ダーク対応）",
     "use_case_1": "今の気持ちに合う曲を探して再生し、心に残った瞬間を記録します。",
@@ -47,6 +47,10 @@
     "dropped": "再生できないリンクのため除外した曲：{{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili",
+    "source_spotify": "Spotify",
+    "source_amazon_music": "Amazon Music",
+    "source_apple_music": "Apple Music",
+    "source_soundcloud": "SoundCloud",
     "tab_memory": "メモリー",
     "error_old_host": "この Kiro Crew は古いため、相棒の非表示チャットを開けません。Kiro Crew を更新してから、このページを開き直してください。",
     "error_hidden_refused": "Kiro Crew が相棒の非表示チャットを開きませんでした。アプリのページで、ムードミュージックが有効で信頼済みか確認してください。"
@@ -321,6 +325,6 @@
     "how_title": "しくみ",
     "how_buddy": "相棒はオンのサイトだけを開きます。この一覧を読めますが、変更はできません。",
     "how_add": "サイトを追加するときは、Kiro Crew 自身の画面でまず確認されます。オフや削除はすぐ反映されます。",
-    "how_new": "新しいサイトでは、相棒が最初に自分でやり方を探します。bilibili と YouTube で保存した手順はそのまま残ります。"
+    "how_new": "新しいサイトでは、相棒が最初に自分でやり方を探します。保存した手順はサイトごとに別々に残ります。"
   }
 }

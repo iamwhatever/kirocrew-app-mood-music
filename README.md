@@ -63,8 +63,11 @@ a pause here counts as play. Turn it off and the page remembers. Click **More li
 close to the one you are hearing.
 
 The first time, approve the music sites on the app's page (**Approve the sites**
-takes you there). By default Mood Music may only open bilibili and YouTube search
-and video pages; the **Sites** tab changes that list (see How to use it). Continuous play goes on with the Mood Music page closed, on a Kiro Crew that
+takes you there). By default Mood Music may only open the search and song pages of
+bilibili, YouTube, Spotify, Amazon Music, Apple Music and SoundCloud; the **Sites**
+tab changes that list (see How to use it). Spotify, Amazon Music and Apple Music play
+full songs only when you are signed in there in Kiro Crew's browser, mostly on a paid
+plan; the buddy never signs in or pays, it stops and tells you. Continuous play goes on with the Mood Music page closed, on a Kiro Crew that
 tells the app when a song ends (KiroCrew#40261): the app wakes the buddy once for the
 next song, and asks for more when the list runs low. **Pause** and turning continuous
 play off hold there too. On an older Kiro Crew it works only while the page is open:
@@ -127,17 +130,15 @@ shows a made-up position over a still frame.</sub>
    in **Apps → Library**.
 
 Kiro Crew must already be able to chat: if ordinary chats work, this works. No music
-account or key is needed. Playing songs needs a Kiro Crew that lets apps name the
-browser pages their agent may open (KiroCrew#38333, newer than v0.13.0-rc.3). On an
-older Kiro Crew the page says so in the player's place and offers no play button;
-finding songs, Moments and Memory still work.
+account or key is needed. Since 0.2.18 the app needs Kiro Crew 0.14.0 or newer (`minKiroCrewVersion`): an
+older Kiro Crew refuses to install it or update to it, says "App requires Kiro Crew
+>= 0.14.0", and keeps the version you have. A 0.14.0 pre-release or dev build counts
+as 0.14.0.
 
 ### What Kiro Crew it needs
 
-The app degrades part by part on an older Kiro Crew, and says on the page which part
-is missing. Each feature below names the Kiro Crew change it needs. All of these are
-merged on kirodotdev/KiroCrew; use a Kiro Crew build that includes them (newer than
-v0.13.1).
+Each feature below names the Kiro Crew change it needs. All of these are merged on
+kirodotdev/KiroCrew and are in Kiro Crew 0.14.0 (v0.13.1 lacks the Sites tab change and most of the others).
 
 | Feature | Needs | Merged |
 |---|---|---|
@@ -235,10 +236,12 @@ on this page; it is not listed in Kiro Crew's sessions.
    local address). **Turn off** and **Remove** work at once, for the defaults too,
    and **Add back** or **Turn on** asks again. The buddy reads this list with every
    play but cannot change it. On a new site it finds the way itself; its saved steps
-   for bilibili and YouTube stay. This needs a Kiro Crew with owner site edits
+   for the other sites stay. After an update that adds default sites (0.2.18 adds
+   Spotify, Amazon Music, Apple Music and SoundCloud), the new ones show **Waiting
+   for approval** until you approve them; the sites you had approved stay on. This needs a Kiro Crew with owner site edits
    (KiroCrew#40727); an older one shows **Update Kiro Crew** on the tab.
 
-   ![The Sites tab: the bilibili and YouTube default pages each marked On with Turn off and Remove, one owner-added site, and an Add a site box](docs/media/sites-light.png)
+   ![The Sites tab, top of the list: the default pages of bilibili, YouTube, Spotify, Amazon Music and Apple Music, each marked On with Turn off and Remove](docs/media/sites-light.png)
 11. The background follows the mood. A chip sets its scene at once. The buddy
    picks a new scene only when your mood clearly shifts, and the scene drifts
    toward its brighter colour as the songs move from stay to lift. To stop the
@@ -257,14 +260,19 @@ on this page; it is not listed in Kiro Crew's sessions.
   songs you liked, skipped or marked "not for me" goes to the same model, in a
   hidden chat of its own with no tools. The buddy searches the public web. To check
   song link the buddy gives, the app asks `www.youtube.com/oembed` or
-  `api.bilibili.com` about that one video, with no cookie. Songs play on YouTube or
-  bilibili in Kiro Crew's browser. Since 0.2.6 the buddy's chat is opened by the app
+  `api.bilibili.com` about that one video, with no cookie. Songs play on the sites on
+  your list in Kiro Crew's browser. Since 0.2.6 the buddy's chat is opened by the app
   with Kiro Crew's usual memory setting, so Kiro Crew's memory may learn from it as
   from any of your chats (before 0.2.6 it was a temporary chat that wrote no memory).
 - **Crew Browser:** the buddy types and clicks in Kiro Crew's browser, which may be
-  your own signed-in Chrome. Kiro Crew holds it to four kinds of page:
-  `search.bilibili.com/all`, `www.bilibili.com/video/BV…`, `www.youtube.com/results`
-  and `www.youtube.com/watch`. Its instructions forbid account pages, comments, likes,
+  your own signed-in Chrome. Kiro Crew holds it to the pages on the list:
+  by default `search.bilibili.com/all`, `www.bilibili.com/video/BV…`,
+  `www.youtube.com/results`, `www.youtube.com/watch`, `open.spotify.com/search/…` and
+  `/track/…`, `music.amazon.com/search/…`, `/albums/…` and `/tracks/…`,
+  `music.apple.com/<country>/search` and `/<country>/song/…`,
+  `soundcloud.com/search/sounds` and `w.soundcloud.com/player/`. NetEase Cloud Music
+  is not a default: its search and song pages share one address behind `#/`, so the
+  only rule that admits them admits the whole site. Its instructions forbid account pages, comments, likes,
   coins and payments, but those are rules it follows, not a block Kiro Crew enforces
   on those pages. Mood Music keeps, per site, the steps that last played a song (for
   example "open the search page, open the matching video in the same tab") in `state.json`,
@@ -303,8 +311,8 @@ A song with no link is kept: the buddy finds it on its site when you press play.
 another direction.
 
 **The player says "Songs cannot play in Kiro Crew's browser yet".**
-The note says why. Your Kiro Crew is too old (update it to a version newer than
-v0.13.0-rc.3 that includes KiroCrew#38333, then open the page again), the sites are
+The note says why. Your Kiro Crew is too old (update it to 0.14.0 or newer, then
+open the page again), the sites are
 not approved yet (choose **Approve the sites**), or a policy turns Kiro Crew's
 browser off. There is no play button until then.
 

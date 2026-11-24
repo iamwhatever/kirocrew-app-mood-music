@@ -15,6 +15,7 @@ import os
 import re
 import unittest
 from pathlib import Path
+from urllib.parse import urlsplit
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 BUNDLE = APP_ROOT / "ui" / "dist" / "index.mjs"
@@ -89,6 +90,35 @@ _STATIC_IMPORT = re.compile(
     r"^import\s+(?:(?P<clause>[^'\"]+?)\s+from\s+)?[\"'](?P<spec>[^\"']+)[\"'];?\s*$",
     re.MULTILINE,
 )
+
+
+#: The default site list of 0.2.18: bilibili and YouTube, then the music sites.
+DEFAULT_SITES = [
+    "https://search.bilibili.com/all",
+    "https://www.bilibili.com/video/BV*",
+    "https://www.youtube.com/results",
+    "https://www.youtube.com/watch",
+    "https://open.spotify.com/search/*",
+    "https://open.spotify.com/track/*",
+    "https://music.amazon.com/search/*",
+    "https://music.amazon.com/albums/*",
+    "https://music.amazon.com/tracks/*",
+    "https://music.apple.com/*/search",
+    "https://music.apple.com/*/song/*",
+    "https://soundcloud.com/search/sounds",
+    "https://w.soundcloud.com/player/",
+]
+
+
+def _site_matches(sites: list[str], url: str) -> bool:
+    """Kiro Crew's rule (``apps/browser_sites.url_matches``): exact host, ``*`` any run, query ignored."""
+    parts = urlsplit(url)
+    for entry in sites:
+        host, _, path = entry[len("https://"):].partition("/")
+        pattern = "^" + ".*".join(re.escape(p) for p in ("/" + path).split("*")) + "$"
+        if parts.hostname == host and re.match(pattern, parts.path or "/"):
+            return True
+    return False
 
 
 def _manifest() -> dict:
@@ -206,17 +236,38 @@ class TestTheManifest(unittest.TestCase):
         """``mcpTools`` withholds every other host-managed tool from the agent."""
         self.assertEqual(_manifest()["permissions"]["mcpTools"], ["browser"])
 
-    def test_the_browser_sites_are_the_four_search_and_video_pages(self) -> None:
-        """Only bilibili and YouTube search and video pages: no home, account or upload page."""
-        self.assertEqual(
-            _manifest()["permissions"]["browserSites"],
-            [
-                "https://search.bilibili.com/all",
-                "https://www.bilibili.com/video/BV*",
-                "https://www.youtube.com/results",
-                "https://www.youtube.com/watch",
-            ],
-        )
+    def test_the_browser_sites_are_search_and_song_pages_only(self) -> None:
+        """Search and song pages of the six music sites: no home, account, upgrade or upload page."""
+        self.assertEqual(_manifest()["permissions"]["browserSites"], DEFAULT_SITES)
+
+    def test_no_default_site_admits_a_home_account_or_payment_page(self) -> None:
+        """Each entry is https, names a path, and none matches the sites' own account or upgrade pages."""
+        sites = _manifest()["permissions"]["browserSites"]
+        self.assertLessEqual(len(sites), 16)  # Kiro Crew's MAX_BROWSER_SITES
+        for entry in sites:
+            with self.subTest(entry=entry):
+                origin, _, path = entry[len("https://"):].partition("/")
+                self.assertTrue(entry.startswith("https://") and origin and path)
+                self.assertNotIn(path, ("", "*"))
+        for url in (
+            "https://open.spotify.com/", "https://open.spotify.com/premium", "https://open.spotify.com/account",
+            "https://music.amazon.com/", "https://music.amazon.com/settings", "https://music.amazon.com/subscribe",
+            "https://music.apple.com/us/subscribe", "https://music.apple.com/us/account",
+            "https://soundcloud.com/", "https://soundcloud.com/settings", "https://soundcloud.com/you/library",
+            "https://music.163.com/",
+        ):
+            with self.subTest(url=url):
+                self.assertFalse(_site_matches(sites, url))
+        for url in (
+            "https://open.spotify.com/search/nujabes%20aruarian%20dance/tracks",
+            "https://open.spotify.com/track/6rqhFgbbKwnb9MLmUQDhG6",
+            "https://music.amazon.com/search/nujabes", "https://music.amazon.com/albums/B0?trackAsin=B1",
+            "https://music.apple.com/us/search?term=nujabes", "https://music.apple.com/jp/song/x/123",
+            "https://soundcloud.com/search/sounds?q=nujabes",
+            "https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/a/b&auto_play=true",
+        ):
+            with self.subTest(url=url):
+                self.assertTrue(_site_matches(sites, url))
 
     def test_the_prompt_holds_the_browser_house_rules(self) -> None:
         """Rules only, not a hard block: the host confines pages, not clicks on them."""

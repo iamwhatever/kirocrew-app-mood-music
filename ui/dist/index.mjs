@@ -28,7 +28,7 @@ var CATALOGS = {
 			"highlight_1": "আপনার মুড বা মন ছুঁয়ে যাওয়া গানটি বলুন — একই অনুভূতির আরও গান খুঁজে দেয়",
 			"highlight_2": "প্রতিটি গানের সঙ্গে বলা থাকে কেন এটি এই মুডে মানায়",
 			"highlight_3": "গান Kiro Crew-এর ব্রাউজারে শব্দসহ বাজে; পেজে চালানো, থামানো আর ভলিউমের বোতাম আছে",
-			"highlight_4": "এজেন্ট শুধু সাইট ট্যাবে আপনার তালিকার সাইটগুলো খোলে (ডিফল্টে bilibili আর YouTube), কখনো সাইন ইন, মন্তব্য, লাইক বা পেমেন্ট করে না",
+			"highlight_4": "এজেন্ট শুধু সাইট ট্যাবে আপনার তালিকার সাইটগুলো খোলে (ডিফল্টে bilibili, YouTube, Spotify, Amazon Music, Apple Music আর SoundCloud), কখনো সাইন ইন, মন্তব্য, লাইক বা পেমেন্ট করে না",
 			"highlight_5": "পছন্দ বা বাদ দেওয়া পরের বাছাইয়ে কাজে লাগে",
 			"highlight_6": "পটভূমি আর নড়াচড়া মুডের সঙ্গে বদলায়, লাইট ও ডার্ক দুটোতেই",
 			"use_case_1": "এখনকার মুডের সঙ্গে মেলে এমন গান খুঁজে বাজান, আর মন ছুঁয়ে যাওয়া মুহূর্তগুলো রেখে দিন।",
@@ -69,6 +69,10 @@ var CATALOGS = {
 			"dropped": "যে গানের লিংক বাজানো যায় না, সেগুলো বাদ: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
+			"source_spotify": "Spotify",
+			"source_amazon_music": "Amazon Music",
+			"source_apple_music": "Apple Music",
+			"source_soundcloud": "SoundCloud",
 			"tab_memory": "স্মৃতি",
 			"error_old_host": "এই Kiro Crew সঙ্গীর লুকানো চ্যাট খোলার জন্য খুব পুরোনো। Kiro Crew আপডেট করুন, তারপর এই পেজ আবার খুলুন।",
 			"error_hidden_refused": "Kiro Crew সঙ্গীর লুকানো চ্যাট খোলেনি। অ্যাপের পেজে দেখুন মুড মিউজিক চালু ও বিশ্বস্ত কি না।"
@@ -343,7 +347,7 @@ var CATALOGS = {
 			"how_title": "কীভাবে কাজ করে",
 			"how_buddy": "সঙ্গী শুধু চালু সাইটগুলো খোলে। সে এই তালিকা পড়তে পারে, বদলাতে পারে না।",
 			"how_add": "সাইট যোগ করার আগে Kiro Crew নিজের জানালায় আপনাকে জিজ্ঞেস করে। বন্ধ করা বা সরানো সঙ্গে সঙ্গে কাজ করে।",
-			"how_new": "নতুন সাইটে সঙ্গী প্রথমবার নিজেই পথ খুঁজে নেয়। bilibili আর YouTube-এর জন্য তার সংরক্ষিত ধাপ যেমন ছিল তেমনই থাকে।"
+			"how_new": "নতুন সাইটে সঙ্গী প্রথমবার নিজেই পথ খুঁজে নেয়। প্রতিটি সাইটের জন্য তার সংরক্ষিত ধাপ আলাদা থাকে।"
 		}
 	},
 	de: {
@@ -354,7 +358,7 @@ var CATALOGS = {
 			"highlight_1": "Sag, wie du dich fühlst, oder nenne einen Song, der dich berührt hat – er findet mehr mit demselben Gefühl",
 			"highlight_2": "Jeder Vorschlag sagt, warum er zur Stimmung passt",
 			"highlight_3": "Songs laufen im Browser von Kiro Crew, mit Ton; auf der Seite gibt es Abspielen, Pause und Lautstärke",
-			"highlight_4": "Der Agent öffnet nur die Seiten auf deiner Liste im Tab Seiten (standardmäßig bilibili und YouTube) und meldet sich nie an, kommentiert, liked oder bezahlt nie",
+			"highlight_4": "Der Agent öffnet nur die Seiten auf deiner Liste im Tab Seiten (standardmäßig bilibili, YouTube, Spotify, Amazon Music, Apple Music und SoundCloud) und meldet sich nie an, kommentiert, liked oder bezahlt nie",
 			"highlight_5": "Gefällt mir oder Überspringen fließt in die nächsten Vorschläge ein",
 			"highlight_6": "Hintergrund und Bewegung folgen der Stimmung, hell wie dunkel",
 			"use_case_1": "Songs finden und abspielen, die zu deiner jetzigen Stimmung passen, und die Momente festhalten, die dich berührt haben.",
@@ -395,6 +399,10 @@ var CATALOGS = {
 			"dropped": "Ausgelassene Songs mit nicht abspielbarem Link: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
+			"source_spotify": "Spotify",
+			"source_amazon_music": "Amazon Music",
+			"source_apple_music": "Apple Music",
+			"source_soundcloud": "SoundCloud",
 			"tab_memory": "Erinnerung",
 			"error_old_host": "Dieses Kiro Crew ist zu alt, um den versteckten Chat deines Buddys zu öffnen. Aktualisiere Kiro Crew und öffne diese Seite erneut.",
 			"error_hidden_refused": "Kiro Crew hat den versteckten Chat deines Buddys nicht geöffnet. Prüfe auf der App-Seite, ob Mood Music eingeschaltet und vertrauenswürdig ist."
@@ -669,7 +677,7 @@ var CATALOGS = {
 			"how_title": "So funktioniert es",
 			"how_buddy": "Der Buddy öffnet nur Seiten, die an sind. Er kann diese Liste lesen, aber nicht ändern.",
 			"how_add": "Beim Hinzufügen fragt Kiro Crew dich zuerst in einem eigenen Fenster. Ausschalten oder Entfernen wirkt sofort.",
-			"how_new": "Auf einer neuen Seite findet der Buddy beim ersten Mal selbst den Weg. Seine gespeicherten Schritte für bilibili und YouTube bleiben, wie sie sind."
+			"how_new": "Auf einer neuen Seite findet der Buddy beim ersten Mal selbst den Weg. Seine gespeicherten Schritte bleiben für jede Seite getrennt."
 		}
 	},
 	en: {
@@ -680,7 +688,7 @@ var CATALOGS = {
 			"highlight_1": "Say how you feel, or name a song that moved you — it finds more with the same feeling",
 			"highlight_2": "Every pick says why it fits the mood",
 			"highlight_3": "Songs play in Kiro Crew's browser, with its sound; the page has play, pause and volume",
-			"highlight_4": "The agent opens only the sites on your list in the Sites tab (bilibili and YouTube by default), and never signs in, comments, likes or pays",
+			"highlight_4": "The agent opens only the sites on your list in the Sites tab (by default bilibili, YouTube, Spotify, Amazon Music, Apple Music and SoundCloud), and never signs in, comments, likes or pays",
 			"highlight_5": "Like or skip a song, and the next picks use it",
 			"highlight_6": "The background and motion follow the mood, in light and dark",
 			"use_case_1": "Find and play songs that match how you feel right now, and keep a history of the moments that moved you.",
@@ -721,6 +729,10 @@ var CATALOGS = {
 			"dropped": "Songs left out because their link cannot play: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
+			"source_spotify": "Spotify",
+			"source_amazon_music": "Amazon Music",
+			"source_apple_music": "Apple Music",
+			"source_soundcloud": "SoundCloud",
 			"tab_memory": "Memory",
 			"error_old_host": "This Kiro Crew is too old to open your buddy's hidden chat. Update Kiro Crew, then open this page again.",
 			"error_hidden_refused": "Kiro Crew would not open your buddy's hidden chat. Check that Mood Music is turned on and trusted, on the app's page."
@@ -995,7 +1007,7 @@ var CATALOGS = {
 			"how_title": "How it works",
 			"how_buddy": "The buddy opens only the sites that are on. It can read this list, but it cannot change it.",
 			"how_add": "Adding a site asks you first, in Kiro Crew's own window. Turning a site off or removing it works at once.",
-			"how_new": "On a new site the buddy finds the way itself the first time. Its saved steps for bilibili and YouTube stay as they are."
+			"how_new": "On a new site the buddy finds the way itself the first time. It keeps its saved steps for each site apart."
 		}
 	},
 	es: {
@@ -1006,7 +1018,7 @@ var CATALOGS = {
 			"highlight_1": "Di cómo te sientes o nombra una canción que te emocionó: encuentra más con el mismo sentimiento",
 			"highlight_2": "Cada elección explica por qué encaja con tu estado de ánimo",
 			"highlight_3": "Las canciones suenan en el navegador de Kiro Crew, con sonido; la página tiene reproducir, pausa y volumen",
-			"highlight_4": "El agente solo abre los sitios de tu lista en la pestaña Sitios (bilibili y YouTube por defecto), y nunca inicia sesión, comenta, da me gusta ni paga",
+			"highlight_4": "El agente solo abre los sitios de tu lista en la pestaña Sitios (por defecto bilibili, YouTube, Spotify, Amazon Music, Apple Music y SoundCloud), y nunca inicia sesión, comenta, da me gusta ni paga",
 			"highlight_5": "Me gusta u Omitir se usan en las siguientes elecciones",
 			"highlight_6": "El fondo y el movimiento siguen tu estado de ánimo, en claro y en oscuro",
 			"use_case_1": "Encuentra y reproduce canciones que encajan con cómo te sientes ahora y guarda los momentos que te emocionaron.",
@@ -1047,6 +1059,10 @@ var CATALOGS = {
 			"dropped": "Canciones omitidas por un enlace que no se puede reproducir: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
+			"source_spotify": "Spotify",
+			"source_amazon_music": "Amazon Music",
+			"source_apple_music": "Apple Music",
+			"source_soundcloud": "SoundCloud",
 			"tab_memory": "Memoria",
 			"error_old_host": "Este Kiro Crew es demasiado antiguo para abrir el chat oculto de tu compañero. Actualiza Kiro Crew y vuelve a abrir esta página.",
 			"error_hidden_refused": "Kiro Crew no abrió el chat oculto de tu compañero. Comprueba en la página de la app que Mood Music está activada y es de confianza."
@@ -1321,7 +1337,7 @@ var CATALOGS = {
 			"how_title": "Cómo funciona",
 			"how_buddy": "El compañero solo abre los sitios activos. Puede leer esta lista, pero no cambiarla.",
 			"how_add": "Al añadir un sitio, Kiro Crew te pregunta primero en su propia ventana. Desactivar o quitar un sitio surte efecto al instante.",
-			"how_new": "En un sitio nuevo, el compañero encuentra el camino por sí mismo la primera vez. Sus pasos guardados para bilibili y YouTube se quedan como están."
+			"how_new": "En un sitio nuevo, el compañero encuentra el camino por sí mismo la primera vez. Guarda sus pasos por separado para cada sitio."
 		}
 	},
 	fr: {
@@ -1332,7 +1348,7 @@ var CATALOGS = {
 			"highlight_1": "Dis ce que tu ressens, ou cite une chanson qui t’a ému : il en trouve d’autres avec la même émotion",
 			"highlight_2": "Chaque choix dit pourquoi il correspond à ton humeur",
 			"highlight_3": "Les chansons se lisent dans le navigateur de Kiro Crew, avec le son ; la page a lecture, pause et volume",
-			"highlight_4": "L’agent n’ouvre que les sites de ta liste dans l’onglet Sites (bilibili et YouTube par défaut), et ne se connecte, ne commente, n’aime ni ne paie jamais",
+			"highlight_4": "L’agent n’ouvre que les sites de ta liste dans l’onglet Sites (par défaut bilibili, YouTube, Spotify, Amazon Music, Apple Music et SoundCloud), et ne se connecte, ne commente, n’aime ni ne paie jamais",
 			"highlight_5": "J’aime ou Passer sert aux choix suivants",
 			"highlight_6": "Le fond et le mouvement suivent l’humeur, en clair comme en sombre",
 			"use_case_1": "Trouver et écouter des chansons qui correspondent à ce que tu ressens maintenant, et garder les moments qui t’ont ému.",
@@ -1373,6 +1389,10 @@ var CATALOGS = {
 			"dropped": "Chansons écartées car leur lien est illisible : {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
+			"source_spotify": "Spotify",
+			"source_amazon_music": "Amazon Music",
+			"source_apple_music": "Apple Music",
+			"source_soundcloud": "SoundCloud",
 			"tab_memory": "Mémoire",
 			"error_old_host": "Ce Kiro Crew est trop ancien pour ouvrir le chat caché de ton compagnon. Mets à jour Kiro Crew, puis rouvre cette page.",
 			"error_hidden_refused": "Kiro Crew n’a pas ouvert le chat caché de ton compagnon. Vérifie sur la page de l’app que Mood Music est activée et approuvée."
@@ -1647,7 +1667,7 @@ var CATALOGS = {
 			"how_title": "Comment ça marche",
 			"how_buddy": "Le compagnon n’ouvre que les sites actifs. Il peut lire cette liste, mais pas la modifier.",
 			"how_add": "Pour ajouter un site, Kiro Crew te demande d’abord dans sa propre fenêtre. Désactiver ou retirer un site agit tout de suite.",
-			"how_new": "Sur un nouveau site, le compagnon trouve seul le chemin la première fois. Ses étapes enregistrées pour bilibili et YouTube restent telles quelles."
+			"how_new": "Sur un nouveau site, le compagnon trouve seul le chemin la première fois. Il garde ses étapes enregistrées à part pour chaque site."
 		}
 	},
 	hi: {
@@ -1658,7 +1678,7 @@ var CATALOGS = {
 			"highlight_1": "अपना मूड बताइए या कोई गाना जिसने आपको छुआ — यह उसी एहसास वाले और गाने ढूँढता है",
 			"highlight_2": "हर गाने के साथ बताया जाता है कि यह इस मूड में क्यों जमता है",
 			"highlight_3": "गाने Kiro Crew के ब्राउज़र में आवाज़ के साथ चलते हैं; पेज पर चलाएँ, रोकें और आवाज़ के बटन हैं",
-			"highlight_4": "एजेंट सिर्फ़ साइटें टैब में आपकी सूची की साइटें खोलता है (डिफ़ॉल्ट रूप से bilibili और YouTube), और कभी साइन इन, टिप्पणी, लाइक या भुगतान नहीं करता",
+			"highlight_4": "एजेंट सिर्फ़ साइटें टैब में आपकी सूची की साइटें खोलता है (डिफ़ॉल्ट रूप से bilibili, YouTube, Spotify, Amazon Music, Apple Music और SoundCloud), और कभी साइन इन, टिप्पणी, लाइक या भुगतान नहीं करता",
 			"highlight_5": "पसंद या छोड़ें अगली पसंद में काम आता है",
 			"highlight_6": "पृष्ठभूमि और हलचल मूड के साथ बदलती है, लाइट और डार्क दोनों में",
 			"use_case_1": "अभी के मूड से मेल खाते गाने ढूँढें और चलाएँ, और दिल छूने वाले पल सहेजें।",
@@ -1699,6 +1719,10 @@ var CATALOGS = {
 			"dropped": "जिन गानों का लिंक नहीं चल सकता, वे छोड़े गए: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
+			"source_spotify": "Spotify",
+			"source_amazon_music": "Amazon Music",
+			"source_apple_music": "Apple Music",
+			"source_soundcloud": "SoundCloud",
 			"tab_memory": "याद",
 			"error_old_host": "यह Kiro Crew साथी की छिपी चैट खोलने के लिए बहुत पुराना है। Kiro Crew अपडेट करें, फिर यह पेज दोबारा खोलें।",
 			"error_hidden_refused": "Kiro Crew ने साथी की छिपी चैट नहीं खोली। ऐप पेज पर देखें कि मूड म्यूज़िक चालू और भरोसेमंद है।"
@@ -1973,7 +1997,7 @@ var CATALOGS = {
 			"how_title": "यह कैसे काम करता है",
 			"how_buddy": "साथी सिर्फ़ चालू साइटें खोलता है। वह यह सूची पढ़ सकता है, बदल नहीं सकता।",
 			"how_add": "साइट जोड़ते समय Kiro Crew पहले अपनी खिड़की में आपसे पूछता है। बंद करना या हटाना तुरंत लागू होता है।",
-			"how_new": "नई साइट पर साथी पहली बार खुद रास्ता ढूँढता है। bilibili और YouTube के लिए उसके सहेजे कदम वैसे ही रहते हैं।"
+			"how_new": "नई साइट पर साथी पहली बार खुद रास्ता ढूँढता है। हर साइट के लिए उसके सहेजे कदम अलग रहते हैं।"
 		}
 	},
 	it: {
@@ -1984,7 +2008,7 @@ var CATALOGS = {
 			"highlight_1": "Di’ come ti senti o nomina una canzone che ti ha emozionato: ne trova altre con la stessa emozione",
 			"highlight_2": "Ogni scelta spiega perché si adatta al tuo umore",
 			"highlight_3": "Le canzoni suonano nel browser di Kiro Crew, con l’audio; la pagina ha riproduci, pausa e volume",
-			"highlight_4": "L’agente apre solo i siti del tuo elenco nella scheda Siti (bilibili e YouTube di default), e non accede, non commenta, non mette mi piace e non paga mai",
+			"highlight_4": "L’agente apre solo i siti del tuo elenco nella scheda Siti (di default bilibili, YouTube, Spotify, Amazon Music, Apple Music e SoundCloud), e non accede, non commenta, non mette mi piace e non paga mai",
 			"highlight_5": "Mi piace o Salta vengono usati per le scelte successive",
 			"highlight_6": "Lo sfondo e il movimento seguono l’umore, in chiaro e in scuro",
 			"use_case_1": "Trova e riproduci canzoni adatte a come ti senti ora e conserva i momenti che ti hanno emozionato.",
@@ -2025,6 +2049,10 @@ var CATALOGS = {
 			"dropped": "Canzoni escluse per un link non riproducibile: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
+			"source_spotify": "Spotify",
+			"source_amazon_music": "Amazon Music",
+			"source_apple_music": "Apple Music",
+			"source_soundcloud": "SoundCloud",
 			"tab_memory": "Memoria",
 			"error_old_host": "Questo Kiro Crew è troppo vecchio per aprire la chat nascosta del tuo compagno. Aggiorna Kiro Crew e riapri questa pagina.",
 			"error_hidden_refused": "Kiro Crew non ha aperto la chat nascosta del tuo compagno. Controlla nella pagina dell’app che Mood Music sia attiva e attendibile."
@@ -2299,7 +2327,7 @@ var CATALOGS = {
 			"how_title": "Come funziona",
 			"how_buddy": "Il compagno apre solo i siti attivi. Può leggere questo elenco, ma non cambiarlo.",
 			"how_add": "Quando aggiungi un sito, Kiro Crew te lo chiede prima nella sua finestra. Spegnere o rimuovere un sito ha effetto subito.",
-			"how_new": "Su un sito nuovo il compagno trova da solo la strada la prima volta. I passi salvati per bilibili e YouTube restano come sono."
+			"how_new": "Su un sito nuovo il compagno trova da solo la strada la prima volta. Tiene i passi salvati separati per ogni sito."
 		}
 	},
 	ja: {
@@ -2310,7 +2338,7 @@ var CATALOGS = {
 			"highlight_1": "気持ちや心に響いた曲を伝えると、同じ気分の曲をもっと探します",
 			"highlight_2": "どの曲にも、その気分に合う理由が添えられます",
 			"highlight_3": "曲は Kiro Crew のブラウザで音付きで再生。ページで再生・一時停止・音量を操作できます",
-			"highlight_4": "エージェントが開くのは「サイト」タブの一覧にあるサイトだけ（既定は bilibili と YouTube）。ログイン、コメント、いいね、支払いはしません",
+			"highlight_4": "エージェントが開くのは「サイト」タブの一覧にあるサイトだけ（既定は bilibili、YouTube、Spotify、Amazon Music、Apple Music、SoundCloud）。ログイン、コメント、いいね、支払いはしません",
 			"highlight_5": "いいね・スキップが次の選曲に使われます",
 			"highlight_6": "背景と動きが気分に合わせて変わります（ライト・ダーク対応）",
 			"use_case_1": "今の気持ちに合う曲を探して再生し、心に残った瞬間を記録します。",
@@ -2351,6 +2379,10 @@ var CATALOGS = {
 			"dropped": "再生できないリンクのため除外した曲：{{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
+			"source_spotify": "Spotify",
+			"source_amazon_music": "Amazon Music",
+			"source_apple_music": "Apple Music",
+			"source_soundcloud": "SoundCloud",
 			"tab_memory": "メモリー",
 			"error_old_host": "この Kiro Crew は古いため、相棒の非表示チャットを開けません。Kiro Crew を更新してから、このページを開き直してください。",
 			"error_hidden_refused": "Kiro Crew が相棒の非表示チャットを開きませんでした。アプリのページで、ムードミュージックが有効で信頼済みか確認してください。"
@@ -2625,7 +2657,7 @@ var CATALOGS = {
 			"how_title": "しくみ",
 			"how_buddy": "相棒はオンのサイトだけを開きます。この一覧を読めますが、変更はできません。",
 			"how_add": "サイトを追加するときは、Kiro Crew 自身の画面でまず確認されます。オフや削除はすぐ反映されます。",
-			"how_new": "新しいサイトでは、相棒が最初に自分でやり方を探します。bilibili と YouTube で保存した手順はそのまま残ります。"
+			"how_new": "新しいサイトでは、相棒が最初に自分でやり方を探します。保存した手順はサイトごとに別々に残ります。"
 		}
 	},
 	ko: {
@@ -2636,7 +2668,7 @@ var CATALOGS = {
 			"highlight_1": "기분이나 마음을 울린 노래를 말하면 같은 느낌의 노래를 더 찾아 줍니다",
 			"highlight_2": "추천곡마다 이 기분에 맞는 이유를 알려 줍니다",
 			"highlight_3": "노래는 Kiro Crew 브라우저에서 소리와 함께 재생되고, 페이지에서 재생·일시정지·음량을 조절해요",
-			"highlight_4": "에이전트는 사이트 탭 목록에 있는 사이트만 열고(기본은 bilibili와 YouTube), 로그인·댓글·좋아요·결제는 하지 않아요",
+			"highlight_4": "에이전트는 사이트 탭 목록에 있는 사이트만 열고(기본은 bilibili, YouTube, Spotify, Amazon Music, Apple Music, SoundCloud), 로그인·댓글·좋아요·결제는 하지 않아요",
 			"highlight_5": "좋아요나 건너뛰기가 다음 추천에 쓰입니다",
 			"highlight_6": "배경과 움직임이 기분에 따라 바뀌며 라이트·다크 모두 지원합니다",
 			"use_case_1": "지금 기분에 맞는 노래를 찾아 재생하고, 마음을 울린 순간을 기록합니다.",
@@ -2677,6 +2709,10 @@ var CATALOGS = {
 			"dropped": "재생할 수 없는 링크라 제외한 곡: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
+			"source_spotify": "Spotify",
+			"source_amazon_music": "Amazon Music",
+			"source_apple_music": "Apple Music",
+			"source_soundcloud": "SoundCloud",
 			"tab_memory": "기억",
 			"error_old_host": "이 Kiro Crew는 너무 오래되어 친구의 숨김 채팅을 열 수 없어요. Kiro Crew를 업데이트한 뒤 이 페이지를 다시 여세요.",
 			"error_hidden_refused": "Kiro Crew가 친구의 숨김 채팅을 열지 않았어요. 앱 페이지에서 무드 뮤직이 켜져 있고 신뢰됨인지 확인하세요."
@@ -2951,7 +2987,7 @@ var CATALOGS = {
 			"how_title": "작동 방식",
 			"how_buddy": "버디는 켜진 사이트만 열어요. 이 목록을 읽을 수는 있지만 바꿀 수는 없어요.",
 			"how_add": "사이트를 추가하면 Kiro Crew가 자기 창에서 먼저 물어봐요. 끄기와 삭제는 바로 적용돼요.",
-			"how_new": "새 사이트에서는 버디가 처음에 스스로 방법을 찾아요. bilibili와 YouTube에 저장된 단계는 그대로 남아요."
+			"how_new": "새 사이트에서는 버디가 처음에 스스로 방법을 찾아요. 저장된 단계는 사이트마다 따로 남아요."
 		}
 	},
 	pt: {
@@ -2962,7 +2998,7 @@ var CATALOGS = {
 			"highlight_1": "Diga como você se sente ou cite uma música que te emocionou — ele encontra mais com o mesmo sentimento",
 			"highlight_2": "Cada escolha diz por que combina com o seu humor",
 			"highlight_3": "As músicas tocam no navegador do Kiro Crew, com som; a página tem tocar, pausar e volume",
-			"highlight_4": "O agente só abre os sites da sua lista na aba Sites (bilibili e YouTube por padrão), e nunca faz login, comenta, curte ou paga",
+			"highlight_4": "O agente só abre os sites da sua lista na aba Sites (por padrão bilibili, YouTube, Spotify, Amazon Music, Apple Music e SoundCloud), e nunca faz login, comenta, curte ou paga",
 			"highlight_5": "Curtir ou Pular é usado nas próximas escolhas",
 			"highlight_6": "O fundo e o movimento acompanham o humor, no claro e no escuro",
 			"use_case_1": "Encontre e toque músicas que combinam com como você se sente agora e guarde os momentos que te emocionaram.",
@@ -3003,6 +3039,10 @@ var CATALOGS = {
 			"dropped": "Músicas deixadas de fora por link que não toca: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
+			"source_spotify": "Spotify",
+			"source_amazon_music": "Amazon Music",
+			"source_apple_music": "Apple Music",
+			"source_soundcloud": "SoundCloud",
 			"tab_memory": "Memória",
 			"error_old_host": "Este Kiro Crew é antigo demais para abrir o chat oculto do seu parceiro. Atualize o Kiro Crew e abra esta página de novo.",
 			"error_hidden_refused": "O Kiro Crew não abriu o chat oculto do seu parceiro. Confira na página do app se o Mood Music está ativado e confiável."
@@ -3277,7 +3317,7 @@ var CATALOGS = {
 			"how_title": "Como funciona",
 			"how_buddy": "O parceiro só abre os sites ligados. Ele pode ler esta lista, mas não mudá-la.",
 			"how_add": "Ao adicionar um site, o Kiro Crew pergunta primeiro, na própria janela. Desligar ou remover um site vale na hora.",
-			"how_new": "Num site novo, o parceiro descobre o caminho sozinho na primeira vez. Os passos salvos para bilibili e YouTube ficam como estão."
+			"how_new": "Num site novo, o parceiro descobre o caminho sozinho na primeira vez. Os passos salvos ficam separados para cada site."
 		}
 	},
 	ru: {
@@ -3288,7 +3328,7 @@ var CATALOGS = {
 			"highlight_1": "Расскажите о настроении или назовите песню, которая тронула, — он найдёт ещё с тем же чувством",
 			"highlight_2": "К каждой песне — пояснение, почему она подходит настроению",
 			"highlight_3": "Песни играют в браузере Kiro Crew, со звуком; на странице есть воспроизведение, пауза и громкость",
-			"highlight_4": "Агент открывает только сайты из вашего списка на вкладке «Сайты» (по умолчанию bilibili и YouTube) и никогда не входит в аккаунт, не комментирует, не ставит лайки и не платит",
+			"highlight_4": "Агент открывает только сайты из вашего списка на вкладке «Сайты» (по умолчанию bilibili, YouTube, Spotify, Amazon Music, Apple Music и SoundCloud) и никогда не входит в аккаунт, не комментирует, не ставит лайки и не платит",
 			"highlight_5": "«Нравится» и «Пропустить» учитываются в следующих подборках",
 			"highlight_6": "Фон и движение меняются с настроением, в светлой и тёмной теме",
 			"use_case_1": "Находите и слушайте песни под ваше настроение и сохраняйте моменты, которые вас тронули.",
@@ -3329,6 +3369,10 @@ var CATALOGS = {
 			"dropped": "Пропущено песен со ссылкой, которую нельзя воспроизвести: {{count}}",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
+			"source_spotify": "Spotify",
+			"source_amazon_music": "Amazon Music",
+			"source_apple_music": "Apple Music",
+			"source_soundcloud": "SoundCloud",
 			"tab_memory": "Память",
 			"error_old_host": "Этот Kiro Crew слишком старый и не может открыть скрытый чат напарника. Обновите Kiro Crew и откройте эту страницу снова.",
 			"error_hidden_refused": "Kiro Crew не открыл скрытый чат напарника. Проверьте на странице приложения, что «Музыка настроения» включена и ей доверяют."
@@ -3603,7 +3647,7 @@ var CATALOGS = {
 			"how_title": "Как это работает",
 			"how_buddy": "Помощник открывает только включённые сайты. Он может читать этот список, но не может его менять.",
 			"how_add": "При добавлении сайта Kiro Crew сначала спросит вас в своём окне. Выключение и удаление работают сразу.",
-			"how_new": "На новом сайте помощник в первый раз сам находит, как включить песню. Сохранённые шаги для bilibili и YouTube остаются как есть."
+			"how_new": "На новом сайте помощник в первый раз сам находит, как включить песню. Сохранённые шаги хранятся отдельно для каждого сайта."
 		}
 	},
 	"zh-CN": {
@@ -3614,7 +3658,7 @@ var CATALOGS = {
 			"highlight_1": "说出心情，或说出一首打动你的歌，它会找来更多感觉相同的歌",
 			"highlight_2": "每首歌都会说明为什么适合这份心情",
 			"highlight_3": "歌在 Kiro Crew 的浏览器里播放，有声音；页面上有播放、暂停和音量",
-			"highlight_4": "助手只打开“网站”页签里你列出的网站（默认是 bilibili 和 YouTube），从不登录、评论、点赞或付款",
+			"highlight_4": "助手只打开“网站”页签里你列出的网站（默认是 bilibili、YouTube、Spotify、Amazon Music、Apple Music 和 SoundCloud），从不登录、评论、点赞或付款",
 			"highlight_5": "喜欢或跳过一首歌，下次推荐会用上",
 			"highlight_6": "背景和动效随心情变化，亮色暗色都适用",
 			"use_case_1": "找到并播放符合你此刻心情的歌，并记下打动你的那些时刻。",
@@ -3655,6 +3699,10 @@ var CATALOGS = {
 			"dropped": "有 {{count}} 首歌的链接无法播放，已略过。",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
+			"source_spotify": "Spotify",
+			"source_amazon_music": "Amazon Music",
+			"source_apple_music": "Apple Music",
+			"source_soundcloud": "SoundCloud",
 			"tab_memory": "记忆",
 			"error_old_host": "这个 Kiro Crew 版本太旧，打不开搭子的隐藏聊天。请更新 Kiro Crew，再打开这个页面。",
 			"error_hidden_refused": "Kiro Crew 没有打开搭子的隐藏聊天。请在应用页面确认情绪音乐已启用、已信任。"
@@ -3929,7 +3977,7 @@ var CATALOGS = {
 			"how_title": "怎么用",
 			"how_buddy": "搭子只打开开着的网站。它能读这个列表，但不能改。",
 			"how_add": "添加网站时，Kiro Crew 会先用自己的窗口问你。关闭或删除网站会马上生效。",
-			"how_new": "在新网站上，搭子第一次会自己摸索怎么播。它在 bilibili 和 YouTube 上存的步骤保持不变。"
+			"how_new": "在新网站上，搭子第一次会自己摸索怎么播。它为每个网站分开保存步骤。"
 		}
 	}
 };
@@ -4276,6 +4324,16 @@ function moodLookFor(texts) {
 * bad pick is dropped, and lengths are cut to the backend's limits. Text is only
 * ever rendered as React text, never as HTML.
 */
+/** The sites a pick plays on. Only YouTube and bilibili picks carry a checked link. */
+var PICK_SOURCES = [
+	"youtube",
+	"bilibili",
+	"spotify",
+	"amazon_music",
+	"apple_music",
+	"soundcloud"
+];
+var isPickSource = (v) => PICK_SOURCES.includes(v);
 var REPLY_ACTIONS = [
 	"next",
 	"pause",
@@ -4288,7 +4346,7 @@ var MAX_STEP_CHARS = 120;
 var STEP_BAD_RE = /[\u0000-\u001f\u007f\u2028\u2029`[\]]/;
 function playResult(d) {
 	if (typeof d.played !== "boolean") return void 0;
-	const site = oneOf(d.site, ["youtube", "bilibili"]);
+	const site = oneOf(d.site, PICK_SOURCES);
 	if (!site) return void 0;
 	const steps = (Array.isArray(d.steps) ? d.steps : []).filter((s) => typeof s === "string" && !STEP_BAD_RE.test(s)).map((s) => s.trim()).filter((s) => s.length > 0 && s.length <= MAX_STEP_CHARS).slice(0, MAX_STEPS);
 	return {
@@ -4375,7 +4433,11 @@ function pick(raw) {
 			url
 		} : null;
 	}
-	return null;
+	const other = oneOf(source, PICK_SOURCES);
+	return other ? {
+		...base,
+		source: other
+	} : null;
 }
 /** Picks in arc order (stay, turn, lift), a pick with no arc after them; ties keep their order. */
 function byArc(picks) {
@@ -6013,7 +6075,7 @@ var key = (title = "", artist = "") => `${title.trim().toLowerCase()}|${artist.t
 function likedSongs(state) {
 	if (!state) return [];
 	const steps = state.play_steps ?? {};
-	const site = (steps.bilibili?.updated_at ?? -1) > (steps.youtube?.updated_at ?? -1) ? "bilibili" : "youtube";
+	const site = PICK_SOURCES.reduce((a, b) => (steps[b]?.updated_at ?? -1) > (steps[a]?.updated_at ?? -1) ? b : a, "youtube");
 	const queued = new Map(state.queue.map((p) => [key(p.title, p.artist), p]));
 	const tags = /* @__PURE__ */ new Map();
 	const addTags = (k, words) => {
@@ -6505,7 +6567,7 @@ function PlaylistsTab({ api, state, busy, onPlay }) {
 												}),
 												/* @__PURE__ */ jsx("span", {
 													className: "shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
-													children: s.source === "youtube" ? t("page.source_youtube") : t("page.source_bilibili")
+													children: t(`page.source_${s.source}`)
 												}),
 												/* @__PURE__ */ jsx(Btn, {
 													type: "button",
@@ -6576,7 +6638,7 @@ var EXPLORE_MIX = {
 * the pick's site when the person presses play. So a pick needs its site, and a
 * link only when the buddy already has one.
 */
-var PLAYER_LINE = "Player: Kiro Crew's browser. Give every pick the site that has it (\"source\": \"youtube\" or \"bilibili\"). A \"url\" is optional: add it only when you already have the exact video link, and do not spend searches hunting for links. The page asks you to play each song later, by searching its site in the browser, so do not open the browser now.";
+var PLAYER_LINE = "Player: Kiro Crew's browser. Give every pick the site that has it (\"source\": \"youtube\", \"bilibili\", \"spotify\", \"amazon_music\", \"apple_music\" or \"soundcloud\"). A \"url\" is optional: add it only when you already have the exact video link, and do not spend searches hunting for links. The page asks you to play each song later, by searching its site in the browser, so do not open the browser now.";
 /**
 * The message the page sends the DJ. The taste summary is the app's own record
 * of what the person liked and skipped, marked as data for the agent.
@@ -6817,8 +6879,8 @@ var ONE_TAB = "Use the one tab you already have: open the video in it (navigate 
 var PLAY_FORMAT = [
 	"Play it with the browser tool, following the \"Playing in Kiro Crew's browser\" rules. Never run a script; never comment, like, coin, pay or open an account page.",
 	"Then write one short sentence and end with ONE fenced block tagged mood-music holding plain JSON:",
-	"- played: {\"played\": true, \"site\": \"bilibili\" or \"youtube\", \"steps\": [\"1 to 8 short plain steps that worked, without the song name\"]}",
-	"- not played: {\"played\": false, \"site\": \"bilibili\" or \"youtube\", \"reason\": \"one short line\"}",
+	"- played: {\"played\": true, \"site\": the Site named above, \"steps\": [\"1 to 8 short plain steps that worked, without the song name\"]}",
+	"- not played: {\"played\": false, \"site\": the Site named above, \"reason\": \"one short line\"}",
 	"Example:",
 	"```mood-music",
 	"{\"played\": true, \"site\": \"bilibili\", \"steps\": [\"open https://search.bilibili.com/all?keyword= with the song title and artist\", \"read the address of the first video whose title matches\", \"navigate this tab to that address\", \"click play if the video is paused\"]}",
@@ -6836,7 +6898,7 @@ var REPLY_LINES = [
 	"Write one or two short sentences, then end your reply with ONE fenced block tagged mood-music holding plain JSON, with exactly these field names:",
 	"- \"mood_tags\": 2 to 4 short words for the feeling, in the person's language.",
 	"- \"picks\": the songs, in arc order, each {\"title\", \"artist\", \"source\", \"url\", \"tier\", \"arc\", \"why\", \"listen_for\", \"evidence\", \"tags\"}.",
-	"- \"source\" is \"youtube\" or \"bilibili\". \"url\" is optional; when you give one, a youtube \"url\" is https://www.youtube.com/watch?v=<11-char id> or https://youtu.be/<id>, and a bilibili \"url\" is https://www.bilibili.com/video/<BV id>.",
+	"- \"source\" is \"youtube\", \"bilibili\", \"spotify\", \"amazon_music\", \"apple_music\" or \"soundcloud\". \"url\" is optional, for youtube and bilibili only; when you give one, a youtube \"url\" is https://www.youtube.com/watch?v=<11-char id> or https://youtu.be/<id>, and a bilibili \"url\" is https://www.bilibili.com/video/<BV id>.",
 	"- \"tier\" is \"anchor\", \"explore\" or \"deep\". \"arc\" is \"stay\", \"turn\" or \"lift\".",
 	"- \"why\": why this song now, one line. \"listen_for\": one line on something to hear in it.",
 	"- \"evidence\" (explore and deep): {\"url\": a page you opened this turn that praises it, \"label\": what that page is}.",
@@ -7564,7 +7626,7 @@ function readPending(v) {
 function readPlay(v) {
 	const p = v;
 	if (!p || typeof p !== "object" || typeof p.pickId !== "string") return void 0;
-	if (p.site !== "youtube" && p.site !== "bilibili") return void 0;
+	if (!isPickSource(p.site)) return void 0;
 	return {
 		pickId: p.pickId.slice(0, 64),
 		site: p.site,
@@ -7574,7 +7636,7 @@ function readPlay(v) {
 function readHeld(v) {
 	const p = v;
 	if (!p || typeof p !== "object" || typeof p.id !== "string" || typeof p.title !== "string") return null;
-	if (p.source !== "youtube" && p.source !== "bilibili") return null;
+	if (!isPickSource(p.source)) return null;
 	return {
 		id: p.id.slice(0, 64),
 		title: str(p.title, 200),
@@ -9303,7 +9365,7 @@ function MoodMusicPage() {
 															}),
 															/* @__PURE__ */ jsx("span", {
 																className: "shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] text-[var(--muted)]",
-																children: p.source === "youtube" ? t("page.source_youtube") : t("page.source_bilibili")
+																children: t(`page.source_${p.source}`)
 															})
 														]
 													}) }, p.id);

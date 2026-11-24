@@ -6,7 +6,7 @@
     "highlight_1": "Diga como você se sente ou cite uma música que te emocionou — ele encontra mais com o mesmo sentimento",
     "highlight_2": "Cada escolha diz por que combina com o seu humor",
     "highlight_3": "As músicas tocam no navegador do Kiro Crew, com som; a página tem tocar, pausar e volume",
-    "highlight_4": "O agente só abre os sites da sua lista na aba Sites (bilibili e YouTube por padrão), e nunca faz login, comenta, curte ou paga",
+    "highlight_4": "O agente só abre os sites da sua lista na aba Sites (por padrão bilibili, YouTube, Spotify, Amazon Music, Apple Music e SoundCloud), e nunca faz login, comenta, curte ou paga",
     "highlight_5": "Curtir ou Pular é usado nas próximas escolhas",
     "highlight_6": "O fundo e o movimento acompanham o humor, no claro e no escuro",
     "use_case_1": "Encontre e toque músicas que combinam com como você se sente agora e guarde os momentos que te emocionaram.",
@@ -47,6 +47,10 @@
     "dropped": "Músicas deixadas de fora por link que não toca: {{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili",
+    "source_spotify": "Spotify",
+    "source_amazon_music": "Amazon Music",
+    "source_apple_music": "Apple Music",
+    "source_soundcloud": "SoundCloud",
     "tab_memory": "Memória",
     "error_old_host": "Este Kiro Crew é antigo demais para abrir o chat oculto do seu parceiro. Atualize o Kiro Crew e abra esta página de novo.",
     "error_hidden_refused": "O Kiro Crew não abriu o chat oculto do seu parceiro. Confira na página do app se o Mood Music está ativado e confiável."
@@ -321,6 +325,6 @@
     "how_title": "Como funciona",
     "how_buddy": "O parceiro só abre os sites ligados. Ele pode ler esta lista, mas não mudá-la.",
     "how_add": "Ao adicionar um site, o Kiro Crew pergunta primeiro, na própria janela. Desligar ou remover um site vale na hora.",
-    "how_new": "Num site novo, o parceiro descobre o caminho sozinho na primeira vez. Os passos salvos para bilibili e YouTube ficam como estão."
+    "how_new": "Num site novo, o parceiro descobre o caminho sozinho na primeira vez. Os passos salvos ficam separados para cada site."
   }
 }

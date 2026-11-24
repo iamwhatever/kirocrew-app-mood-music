@@ -6,7 +6,7 @@
     "highlight_1": "Dis ce que tu ressens, ou cite une chanson qui t’a ému : il en trouve d’autres avec la même émotion",
     "highlight_2": "Chaque choix dit pourquoi il correspond à ton humeur",
     "highlight_3": "Les chansons se lisent dans le navigateur de Kiro Crew, avec le son ; la page a lecture, pause et volume",
-    "highlight_4": "L’agent n’ouvre que les sites de ta liste dans l’onglet Sites (bilibili et YouTube par défaut), et ne se connecte, ne commente, n’aime ni ne paie jamais",
+    "highlight_4": "L’agent n’ouvre que les sites de ta liste dans l’onglet Sites (par défaut bilibili, YouTube, Spotify, Amazon Music, Apple Music et SoundCloud), et ne se connecte, ne commente, n’aime ni ne paie jamais",
     "highlight_5": "J’aime ou Passer sert aux choix suivants",
     "highlight_6": "Le fond et le mouvement suivent l’humeur, en clair comme en sombre",
     "use_case_1": "Trouver et écouter des chansons qui correspondent à ce que tu ressens maintenant, et garder les moments qui t’ont ému.",
@@ -47,6 +47,10 @@
     "dropped": "Chansons écartées car leur lien est illisible : {{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili",
+    "source_spotify": "Spotify",
+    "source_amazon_music": "Amazon Music",
+    "source_apple_music": "Apple Music",
+    "source_soundcloud": "SoundCloud",
     "tab_memory": "Mémoire",
     "error_old_host": "Ce Kiro Crew est trop ancien pour ouvrir le chat caché de ton compagnon. Mets à jour Kiro Crew, puis rouvre cette page.",
     "error_hidden_refused": "Kiro Crew n’a pas ouvert le chat caché de ton compagnon. Vérifie sur la page de l’app que Mood Music est activée et approuvée."
@@ -321,6 +325,6 @@
     "how_title": "Comment ça marche",
     "how_buddy": "Le compagnon n’ouvre que les sites actifs. Il peut lire cette liste, mais pas la modifier.",
     "how_add": "Pour ajouter un site, Kiro Crew te demande d’abord dans sa propre fenêtre. Désactiver ou retirer un site agit tout de suite.",
-    "how_new": "Sur un nouveau site, le compagnon trouve seul le chemin la première fois. Ses étapes enregistrées pour bilibili et YouTube restent telles quelles."
+    "how_new": "Sur un nouveau site, le compagnon trouve seul le chemin la première fois. Il garde ses étapes enregistrées à part pour chaque site."
   }
 }

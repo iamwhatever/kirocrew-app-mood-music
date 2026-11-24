@@ -89,7 +89,7 @@ def test_liked_songs_with_no_link_become_a_list_and_twins_are_kept_once(ctx) -> 
         ({"name": "x", "songs": []}, "invalid_field_type"),
         ({"name": "x", "songs": "Song 1"}, "invalid_field_type"),
         ({"name": "x", "songs": [song(1), {"title": "", "source": "youtube"}]}, "invalid_pick"),
-        ({"name": "x", "songs": [song(1, source="spotify")]}, "invalid_source"),
+        ({"name": "x", "songs": [song(1, source="netease")]}, "invalid_source"),
         ({"name": "x", "songs": [song(1, video_id="javascript:alert(1)")]}, "invalid_video_id"),
         ({"name": "x", "songs": [song(1, source="bilibili", url="https://evil.example/BV1")]}, "invalid_bilibili_url"),
     ],

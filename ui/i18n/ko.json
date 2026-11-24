@@ -6,7 +6,7 @@
     "highlight_1": "기분이나 마음을 울린 노래를 말하면 같은 느낌의 노래를 더 찾아 줍니다",
     "highlight_2": "추천곡마다 이 기분에 맞는 이유를 알려 줍니다",
     "highlight_3": "노래는 Kiro Crew 브라우저에서 소리와 함께 재생되고, 페이지에서 재생·일시정지·음량을 조절해요",
-    "highlight_4": "에이전트는 사이트 탭 목록에 있는 사이트만 열고(기본은 bilibili와 YouTube), 로그인·댓글·좋아요·결제는 하지 않아요",
+    "highlight_4": "에이전트는 사이트 탭 목록에 있는 사이트만 열고(기본은 bilibili, YouTube, Spotify, Amazon Music, Apple Music, SoundCloud), 로그인·댓글·좋아요·결제는 하지 않아요",
     "highlight_5": "좋아요나 건너뛰기가 다음 추천에 쓰입니다",
     "highlight_6": "배경과 움직임이 기분에 따라 바뀌며 라이트·다크 모두 지원합니다",
     "use_case_1": "지금 기분에 맞는 노래를 찾아 재생하고, 마음을 울린 순간을 기록합니다.",
@@ -47,6 +47,10 @@
     "dropped": "재생할 수 없는 링크라 제외한 곡: {{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili",
+    "source_spotify": "Spotify",
+    "source_amazon_music": "Amazon Music",
+    "source_apple_music": "Apple Music",
+    "source_soundcloud": "SoundCloud",
     "tab_memory": "기억",
     "error_old_host": "이 Kiro Crew는 너무 오래되어 친구의 숨김 채팅을 열 수 없어요. Kiro Crew를 업데이트한 뒤 이 페이지를 다시 여세요.",
     "error_hidden_refused": "Kiro Crew가 친구의 숨김 채팅을 열지 않았어요. 앱 페이지에서 무드 뮤직이 켜져 있고 신뢰됨인지 확인하세요."
@@ -321,6 +325,6 @@
     "how_title": "작동 방식",
     "how_buddy": "버디는 켜진 사이트만 열어요. 이 목록을 읽을 수는 있지만 바꿀 수는 없어요.",
     "how_add": "사이트를 추가하면 Kiro Crew가 자기 창에서 먼저 물어봐요. 끄기와 삭제는 바로 적용돼요.",
-    "how_new": "새 사이트에서는 버디가 처음에 스스로 방법을 찾아요. bilibili와 YouTube에 저장된 단계는 그대로 남아요."
+    "how_new": "새 사이트에서는 버디가 처음에 스스로 방법을 찾아요. 저장된 단계는 사이트마다 따로 남아요."
   }
 }

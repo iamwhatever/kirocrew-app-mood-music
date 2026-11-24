@@ -6,7 +6,7 @@
     "highlight_1": "说出心情，或说出一首打动你的歌，它会找来更多感觉相同的歌",
     "highlight_2": "每首歌都会说明为什么适合这份心情",
     "highlight_3": "歌在 Kiro Crew 的浏览器里播放，有声音；页面上有播放、暂停和音量",
-    "highlight_4": "助手只打开“网站”页签里你列出的网站（默认是 bilibili 和 YouTube），从不登录、评论、点赞或付款",
+    "highlight_4": "助手只打开“网站”页签里你列出的网站（默认是 bilibili、YouTube、Spotify、Amazon Music、Apple Music 和 SoundCloud），从不登录、评论、点赞或付款",
     "highlight_5": "喜欢或跳过一首歌，下次推荐会用上",
     "highlight_6": "背景和动效随心情变化，亮色暗色都适用",
     "use_case_1": "找到并播放符合你此刻心情的歌，并记下打动你的那些时刻。",
@@ -47,6 +47,10 @@
     "dropped": "有 {{count}} 首歌的链接无法播放，已略过。",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili",
+    "source_spotify": "Spotify",
+    "source_amazon_music": "Amazon Music",
+    "source_apple_music": "Apple Music",
+    "source_soundcloud": "SoundCloud",
     "tab_memory": "记忆",
     "error_old_host": "这个 Kiro Crew 版本太旧，打不开搭子的隐藏聊天。请更新 Kiro Crew，再打开这个页面。",
     "error_hidden_refused": "Kiro Crew 没有打开搭子的隐藏聊天。请在应用页面确认情绪音乐已启用、已信任。"
@@ -321,6 +325,6 @@
     "how_title": "怎么用",
     "how_buddy": "搭子只打开开着的网站。它能读这个列表，但不能改。",
     "how_add": "添加网站时，Kiro Crew 会先用自己的窗口问你。关闭或删除网站会马上生效。",
-    "how_new": "在新网站上，搭子第一次会自己摸索怎么播。它在 bilibili 和 YouTube 上存的步骤保持不变。"
+    "how_new": "在新网站上，搭子第一次会自己摸索怎么播。它为每个网站分开保存步骤。"
   }
 }

@@ -6,7 +6,7 @@
     "highlight_1": "Di cómo te sientes o nombra una canción que te emocionó: encuentra más con el mismo sentimiento",
     "highlight_2": "Cada elección explica por qué encaja con tu estado de ánimo",
     "highlight_3": "Las canciones suenan en el navegador de Kiro Crew, con sonido; la página tiene reproducir, pausa y volumen",
-    "highlight_4": "El agente solo abre los sitios de tu lista en la pestaña Sitios (bilibili y YouTube por defecto), y nunca inicia sesión, comenta, da me gusta ni paga",
+    "highlight_4": "El agente solo abre los sitios de tu lista en la pestaña Sitios (por defecto bilibili, YouTube, Spotify, Amazon Music, Apple Music y SoundCloud), y nunca inicia sesión, comenta, da me gusta ni paga",
     "highlight_5": "Me gusta u Omitir se usan en las siguientes elecciones",
     "highlight_6": "El fondo y el movimiento siguen tu estado de ánimo, en claro y en oscuro",
     "use_case_1": "Encuentra y reproduce canciones que encajan con cómo te sientes ahora y guarda los momentos que te emocionaron.",
@@ -47,6 +47,10 @@
     "dropped": "Canciones omitidas por un enlace que no se puede reproducir: {{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili",
+    "source_spotify": "Spotify",
+    "source_amazon_music": "Amazon Music",
+    "source_apple_music": "Apple Music",
+    "source_soundcloud": "SoundCloud",
     "tab_memory": "Memoria",
     "error_old_host": "Este Kiro Crew es demasiado antiguo para abrir el chat oculto de tu compañero. Actualiza Kiro Crew y vuelve a abrir esta página.",
     "error_hidden_refused": "Kiro Crew no abrió el chat oculto de tu compañero. Comprueba en la página de la app que Mood Music está activada y es de confianza."
@@ -321,6 +325,6 @@
     "how_title": "Cómo funciona",
     "how_buddy": "El compañero solo abre los sitios activos. Puede leer esta lista, pero no cambiarla.",
     "how_add": "Al añadir un sitio, Kiro Crew te pregunta primero en su propia ventana. Desactivar o quitar un sitio surte efecto al instante.",
-    "how_new": "En un sitio nuevo, el compañero encuentra el camino por sí mismo la primera vez. Sus pasos guardados para bilibili y YouTube se quedan como están."
+    "how_new": "En un sitio nuevo, el compañero encuentra el camino por sí mismo la primera vez. Guarda sus pasos por separado para cada sitio."
   }
 }

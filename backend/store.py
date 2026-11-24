@@ -77,7 +77,9 @@ DEFAULT_SETTINGS = {
     "view_open": True,
 }
 #: The sites the buddy plays on in Kiro Crew's browser, each with its own saved steps.
-PLAY_SITES = ("bilibili", "youtube")
+#: Only bilibili and YouTube picks carry a checked link; on the others the buddy
+#: always searches the site for the song when it plays.
+PLAY_SITES = ("bilibili", "youtube", "spotify", "amazon_music", "apple_music", "soundcloud")
 #: Saved steps per site: at most this many, each at most this long.
 MAX_STEPS = 8
 MAX_STEP_CHARS = 120

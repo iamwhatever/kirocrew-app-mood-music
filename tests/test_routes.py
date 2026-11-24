@@ -129,7 +129,7 @@ def test_a_pick_with_no_link_is_stored_by_its_site(ctx, source) -> None:
         (_bili("http://www.bilibili.com/video/BV1"), "invalid_bilibili_url"),
         (_bili("https://evil.com/video/BV1"), "invalid_bilibili_url"),
         (
-            {"title": "x", "source": "spotify", "url": "https://open.spotify.com/x"},
+            {"title": "x", "source": "netease", "url": "https://music.163.com/x"},
             "invalid_source",
         ),
         ({"source": "youtube", "video_id": ID}, "invalid_pick"),
@@ -328,7 +328,7 @@ def test_play_steps_are_kept_per_site_and_forgotten_after_a_failure(ctx) -> None
 @pytest.mark.parametrize(
     ("path", "body"),
     [
-        ("/play-steps/spotify", {"steps": ["x"]}),
+        ("/play-steps/netease", {"steps": ["x"]}),
         ("/play-steps/bilibili", {"steps": []}),
         ("/play-steps/bilibili", {"steps": "click"}),
         ("/play-steps/bilibili", {"steps": ["x"] * 9}),
@@ -375,3 +375,33 @@ def test_a_gateway_without_the_owner_seam_refuses_everyone(
     status, payload = _call(legacy, method, path, body)
     assert (status, payload.get("code")) == (403, "owner_only")
     assert legacy.health.status == "degraded"
+
+
+# ── the music sites added in 0.2.18 ──
+
+NEW_SITES = ("spotify", "amazon_music", "apple_music", "soundcloud")
+
+
+@pytest.mark.parametrize("site", NEW_SITES)
+def test_a_pick_on_a_music_site_is_kept_with_no_link(ctx, site) -> None:
+    """A link is checked only on YouTube and bilibili; on the others it is dropped, never opened."""
+    status, body = _call(ctx, "POST", "/queue", {
+        "source": "r1", "mood_tags": [],
+        "picks": [{"title": "Song", "artist": "A", "source": site,
+                   "url": "https://evil.example/x", "video_id": "dQw4w9WgXcQ"}],
+    })
+    assert status == 200
+    [queued] = body["queue"]
+    assert queued["source"] == site
+    assert "url" not in queued and "video_id" not in queued
+
+
+@pytest.mark.parametrize("site", NEW_SITES)
+def test_steps_are_kept_and_forgotten_per_music_site(ctx, site) -> None:
+    assert _call(ctx, "PUT", f"/play-steps/{site}", {"steps": ["open the search page", "click the row's Play"]})[0] == 200
+    _call(ctx, "PUT", "/play-steps/youtube", {"steps": ["open results"]})
+    steps = _call(ctx, "GET", "/state")[1]["play_steps"]
+    assert steps[site]["steps"] == ["open the search page", "click the row's Play"]
+    assert _call(ctx, "DELETE", f"/play-steps/{site}")[1] == {"site": site, "forgotten": True}
+    steps = _call(ctx, "GET", "/state")[1]["play_steps"]
+    assert site not in steps and steps["youtube"]["steps"] == ["open results"]

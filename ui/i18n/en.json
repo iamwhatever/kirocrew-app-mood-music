@@ -6,7 +6,7 @@
     "highlight_1": "Say how you feel, or name a song that moved you — it finds more with the same feeling",
     "highlight_2": "Every pick says why it fits the mood",
     "highlight_3": "Songs play in Kiro Crew's browser, with its sound; the page has play, pause and volume",
-    "highlight_4": "The agent opens only the sites on your list in the Sites tab (bilibili and YouTube by default), and never signs in, comments, likes or pays",
+    "highlight_4": "The agent opens only the sites on your list in the Sites tab (by default bilibili, YouTube, Spotify, Amazon Music, Apple Music and SoundCloud), and never signs in, comments, likes or pays",
     "highlight_5": "Like or skip a song, and the next picks use it",
     "highlight_6": "The background and motion follow the mood, in light and dark",
     "use_case_1": "Find and play songs that match how you feel right now, and keep a history of the moments that moved you.",
@@ -47,6 +47,10 @@
     "dropped": "Songs left out because their link cannot play: {{count}}",
     "source_youtube": "YouTube",
     "source_bilibili": "bilibili",
+    "source_spotify": "Spotify",
+    "source_amazon_music": "Amazon Music",
+    "source_apple_music": "Apple Music",
+    "source_soundcloud": "SoundCloud",
     "tab_memory": "Memory",
     "error_old_host": "This Kiro Crew is too old to open your buddy's hidden chat. Update Kiro Crew, then open this page again.",
     "error_hidden_refused": "Kiro Crew would not open your buddy's hidden chat. Check that Mood Music is turned on and trusted, on the app's page."
@@ -321,6 +325,6 @@
     "how_title": "How it works",
     "how_buddy": "The buddy opens only the sites that are on. It can read this list, but it cannot change it.",
     "how_add": "Adding a site asks you first, in Kiro Crew's own window. Turning a site off or removing it works at once.",
-    "how_new": "On a new site the buddy finds the way itself the first time. Its saved steps for bilibili and YouTube stay as they are."
+    "how_new": "On a new site the buddy finds the way itself the first time. It keeps its saved steps for each site apart."
   }
 }

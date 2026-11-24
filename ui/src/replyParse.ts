@@ -9,7 +9,10 @@
 import { bilibiliUrl, evidenceUrl, validVideoId, youtubeVideoId } from './links'
 import { parseScene, type Scene } from './moods'
 
-export type PickSource = 'youtube' | 'bilibili'
+/** The sites a pick plays on. Only YouTube and bilibili picks carry a checked link. */
+export const PICK_SOURCES = ['youtube', 'bilibili', 'spotify', 'amazon_music', 'apple_music', 'soundcloud'] as const
+export type PickSource = (typeof PICK_SOURCES)[number]
+export const isPickSource = (v: unknown): v is PickSource => PICK_SOURCES.includes(v as PickSource)
 export type PickTier = 'anchor' | 'explore' | 'deep'
 export type PickArc = 'stay' | 'turn' | 'lift'
 
@@ -79,7 +82,7 @@ const STEP_BAD_RE = /[\u0000-\u001f\u007f\u2028\u2029`[\]]/
 
 function playResult(d: Record<string, unknown>): PlayResult | undefined {
   if (typeof d.played !== 'boolean') return undefined
-  const site = oneOf(d.site, ['youtube', 'bilibili'] as const)
+  const site = oneOf(d.site, PICK_SOURCES)
   if (!site) return undefined
   const raw = Array.isArray(d.steps) ? d.steps : []
   const steps = raw
@@ -148,7 +151,9 @@ function pick(raw: unknown): NewPick | null {
     const url = bilibiliUrl(r.url)
     return url ? { ...base, source: 'bilibili', url } : null
   }
-  return null
+  // A site with no link check: any link given is dropped, never opened.
+  const other = oneOf(source, PICK_SOURCES)
+  return other ? { ...base, source: other } : null
 }
 
 /** Picks in arc order (stay, turn, lift), a pick with no arc after them; ties keep their order. */

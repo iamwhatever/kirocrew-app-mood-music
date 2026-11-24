@@ -13,6 +13,7 @@
  */
 import { isMoodKey, parseScene, presetScene, type MoodKey, type Scene } from './moods'
 import type { QueuedPick } from './api'
+import { isPickSource, type PickSource } from './replyParse'
 
 export const PAGE_KEY = 'mood-music:page'
 /** Larger than this, the saved view is dropped rather than stored in part. */
@@ -31,7 +32,7 @@ export interface SavedPending {
   /** The person's words were steered into this turn: its reply is read like a box message's. */
   steered?: boolean
   /** A play request to the buddy (Crew Browser): the song, its site, and whether it asked for more. */
-  play?: { pickId: string; site: 'youtube' | 'bilibili'; refill: boolean }
+  play?: { pickId: string; site: PickSource; refill: boolean }
 }
 
 export interface PageView {
@@ -76,14 +77,14 @@ function readPending(v: unknown): SavedPending | null {
 function readPlay(v: unknown): SavedPending['play'] {
   const p = v as Partial<NonNullable<SavedPending['play']>> | null
   if (!p || typeof p !== 'object' || typeof p.pickId !== 'string') return undefined
-  if (p.site !== 'youtube' && p.site !== 'bilibili') return undefined
+  if (!isPickSource(p.site)) return undefined
   return { pickId: p.pickId.slice(0, 64), site: p.site, refill: p.refill === true }
 }
 
 function readHeld(v: unknown): QueuedPick | null {
   const p = v as Partial<QueuedPick> | null
   if (!p || typeof p !== 'object' || typeof p.id !== 'string' || typeof p.title !== 'string') return null
-  if (p.source !== 'youtube' && p.source !== 'bilibili') return null
+  if (!isPickSource(p.source)) return null
   return {
     id: p.id.slice(0, 64), title: str(p.title, 200), artist: str(p.artist, 200), why: str(p.why, 400),
     tags: [], source: p.source, feedback: p.feedback === 'liked' ? 'liked' : '',
