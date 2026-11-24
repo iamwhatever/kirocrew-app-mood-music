@@ -1,0 +1,72 @@
+{
+  "app_commit": "01fe0eaf347966608a065f3ce9657c64301f2c0a",
+  "kirocrew_commit": "96baf703c20f6e2f4d23c20f4e379e1ab23f3a86",
+  "produced_by": "capture harness on this repo's PR branch: the real ui/src page with a fake host SDK and fake data, not capture/capture.py",
+  "live": false,
+  "data_notes": [
+    "All data is made up; song titles are real released works used as examples, every note/dislike/review label/person is invented.",
+    "Review URLs use the reserved .example domain; the owner-added site is music.example.com.",
+    "The browser box is a labelled placeholder: no real browser tab, page or model was used.",
+    "The player shows a made-up position (1:23 of 5:36) over a still frame.",
+    "The walkthrough only switches tabs; no agent reply was generated."
+  ],
+  "video_seconds_cut": 0,
+  "media": {
+    "hero-dark.png": {
+      "bytes": 300029,
+      "width": 1440,
+      "height": 900
+    },
+    "hero-light.png": {
+      "bytes": 379081,
+      "width": 1440,
+      "height": 900
+    },
+    "memory-light.png": {
+      "bytes": 277368,
+      "width": 1440,
+      "height": 900
+    },
+    "mood-calm-dark.png": {
+      "bytes": 299814,
+      "width": 1440,
+      "height": 900
+    },
+    "mood-happy-light.png": {
+      "bytes": 382189,
+      "width": 1440,
+      "height": 900
+    },
+    "playlists-light.png": {
+      "bytes": 311878,
+      "width": 1440,
+      "height": 900
+    },
+    "sites-light.png": {
+      "bytes": 389559,
+      "width": 1440,
+      "height": 900
+    },
+    "use-case-1-light.png": {
+      "bytes": 358464,
+      "width": 1440,
+      "height": 900
+    },
+    "use-case-2-dark.png": {
+      "bytes": 300029,
+      "width": 1440,
+      "height": 900
+    },
+    "use-case-3-light.png": {
+      "bytes": 403081,
+      "width": 1440,
+      "height": 900
+    },
+    "walkthrough.gif": {
+      "bytes": 2764533
+    },
+    "walkthrough.mp4": {
+      "bytes": 402662
+    }
+  }
+}
