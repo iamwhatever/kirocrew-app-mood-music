@@ -447,8 +447,9 @@ export default function MoodMusicPage() {
       stayOnly,
       sites: promptSites(sites),
     })
+    const queueGen = state?.queue_gen
     await ask(message, pick.artist ? `"${pick.title}" - ${pick.artist}` : `"${pick.title}"`, refill ? ids : [], {
-      pickId: pick.id, site: pick.source, refill,
+      pickId: pick.id, site: pick.source, refill, ...(typeof queueGen === 'number' ? { queueGen } : {}),
     })
   }
 
@@ -687,7 +688,12 @@ export default function MoodMusicPage() {
     try {
       const checked = await moodApi.verifyPicks(parsed.picks)
       if (checked.picks.length) {
-        await moodApi.setQueue({ source, mood_tags: parsed.moodTags, picks: checked.picks, append: true })
+        // Asked on the list of `queueGen`: once the person's newer list replaced
+        // it, the backend drops this refill instead of pushing that list out.
+        await moodApi.setQueue({
+          source, mood_tags: parsed.moodTags, picks: checked.picks, append: true,
+          ...(play.queueGen !== undefined ? { based_on: play.queueGen } : {}),
+        })
         setState(await moodApi.state())
       }
     } catch (e) {
@@ -879,7 +885,9 @@ export default function MoodMusicPage() {
     if (!browserMode || !continuous || stoppedRef.current || !id) return
     if (endedForRef.current === id) return
     // The host reports an ending once: with the buddy busy it is owed, not dropped.
-    if (pendingRef.current || busy) { setOwedEnd(id); return }
+    // So while the page checks and stores a reply's picks (`checking`): the
+    // turn is over, but the queue is still the old list until they land.
+    if (pendingRef.current || busy || checking) { setOwedEnd(id); return }
     endedForRef.current = id
     setEndedFor(id)
     // The next one not skipped after it; a song from a replaced list goes on to the new list's first.
@@ -900,11 +908,11 @@ export default function MoodMusicPage() {
   // same song is still over in the tab, it wakes the buddy then.
   const [owedEnd, setOwedEnd] = useState<string | null>(null)
   useEffect(() => {
-    if (!owedEnd || pending || busy) return
+    if (!owedEnd || pending || busy || checking) return
     setOwedEnd(null)
     if (owedEnd === browserPick && stillEnded(crewMediaRef.current)) onEndedRef.current()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [owedEnd, pending, busy])
+  }, [owedEnd, pending, busy, checking])
 
   // Readings of the tab: an ending no reading called `ended` (`endedBetween`),
   // and the person pressing play on the site itself after pausing here.

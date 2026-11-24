@@ -18,6 +18,12 @@ person's own request) is not dropped: a tracked task claims it once the slot is
 idle, for the song that ended then, so a turn that started another song meanwhile
 claims nothing.
 
+The newest list the person asked for wins (0.2.19). An ending that comes after
+the buddy answered with a new list, but before the page stored it, waits for it
+(``LIST_WAIT_S`` at most), so the song after it is the new list's first. A
+refill names the ``queue_gen`` it was asked on, and is dropped when the queue
+was replaced since.
+
 The side that woke the buddy reads its answer. Here that is a task held with the
 gateway's background work (``chat_slots.track``): once the turn ends it keeps the
 steps that worked (or forgets those that failed), records the song as playing and
@@ -200,7 +206,7 @@ def _latest_reply(rows: list[Any]) -> str:
 
 async def after_turn(
     ctx: Any, state: Any, turn: asyncio.Task[Any], song: dict[str, Any],
-    memory_ids: list[str] | None = None,
+    memory_ids: list[str] | None = None, queue_gen: int | None = None,
 ) -> None:
     """Read the buddy's answer to a wake and keep what it says, as the page's ``afterPlay`` does."""
     from .routes import _store  # noqa: PLC0415
@@ -237,9 +243,12 @@ async def after_turn(
     async with verify.http_fetch() as fetch:
         kept, _dropped = await verify.verify_picks(picks, fetch, **avoid)
     if kept:
-        await asyncio.to_thread(lambda: store.set_queue(
-            kept, source=reply_source(reply), mood_tags=parsed["mood_tags"], append=True))
-        if memory_ids:
+        # Asked on the list of *queue_gen*: a list the person asked for since wins,
+        # and this refill is dropped rather than pushed after it.
+        added = await asyncio.to_thread(lambda: store.set_queue(
+            kept, source=reply_source(reply), mood_tags=parsed["mood_tags"], append=True,
+            based_on=queue_gen))
+        if added and memory_ids:
             # The memory the refill request carried helped: keep it fresh (design §2.3).
             await asyncio.to_thread(lambda: store.mark_used(memory_ids))
 
@@ -261,9 +270,10 @@ async def on_media_ended(ctx: Any, event: Any) -> None:
     pick_id = str((snapshot.get("playback") or {}).get("pick_id") or "")
     if not pick_id:
         return
-    if await _wake(ctx, state, slots, pick_id) == "busy":
-        # A turn already out (the person's own request) goes first. The host
-        # reports an ending once, so it is claimed after that turn, not dropped.
+    if await _wake(ctx, state, slots, pick_id) in ("busy", "list"):
+        # A turn already out (the person's own request) goes first, and so does
+        # the new list it brought. The host reports an ending once, so it is
+        # claimed after them, not dropped.
         follow = asyncio.ensure_future(_wake_after_turn(ctx, state, slots, pick_id))
         track = getattr(slots, "track", None)
         if callable(track):
@@ -274,23 +284,49 @@ async def on_media_ended(ctx: Any, event: Any) -> None:
 #: shortcut: polls the slot; a host turn-ended signal for apps would replace it.
 BUSY_POLL_S = 2.0
 BUSY_WAIT_S = 30 * 60.0
+#: How long an ending waits for the page to store the new list the buddy just
+#: answered with (the page checks its links first, a few seconds). After that
+#: the page is taken to be gone, and the list stored is the one that plays on.
+LIST_WAIT_S = 60.0
 
 
 async def _wake_after_turn(ctx: Any, state: Any, slots: Any, pick_id: str) -> None:
     """Claim *pick_id*'s ending once the running turn is over (and any after it)."""
-    waited = 0.0
+    waited = listed = 0.0
     while waited < BUSY_WAIT_S:
         await asyncio.sleep(BUSY_POLL_S)
         waited += BUSY_POLL_S
-        if await _wake(ctx, state, slots, pick_id) != "busy":
+        outcome = await _wake(ctx, state, slots, pick_id, wait_for_list=listed < LIST_WAIT_S)
+        if outcome == "list":
+            listed += BUSY_POLL_S
+        elif outcome != "busy":
             return
     logger.info("mood-music: the buddy stayed busy; a song ending was not claimed")
 
 
-async def _wake(ctx: Any, state: Any, slots: Any, pick_id: str) -> str:
+async def _list_on_its_way(ctx: Any, state: Any, slots: Any, snapshot: dict[str, Any]) -> bool:
+    """Whether the buddy's newest answer is a new list the page has not stored yet.
+
+    The person's own request ends with picks and no play result; the page then
+    checks them and replaces the queue (``last_source`` becomes that reply's id).
+    Until it has, the queue is the old list, and an ending claimed now would
+    play on from it.
+    """
+    transcript = getattr(slots, "transcript", None)
+    if not callable(transcript):
+        return False
+    reply = _latest_reply(await transcript(state, buddy.BUDDY_KEY))
+    parsed = parse_reply(reply) if reply else None
+    if not parsed or parsed["play"] is not None or not parsed["picks"]:
+        return False
+    return reply_source(reply) != snapshot.get("last_source")
+
+
+async def _wake(ctx: Any, state: Any, slots: Any, pick_id: str, *, wait_for_list: bool = True) -> str:
     """Claim *pick_id*'s ending and wake the buddy for the next song.
 
-    ``busy`` when a turn is running, so nothing was claimed; ``done`` otherwise.
+    ``busy`` when a turn is running and ``list`` while the new list it brought
+    is not stored yet, so nothing was claimed; ``done`` otherwise.
     """
     from .routes import _store  # noqa: PLC0415
 
@@ -299,6 +335,10 @@ async def _wake(ctx: Any, state: Any, slots: Any, pick_id: str) -> str:
         return "done"
     if getattr(slot, "running", False):
         return "busy"
+    if wait_for_list and await _list_on_its_way(
+        ctx, state, slots, await asyncio.to_thread(_store(ctx).snapshot)
+    ):
+        return "list"
     # Read before the slot is held: the pages the owner allows now (read only).
     active = await sites.active_sites(ctx)
     reserve = getattr(slots, "reserve", None)
@@ -328,7 +368,8 @@ async def _wake(ctx: Any, state: Any, slots: Any, pick_id: str) -> str:
         return "done"
     if turn is None:
         return "done"
-    follow = asyncio.ensure_future(after_turn(ctx, state, turn, song, memory_ids))
+    follow = asyncio.ensure_future(
+        after_turn(ctx, state, turn, song, memory_ids, snapshot.get("queue_gen")))
     track = getattr(slots, "track", None)
     if callable(track):
         track(state, follow)

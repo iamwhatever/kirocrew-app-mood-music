@@ -7627,10 +7627,12 @@ function readPlay(v) {
 	const p = v;
 	if (!p || typeof p !== "object" || typeof p.pickId !== "string") return void 0;
 	if (!isPickSource(p.site)) return void 0;
+	const gen = p.queueGen;
 	return {
 		pickId: p.pickId.slice(0, 64),
 		site: p.site,
-		refill: p.refill === true
+		refill: p.refill === true,
+		...Number.isSafeInteger(gen) && gen >= 0 ? { queueGen: gen } : {}
 	};
 }
 function readHeld(v) {
@@ -8078,10 +8080,12 @@ function MoodMusicPage() {
 			stayOnly,
 			sites: promptSites(sites)
 		});
+		const queueGen = state?.queue_gen;
 		await ask(message, pick.artist ? `"${pick.title}" - ${pick.artist}` : `"${pick.title}"`, refill ? ids : [], {
 			pickId: pick.id,
 			site: pick.source,
-			refill
+			refill,
+			...typeof queueGen === "number" ? { queueGen } : {}
 		});
 	};
 	const run = useCallback(async (work) => {
@@ -8351,7 +8355,8 @@ function MoodMusicPage() {
 					source,
 					mood_tags: parsed.moodTags,
 					picks: checked.picks,
-					append: true
+					append: true,
+					...play.queueGen !== void 0 ? { based_on: play.queueGen } : {}
 				});
 				setState(await moodApi.state());
 			}
@@ -8583,7 +8588,7 @@ function MoodMusicPage() {
 		const id = browserPick;
 		if (!browserMode || !continuous || stoppedRef.current || !id) return;
 		if (endedForRef.current === id) return;
-		if (pendingRef.current || busy) {
+		if (pendingRef.current || busy || checking) {
 			setOwedEnd(id);
 			return;
 		}
@@ -8604,13 +8609,14 @@ function MoodMusicPage() {
 	onEndedRef.current = onEnded;
 	const [owedEnd, setOwedEnd] = useState(null);
 	useEffect(() => {
-		if (!owedEnd || pending || busy) return;
+		if (!owedEnd || pending || busy || checking) return;
 		setOwedEnd(null);
 		if (owedEnd === browserPick && stillEnded(crewMediaRef.current)) onEndedRef.current();
 	}, [
 		owedEnd,
 		pending,
-		busy
+		busy,
+		checking
 	]);
 	const lastMediaRef = useRef(crew.media);
 	const pausedAtRef = useRef(0);

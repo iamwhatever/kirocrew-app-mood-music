@@ -27,6 +27,7 @@ def test_an_empty_store_reads_empty(tmp_path: Path) -> None:
     assert _store(tmp_path).snapshot() == {
         "moments": [],
         "queue": [],
+        "queue_gen": 0,
         "feedback": [],
         "last_source": "",
         "memory": [],

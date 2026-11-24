@@ -309,6 +309,35 @@ def test_a_refill_adds_after_the_queue_and_keeps_it_bounded(ctx) -> None:
     assert _call(ctx, "POST", "/queue", {"source": "r3", "append": "yes", "picks": [_yt()]})[0] == 400
 
 
+def test_a_refill_asked_on_a_replaced_list_is_dropped(ctx) -> None:
+    _call(ctx, "POST", "/queue", {"source": "r1", "picks": [_yt(title="Old")]})
+    asked_on = _call(ctx, "GET", "/state")[1]["queue_gen"]
+    # The person's new list lands while the refill is out.
+    _call(ctx, "POST", "/queue", {"source": "r2", "picks": [_yt(title="New")]})
+    status, body = _call(ctx, "POST", "/queue", {
+        "source": "r3", "append": True, "based_on": asked_on, "picks": [_yt(title="Old mood")],
+    })
+    assert (status, body) == (200, {"queue": []})
+    state = _call(ctx, "GET", "/state")[1]
+    assert [p["title"] for p in state["queue"]] == ["New"] and state["last_source"] == "r2"
+    # A refill on the list in force is added as before.
+    status, body = _call(ctx, "POST", "/queue", {
+        "source": "r4", "append": True, "based_on": state["queue_gen"], "picks": [_yt(title="More")],
+    })
+    assert status == 200 and [p["title"] for p in body["queue"]] == ["More"]
+    assert [p["title"] for p in _call(ctx, "GET", "/state")[1]["queue"]] == ["New", "More"]
+
+
+@pytest.mark.parametrize("extra", [
+    {"based_on": 1},
+    {"append": True, "based_on": True},
+    {"append": True, "based_on": -1},
+    {"append": True, "based_on": "1"},
+])
+def test_based_on_must_be_a_queue_gen_with_append(ctx, extra) -> None:
+    assert _call(ctx, "POST", "/queue", {"source": "r1", "picks": [_yt()], **extra})[0] == 400
+
+
 def test_play_steps_are_kept_per_site_and_forgotten_after_a_failure(ctx) -> None:
     steps = ["click the search box", "type the song and artist", "click the first video"]
     status, body = _call(ctx, "PUT", "/play-steps/bilibili", {"steps": [f"  {s} " for s in steps]})

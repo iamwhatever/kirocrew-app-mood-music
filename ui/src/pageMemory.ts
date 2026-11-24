@@ -32,7 +32,8 @@ export interface SavedPending {
   /** The person's words were steered into this turn: its reply is read like a box message's. */
   steered?: boolean
   /** A play request to the buddy (Crew Browser): the song, its site, and whether it asked for more. */
-  play?: { pickId: string; site: PickSource; refill: boolean }
+  /** `queueGen`: the list a refill was asked on (`queue_gen`), so it is dropped once a newer list replaced it. */
+  play?: { pickId: string; site: PickSource; refill: boolean; queueGen?: number }
 }
 
 export interface PageView {
@@ -78,7 +79,11 @@ function readPlay(v: unknown): SavedPending['play'] {
   const p = v as Partial<NonNullable<SavedPending['play']>> | null
   if (!p || typeof p !== 'object' || typeof p.pickId !== 'string') return undefined
   if (!isPickSource(p.site)) return undefined
-  return { pickId: p.pickId.slice(0, 64), site: p.site, refill: p.refill === true }
+  const gen = p.queueGen
+  return {
+    pickId: p.pickId.slice(0, 64), site: p.site, refill: p.refill === true,
+    ...(Number.isSafeInteger(gen) && (gen as number) >= 0 ? { queueGen: gen } : {}),
+  }
 }
 
 function readHeld(v: unknown): QueuedPick | null {

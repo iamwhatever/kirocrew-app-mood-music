@@ -109,6 +109,9 @@ def _empty() -> dict[str, Any]:
     return {
         "moments": [],
         "queue": [],
+        # Bumped each time the queue is replaced (a new list), never by an append:
+        # a refill asked for on an older list names the one it was asked on.
+        "queue_gen": 0,
         "feedback": [],
         "last_source": "",
         "memory": [],
@@ -238,6 +241,9 @@ class MoodStore:
                 state[key] = [r for r in data[key] if isinstance(r, dict)]
         if isinstance(data.get("last_source"), str):
             state["last_source"] = data["last_source"]
+        gen = data.get("queue_gen")
+        if isinstance(gen, int) and not isinstance(gen, bool) and gen >= 0:
+            state["queue_gen"] = gen
         saved = data.get("settings") if isinstance(data.get("settings"), dict) else {}
         if saved.get("explore") in EXPLORE_LEVELS:
             state["settings"]["explore"] = saved["explore"]
@@ -705,6 +711,7 @@ class MoodStore:
         moment_id: str = "",
         mood_tags: list[str] | None = None,
         append: bool = False,
+        based_on: int | None = None,
     ) -> list[dict[str, Any]]:
         """Replace the queue with the agent's new picks, or add them at its end.
 
@@ -714,11 +721,22 @@ class MoodStore:
         refill while songs play on), the new picks go after the old ones and the
         oldest leave first once the queue is full. The return is always the new
         picks alone.
+
+        *based_on* is the ``queue_gen`` a refill was asked on. When the queue was
+        replaced since (the person asked for a new list), the refill belongs to
+        the old list: nothing is stored and the return is ``[]``, so a refill
+        never pushes the newer list out.
         """
         queue = [{**pick, "id": uuid.uuid4().hex, "feedback": ""} for pick in picks[:MAX_QUEUE]]
         with self._lock:
             state = self._read()
-            state["queue"] = [*state["queue"], *queue][-MAX_QUEUE:] if append else queue
+            if append and based_on is not None and based_on != state["queue_gen"]:
+                return []
+            if append:
+                state["queue"] = [*state["queue"], *queue][-MAX_QUEUE:]
+            else:
+                state["queue"] = queue
+                state["queue_gen"] = int(state["queue_gen"]) + 1
             state["last_source"] = source
             now = self._now()
             anchors = [{"title": p["title"], "artist": p.get("artist", ""), "at": now}
