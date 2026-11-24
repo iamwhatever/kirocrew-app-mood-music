@@ -72,10 +72,11 @@ export default function SongCard({ pick, playing, known, busy, onPlay, onLike, o
           <Play size={13} aria-hidden="true" />
           {t('card.play')}
         </Btn>
-        <Btn onClick={onLike} disabled={busy} aria-pressed={liked} aria-label={liked ? t('page.liked') : t('page.like')}>
+        {/* Like and skip work while the buddy works: they are the person's verdict, not a turn. */}
+        <Btn onClick={onLike} aria-pressed={liked} aria-label={liked ? t('page.liked') : t('page.like')}>
           <Heart size={13} aria-hidden="true" fill={liked ? 'currentColor' : 'none'} />
         </Btn>
-        <Btn onClick={onSkip} disabled={busy} aria-label={t('page.skip')}>
+        <Btn onClick={onSkip} aria-label={t('page.skip')}>
           <SkipForward size={13} aria-hidden="true" />
         </Btn>
         <Btn onClick={onKnown} disabled={busy || known} aria-pressed={known}>

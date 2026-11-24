@@ -39,6 +39,7 @@ signs in to any music site and never plays, likes or comments anything for you.
 It is a rainy evening and you miss home. You click **Missing someone**, or type it
 in your own words. A moment later a song is ready to play, with a short line on why
 it fits, and more songs wait under **Up next**. Click **Like** on the ones that land.
+**Like** and **Skip** work any time a song plays, even while the buddy is still working.
 
 You can type while the buddy is still working. Your words go into what it is doing
 right now, marked **Cut in** in the conversation, and its answer brings songs as

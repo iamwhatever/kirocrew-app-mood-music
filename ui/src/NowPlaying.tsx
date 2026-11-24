@@ -15,7 +15,7 @@ import type { QueuedPick } from './api'
 export default function NowPlaying({ pick, busy, onLike, onSkip, onMore, stage, fromOldList = false }: {
   pick: QueuedPick
   busy: boolean
-  /** Still playing from a list the buddy since replaced: it is in no queue, so it cannot be liked here. */
+  /** Still playing from a list the buddy since replaced: it is in no queue, so a like goes straight to memory. */
   fromOldList?: boolean
   onLike: () => void
   onSkip: () => void
@@ -55,13 +55,12 @@ export default function NowPlaying({ pick, busy, onLike, onSkip, onMore, stage, 
         </p>
       )}
       <div className="mt-3 flex flex-wrap gap-2">
-        {!fromOldList && (
-          <Btn onClick={onLike} disabled={busy} aria-pressed={liked} primary={liked}>
-            <Heart size={14} aria-hidden="true" fill={liked ? 'currentColor' : 'none'} />
-            {liked ? t('page.liked') : t('page.like')}
-          </Btn>
-        )}
-        <Btn onClick={onSkip} disabled={busy}>
+        {/* Like and skip work while the buddy works: the song plays, so it can be judged. */}
+        <Btn onClick={onLike} aria-pressed={liked} primary={liked}>
+          <Heart size={14} aria-hidden="true" fill={liked ? 'currentColor' : 'none'} />
+          {liked ? t('page.liked') : t('page.like')}
+        </Btn>
+        <Btn onClick={onSkip}>
           <SkipForward size={14} aria-hidden="true" />
           {t('page.skip')}
         </Btn>
