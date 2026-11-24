@@ -5968,9 +5968,8 @@ function NowPlaying({ pick, busy, onLike, onSkip, onMore, stage, fromOldList = f
 			/* @__PURE__ */ jsxs("div", {
 				className: "mt-3 flex flex-wrap gap-2",
 				children: [
-					!fromOldList && /* @__PURE__ */ jsxs(Btn, {
+					/* @__PURE__ */ jsxs(Btn, {
 						onClick: onLike,
-						disabled: busy,
 						"aria-pressed": liked,
 						primary: liked,
 						children: [/* @__PURE__ */ jsx(Heart, {
@@ -5981,7 +5980,6 @@ function NowPlaying({ pick, busy, onLike, onSkip, onMore, stage, fromOldList = f
 					}),
 					/* @__PURE__ */ jsxs(Btn, {
 						onClick: onSkip,
-						disabled: busy,
 						children: [/* @__PURE__ */ jsx(SkipForward, {
 							size: 14,
 							"aria-hidden": "true"
@@ -7245,7 +7243,6 @@ function SongCard({ pick, playing, known, busy, onPlay, onLike, onSkip, onKnown 
 					}),
 					/* @__PURE__ */ jsx(Btn, {
 						onClick: onLike,
-						disabled: busy,
 						"aria-pressed": liked,
 						"aria-label": liked ? t("page.liked") : t("page.like"),
 						children: /* @__PURE__ */ jsx(Heart, {
@@ -7256,7 +7253,6 @@ function SongCard({ pick, playing, known, busy, onPlay, onLike, onSkip, onKnown 
 					}),
 					/* @__PURE__ */ jsx(Btn, {
 						onClick: onSkip,
-						disabled: busy,
 						"aria-label": t("page.skip"),
 						children: /* @__PURE__ */ jsx(SkipForward, {
 							size: 13,
@@ -7586,7 +7582,7 @@ function readHeld(v) {
 		why: str(p.why, 400),
 		tags: [],
 		source: p.source,
-		feedback: "",
+		feedback: p.feedback === "liked" ? "liked" : "",
 		...typeof p.video_id === "string" ? { video_id: p.video_id.slice(0, 64) } : {},
 		...typeof p.url === "string" ? { url: p.url.slice(0, 500) } : {},
 		...typeof p.listen_for === "string" ? { listen_for: p.listen_for.slice(0, 300) } : {}
@@ -8326,24 +8322,51 @@ function MoodMusicPage() {
 		queueMemoryRef.current = [];
 		if (ids.length) moodApi.markUsed(ids).catch(() => void 0);
 	}, [moodApi]);
+	/**
+	* Like, unlike or skip a song. Never waits on the buddy and never marks the
+	* page busy: the song plays while the buddy works, so the person can judge it
+	* then. A skip goes on the way a click on the next song does (steered into a
+	* running turn, or a turn of its own).
+	*/
 	const giveFeedback = (pick, verdict) => {
+		const failed = (e) => setError(errMessage(e) || "unknown");
 		if (pick === heldNow) {
-			const first = queue.find((p) => p.feedback !== "skipped");
-			if (verdict === "skipped" && first) playPick(first);
+			if (verdict === "skipped") {
+				const first = queue.find((p) => p.feedback !== "skipped");
+				if (first) playPick(first);
+				return;
+			}
+			setHeld((h) => h && h.id === pick.id ? {
+				...h,
+				feedback: verdict
+			} : h);
+			const key = songKey(pick.title, pick.artist);
+			const kept = (state?.memory ?? []).find((m) => m.kind === "liked" && m.origin === "app" && songKey(m.title, m.artist) === key);
+			(verdict === "liked" ? kept ? Promise.resolve() : moodApi.addMemory({
+				kind: "liked",
+				title: pick.title,
+				artist: pick.artist,
+				origin: "app"
+			}) : kept ? moodApi.deleteMemory(kept.id) : Promise.resolve()).then(refresh).catch(failed);
 			return;
 		}
-		run(async () => {
-			const updated = await moodApi.feedback(pick.id, verdict);
+		setState((s) => s ? {
+			...s,
+			queue: s.queue.map((p) => p.id === pick.id ? {
+				...p,
+				feedback: verdict
+			} : p)
+		} : s);
+		if (verdict === "skipped" && current?.id === pick.id) {
+			const rest = queue.filter((p) => p.id !== pick.id && p.feedback !== "skipped");
+			if (rest[0]) playPick(rest[0]);
+			else setCurrentId(null);
+		}
+		moodApi.feedback(pick.id, verdict).then(() => {
 			if (verdict === "liked") markUsed();
-			setState(await moodApi.state().catch(() => state));
-			if (verdict === "skipped") {
-				const rest = queue.filter((p) => p.id !== updated.id && p.feedback !== "skipped");
-				setCurrentId(rest[0]?.id ?? null);
-				if (browserMode && rest[0]) {
-					stoppedRef.current = false;
-					await askPlay(rest[0], "start");
-				}
-			}
+		}).then(refresh).catch((e) => {
+			failed(e);
+			refresh().catch(() => void 0);
 		});
 	};
 	/** Play a saved list: it replaces the queue, and its first song plays as a queued pick does. */

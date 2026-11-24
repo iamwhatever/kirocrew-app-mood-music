@@ -127,8 +127,8 @@ describe('a new list while a song plays', () => {
     await refreshList()
     expect(within(card()).getByText('Song 1')).toBeInTheDocument()
     expect(within(card()).getByTestId('mood-now-old-list')).toHaveTextContent(t('page.from_old_list'))
-    // It is in no queue now, so it cannot be liked here.
-    expect(within(card()).queryByRole('button', { name: t('page.like') })).toBeNull()
+    // It is in no queue now, but it plays, so it can still be liked (0.2.17).
+    expect(within(card()).getByRole('button', { name: t('page.like') })).toBeInTheDocument()
     expect(screen.getAllByTestId('mood-queue-row').map(r => r.textContent)).toEqual(
       expect.arrayContaining([expect.stringContaining('Song 11')]),
     )

@@ -86,7 +86,7 @@ function readHeld(v: unknown): QueuedPick | null {
   if (p.source !== 'youtube' && p.source !== 'bilibili') return null
   return {
     id: p.id.slice(0, 64), title: str(p.title, 200), artist: str(p.artist, 200), why: str(p.why, 400),
-    tags: [], source: p.source, feedback: '',
+    tags: [], source: p.source, feedback: p.feedback === 'liked' ? 'liked' : '',
     ...(typeof p.video_id === 'string' ? { video_id: p.video_id.slice(0, 64) } : {}),
     ...(typeof p.url === 'string' ? { url: p.url.slice(0, 500) } : {}),
     ...(typeof p.listen_for === 'string' ? { listen_for: p.listen_for.slice(0, 300) } : {}),
