@@ -2,7 +2,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/media/hero-dark.png">
-  <img src="docs/media/hero-light.png" alt="The Mood Music page with the Missing someone chip picked, 苏州河 by 薛凯琪 playing in Kiro Crew's browser with Pause, progress, volume and Continuous play, and four songs under Up next">
+  <img src="docs/media/hero-light.png" alt="The Mood Music page: Listen, Moments, Memory, Playlists and Sites tabs, the buddy's record on the left, Kiro Crew's browser and a Now playing player on the right with Pause, progress, volume and Continuous play, and five songs under Up next">
 </picture>
 
 **Say how you feel, and hear songs that feel the same.**
@@ -46,7 +46,7 @@ right now, marked **Cut in** in the conversation, and its answer brings songs as
 usual. If the buddy could not take them in, the page says so and leaves your words
 in the box; nothing waits in a line to be sent later.
 
-![The Missing someone chip is picked, Holocene is playing and marked Liked, and three more songs wait under Up next](docs/media/use-case-1-light.png)
+![The Missing someone chip is picked, Holocene by Bon Iver is playing and marked Liked with its why and listen-for lines, and four more songs wait under Up next](docs/media/use-case-1-light.png)
 
 ### 2. Let the buddy play songs in Kiro Crew's browser
 
@@ -79,11 +79,11 @@ card does: it shows **Show the live page**, and one click streams the tab again.
 #39018, #39020), **App browser access** on in **Settings → Feature Previews**, and
 **view** approved on the app's page. On an older Kiro Crew the box says to update.
 
-![A song playing in Kiro Crew's browser at 1:23 of 5:36, with Pause, the progress bar, the volume and Continuous play on](docs/media/use-case-2-light.png)
+![The page on the dark theme: Kiro Crew's browser box above a Now playing player at 1:23 of 5:36, with Pause, the progress bar, the volume and Continuous play on, and the Up next list beside it](docs/media/use-case-2-dark.png)
 
 <sub>This picture and the one at the top were drawn from the page with made-up songs
-and a made-up browser tab state (playing, 1:23 of 5:36); no real browser tab or model
-was used.</sub>
+and a made-up browser-tab state (playing, 1:23 of 5:36); the browser box is a labelled
+placeholder, and no real browser tab or model was used.</sub>
 
 ### 3. Look back at your moments
 
@@ -100,15 +100,15 @@ The background colour and its slow drift follow the mood, in light and dark:
 
 ## Watch it
 
-![A recording that types a rainy evening missing home, gets songs, likes the first one, plays a bilibili pick and opens Moments](docs/media/walkthrough.gif)
+![A recording that moves across the Mood Music tabs: Listen with a song playing, then Moments, Playlists, Memory and Sites, then back to Listen](docs/media/walkthrough.gif)
 
 [Watch the walkthrough as a video (MP4)](docs/media/walkthrough.mp4).
 
 <sub>Recorded from the Mood Music page drawn with Kiro Crew's own dashboard styles on
-made-up demo data, before version 0.2.5. No AI model was connected: the DJ's reply was
-written for this demo, so a real reply will differ, and the wait for it is shortened.
-The recording still shows the old in-page player and bilibili link; since 0.2.5 songs
-play only in Kiro Crew's browser.</sub>
+made-up demo data. No AI model was connected, so no buddy reply is generated in the
+recording: it moves across the tabs to show the current layout (Listen, Moments,
+Playlists, Memory, Sites). The browser box is a labelled placeholder, and the player
+shows a made-up position over a still frame.</sub>
 
 ## Install
 
@@ -131,6 +131,38 @@ account or key is needed. Playing songs needs a Kiro Crew that lets apps name th
 browser pages their agent may open (KiroCrew#38333, newer than v0.13.0-rc.3). On an
 older Kiro Crew the page says so in the player's place and offers no play button;
 finding songs, Moments and Memory still work.
+
+### What Kiro Crew it needs
+
+The app degrades part by part on an older Kiro Crew, and says on the page which part
+is missing. Each feature below names the Kiro Crew change it needs. All of these are
+merged on kirodotdev/KiroCrew; use a Kiro Crew build that includes them (newer than
+v0.13.1).
+
+| Feature | Needs | Merged |
+|---|---|---|
+| Play songs in Kiro Crew's browser (approved sites) | [KiroCrew#38333](https://github.com/kirodotdev/KiroCrew/pull/38333) | yes |
+| The buddy's hidden chat on the page | [KiroCrew#39246](https://github.com/kirodotdev/KiroCrew/pull/39246) | yes |
+| App browser access, the `browser` grant and the live **view** | [KiroCrew#39018](https://github.com/kirodotdev/KiroCrew/pull/39018) | yes |
+| The live view keeps the picture after a turn | [KiroCrew#39943](https://github.com/kirodotdev/KiroCrew/pull/39943) | yes |
+| Continuous play with the page closed (song-end signal) | [KiroCrew#40261](https://github.com/kirodotdev/KiroCrew/pull/40261) | yes |
+| One calm consent notice on a fresh install | [KiroCrew#40252](https://github.com/kirodotdev/KiroCrew/pull/40252) | yes |
+| The view shows the page again right after playback resumes | [KiroCrew#40679](https://github.com/kirodotdev/KiroCrew/pull/40679) | yes |
+| A media ending takes its source from the right site | [KiroCrew#40726](https://github.com/kirodotdev/KiroCrew/pull/40726) | yes |
+| The owner adds, removes and turns off sites (the **Sites** tab) | [KiroCrew#40727](https://github.com/kirodotdev/KiroCrew/pull/40727) | yes |
+
+Two parts need the newest of these: the **Sites** tab needs KiroCrew#40727, and
+continuous play with the Mood Music page closed needs KiroCrew#40261. On a Kiro Crew
+without them the Sites tab says to update, and continuous play works only while the
+page is open.
+
+### Not yet shipped
+
+Browser **operation recipes** (fixed clicks Kiro Crew runs on the tab on its own,
+including skipping an ad before a song) are still in progress in
+[KiroCrew#41783](https://github.com/kirodotdev/KiroCrew/pull/41783), which is not
+merged. Mood Music does not use them yet: the buddy opens and plays each song itself,
+and there is no automatic ad-skip.
 
 ## First run
 
@@ -181,6 +213,8 @@ on this page; it is not listed in Kiro Crew's sessions.
    again**. After a run, older songs the app recorded are cleared, except the 5
    newest of each kind, pinned ones and the ones a line names; the buddy still never
    offers a cleared song as new.
+
+   ![The Memory tab: Your taste in short at the top, then your own notes, Not for you items, and lists of liked, skipped and known songs](docs/media/memory-light.png)
 8. Open **Moments** to see the moods you shared and the songs they brought.
 9. Keep songs as playlists. **Save as playlist** in the **Up next** header saves the
    queue in one press, named by the mood and the date. On the **Playlists** tab, make
@@ -191,6 +225,8 @@ on this page; it is not listed in Kiro Crew's sessions.
    more**. You can keep 50 lists of up to 200 songs each. Once the taste profile has
    folded older likes away, only the liked songs still in Memory can be picked, and
    the tab says so.
+
+   ![The Playlists tab: Save as playlist, a From songs you liked builder with mood filters, and two saved playlists each with a Play button](docs/media/playlists-light.png)
 10. Choose where the buddy may browse on the **Sites** tab. It lists every site,
    whether it is a default (from the app) or one you added, and whether it is on,
    waiting for approval, off or removed. **Add** a page address (`https://` and a
@@ -201,6 +237,8 @@ on this page; it is not listed in Kiro Crew's sessions.
    play but cannot change it. On a new site it finds the way itself; its saved steps
    for bilibili and YouTube stay. This needs a Kiro Crew with owner site edits
    (KiroCrew#40727); an older one shows **Update Kiro Crew** on the tab.
+
+   ![The Sites tab: the bilibili and YouTube default pages each marked On with Turn off and Remove, one owner-added site, and an Add a site box](docs/media/sites-light.png)
 11. The background follows the mood. A chip sets its scene at once. The buddy
    picks a new scene only when your mood clearly shifts, and the scene drifts
    toward its brighter colour as the songs move from stay to lift. To stop the
@@ -330,9 +368,11 @@ CI fails if `ui/dist/` differs from a fresh build.
 
 ### Re-capture the README media
 
-The pictures and the recording above were drawn from the page with demo data and a
-stand-in player. [`capture/`](capture/README.md) holds the template's harness for a
-real, isolated Kiro Crew gateway:
+The pictures and the recording above were drawn from the real page source with
+made-up data and a stand-in host (the browser box is a labelled placeholder and no
+model was connected); `docs/media/media.json` records the app and Kiro Crew commits.
+[`capture/`](capture/README.md) holds the template's harness for a real, isolated
+Kiro Crew gateway, the supported way to refresh the media:
 
 ```bash
 python capture/capture.py --kirocrew /path/to/KiroCrew
