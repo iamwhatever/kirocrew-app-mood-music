@@ -138,6 +138,8 @@ export interface MoodState {
   queue: QueuedPick[]
   feedback: FeedbackEntry[]
   last_source: string
+  /** Bumped each time the queue is replaced by a new list. Absent on an older backend. */
+  queue_gen?: number
   memory: MemoryItem[]
   settings: Settings
   /** Per site, the steps that last played a song in Kiro Crew's browser. Absent on an older backend. */
@@ -242,7 +244,7 @@ export function createMoodApi(api: AppApi) {
   return {
     state: () => api.get<MoodState>(`${BASE}/state`),
     addMoment: (mood: string) => api.post<Moment>(`${BASE}/moments`, { mood }),
-    setQueue: (body: { source: string; moment_id?: string; mood_tags: string[]; picks: NewPick[]; append?: boolean }) =>
+    setQueue: (body: { source: string; moment_id?: string; mood_tags: string[]; picks: NewPick[]; append?: boolean; based_on?: number }) =>
       api.post<{ queue: QueuedPick[] }>(`${BASE}/queue`, body),
     /** Look each pick up on YouTube / bilibili; only confirmed picks come back. */
     verifyPicks: (picks: NewPick[]) =>

@@ -366,6 +366,95 @@ def test_a_song_from_a_replaced_list_ends_into_the_new_lists_first_pick(ctx) -> 
     assert store(ctx).snapshot()["playback"]["pick_id"] == new[0]["id"]
 
 
+def new_list_reply() -> str:
+    """The buddy's answer to the person asking for another list: picks, no play result."""
+    data = {"mood_tags": ["爵士"], "picks": [
+        {"title": f"Song {n}", "artist": f"Artist {n}", "source": "youtube", "video_id": VID} for n in (11, 12, 13)
+    ]}
+    return "Here is jazz.\n```mood-music\n" + json.dumps(data, ensure_ascii=False) + "\n```"
+
+
+def answered_with_a_new_list(ctx: Any) -> str:
+    """The person's turn is over and its new list is in the chat, not yet in the queue."""
+    reply = new_list_reply()
+    ctx.chat_slots.slot.messages += [
+        {"role": "user", "content": "[Mood Music]\nMessage: play jazz instead"},
+        {"role": "assistant", "content": reply},
+    ]
+    return reply
+
+
+def test_an_ending_before_the_page_stores_the_new_list_plays_the_new_lists_first(ctx, monkeypatch) -> None:
+    # 0.2.18: the ending was claimed at once, Song 2 of the OLD list played, and
+    # the new list landed behind it.
+    queue(ctx)
+    reply = answered_with_a_new_list(ctx)
+    monkeypatch.setattr(playback, "BUSY_POLL_S", 0.01)
+    ctx.chat_slots.reply = played()
+    new: list[dict[str, Any]] = []
+
+    async def go() -> None:
+        await playback.on_media_ended(ctx, ended())
+        await asyncio.sleep(0.05)
+        # The page is still checking the new picks: nothing is claimed yet.
+        assert ctx.chat_slots.sent == []
+        assert store(ctx).snapshot()["playback"]["ended_for"] == ""
+        new.extend(store(ctx).set_queue([pick(11), pick(12), pick(13)], source=reply_source(reply)))
+        await asyncio.gather(*ctx.chat_slots.tracked)
+        await asyncio.gather(*ctx.chat_slots.tracked)
+
+    asyncio.run(go())
+    assert len(ctx.chat_slots.sent) == 1
+    assert 'Play in Crew Browser: "Song 11" - Artist 11' in ctx.chat_slots.sent[0]
+    assert store(ctx).snapshot()["playback"]["pick_id"] == new[0]["id"]
+
+
+def test_a_new_list_the_page_never_stores_lets_the_old_list_play_on(ctx, monkeypatch) -> None:
+    # The page closed (or dropped every pick): the stored list is the newest one.
+    queue(ctx)
+    answered_with_a_new_list(ctx)
+    monkeypatch.setattr(playback, "BUSY_POLL_S", 0.01)
+    monkeypatch.setattr(playback, "LIST_WAIT_S", 0.05)
+
+    async def go() -> None:
+        await playback.on_media_ended(ctx, ended())
+        await asyncio.gather(*ctx.chat_slots.tracked)
+        await asyncio.gather(*ctx.chat_slots.tracked)
+
+    asyncio.run(go())
+    assert len(ctx.chat_slots.sent) == 1
+    assert 'Play in Crew Browser: "Song 2" - Artist 2' in ctx.chat_slots.sent[0]
+
+
+def test_a_new_list_already_stored_does_not_hold_the_ending(ctx) -> None:
+    queue(ctx)
+    reply = answered_with_a_new_list(ctx)
+    store(ctx).set_queue([pick(11), pick(12), pick(13)], source=reply_source(reply))
+    fire(ctx, ended())
+    assert 'Play in Crew Browser: "Song 11" - Artist 11' in ctx.chat_slots.sent[0]
+
+
+def test_a_refill_asked_on_the_old_list_is_dropped_once_a_new_list_lands(ctx, monkeypatch) -> None:
+    # 0.2.18: the old list's refill was added after the new list and pushed it out.
+    queue(ctx, 2)
+    new: list[dict[str, Any]] = []
+
+    async def new_list_meanwhile(picks: list[dict[str, Any]], fetch: Any, **avoid: Any) -> tuple[list[dict[str, Any]], dict[str, int]]:
+        # The person's new list is stored while the refill's picks are checked.
+        new.extend(store(ctx).set_queue([pick(11 + i) for i in range(10)], source="r-new"))
+        return picks, {}
+
+    monkeypatch.setattr(verify, "verify_picks", new_list_meanwhile)
+    ctx.chat_slots.reply = played(picks=[
+        {"title": f"Old mood {n}", "artist": "Old", "source": "youtube", "video_id": VID} for n in range(4)
+    ])
+    fire(ctx, ended())
+    assert "nearly empty" in ctx.chat_slots.sent[0]
+    snap = store(ctx).snapshot()
+    assert [p["id"] for p in snap["queue"]] == [p["id"] for p in new]
+    assert snap["last_source"] == "r-new"
+
+
 def test_a_skipped_song_that_ends_goes_on_to_the_one_after_it(ctx) -> None:
     q = queue(ctx)
     store(ctx).set_feedback(q[1]["id"], "skipped")

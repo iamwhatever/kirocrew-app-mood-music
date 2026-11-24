@@ -1,6 +1,6 @@
 {
   "name": "mood-music",
-  "version": "0.2.18",
+  "version": "0.2.19",
   "displayName": "Mood Music",
   "description": "Tell it how you feel, or name a song that moved you. A DJ agent finds songs with the same feeling and plays them on YouTube or bilibili in Kiro Crew's browser. Like or skip, and the next picks follow.",
   "author": "iamwhatever",

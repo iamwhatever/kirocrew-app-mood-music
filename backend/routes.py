@@ -305,12 +305,19 @@ async def _handle_set_queue(request: web.Request, ctx: Any) -> web.Response:
     append = body.get("append", False)
     if not isinstance(append, bool):
         return _bad_request("append must be true or false", "invalid_field_type")
+    # The list a refill was asked on (``queue_gen`` in /state); an older page sends none.
+    based_on = body.get("based_on")
+    if based_on is not None and (
+        not append or not isinstance(based_on, int) or isinstance(based_on, bool) or based_on < 0
+    ):
+        return _bad_request("based_on must be a queue_gen, with append", "invalid_field_type")
     picks, err = await _checked_picks(body)
     if err is not None:
         return err
     queue = await asyncio.to_thread(
         lambda: _store(ctx).set_queue(
-            picks, source=source, moment_id=moment_id, mood_tags=mood_tags, append=append
+            picks, source=source, moment_id=moment_id, mood_tags=mood_tags, append=append,
+            based_on=based_on,
         )
     )
     return web.json_response({"queue": queue})
