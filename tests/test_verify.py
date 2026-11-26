@@ -163,6 +163,40 @@ class TestVerifyPicks:
         recent = [verify.song_key("苏州河", "薛凯琪")]
         assert _run([_yt(tier="anchor")], fetch, recent_anchors=recent) == ([], {"recent_anchor": 1})
 
+    def test_a_song_played_or_queued_lately_never_comes_back_in_any_tier(self) -> None:
+        fetch, calls = _fetch({verify.YOUTUBE_OEMBED: OEMBED_OK})
+        # The buddy wrote the artist another way: the title alone matches a recent song.
+        recent = [verify.song_key("苏州河", "Hins")]
+        picks = [_yt(tier="anchor"), _yt(tier="explore"), _yt(title="苏州河 (Live)", tier="deep")]
+        assert _run(picks, fetch, recent=recent) == ([], {"recent": 3})
+        assert calls == []
+
+    def test_a_song_the_person_named_may_come_back(self) -> None:
+        fetch, _ = _fetch({verify.YOUTUBE_OEMBED: OEMBED_OK})
+        recent = [verify.song_key("苏州河", "薛凯琪")]
+        assert _run([_yt()], fetch, recent=recent, asked="再放一遍《苏州河》") == ([_yt()], {})
+        assert _run([_yt()], fetch, recent=recent, asked="再安静一点") == ([], {"recent": 1})
+
+
+class TestSongKey:
+    @pytest.mark.parametrize("title", [
+        "Song", "SONG", "Ｓｏｎｇ", "song!", "Song (Live)", "Song [Official MV]", "Song（现场）",
+        "Song【中字】", "Song feat. B", "Song ft. B", "Song featuring B", "  s o n g ",
+    ])
+    def test_one_song_written_many_ways_has_one_key(self, title: str) -> None:
+        assert verify.song_key(title)[0] == "song"
+
+    def test_a_featured_artist_is_not_part_of_the_artist(self) -> None:
+        assert verify.song_key("x", "A feat. B") == verify.song_key("x", "a")
+
+    def test_a_title_that_is_only_brackets_keeps_its_words(self) -> None:
+        assert verify.song_key("(Intro)")[0] == "intro"
+        assert verify.song_key("《晴天》")[0] == "晴天"
+
+    def test_words_are_not_cut_inside(self) -> None:
+        assert verify.song_key("Left Behind")[0] == "leftbehind"
+        assert verify.song_key("Aftershock")[0] == "aftershock"
+
 
 class _FakeResponse:
     def __init__(self, status: int, body: bytes) -> None:
@@ -287,3 +321,35 @@ def test_the_route_returns_the_kept_picks_and_the_drop_counts(tmp_path: Path, mo
     assert bili["unverified"] is True and bili["url"] == f"https://www.bilibili.com/video/{BV}"
     assert body["dropped"] == {"title_mismatch": 1}
     assert ctx.owner_checks == ["verify_picks"]
+
+
+def test_the_route_drops_songs_played_lately_unless_the_person_named_them(tmp_path: Path, monkeypatch) -> None:
+    """The page's path: what the page sends is checked against the store's plays and queue."""
+    from aiohttp.test_utils import TestClient, TestServer
+
+    from backend.store import MoodStore
+    from tests.harness import PREFIX, build_app, identity, make_ctx
+
+    monkeypatch.setattr(verify, "http_fetch", _fake_http_fetch)
+    ctx = make_ctx(tmp_path)
+    store = MoodStore(Path(ctx.data_dir) / "state.json")
+    queue = store.set_queue([{"title": "晴天", "artist": "周杰伦", "why": "", "tags": [], "source": "bilibili"}], source="r")
+    store.set_playback(pick_id=queue[0]["id"])
+    store.set_queue([{"title": "Other", "artist": "", "why": "", "tags": [], "source": "bilibili"}], source="r2")
+    picks = [{"title": "晴天", "artist": "Jay Chou", "source": "bilibili", "tier": "anchor"},
+             {"title": "OTHER", "artist": "", "source": "bilibili", "tier": "explore"},
+             {"title": "New", "artist": "", "source": "bilibili", "tier": "explore"}]
+
+    async def go(extra: dict[str, Any]):
+        app = build_app(ctx, middlewares=[identity("owner-1", "")], owner_id="owner-1")
+        async with TestClient(TestServer(app)) as client:
+            resp = await client.post(PREFIX + "/verify-picks", json={"picks": picks, **extra})
+            return resp.status, await resp.json()
+
+    status, body = asyncio.run(go({}))
+    assert status == 200
+    assert [p["title"] for p in body["picks"]] == ["New"] and body["dropped"] == {"recent": 2}
+    status, body = asyncio.run(go({"asked": "再放一次晴天"}))
+    assert [p["title"] for p in body["picks"]] == ["晴天", "New"] and body["dropped"] == {"recent": 1}
+    status, body = asyncio.run(go({"asked": 3}))
+    assert (status, body["code"]) == (400, "invalid_field_type")

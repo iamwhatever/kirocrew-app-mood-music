@@ -42,7 +42,15 @@ import re
 from typing import Any
 
 from . import buddy, links, playlists, sites, verify
-from .play_request import REFILL_AT, build_play_request, memory_summary, reply_source
+from .play_request import (
+    MORE_HEAD,
+    REFILL_AT,
+    REFILL_COUNT,
+    build_more_request,
+    build_play_request,
+    memory_summary,
+    reply_source,
+)
 from .store import PLAY_SITES, MemoryFull
 
 logger = logging.getLogger(__name__)
@@ -77,6 +85,23 @@ def next_pick(snapshot: dict[str, Any], pick_id: str) -> tuple[dict[str, Any] | 
     return after[0], len(after) - 1 <= REFILL_AT
 
 
+#: A refill that keeps fewer new songs than this, after its repeats were dropped,
+#: asks the buddy once for picks in their place (``MIN_NEW`` in the page).
+MIN_NEW = 2
+
+
+def _refill_of(snapshot: dict[str, Any]) -> dict[str, Any]:
+    moments = snapshot.get("moments") or []
+    return {
+        "mood_tags": (moments[0].get("tags") if moments else None) or [],
+        "queued": [
+            {"title": p.get("title", ""), "artist": p.get("artist", ""), "arc": p.get("arc", "")}
+            for p in snapshot.get("queue", [])
+        ],
+        "played": snapshot.get("played") or [],
+    }
+
+
 def play_message(
     snapshot: dict[str, Any], song: dict[str, Any], refill: bool,
     active: list[str] | None = None,
@@ -89,19 +114,12 @@ def play_message(
     its picks land, as the page marks the memory behind a queue.
     """
     settings = snapshot.get("settings") or {}
-    moments = snapshot.get("moments") or []
     memory = snapshot.get("memory") or []
     message = build_play_request(
         song=song,
         steps=((snapshot.get("play_steps") or {}).get(song.get("source")) or {}).get("steps") or [],
         why="ended",
-        refill={
-            "mood_tags": (moments[0].get("tags") if moments else None) or [],
-            "queued": [
-                {"title": p.get("title", ""), "artist": p.get("artist", ""), "arc": p.get("arc", "")}
-                for p in snapshot.get("queue", [])
-            ],
-        } if refill else None,
+        refill=_refill_of(snapshot) if refill else None,
         memory=memory,
         explore=settings.get("explore") or "balanced",
         # The page stores its "stay only" switch; off until the person sets it.
@@ -110,6 +128,30 @@ def play_message(
         sites=active,
     )
     return message, (memory_summary(memory, snapshot.get("profile"))[1] if refill else [])
+
+
+def more_message(snapshot: dict[str, Any], count: int) -> str:
+    """The request for *count* picks in place of a refill's repeats, from the stored state."""
+    settings = snapshot.get("settings") or {}
+    return build_more_request(
+        count=count,
+        refill=_refill_of(snapshot),
+        memory=snapshot.get("memory") or [],
+        explore=settings.get("explore") or "balanced",
+        stay_only=settings.get("stay_only") is True,
+        profile=snapshot.get("profile"),
+    )
+
+
+def needs_more(kept: int, dropped: dict[str, int]) -> int:
+    """How many picks to ask for in place of a refill's repeats; 0 for none.
+
+    Only when repeats were dropped and fewer than :data:`MIN_NEW` new songs are
+    left: then the buddy is asked once, rather than the queue running dry.
+    """
+    if not dropped.get("recent") or kept >= MIN_NEW:
+        return 0
+    return REFILL_COUNT - kept
 
 
 # ── the reply ──
@@ -192,6 +234,15 @@ def parse_reply(content: str) -> dict[str, Any] | None:
     return {"play": play, "mood_tags": mood_tags, "picks": picks}
 
 
+def _latest_ask(rows: list[Any]) -> str:
+    """The text of the last user row, or ``""``."""
+    for row in reversed(rows):
+        if isinstance(row, dict) and row.get("role") == "user":
+            content = row.get("content")
+            return content if isinstance(content, str) else ""
+    return ""
+
+
 def _latest_reply(rows: list[Any]) -> str:
     """The buddy's answer to the turn this module started: after the last user row."""
     users = [i for i, r in enumerate(rows) if isinstance(r, dict) and r.get("role") == "user"]
@@ -235,22 +286,78 @@ async def after_turn(
             pass
     elif result and site in PLAY_SITES:
         await asyncio.to_thread(lambda: store.forget_play_steps(site))
+    count = await _add_refill(store, parsed, reply, memory_ids, queue_gen)
+    if count:
+        await _ask_more(ctx, state, count, queue_gen)
+
+
+async def _add_refill(
+    store: Any, parsed: dict[str, Any] | None, reply: str,
+    memory_ids: list[str] | None, queue_gen: int | None,
+) -> int:
+    """Check a refill's picks and add those kept after the queue.
+
+    Returns how many picks to ask for in place of its repeats (:func:`needs_more`).
+    """
     picks = (parsed or {}).get("picks") or []
-    if not picks:
-        return
+    if not picks or parsed is None:
+        return 0
     picks = [{k: v for k, v in p.items() if k != "unverified"} for p in picks]
     avoid = await asyncio.to_thread(store.avoid_lists)
     async with verify.http_fetch() as fetch:
-        kept, _dropped = await verify.verify_picks(picks, fetch, **avoid)
+        kept, dropped = await verify.verify_picks(picks, fetch, **avoid)
     if kept:
         # Asked on the list of *queue_gen*: a list the person asked for since wins,
         # and this refill is dropped rather than pushed after it.
         added = await asyncio.to_thread(lambda: store.set_queue(
             kept, source=reply_source(reply), mood_tags=parsed["mood_tags"], append=True,
             based_on=queue_gen))
-        if added and memory_ids:
+        if not added:
+            return 0
+        if memory_ids:
             # The memory the refill request carried helped: keep it fresh (design §2.3).
             await asyncio.to_thread(lambda: store.mark_used(memory_ids))
+    return needs_more(len(kept), dropped)
+
+
+async def _ask_more(ctx: Any, state: Any, count: int, queue_gen: int | None) -> None:
+    """Ask the buddy once for *count* picks in place of repeats, and add what it finds."""
+    from .routes import _store  # noqa: PLC0415
+
+    slots = ctx.chat_slots
+    slot = slots.get(state, buddy.BUDDY_KEY)
+    if slot is None or getattr(slot, "running", False):
+        return
+    reserve = getattr(slots, "reserve", None)
+    reservation = reserve(state, slot) if callable(reserve) else None
+    if callable(reserve) and reservation is None:
+        return
+    store = _store(ctx)
+    snapshot = await asyncio.to_thread(store.snapshot)
+    if queue_gen is not None and snapshot.get("queue_gen") != queue_gen:
+        return
+    try:
+        turn = slots.send(state, slot, more_message(snapshot, count),
+                          **({"reservation": reservation} if reservation is not None else {}))
+    except (PermissionError, RuntimeError) as exc:
+        logger.warning("mood-music: the buddy could not be asked for more: %s", exc)
+        return
+    if turn is None:
+        return
+
+    async def follow() -> None:
+        try:
+            await turn
+        except BaseException:  # noqa: BLE001 - a stopped turn added nothing
+            return
+        reply = _latest_reply(await slots.transcript(state, buddy.BUDDY_KEY))
+        # Added if it fits; never asked for again, so one refill asks once.
+        await _add_refill(store, parse_reply(reply) if reply else None, reply, None, queue_gen)
+
+    task = asyncio.ensure_future(follow())
+    track = getattr(slots, "track", None)
+    if callable(track):
+        track(state, task)
 
 
 async def on_media_ended(ctx: Any, event: Any) -> None:
@@ -315,7 +422,11 @@ async def _list_on_its_way(ctx: Any, state: Any, slots: Any, snapshot: dict[str,
     transcript = getattr(slots, "transcript", None)
     if not callable(transcript):
         return False
-    reply = _latest_reply(await transcript(state, buddy.BUDDY_KEY))
+    rows = await transcript(state, buddy.BUDDY_KEY)
+    if _latest_ask(rows).startswith(f"[Mood Music]\n{MORE_HEAD}: "):
+        # Picks in place of a refill's repeats go after the queue: no new list.
+        return False
+    reply = _latest_reply(rows)
     parsed = parse_reply(reply) if reply else None
     if not parsed or parsed["play"] is not None or not parsed["picks"]:
         return False

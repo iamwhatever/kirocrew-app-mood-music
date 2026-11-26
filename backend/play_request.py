@@ -67,6 +67,9 @@ _PICK_LINES = [
 ]
 PLAY_REFILL_FORMAT = "\n".join(['Add to the same block "mood_tags" and "picks", each pick exactly as below:', *_PICK_LINES])
 
+#: The head of the request for picks in place of repeats (``MORE_HEAD`` in the page).
+MORE_HEAD = "More songs"
+
 
 #: At most this many sites go into a request (``MAX_PROMPT_SITES`` in the page).
 MAX_PROMPT_SITES = 40
@@ -211,6 +214,66 @@ def _song_link(song: dict[str, Any]) -> str:
     return ""
 
 
+def _song_list(songs: list[dict[str, Any]]) -> str:
+    return "; ".join(
+        f'"{clean(str(q.get("title") or ""), 80)}"'
+        + (f" - {clean(str(q.get('artist')), 60)}" if q.get("artist") else "")
+        for q in songs
+    )
+
+
+def played_line(played: list[dict[str, Any]] | None) -> list[str]:
+    """``playedLine`` in the page: the songs played lately, so none is picked again.
+
+    *played* is the snapshot's ``played``. Empty when there are none, so a
+    request without them reads as before 0.2.20.
+    """
+    return [f"Played lately, do not pick again: {_song_list(played)}"] if played else []
+
+
+def _arc_line(stay_only: bool, queued: list[dict[str, Any]]) -> str:
+    return "Arc: stay only" if stay_only else hold_line((queued or [{}])[-1].get("arc"))
+
+
+def build_more_request(
+    *,
+    count: int,
+    refill: dict[str, Any],
+    memory: list[dict[str, Any]],
+    explore: str = "balanced",
+    stay_only: bool = False,
+    profile: dict[str, Any] | None = None,
+) -> str:
+    """``buildMoreRequest`` in the page: picks in place of the repeats just dropped.
+
+    Sent once, after a refill whose picks were mostly songs played or queued
+    lately; its picks are checked again and added after the queue, never asked
+    for a second time. *refill* is as in :func:`build_play_request`.
+    """
+    anchor, exp, deep = EXPLORE_MIX.get(explore, EXPLORE_MIX["balanced"])
+    mood = "; ".join(clean(str(m), 40) for m in refill["mood_tags"])
+    return "\n".join([
+        "[Mood Music]",
+        f"{MORE_HEAD}: {count} in place of songs played lately",
+        "",
+        "Some of the picks you just gave were songs played or queued lately, so the page dropped them. "
+        "Nothing to play now: do not open the browser.",
+        f"Give {count} new picks for the same feeling instead, found with web_search and web_fetch as in How to pick.",
+        f"Mood so far: {mood or 'as in this chat'}",
+        f"Explore level: {explore} ({anchor} anchor, {exp} explore, {deep} deep)",
+        _arc_line(stay_only, refill["queued"]),
+        f"Already in the queue, do not pick again: {_song_list(refill['queued']) or 'none'}",
+        *played_line(refill.get("played")),
+        PLAYER_LINE,
+        "",
+        *memory_summary(memory, profile)[0],
+        "",
+        "Write one short sentence and end with ONE fenced block tagged mood-music holding plain JSON "
+        'with "mood_tags" and "picks", each pick exactly as below:',
+        *_PICK_LINES,
+    ])
+
+
 def build_play_request(
     *,
     song: dict[str, Any],
@@ -251,19 +314,15 @@ def build_play_request(
         lines.append(f"No saved steps for {song.get('source')} yet: find the way, and report the steps that worked.")
     if refill:
         anchor, exp, deep = EXPLORE_MIX.get(explore, EXPLORE_MIX["balanced"])
-        queued = [
-            f'"{clean(str(q.get("title") or ""), 80)}"'
-            + (f" - {clean(str(q.get('artist')), 60)}" if q.get("artist") else "")
-            for q in refill["queued"]
-        ]
         mood = "; ".join(clean(str(m), 40) for m in refill["mood_tags"])
         lines.extend([
             "",
             f"The queue is nearly empty: also add {REFILL_COUNT} new picks for the same feeling, found with web_search and web_fetch as in How to pick.",
             f"Mood so far: {mood or 'as in this chat'}",
             f"Explore level: {explore} ({anchor} anchor, {exp} explore, {deep} deep)",
-            "Arc: stay only" if stay_only else hold_line((refill["queued"] or [{}])[-1].get("arc")),
-            f"Already in the queue, do not pick again: {'; '.join(queued) or 'none'}",
+            _arc_line(stay_only, refill["queued"]),
+            f"Already in the queue, do not pick again: {_song_list(refill['queued']) or 'none'}",
+            *played_line(refill.get("played")),
             PLAYER_LINE,
             "",
             *memory_summary(memory, profile)[0],

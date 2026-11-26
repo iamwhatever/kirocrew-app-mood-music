@@ -58,7 +58,7 @@ import MoodBackdrop from './MoodBackdrop'
 import { MOOD_KEYS, moodLookFor, presetScene, type MoodKey, type MoodLook, type Scene } from './moods'
 import NowPlaying from './NowPlaying'
 import PlaylistsTab, { SaveQueueButton } from './PlaylistsTab'
-import { REFILL_AT, buildPlayRequest, buildRequest, memorySummary, type ExploreLevel } from './request.prompt'
+import { REFILL_AT, REFILL_COUNT, buildMoreRequest, buildPlayRequest, buildRequest, memorySummary, type ExploreLevel, type Refill } from './request.prompt'
 import { parseDjReply, replySource, type DjReply, type ReplyAction } from './replyParse'
 import { usePrefersReducedMotion } from './reducedMotion'
 import { CARD_STYLE } from './cardStyle'
@@ -182,6 +182,21 @@ export const SPLIT_CSS = `
 
 /** Whether the tab still has a song on (playing or paused mid-way); unknown until a reading says otherwise. */
 const songOn = (b: BrowserMedia) => (b.media ? !stillEnded(b.media) : b.error !== 'no_tab' && b.error !== 'no_media')
+
+/** A refill that keeps fewer new songs than this, after its repeats were dropped, asks once for more. */
+export const MIN_NEW = 2
+
+/** How many picks to ask for in place of a refill's repeats; 0 for none (`needs_more` in the backend). */
+export function needsMore(kept: number, dropped: Record<string, number>): number {
+  return dropped.recent && kept < MIN_NEW ? REFILL_COUNT - kept : 0
+}
+
+/** What a refill request lists: the queue (its last arc is where it holds) and the songs played lately. */
+const refillOf = (queue: QueuedPick[], state: MoodState | undefined): Refill => ({
+  moodTags: state?.moments?.[0]?.tags ?? [],
+  queued: queue.map(p => ({ title: p.title, artist: p.artist, arc: p.arc })),
+  played: state?.played ?? [],
+})
 
 const songKey = (title = '', artist = '') => `${title.trim().toLowerCase()}|${artist.trim().toLowerCase()}`
 
@@ -399,7 +414,7 @@ export default function MoodMusicPage() {
   )
 
   /** Send one turn to the buddy and start waiting for its reply. */
-  const ask = useCallback(async (message: string, shown: string, memoryIds: string[], play?: Pending['play'], say?: boolean) => {
+  const ask = useCallback(async (message: string, shown: string, memoryIds: string[], play?: Pending['play'], say?: boolean, more?: Pending['more']) => {
     const known = slotRef.current ?? (await moodApi.openSlot()).key
     // The reply already in the slot, so the poll waits for a NEW one.
     const before = await moodApi.getSlot(known).catch(() => undefined)
@@ -408,7 +423,7 @@ export default function MoodMusicPage() {
     const key = await moodApi.ask(message)
     slotRef.current = key
     setSlotKey(key)
-    setPending({ momentId: momentRef.current, baseline: replyMark(before), memoryIds, text: shown, ...(play ? { play } : {}), ...(say ? { say } : {}) })
+    setPending({ momentId: momentRef.current, baseline: replyMark(before), memoryIds, text: shown, ...(play ? { play } : {}), ...(say ? { say } : {}), ...(more ? { more } : {}) })
     // What the person just sent shows at the bottom of the record.
     stickRef.current = true
     setAtBottom(true)
@@ -435,13 +450,12 @@ export default function MoodMusicPage() {
         if (part.added) setState(await moodApi.state())
       }
     }
-    const moodTags = state?.moments?.[0]?.tags ?? []
     const { ids } = memorySummary(state?.memory ?? [])
     const message = buildPlayRequest({
       song: pick,
       steps: state?.play_steps?.[pick.source]?.steps ?? [],
       why,
-      refill: refill ? { moodTags, queued: queue.map(p => ({ title: p.title, artist: p.artist, arc: p.arc })) } : null,
+      refill: refill ? refillOf(queue, state) : null,
       state,
       explore,
       stayOnly,
@@ -598,9 +612,14 @@ export default function MoodMusicPage() {
       if (failed && !fresh) { setTurnFailed(failed); return }
       const parsed = parseDjReply(reply)
       if (turn.play) {
-        if (!turn.steered) { await afterPlay(turn.play, parsed, source); return }
+        if (!turn.steered) { await afterPlay(turn.play, parsed, source, !next); return }
         // Words steered into a play: the play's own result is kept, then the reply is read like theirs.
         if (parsed?.play) await afterPlay(turn.play, { ...parsed, picks: [] }, source)
+      }
+      if (turn.more) {
+        // Picks in place of a refill's repeats: added after the queue, and never asked for again.
+        if (parsed?.picks.length) await addRefill(parsed, source, turn.more.queueGen)
+        return
       }
       if (!parsed) { setError('unreadable'); return }
       if (parsed.scene) {
@@ -624,10 +643,16 @@ export default function MoodMusicPage() {
       }
       setChecking(true)
       try {
-        const checked = await moodApi.verifyPicks(parsed.picks)
+        // A song the person named in their own words may come back, even one played lately.
+        const checked = await moodApi.verifyPicks(parsed.picks, turn.say ? turn.text : undefined)
         const dropped = parsed.dropped + Object.values(checked.dropped).reduce((a, b) => a + b, 0)
-        if (checked.picks.length === 0) { setDroppedAll(dropped); setError('all_dropped'); return }
-        if (dropped > 0) setNotice(t('page.dropped', { count: dropped }))
+        const recent = checked.dropped.recent ?? 0
+        if (checked.picks.length === 0) { setDroppedAll(dropped); setError(recent === dropped ? 'all_recent' : 'all_dropped'); return }
+        const notes = [
+          ...(dropped > recent ? [t('page.dropped', { count: dropped - recent })] : []),
+          ...(recent ? [t('page.dropped_recent', { count: recent })] : []),
+        ]
+        if (notes.length) setNotice(notes.join(' · '))
         // A box message that brought songs was a feeling worth keeping as a moment.
         const momentId = turn.say ? (await moodApi.addMoment(turn.text)).id : turn.momentId
         // The song in the tab plays on through a new list: it stays the current
@@ -659,7 +684,7 @@ export default function MoodMusicPage() {
    * steps go, so the next play finds the way again. Picks in the same block (a
    * refill) are checked like any others and added after the queue.
    */
-  async function afterPlay(play: NonNullable<Pending['play']>, parsed: DjReply | null, source: string) {
+  async function afterPlay(play: NonNullable<Pending['play']>, parsed: DjReply | null, source: string, free = true) {
     const result = parsed?.play
     // No readable answer, but the tab now plays: the song is there all the same,
     // so the buttons reach it. Its steps are not known, so none are kept.
@@ -684,20 +709,39 @@ export default function MoodMusicPage() {
       setNotice(t('browser.not_played', { reason: result?.reason || t('browser.no_reason') }))
     }
     if (!parsed?.picks.length) return
+    const count = await addRefill(parsed, source, play.queueGen)
+    // Mostly repeats: ask once for songs in their place, unless another turn is next.
+    if (count && free && !pendingRef.current?.more) {
+      const fresh = await moodApi.state().catch(() => null)
+      if (!fresh || (play.queueGen !== undefined && fresh.queue_gen !== play.queueGen)) return
+      const message = buildMoreRequest({ count, refill: refillOf(fresh.queue, fresh), state: fresh, explore, stayOnly })
+      await ask(message, t('page.more_songs', { count }), [], undefined, false,
+        play.queueGen !== undefined ? { queueGen: play.queueGen } : {}).catch(e => setError(errMessage(e) || 'unknown'))
+    }
+  }
+
+  /**
+   * Check a refill's picks and add those kept after the queue. Returns how many
+   * picks to ask for in place of its repeats ({@link needsMore}).
+   */
+  async function addRefill(parsed: DjReply, source: string, queueGen: number | undefined): Promise<number> {
     setChecking(true)
     try {
       const checked = await moodApi.verifyPicks(parsed.picks)
       if (checked.picks.length) {
         // Asked on the list of `queueGen`: once the person's newer list replaced
         // it, the backend drops this refill instead of pushing that list out.
-        await moodApi.setQueue({
+        const { queue: added } = await moodApi.setQueue({
           source, mood_tags: parsed.moodTags, picks: checked.picks, append: true,
-          ...(play.queueGen !== undefined ? { based_on: play.queueGen } : {}),
+          ...(queueGen !== undefined ? { based_on: queueGen } : {}),
         })
         setState(await moodApi.state())
+        if (!added.length) return 0
       }
+      return needsMore(checked.picks.length, checked.dropped)
     } catch (e) {
       setError(errMessage(e) || 'unknown')
+      return 0
     } finally {
       setChecking(false)
     }
@@ -1061,6 +1105,7 @@ export default function MoodMusicPage() {
       : error === 'old_host' ? t('page.error_old_host')
       : error === 'hidden_refused' ? t('page.error_hidden_refused')
       : error === 'all_dropped' ? t('chat.all_dropped', { count: droppedAll })
+      : error === 'all_recent' ? t('chat.all_recent', { count: droppedAll })
         : t('page.error_generic', { code: error })
   const working = busy || !!pending
   // On the person's words that went into a running turn.
@@ -1398,7 +1443,7 @@ export default function MoodMusicPage() {
                     )}
                   </div>
                   <ErrorNotice message={errorText} />
-                  {(error === 'unreadable' || error === 'all_dropped') && lastAskRef.current && !working && (
+                  {(error === 'unreadable' || error === 'all_dropped' || error === 'all_recent') && lastAskRef.current && !working && (
                     <Btn type="button" onClick={retry}>{t('page.retry')}</Btn>
                   )}
                   {notice && <p role="status" className="text-xs text-[var(--muted)]" data-testid="mood-notice">{notice}</p>}

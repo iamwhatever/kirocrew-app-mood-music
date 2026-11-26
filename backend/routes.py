@@ -354,9 +354,14 @@ async def _handle_verify(request: web.Request, ctx: Any) -> web.Response:
         return err
     # Whether a pick is confirmed is this route's answer, never the caller's.
     picks = [{k: v for k, v in p.items() if k != "unverified"} for p in picks]
+    # The person's own words, when they asked for these songs: a song they named
+    # may come back even though it played lately.
+    asked, err = _text(body, "asked", _MAX_NOTE)
+    if err is not None:
+        return err
     avoid = await asyncio.to_thread(lambda: _store(ctx).avoid_lists())
     async with verify.http_fetch() as fetch:
-        kept, dropped = await verify.verify_picks(picks, fetch, **avoid)
+        kept, dropped = await verify.verify_picks(picks, fetch, asked=asked, **avoid)
     return web.json_response({"picks": kept, "dropped": dropped})
 
 
