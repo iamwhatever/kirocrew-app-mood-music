@@ -34,6 +34,8 @@ export interface SavedPending {
   /** A play request to the buddy (Crew Browser): the song, its site, and whether it asked for more. */
   /** `queueGen`: the list a refill was asked on (`queue_gen`), so it is dropped once a newer list replaced it. */
   play?: { pickId: string; site: PickSource; refill: boolean; queueGen?: number }
+  /** Picks asked for once in place of a refill's repeats: added after the list of `queueGen`, never asked for again. */
+  more?: { queueGen?: number }
 }
 
 export interface PageView {
@@ -72,6 +74,7 @@ function readPending(v: unknown): SavedPending | null {
     say: p.say === true || undefined,
     steered: p.steered === true || undefined,
     play: readPlay(p.play),
+    more: readMore(p.more),
   }
 }
 
@@ -84,6 +87,13 @@ function readPlay(v: unknown): SavedPending['play'] {
     pickId: p.pickId.slice(0, 64), site: p.site, refill: p.refill === true,
     ...(Number.isSafeInteger(gen) && (gen as number) >= 0 ? { queueGen: gen } : {}),
   }
+}
+
+function readMore(v: unknown): SavedPending['more'] {
+  const m = v as Partial<NonNullable<SavedPending['more']>> | null
+  if (!m || typeof m !== 'object') return undefined
+  const gen = m.queueGen
+  return Number.isSafeInteger(gen) && (gen as number) >= 0 ? { queueGen: gen } : {}
 }
 
 function readHeld(v: unknown): QueuedPick | null {

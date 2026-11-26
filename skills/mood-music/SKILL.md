@@ -49,6 +49,10 @@ person presses play.
   `web_fetch` this turn that praises it. No evidence: make it an `anchor` or drop it.
 - Never pick a song from the "Already known" or "Skipped" lists as `explore` or
   `deep`. The app drops it if you do.
+- Never pick a song from "Already in the queue" or "Played lately" again, in any
+  tier, and not as another version of it (live, remix, cover, "feat."). The app
+  drops it, matching on the title alone. A song the person asks for by name is
+  the one exception.
 
 ## The arc
 
@@ -198,7 +202,9 @@ usual and do not open the browser then.
 - Answer with `{"played": true, "site": "...", "steps": [...]}` (1 to 8 plain steps
   without the song name), or `{"played": false, "site": "...", "reason": "..."}`.
   When the request says the queue is nearly empty, add `mood_tags` and `picks` to the
-  same block, picked exactly as above and not repeating a queued song.
+  same block, picked exactly as above and not repeating a queued or played song.
+- A `More songs` request means the app dropped your last picks as repeats: do not
+  open the browser, give the new picks it asks for, none of them on its lists.
 
 ### The sites, their default pages and how each plays
 

@@ -67,6 +67,8 @@ var CATALOGS = {
 			"error_unreadable": "DJ-এর উত্তর পড়া যায়নি। আবার চেষ্টা করুন।",
 			"retry": "আবার জিজ্ঞেস করুন",
 			"dropped": "যে গানের লিংক বাজানো যায় না, সেগুলো বাদ: {{count}}",
+			"dropped_recent": "সম্প্রতি শোনা গান বাদ দেওয়া হলো: {{count}}টি",
+			"more_songs": "সম্প্রতি শোনা গানের বদলে আরও {{count}}টি গান",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
 			"source_spotify": "Spotify",
@@ -159,6 +161,7 @@ var CATALOGS = {
 			"offline_title": "Kiro Crew-এ পৌঁছানো যাচ্ছে না",
 			"reconnect": "আবার সংযোগ",
 			"all_dropped": "এবার পাওয়া {{count}}টি গানের কোনোটিই চলেনি। অন্য দিকে চেষ্টা করবেন?",
+			"all_recent": "এবার পাওয়া {{count}}টি গানই আপনি সম্প্রতি শুনেছেন। অন্য দিকে চেষ্টা করবেন?",
 			"follow_ups": "উত্তর দিন",
 			"remember": "মনে রাখুন: {{note}}",
 			"remembered": "মনে রাখা হলো: {{note}}",
@@ -397,6 +400,8 @@ var CATALOGS = {
 			"error_unreadable": "Die Antwort des DJs ließ sich nicht lesen. Versuch es noch einmal.",
 			"retry": "Noch einmal fragen",
 			"dropped": "Ausgelassene Songs mit nicht abspielbarem Link: {{count}}",
+			"dropped_recent": "Ausgelassen, weil du sie gerade gehört hast: {{count}}",
+			"more_songs": "{{count}} weitere Songs statt gerade gehörter",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
 			"source_spotify": "Spotify",
@@ -489,6 +494,7 @@ var CATALOGS = {
 			"offline_title": "Kiro Crew ist nicht erreichbar",
 			"reconnect": "Neu verbinden",
 			"all_dropped": "Keiner der {{count}} gefundenen Songs ließ sich abspielen. Eine andere Richtung?",
+			"all_recent": "Alle {{count}} gefundenen Songs hast du gerade gehört. Eine andere Richtung?",
 			"follow_ups": "Antworten mit",
 			"remember": "Merken: {{note}}",
 			"remembered": "Gemerkt: {{note}}",
@@ -727,6 +733,8 @@ var CATALOGS = {
 			"error_unreadable": "Couldn't read your buddy's answer. Try again.",
 			"retry": "Ask again",
 			"dropped": "Songs left out because their link cannot play: {{count}}",
+			"dropped_recent": "Songs left out because you heard them lately: {{count}}",
+			"more_songs": "{{count}} more songs, in place of ones you heard lately",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
 			"source_spotify": "Spotify",
@@ -819,6 +827,7 @@ var CATALOGS = {
 			"offline_title": "Can't reach Kiro Crew",
 			"reconnect": "Reconnect",
 			"all_dropped": "None of the {{count}} songs found this time could play. Try another direction?",
+			"all_recent": "All {{count}} songs found this time were ones you heard lately. Try another direction?",
 			"follow_ups": "Reply with",
 			"remember": "Remember: {{note}}",
 			"remembered": "Remembered: {{note}}",
@@ -1057,6 +1066,8 @@ var CATALOGS = {
 			"error_unreadable": "No se pudo leer la respuesta del DJ. Inténtalo de nuevo.",
 			"retry": "Preguntar otra vez",
 			"dropped": "Canciones omitidas por un enlace que no se puede reproducir: {{count}}",
+			"dropped_recent": "Canciones omitidas porque las escuchaste hace poco: {{count}}",
+			"more_songs": "{{count}} canciones más, en lugar de las que escuchaste hace poco",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
 			"source_spotify": "Spotify",
@@ -1149,6 +1160,7 @@ var CATALOGS = {
 			"offline_title": "No se puede conectar con Kiro Crew",
 			"reconnect": "Reconectar",
 			"all_dropped": "Ninguna de las {{count}} canciones encontradas se pudo reproducir. ¿Otra dirección?",
+			"all_recent": "Las {{count}} canciones encontradas esta vez ya las escuchaste hace poco. ¿Probamos otra dirección?",
 			"follow_ups": "Responder con",
 			"remember": "Recordar: {{note}}",
 			"remembered": "Recordado: {{note}}",
@@ -1387,6 +1399,8 @@ var CATALOGS = {
 			"error_unreadable": "Impossible de lire la réponse du DJ. Réessaie.",
 			"retry": "Redemander",
 			"dropped": "Chansons écartées car leur lien est illisible : {{count}}",
+			"dropped_recent": "Titres écartés car écoutés récemment : {{count}}",
+			"more_songs": "{{count}} titres de plus, à la place de ceux écoutés récemment",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
 			"source_spotify": "Spotify",
@@ -1479,6 +1493,7 @@ var CATALOGS = {
 			"offline_title": "Impossible de joindre Kiro Crew",
 			"reconnect": "Se reconnecter",
 			"all_dropped": "Aucune des {{count}} chansons trouvées ne se lit. Une autre direction ?",
+			"all_recent": "Les {{count}} titres trouvés cette fois ont tous été écoutés récemment. Essayer une autre direction ?",
 			"follow_ups": "Répondre par",
 			"remember": "Retenir : {{note}}",
 			"remembered": "Retenu : {{note}}",
@@ -1717,6 +1732,8 @@ var CATALOGS = {
 			"error_unreadable": "DJ का जवाब पढ़ा नहीं जा सका। फिर कोशिश करें।",
 			"retry": "फिर से पूछें",
 			"dropped": "जिन गानों का लिंक नहीं चल सकता, वे छोड़े गए: {{count}}",
+			"dropped_recent": "हाल ही में सुने गए गाने छोड़ दिए: {{count}}",
+			"more_songs": "हाल में सुने गानों की जगह {{count}} और गाने",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
 			"source_spotify": "Spotify",
@@ -1809,6 +1826,7 @@ var CATALOGS = {
 			"offline_title": "Kiro Crew से जुड़ नहीं पा रहे",
 			"reconnect": "फिर से जोड़ें",
 			"all_dropped": "इस बार मिले {{count}} गानों में से कोई नहीं चला। कोई और दिशा?",
+			"all_recent": "इस बार मिले सभी {{count}} गाने आपने हाल ही में सुने हैं। कोई और दिशा आज़माएँ?",
 			"follow_ups": "जवाब दें",
 			"remember": "याद रखें: {{note}}",
 			"remembered": "याद रखा: {{note}}",
@@ -2047,6 +2065,8 @@ var CATALOGS = {
 			"error_unreadable": "Impossibile leggere la risposta del DJ. Riprova.",
 			"retry": "Chiedi di nuovo",
 			"dropped": "Canzoni escluse per un link non riproducibile: {{count}}",
+			"dropped_recent": "Brani esclusi perché ascoltati di recente: {{count}}",
+			"more_songs": "Altri {{count}} brani, al posto di quelli ascoltati di recente",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
 			"source_spotify": "Spotify",
@@ -2139,6 +2159,7 @@ var CATALOGS = {
 			"offline_title": "Impossibile raggiungere Kiro Crew",
 			"reconnect": "Riconnetti",
 			"all_dropped": "Nessuna delle {{count}} canzoni trovate si poteva ascoltare. Un’altra direzione?",
+			"all_recent": "Tutti i {{count}} brani trovati questa volta sono stati ascoltati di recente. Proviamo un'altra direzione?",
 			"follow_ups": "Rispondi con",
 			"remember": "Ricorda: {{note}}",
 			"remembered": "Ricordato: {{note}}",
@@ -2377,6 +2398,8 @@ var CATALOGS = {
 			"error_unreadable": "DJ の返答を読み取れませんでした。もう一度お試しください。",
 			"retry": "もう一度聞く",
 			"dropped": "再生できないリンクのため除外した曲：{{count}}",
+			"dropped_recent": "最近聴いた曲を外しました：{{count}} 曲",
+			"more_songs": "最近聴いた曲の代わりに、あと {{count}} 曲",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
 			"source_spotify": "Spotify",
@@ -2469,6 +2492,7 @@ var CATALOGS = {
 			"offline_title": "Kiro Crew に接続できません",
 			"reconnect": "再接続",
 			"all_dropped": "今回見つけた {{count}} 曲はどれも再生できませんでした。別の方向にしてみる？",
+			"all_recent": "今回見つかった {{count}} 曲はどれも最近聴いた曲でした。別の方向で試しますか？",
 			"follow_ups": "返事する",
 			"remember": "覚えておく：{{note}}",
 			"remembered": "覚えました：{{note}}",
@@ -2707,6 +2731,8 @@ var CATALOGS = {
 			"error_unreadable": "DJ의 답을 읽을 수 없습니다. 다시 시도하세요.",
 			"retry": "다시 물어보기",
 			"dropped": "재생할 수 없는 링크라 제외한 곡: {{count}}",
+			"dropped_recent": "최근에 들은 곡은 뺐어요: {{count}}곡",
+			"more_songs": "최근에 들은 곡 대신 {{count}}곡 더",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
 			"source_spotify": "Spotify",
@@ -2799,6 +2825,7 @@ var CATALOGS = {
 			"offline_title": "Kiro Crew에 연결할 수 없어요",
 			"reconnect": "다시 연결",
 			"all_dropped": "이번에 찾은 {{count}}곡 모두 재생할 수 없었어요. 다른 방향으로 가 볼까요?",
+			"all_recent": "이번에 찾은 {{count}}곡은 모두 최근에 들은 곡이에요. 다른 방향으로 해볼까요?",
 			"follow_ups": "이어서 말하기",
 			"remember": "기억하기: {{note}}",
 			"remembered": "기억했어요: {{note}}",
@@ -3037,6 +3064,8 @@ var CATALOGS = {
 			"error_unreadable": "Não foi possível ler a resposta do DJ. Tente de novo.",
 			"retry": "Perguntar de novo",
 			"dropped": "Músicas deixadas de fora por link que não toca: {{count}}",
+			"dropped_recent": "Músicas deixadas de fora porque você as ouviu há pouco: {{count}}",
+			"more_songs": "Mais {{count}} músicas, no lugar das que você ouviu há pouco",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
 			"source_spotify": "Spotify",
@@ -3129,6 +3158,7 @@ var CATALOGS = {
 			"offline_title": "Não foi possível conectar ao Kiro Crew",
 			"reconnect": "Reconectar",
 			"all_dropped": "Nenhuma das {{count}} músicas encontradas pôde tocar. Outra direção?",
+			"all_recent": "Todas as {{count}} músicas encontradas desta vez você ouviu há pouco. Tentar outra direção?",
 			"follow_ups": "Responder com",
 			"remember": "Lembrar: {{note}}",
 			"remembered": "Lembrado: {{note}}",
@@ -3367,6 +3397,8 @@ var CATALOGS = {
 			"error_unreadable": "Не удалось прочитать ответ DJ. Попробуйте ещё раз.",
 			"retry": "Спросить ещё раз",
 			"dropped": "Пропущено песен со ссылкой, которую нельзя воспроизвести: {{count}}",
+			"dropped_recent": "Пропущены песни, которые вы недавно слушали: {{count}}",
+			"more_songs": "Ещё {{count}} песен вместо недавно прослушанных",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
 			"source_spotify": "Spotify",
@@ -3459,6 +3491,7 @@ var CATALOGS = {
 			"offline_title": "Нет связи с Kiro Crew",
 			"reconnect": "Переподключиться",
 			"all_dropped": "Ни одна из {{count}} найденных песен не играет. Попробовать другое направление?",
+			"all_recent": "Все {{count}} найденные песни вы недавно слушали. Попробовать другое направление?",
 			"follow_ups": "Ответить",
 			"remember": "Запомнить: {{note}}",
 			"remembered": "Запомнено: {{note}}",
@@ -3697,6 +3730,8 @@ var CATALOGS = {
 			"error_unreadable": "读不懂搭子的回答，请再试一次。",
 			"retry": "再问一次",
 			"dropped": "有 {{count}} 首歌的链接无法播放，已略过。",
+			"dropped_recent": "刚听过的歌已略过：{{count}} 首",
+			"more_songs": "再找 {{count}} 首，换掉刚听过的",
 			"source_youtube": "YouTube",
 			"source_bilibili": "bilibili",
 			"source_spotify": "Spotify",
@@ -3789,6 +3824,7 @@ var CATALOGS = {
 			"offline_title": "连不上 Crew",
 			"reconnect": "重新连接",
 			"all_dropped": "这次找到的 {{count}} 首都放不了，换个方向？",
+			"all_recent": "这次找到的 {{count}} 首都是刚听过的。换个方向试试？",
 			"follow_ups": "接着说",
 			"remember": "记住：{{note}}",
 			"remembered": "记下了：{{note}}",
@@ -4529,8 +4565,15 @@ function createMoodApi(api) {
 		state: () => api.get(`${BASE}/state`),
 		addMoment: (mood) => api.post(`${BASE}/moments`, { mood }),
 		setQueue: (body) => api.post(`${BASE}/queue`, body),
-		/** Look each pick up on YouTube / bilibili; only confirmed picks come back. */
-		verifyPicks: (picks) => api.post(`${BASE}/verify-picks`, { picks }),
+		/**
+		* Look each pick up on YouTube / bilibili; only confirmed picks come back.
+		* A song played or queued lately is dropped (`dropped.recent`), unless
+		* *asked*, the person's own words, names it.
+		*/
+		verifyPicks: (picks, asked) => api.post(`${BASE}/verify-picks`, {
+			picks,
+			...asked ? { asked: asked.slice(0, 1e3) } : {}
+		}),
 		feedback: (pickId, verdict) => api.put(`${BASE}/queue/${encodeURIComponent(pickId)}/feedback`, { verdict }),
 		setSettings: (patch) => api.put(`${BASE}/settings`, patch),
 		/** Keep the steps that just played a song on *site*. */
@@ -6814,6 +6857,41 @@ function memorySummary(memory, profile) {
 }
 /** The head of a play request; `turnState.ts` shows the song after it. */
 var PLAY_HEAD = "Play in Crew Browser";
+/** The head of the request for picks in place of a refill's repeats. */
+var MORE_HEAD = "More songs";
+var songList = (songs) => songs.map((q) => `"${clean(q.title, 80)}"${q.artist ? ` - ${clean(q.artist, 60)}` : ""}`).join("; ");
+/** The songs played lately, so none is picked again; nothing when there are none. */
+function playedLine(played) {
+	return played?.length ? [`Played lately, do not pick again: ${songList(played)}`] : [];
+}
+var arcLine = (stayOnly, refill) => stayOnly ? "Arc: stay only" : holdLine(refill.queued.at(-1)?.arc);
+/**
+* Sent once after a refill whose picks were mostly songs played or queued
+* lately (the check dropped them): *count* picks in their place. Its picks are
+* checked again and added after the queue, never asked for a second time.
+*/
+function buildMoreRequest(opts) {
+	const { count, refill, state, explore = "balanced", stayOnly = false } = opts;
+	const [anchor, exp, deep] = EXPLORE_MIX[explore];
+	return [
+		"[Mood Music]",
+		`${MORE_HEAD}: ${count} in place of songs played lately`,
+		"",
+		"Some of the picks you just gave were songs played or queued lately, so the page dropped them. Nothing to play now: do not open the browser.",
+		`Give ${count} new picks for the same feeling instead, found with web_search and web_fetch as in How to pick.`,
+		`Mood so far: ${refill.moodTags.map((m) => clean(m, 40)).join("; ") || "as in this chat"}`,
+		`Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`,
+		arcLine(stayOnly, refill),
+		`Already in the queue, do not pick again: ${songList(refill.queued) || "none"}`,
+		...playedLine(refill.played),
+		PLAYER_LINE,
+		"",
+		...memorySummary(state?.memory ?? [], state?.profile).lines,
+		"",
+		"Write one short sentence and end with ONE fenced block tagged mood-music holding plain JSON with \"mood_tags\" and \"picks\", each pick exactly as below:",
+		...REPLY_LINES.slice(1, 7)
+	].join("\n");
+}
 /** The checked link of *song* on its own site, for the buddy to fall back on. */
 function songLink(song) {
 	if (song.source === "youtube" && song.video_id) return `https://www.youtube.com/watch?v=${song.video_id}`;
@@ -6848,8 +6926,7 @@ function buildPlayRequest(opts) {
 	} else lines.push(`No saved steps for ${song.source} yet: find the way, and report the steps that worked.`);
 	if (refill) {
 		const [anchor, exp, deep] = EXPLORE_MIX[explore];
-		const queued = refill.queued.map((q) => `"${clean(q.title, 80)}"${q.artist ? ` - ${clean(q.artist, 60)}` : ""}`);
-		lines.push("", `The queue is nearly empty: also add 4 new picks for the same feeling, found with web_search and web_fetch as in How to pick.`, `Mood so far: ${refill.moodTags.map((m) => clean(m, 40)).join("; ") || "as in this chat"}`, `Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`, stayOnly ? "Arc: stay only" : holdLine(refill.queued.at(-1)?.arc), `Already in the queue, do not pick again: ${queued.join("; ") || "none"}`, PLAYER_LINE, "", ...memorySummary(state?.memory ?? [], state?.profile).lines);
+		lines.push("", `The queue is nearly empty: also add 4 new picks for the same feeling, found with web_search and web_fetch as in How to pick.`, `Mood so far: ${refill.moodTags.map((m) => clean(m, 40)).join("; ") || "as in this chat"}`, `Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`, arcLine(stayOnly, refill), `Already in the queue, do not pick again: ${songList(refill.queued) || "none"}`, ...playedLine(refill.played), PLAYER_LINE, "", ...memorySummary(state?.memory ?? [], state?.profile).lines);
 	}
 	lines.push("", refill ? `${PLAY_FORMAT}\n${playRefillFormat()}` : PLAY_FORMAT);
 	return lines.join("\n");
@@ -7343,7 +7420,8 @@ var HEADS = [
 	"Answer to your question",
 	"More like this song",
 	"Follow-up",
-	"Play in Crew Browser"
+	"Play in Crew Browser",
+	"More songs"
 ];
 var msgs = (slot) => slot?.messages ?? [];
 /** A person's row the gateway put into a running turn: it starts no turn of its own. */
@@ -7620,7 +7698,8 @@ function readPending(v) {
 		stopped: p.stopped === true || void 0,
 		say: p.say === true || void 0,
 		steered: p.steered === true || void 0,
-		play: readPlay(p.play)
+		play: readPlay(p.play),
+		more: readMore(p.more)
 	};
 }
 function readPlay(v) {
@@ -7634,6 +7713,12 @@ function readPlay(v) {
 		refill: p.refill === true,
 		...Number.isSafeInteger(gen) && gen >= 0 ? { queueGen: gen } : {}
 	};
+}
+function readMore(v) {
+	const m = v;
+	if (!m || typeof m !== "object") return void 0;
+	const gen = m.queueGen;
+	return Number.isSafeInteger(gen) && gen >= 0 ? { queueGen: gen } : {};
 }
 function readHeld(v) {
 	const p = v;
@@ -7823,6 +7908,20 @@ var SPLIT_CSS = `
 `;
 /** Whether the tab still has a song on (playing or paused mid-way); unknown until a reading says otherwise. */
 var songOn = (b) => b.media ? !stillEnded(b.media) : b.error !== "no_tab" && b.error !== "no_media";
+/** How many picks to ask for in place of a refill's repeats; 0 for none (`needs_more` in the backend). */
+function needsMore(kept, dropped) {
+	return dropped.recent && kept < 2 ? 4 - kept : 0;
+}
+/** What a refill request lists: the queue (its last arc is where it holds) and the songs played lately. */
+var refillOf = (queue, state) => ({
+	moodTags: state?.moments?.[0]?.tags ?? [],
+	queued: queue.map((p) => ({
+		title: p.title,
+		artist: p.artist,
+		arc: p.arc
+	})),
+	played: state?.played ?? []
+});
 var songKey = (title = "", artist = "") => `${title.trim().toLowerCase()}|${artist.trim().toLowerCase()}`;
 function statusText(s) {
 	switch (s.phase) {
@@ -8024,7 +8123,7 @@ function MoodMusicPage() {
 	const current = queue.find((p) => p.id === currentId) ?? heldNow ?? (playingOld ? null : queue.find((p) => p.feedback !== "skipped") ?? null);
 	const knownSongs = useMemo(() => new Set((state?.memory ?? []).filter((m) => m.kind === "known").map((m) => songKey(m.title, m.artist))), [state?.memory]);
 	/** Send one turn to the buddy and start waiting for its reply. */
-	const ask = useCallback(async (message, shown, memoryIds, play, say) => {
+	const ask = useCallback(async (message, shown, memoryIds, play, say, more) => {
 		const known = slotRef.current ?? (await moodApi.openSlot()).key;
 		const before = await moodApi.getSlot(known).catch(() => void 0);
 		lastAskRef.current = message;
@@ -8038,7 +8137,8 @@ function MoodMusicPage() {
 			memoryIds,
 			text: shown,
 			...play ? { play } : {},
-			...say ? { say } : {}
+			...say ? { say } : {},
+			...more ? { more } : {}
 		});
 		stickRef.current = true;
 		setAtBottom(true);
@@ -8061,20 +8161,12 @@ function MoodMusicPage() {
 				if (part.added) setState(await moodApi.state());
 			}
 		}
-		const moodTags = state?.moments?.[0]?.tags ?? [];
 		const { ids } = memorySummary(state?.memory ?? []);
 		const message = buildPlayRequest({
 			song: pick,
 			steps: state?.play_steps?.[pick.source]?.steps ?? [],
 			why,
-			refill: refill ? {
-				moodTags,
-				queued: queue.map((p) => ({
-					title: p.title,
-					artist: p.artist,
-					arc: p.arc
-				}))
-			} : null,
+			refill: refill ? refillOf(queue, state) : null,
 			state,
 			explore,
 			stayOnly,
@@ -8250,13 +8342,17 @@ function MoodMusicPage() {
 			const parsed = parseDjReply(reply);
 			if (turn.play) {
 				if (!turn.steered) {
-					await afterPlay(turn.play, parsed, source);
+					await afterPlay(turn.play, parsed, source, !next);
 					return;
 				}
 				if (parsed?.play) await afterPlay(turn.play, {
 					...parsed,
 					picks: []
 				}, source);
+			}
+			if (turn.more) {
+				if (parsed?.picks.length) await addRefill(parsed, source, turn.more.queueGen);
+				return;
 			}
 			if (!parsed) {
 				setError("unreadable");
@@ -8282,14 +8378,16 @@ function MoodMusicPage() {
 			}
 			setChecking(true);
 			try {
-				const checked = await moodApi.verifyPicks(parsed.picks);
+				const checked = await moodApi.verifyPicks(parsed.picks, turn.say ? turn.text : void 0);
 				const dropped = parsed.dropped + Object.values(checked.dropped).reduce((a, b) => a + b, 0);
+				const recent = checked.dropped.recent ?? 0;
 				if (checked.picks.length === 0) {
 					setDroppedAll(dropped);
-					setError("all_dropped");
+					setError(recent === dropped ? "all_recent" : "all_dropped");
 					return;
 				}
-				if (dropped > 0) setNotice(t("page.dropped", { count: dropped }));
+				const notes = [...dropped > recent ? [t("page.dropped", { count: dropped - recent })] : [], ...recent ? [t("page.dropped_recent", { count: recent })] : []];
+				if (notes.length) setNotice(notes.join(" · "));
 				const momentId = turn.say ? (await moodApi.addMoment(turn.text)).id : turn.momentId;
 				const playing = browserPickRef.current;
 				const before = queueRef.current.find((p) => p.id === playing);
@@ -8325,7 +8423,7 @@ function MoodMusicPage() {
 	* steps go, so the next play finds the way again. Picks in the same block (a
 	* refill) are checked like any others and added after the queue.
 	*/
-	async function afterPlay(play, parsed, source) {
+	async function afterPlay(play, parsed, source, free = true) {
 		const result = parsed?.play;
 		const inTabNow = !result && !!crewMediaRef.current && !crewMediaRef.current.ended;
 		if (result?.played || inTabNow) {
@@ -8347,21 +8445,43 @@ function MoodMusicPage() {
 			setNotice(t("browser.not_played", { reason: result?.reason || t("browser.no_reason") }));
 		}
 		if (!parsed?.picks.length) return;
+		const count = await addRefill(parsed, source, play.queueGen);
+		if (count && free && !pendingRef.current?.more) {
+			const fresh = await moodApi.state().catch(() => null);
+			if (!fresh || play.queueGen !== void 0 && fresh.queue_gen !== play.queueGen) return;
+			const message = buildMoreRequest({
+				count,
+				refill: refillOf(fresh.queue, fresh),
+				state: fresh,
+				explore,
+				stayOnly
+			});
+			await ask(message, t("page.more_songs", { count }), [], void 0, false, play.queueGen !== void 0 ? { queueGen: play.queueGen } : {}).catch((e) => setError(errMessage(e) || "unknown"));
+		}
+	}
+	/**
+	* Check a refill's picks and add those kept after the queue. Returns how many
+	* picks to ask for in place of its repeats ({@link needsMore}).
+	*/
+	async function addRefill(parsed, source, queueGen) {
 		setChecking(true);
 		try {
 			const checked = await moodApi.verifyPicks(parsed.picks);
 			if (checked.picks.length) {
-				await moodApi.setQueue({
+				const { queue: added } = await moodApi.setQueue({
 					source,
 					mood_tags: parsed.moodTags,
 					picks: checked.picks,
 					append: true,
-					...play.queueGen !== void 0 ? { based_on: play.queueGen } : {}
+					...queueGen !== void 0 ? { based_on: queueGen } : {}
 				});
 				setState(await moodApi.state());
+				if (!added.length) return 0;
 			}
+			return needsMore(checked.picks.length, checked.dropped);
 		} catch (e) {
 			setError(errMessage(e) || "unknown");
+			return 0;
 		} finally {
 			setChecking(false);
 		}
@@ -8749,7 +8869,7 @@ function MoodMusicPage() {
 			await ask(again, lastShownRef.current, []);
 		});
 	};
-	const errorText = error === null ? null : error === "unreadable" ? t("page.error_unreadable") : error === "old_host" ? t("page.error_old_host") : error === "hidden_refused" ? t("page.error_hidden_refused") : error === "all_dropped" ? t("chat.all_dropped", { count: droppedAll }) : t("page.error_generic", { code: error });
+	const errorText = error === null ? null : error === "unreadable" ? t("page.error_unreadable") : error === "old_host" ? t("page.error_old_host") : error === "hidden_refused" ? t("page.error_hidden_refused") : error === "all_dropped" ? t("chat.all_dropped", { count: droppedAll }) : error === "all_recent" ? t("chat.all_recent", { count: droppedAll }) : t("page.error_generic", { code: error });
 	const working = busy || !!pending;
 	const steeredMark = /* @__PURE__ */ jsxs("span", {
 		className: "mr-1.5 inline-flex items-center gap-0.5 rounded-full border border-[var(--accent)] px-1.5 align-[1px] text-[10px] font-semibold leading-4 text-[var(--accent)]",
@@ -9249,7 +9369,7 @@ function MoodMusicPage() {
 												]
 											}),
 											/* @__PURE__ */ jsx(ErrorNotice, { message: errorText }),
-											(error === "unreadable" || error === "all_dropped") && lastAskRef.current && !working && /* @__PURE__ */ jsx(Btn, {
+											(error === "unreadable" || error === "all_dropped" || error === "all_recent") && lastAskRef.current && !working && /* @__PURE__ */ jsx(Btn, {
 												type: "button",
 												onClick: retry,
 												children: t("page.retry")

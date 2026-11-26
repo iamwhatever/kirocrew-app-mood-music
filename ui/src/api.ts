@@ -150,6 +150,8 @@ export interface MoodState {
   profile?: TasteProfile | null
   memory_room?: MemoryRoom
   taste_status?: TasteStatus
+  /** Songs played lately that the queue no longer lists, newest first. Absent on an older backend. */
+  played?: { title: string; artist: string }[]
 }
 
 /** Shared with the backend, so one song's end wakes the buddy once, page open or closed. */
@@ -246,9 +248,14 @@ export function createMoodApi(api: AppApi) {
     addMoment: (mood: string) => api.post<Moment>(`${BASE}/moments`, { mood }),
     setQueue: (body: { source: string; moment_id?: string; mood_tags: string[]; picks: NewPick[]; append?: boolean; based_on?: number }) =>
       api.post<{ queue: QueuedPick[] }>(`${BASE}/queue`, body),
-    /** Look each pick up on YouTube / bilibili; only confirmed picks come back. */
-    verifyPicks: (picks: NewPick[]) =>
-      api.post<{ picks: NewPick[]; dropped: Record<string, number> }>(`${BASE}/verify-picks`, { picks }),
+    /**
+     * Look each pick up on YouTube / bilibili; only confirmed picks come back.
+     * A song played or queued lately is dropped (`dropped.recent`), unless
+     * *asked*, the person's own words, names it.
+     */
+    verifyPicks: (picks: NewPick[], asked?: string) =>
+      api.post<{ picks: NewPick[]; dropped: Record<string, number> }>(
+        `${BASE}/verify-picks`, { picks, ...(asked ? { asked: asked.slice(0, 1000) } : {}) }),
     feedback: (pickId: string, verdict: Verdict) =>
       api.put<QueuedPick>(`${BASE}/queue/${encodeURIComponent(pickId)}/feedback`, { verdict }),
     setSettings: (patch: Partial<Settings>) => api.put<Settings>(`${BASE}/settings`, patch),

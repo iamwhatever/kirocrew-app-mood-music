@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 import golden from '../../tests/fixtures/play_request_golden.json'
 import type { MoodState } from '../src/api'
 import { replySource } from '../src/replyParse'
-import { buildPlayRequest, memorySummary, type ExploreLevel, type PlaySong } from '../src/request.prompt'
+import { buildMoreRequest, buildPlayRequest, memorySummary, type ExploreLevel, type PlaySong } from '../src/request.prompt'
 
 describe('play request parity with the backend', () => {
   for (const c of golden.cases) {
@@ -15,7 +15,7 @@ describe('play request parity with the backend', () => {
         song: i.song as PlaySong,
         steps: i.steps,
         why: i.why as 'start' | 'ended',
-        refill: i.refill ? { moodTags: i.refill.mood_tags, queued: i.refill.queued } : null,
+        refill: i.refill ? { moodTags: i.refill.mood_tags, queued: i.refill.queued, played: 'played' in i.refill ? (i.refill as { played: { title: string; artist: string }[] }).played : undefined } : null,
         state: { memory: i.memory, profile: i.profile } as unknown as MoodState,
         explore: i.explore as ExploreLevel,
         stayOnly: i.stay_only,
@@ -24,6 +24,20 @@ describe('play request parity with the backend', () => {
       expect(out).toBe(c.expected)
       // The memory a refill carried, which the backend marks used once its picks land.
       expect(memorySummary(i.memory as never, i.profile as never).ids).toEqual(c.summary_ids)
+    })
+  }
+
+  for (const c of golden.more) {
+    it(`more: ${c.name}`, () => {
+      const i = c.input
+      const out = buildMoreRequest({
+        count: i.count,
+        refill: { moodTags: i.refill.mood_tags, queued: i.refill.queued, played: i.refill.played },
+        state: { memory: i.memory, profile: i.profile } as unknown as MoodState,
+        explore: i.explore as ExploreLevel,
+        stayOnly: i.stay_only,
+      })
+      expect(out).toBe(c.expected)
     })
   }
 

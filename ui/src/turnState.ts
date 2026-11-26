@@ -45,7 +45,7 @@ export interface Line {
 }
 
 /** The heads `request.prompt.ts` writes on the line after `[Mood Music]`. */
-const HEADS = ['Message', 'Mood', 'Answer to your question', 'More like this song', 'Follow-up', 'Play in Crew Browser']
+const HEADS = ['Message', 'Mood', 'Answer to your question', 'More like this song', 'Follow-up', 'Play in Crew Browser', 'More songs']
 
 const msgs = (slot: SlotData | undefined): SlotMessage[] => slot?.messages ?? []
 

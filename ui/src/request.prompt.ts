@@ -187,6 +187,58 @@ export const PLAY_HEAD = 'Play in Crew Browser'
 export const REFILL_AT = 1
 /** How many new songs a refill asks for. */
 export const REFILL_COUNT = 4
+/** The head of the request for picks in place of a refill's repeats. */
+export const MORE_HEAD = 'More songs'
+
+export interface Refill {
+  moodTags: string[]
+  queued: { title: string; artist: string; arc?: string }[]
+  played?: { title: string; artist: string }[]
+}
+
+const songList = (songs: { title: string; artist: string }[]) =>
+  songs.map(q => `"${clean(q.title, 80)}"${q.artist ? ` - ${clean(q.artist, 60)}` : ''}`).join('; ')
+
+/** The songs played lately, so none is picked again; nothing when there are none. */
+export function playedLine(played: { title: string; artist: string }[] | undefined): string[] {
+  return played?.length ? [`Played lately, do not pick again: ${songList(played)}`] : []
+}
+
+const arcLine = (stayOnly: boolean, refill: Refill) => (stayOnly ? 'Arc: stay only' : holdLine(refill.queued.at(-1)?.arc))
+
+/**
+ * Sent once after a refill whose picks were mostly songs played or queued
+ * lately (the check dropped them): *count* picks in their place. Its picks are
+ * checked again and added after the queue, never asked for a second time.
+ */
+export function buildMoreRequest(opts: {
+  count: number
+  refill: Refill
+  state: MoodState | undefined
+  explore?: ExploreLevel
+  stayOnly?: boolean
+}): string {
+  const { count, refill, state, explore = 'balanced', stayOnly = false } = opts
+  const [anchor, exp, deep] = EXPLORE_MIX[explore]
+  return [
+    '[Mood Music]',
+    `${MORE_HEAD}: ${count} in place of songs played lately`,
+    '',
+    'Some of the picks you just gave were songs played or queued lately, so the page dropped them. Nothing to play now: do not open the browser.',
+    `Give ${count} new picks for the same feeling instead, found with web_search and web_fetch as in How to pick.`,
+    `Mood so far: ${refill.moodTags.map(m => clean(m, 40)).join('; ') || 'as in this chat'}`,
+    `Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`,
+    arcLine(stayOnly, refill),
+    `Already in the queue, do not pick again: ${songList(refill.queued) || 'none'}`,
+    ...playedLine(refill.played),
+    PLAYER_LINE,
+    '',
+    ...memorySummary(state?.memory ?? [], state?.profile).lines,
+    '',
+    'Write one short sentence and end with ONE fenced block tagged mood-music holding plain JSON with "mood_tags" and "picks", each pick exactly as below:',
+    ...REPLY_LINES.slice(1, 7),
+  ].join('\n')
+}
 
 export interface PlaySong {
   title: string
@@ -214,8 +266,8 @@ export function buildPlayRequest(opts: {
   steps: string[]
   /** `switch`: the person picked this song while a turn was running; it is steered into that turn. */
   why: 'start' | 'ended' | 'switch'
-  /** `queued` in queue order; the last one's `arc` is where a refill holds. */
-  refill?: { moodTags: string[]; queued: { title: string; artist: string; arc?: string }[] } | null
+  /** `queued` in queue order; the last one's `arc` is where a refill holds. `played`: the state's `played`. */
+  refill?: Refill | null
   state: MoodState | undefined
   explore?: ExploreLevel
   stayOnly?: boolean
@@ -247,14 +299,14 @@ export function buildPlayRequest(opts: {
   }
   if (refill) {
     const [anchor, exp, deep] = EXPLORE_MIX[explore]
-    const queued = refill.queued.map(q => `"${clean(q.title, 80)}"${q.artist ? ` - ${clean(q.artist, 60)}` : ''}`)
     lines.push(
       '',
       `The queue is nearly empty: also add ${REFILL_COUNT} new picks for the same feeling, found with web_search and web_fetch as in How to pick.`,
       `Mood so far: ${refill.moodTags.map(m => clean(m, 40)).join('; ') || 'as in this chat'}`,
       `Explore level: ${explore} (${anchor} anchor, ${exp} explore, ${deep} deep)`,
-      stayOnly ? 'Arc: stay only' : holdLine(refill.queued.at(-1)?.arc),
-      `Already in the queue, do not pick again: ${queued.join('; ') || 'none'}`,
+      arcLine(stayOnly, refill),
+      `Already in the queue, do not pick again: ${songList(refill.queued) || 'none'}`,
+      ...playedLine(refill.played),
       PLAYER_LINE,
       '',
       ...memorySummary(state?.memory ?? [], state?.profile).lines,

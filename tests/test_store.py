@@ -37,6 +37,7 @@ def test_an_empty_store_reads_empty(tmp_path: Path) -> None:
         "play_steps": {},
         "playback": {"pick_id": "", "ended_for": "", "paused": False},
         "profile": None,
+        "played": [],
         "memory_room": {k: {"count": 0, "cap": cap, "own": 0} for k, cap in store_mod.MEMORY_CAPS.items()},
         "taste_status": {"pending": 0, "every": store_mod.FOLD_EVERY, "running": False, "error": ""},
     }
@@ -293,6 +294,29 @@ def test_an_anchor_is_remembered_for_30_days(tmp_path: Path) -> None:
     assert s.avoid_lists()["recent_anchors"] == [("x", "a")]
     clock.t += 31 * DAY
     assert s.avoid_lists()["recent_anchors"] == []
+
+
+def test_each_start_is_a_play_and_plays_and_the_queue_are_recent(tmp_path: Path) -> None:
+    s, _ = _clocked(tmp_path)
+    q = s.set_queue([_pick("x"), _pick("y")], source="r")
+    s.set_playback(pick_id=q[0]["id"])
+    s.set_playback(pick_id=q[0]["id"])  # the page telling it twice is one start
+    s.set_playback(pick_id="f" * 32)  # not a queued song: no play to keep
+    assert [k for k in s.avoid_lists()["recent"]] == [("x", "a"), ("x", "a"), ("y", "a")]
+    # x is in the queue, so a request names it there, not as played.
+    assert s.snapshot()["played"] == []
+    # A new list: x played, so it is still recent; y left with its list.
+    s.set_queue([_pick("z")], source="r2")
+    assert s.avoid_lists()["recent"] == [("x", "a"), ("z", "a")]
+    assert s.snapshot()["played"] == [{"title": "x", "artist": "A"}]
+
+
+def test_only_the_last_plays_are_kept(tmp_path: Path) -> None:
+    s, _ = _clocked(tmp_path)
+    q = s.set_queue([_pick(f"s{i}") for i in range(2)], source="r")
+    for i in range(store_mod.MAX_PLAYS + 5):
+        s.set_playback(pick_id=q[i % 2]["id"])
+    assert len(s.avoid_lists()["recent"]) == store_mod.MAX_PLAYS + 2
 
 
 def test_a_file_from_before_memory_turns_its_likes_and_skips_into_memory(tmp_path: Path) -> None:

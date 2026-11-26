@@ -63,6 +63,12 @@ KEEP_RECENT = 5
 #: Songs pruned (or evicted) from memory, kept as title / artist so they are never
 #: picked as new again. Oldest leave first.
 MAX_HEARD = 1000
+#: The songs that started in the tab lately, newest first. With every song in the
+#: queue they are "recent" (``avoid_lists``): a pick of one of them is dropped in
+#: any tier. 50 plays is about three hours of listening.
+MAX_PLAYS = 50
+#: The most of them a refill request names (the queue is named apart).
+MAX_PLAYED_SHOWN = 20
 #: An app item unused this long is "maybe stale".
 STALE_AFTER = 90 * 86400
 #: A song that was an anchor this recently is not an anchor again.
@@ -121,6 +127,7 @@ def _empty() -> dict[str, Any]:
         "playback": dict(_NO_PLAYBACK),
         "profile": None,
         "heard": [],
+        "plays": [],
         "taste": {"pending": 0, "running_at": 0, "started_pending": 0, "error": ""},
     }
 
@@ -177,6 +184,24 @@ def _remember_heard(state: dict[str, Any], items: list[dict[str, Any]]) -> None:
     ]
     if heard:
         state["heard"] = [*heard, *state["heard"]][:MAX_HEARD]
+
+
+def _played(state: dict[str, Any]) -> list[dict[str, str]]:
+    """The songs played lately that the queue no longer lists, for a refill request.
+
+    Newest first, one per title, at most :data:`MAX_PLAYED_SHOWN`. The page and the
+    backend both read it off the snapshot, so they name the same songs.
+    """
+    from .verify import song_key
+
+    seen = {song_key(str(p.get("title") or ""))[0] for p in state["queue"]}
+    out: list[dict[str, str]] = []
+    for p in state["plays"]:
+        key = song_key(str(p.get("title") or ""))[0]
+        if key and key not in seen:
+            seen.add(key)
+            out.append({"title": str(p.get("title") or ""), "artist": str(p.get("artist") or "")})
+    return out[:MAX_PLAYED_SHOWN]
 
 
 def _read_line(raw: Any) -> dict[str, Any] | None:
@@ -236,7 +261,7 @@ class MoodStore:
             logger.warning("mood music state was unreadable; moved aside")
             return _empty()
         state = _empty()
-        for key in ("moments", "queue", "feedback", "memory", "anchors", "heard"):
+        for key in ("moments", "queue", "feedback", "memory", "anchors", "heard", "plays"):
             if isinstance(data.get(key), list):
                 state[key] = [r for r in data[key] if isinstance(r, dict)]
         if isinstance(data.get("last_source"), str):
@@ -331,7 +356,8 @@ class MoodStore:
             "running": _fold_running(taste, now),
             "error": taste["error"],
         }
-        for private in ("anchors", "continuous_choice", "heard"):
+        state["played"] = _played(state)
+        for private in ("anchors", "continuous_choice", "heard", "plays"):
             state.pop(private, None)
         return state
 
@@ -361,12 +387,19 @@ class MoodStore:
 
         A start clears the ending already handled and the pause, so this song's
         own ending wakes the buddy again, a replay of the same song included.
+        A start of a queued song is kept in ``plays`` (once per start).
         """
         with self._lock:
             state = self._read()
             playback = state["playback"]
             if pick_id is not None:
                 playback.update(pick_id=pick_id, ended_for="", paused=False)
+                song = next((p for p in state["queue"] if p.get("id") == pick_id), None)
+                plays = state["plays"]
+                if song is not None and not (plays and plays[0].get("pick_id") == pick_id):
+                    play = {"pick_id": pick_id, "title": str(song.get("title") or ""),
+                            "artist": str(song.get("artist") or ""), "at": self._now()}
+                    state["plays"] = [play, *plays][:MAX_PLAYS]
             if paused is not None:
                 playback["paused"] = paused
             self._write(state)
@@ -538,12 +571,13 @@ class MoodStore:
         Liked and known songs are ``known``; a skip a later like replaced no
         longer counts; a disliked song is ``skipped``; the "already heard" list
         (songs pruned after a fold) keeps its verdict; anchors from the last 30
-        days are ``recent_anchors``.
+        days are ``recent_anchors``; the last :data:`MAX_PLAYS` plays and every
+        song in the queue are ``recent``.
         """
         with self._lock:
             state = self._read()
         now = self._now()
-        out: dict[str, list[tuple[str, str]]] = {"known": [], "skipped": [], "recent_anchors": []}
+        out: dict[str, list[tuple[str, str]]] = {"known": [], "skipped": [], "recent_anchors": [], "recent": []}
         for m in state["memory"]:
             key = _song_key(m.get("title", ""), m.get("artist", ""))
             if m.get("kind") in ("liked", "known"):
@@ -560,6 +594,8 @@ class MoodStore:
         for a in state["anchors"]:
             if now - float(a.get("at") or 0) <= ANCHOR_WINDOW:
                 out["recent_anchors"].append(_song_key(a.get("title", ""), a.get("artist", "")))
+        for song in [*state["plays"], *state["queue"]]:
+            out["recent"].append(_song_key(str(song.get("title") or ""), str(song.get("artist") or "")))
         return out
 
     # ── the taste profile (``taste.py``) ──

@@ -27,7 +27,8 @@ kept, the body read is capped, and every lookup has a deadline.
 
 A pick whose song the person already knows or skipped is dropped too (design
 §0.6): a skipped song never comes back, and a known song is never an
-``explore`` or ``deep`` pick.
+``explore`` or ``deep`` pick. A song played or queued lately never comes back
+in any tier (0.2.20): that is the check, not only the request's words.
 """
 
 from __future__ import annotations
@@ -106,15 +107,46 @@ def title_matches(title: str, found_title: str, found_author: str = "") -> bool:
     return hits / len(want) >= MATCH_SHARE
 
 
+#: A bracketed part of a title: a version note ("(Live)", "[Official MV]", "【中字】").
+#: NFKC has already turned full-width brackets into ASCII ones.
+_BRACKET_RE = re.compile(r"\([^()]*\)|\[[^\[\]]*\]|【[^【】]*】")
+#: A featured artist and all after it: "Song feat. B", "A ft. B", "A featuring B".
+_FEAT_RE = re.compile(r"(?:^|\s)(?:feat\.?|ft\.|featuring)\s.*$")
+
+
+def _squash(text: str) -> str:
+    return "".join(re.findall(r"\w+", text))
+
+
+def _core(text: str) -> str:
+    """*text* folded, without its featured artists and bracketed notes, when anything is left."""
+    folded = _FEAT_RE.sub("", _norm(text))
+    bare = _squash(_BRACKET_RE.sub(" ", folded))
+    return bare or _squash(folded) or _squash(_norm(text))
+
+
 def song_key(title: str, artist: str = "") -> tuple[str, str]:
-    """The (title, artist) pair a song is remembered by, with spacing and punctuation gone."""
-    squash = lambda s: "".join(re.findall(r"\w+", _norm(s)))  # noqa: E731
-    return squash(title), squash(artist)
+    """The (title, artist) pair a song is remembered by.
+
+    Case, width, spacing and punctuation are gone, and so are a featured artist
+    and a bracketed note, so "Song (Live)", "SONG feat. B" and "Ｓｏｎｇ" are one song.
+    """
+    return _core(title), _core(artist)
 
 
 def same_song(a: tuple[str, str], b: tuple[str, str]) -> bool:
     """Same title, and the same artist when both name one."""
     return bool(a[0]) and a[0] == b[0] and (not a[1] or not b[1] or a[1] == b[1])
+
+
+def same_title(a: tuple[str, str], b: tuple[str, str]) -> bool:
+    """Same title, whoever sings it: a recent song is matched on its title alone.
+
+    The buddy writes one artist in more than one way ("周杰伦", "周杰倫", "Jay
+    Chou"), so for a song heard minutes ago the title is the safer match. A
+    different song with the same title is dropped too, and asked for again.
+    """
+    return bool(a[0]) and a[0] == b[0]
 
 
 # ── lookups ──
@@ -188,6 +220,8 @@ async def verify_picks(
     known: Iterable[tuple[str, str]] = (),
     skipped: Iterable[tuple[str, str]] = (),
     recent_anchors: Iterable[tuple[str, str]] = (),
+    recent: Iterable[tuple[str, str]] = (),
+    asked: str = "",
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
     """The picks kept, in order, and a count of the dropped ones by reason.
 
@@ -195,16 +229,25 @@ async def verify_picks(
 
     *known* songs may not be ``explore`` / ``deep``; *skipped* songs may not come
     back at all; *recent_anchors* were an anchor in the last 30 days and may not
-    be one again.
+    be one again. *recent* songs were played or queued lately
+    (``MoodStore.avoid_lists``) and may not come back in any tier, matched on
+    the title (:func:`same_title`). A song
+    the person named in *asked*, their own words, is let through: they asked
+    for it again.
     """
     known, skipped, recent_anchors = list(known), list(skipped), list(recent_anchors)
+    recent = list(recent)
+    wanted = _squash(_norm(asked))
     reasons: list[str] = []
     to_check: list[int] = []
     for i, pick in enumerate(picks):
         key = song_key(pick.get("title", ""), pick.get("artist", ""))
         tier = pick.get("tier")
+        named = bool(wanted) and bool(key[0]) and key[0] in wanted
         if any(same_song(key, k) for k in skipped):
             reasons.append("skipped")
+        elif not named and any(same_title(key, k) for k in recent):
+            reasons.append("recent")
         elif tier in ("explore", "deep") and any(same_song(key, k) for k in known):
             reasons.append("known")
         elif tier == "anchor" and any(same_song(key, k) for k in recent_anchors):

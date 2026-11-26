@@ -19,7 +19,7 @@ from typing import Any
 
 import pytest
 
-from backend import buddy, playback, verify
+from backend import buddy, play_request, playback, verify
 from backend.play_request import build_play_request, memory_summary, reply_source
 from backend.store import MoodStore
 from tests.harness import make_ctx
@@ -48,6 +48,8 @@ class FakeSlots:
         self.reservations: list[Any] = []
         self.tracked: list[asyncio.Task[Any]] = []
         self.reply = ""
+        #: Answers for the next turns, in order; then ``reply`` for every turn after.
+        self.replies: list[str] = []
 
     def get(self, state: Any, key: str) -> FakeSlot | None:
         return self.slot if key == buddy.BUDDY_KEY else None
@@ -64,9 +66,11 @@ class FakeSlots:
         self.sent.append(message)
         slot.messages.append({"role": "user", "content": message})
 
+        answer = self.replies.pop(0) if self.replies else self.reply
+
         async def turn() -> None:
-            if self.reply:
-                slot.messages.append({"role": "assistant", "content": self.reply})
+            if answer:
+                slot.messages.append({"role": "assistant", "content": answer})
 
         return asyncio.ensure_future(turn())
 
@@ -107,7 +111,8 @@ def fire(ctx: Any, *events: dict[str, Any]) -> None:
         for event in events:
             await playback.on_media_ended(ctx, event)
         tracked = getattr(ctx.chat_slots, "tracked", None)
-        if tracked:
+        # A tracked task may track another (a refill asking for more): wait for all.
+        while tracked and not all(t.done() for t in tracked):
             await asyncio.gather(*tracked)
 
     asyncio.run(go())
@@ -530,6 +535,8 @@ def test_the_play_request_and_reply_id_match_the_page_word_for_word() -> None:
                                  profile=i["profile"], sites=i.get("sites"))
         assert out == case["expected"], case["name"]
         assert memory_summary(i["memory"], i["profile"])[1] == case["summary_ids"], case["name"]
+    for case in golden["more"]:
+        assert play_request.build_more_request(**case["input"]) == case["expected"], case["name"]
     for source in golden["sources"]:
         assert reply_source(source["content"]) == source["expected"]
 
@@ -587,3 +594,113 @@ def test_a_sign_in_wall_on_a_music_site_forgets_only_that_sites_steps(ctx) -> No
     fire(ctx, ended())
     steps = store(ctx).snapshot()["play_steps"]
     assert "apple_music" not in steps and steps["youtube"]["steps"] == ["open the results page"]
+
+
+# ── no repeats of songs played or queued lately (0.2.20) ──
+
+
+def _song(title: str, artist: str = "", tier: str = "anchor", **over: Any) -> dict[str, Any]:
+    """A pick with no link, so the check looks nothing up."""
+    return {"title": title, "artist": artist, "source": "bilibili", "tier": tier, "arc": "stay", **over}
+
+
+def _refill_reply(*picks: dict[str, Any]) -> str:
+    return played(mood_tags=["平静"], picks=list(picks))
+
+
+def _more_reply(*picks: dict[str, Any]) -> str:
+    data = {"mood_tags": ["平静"], "picks": list(picks)}
+    return "More.\n```mood-music\n" + json.dumps(data, ensure_ascii=False) + "\n```"
+
+
+def _played_through(ctx: Any, titles: list[str]) -> list[dict[str, Any]]:
+    """A queue of *titles*, each started in the tab in turn; the last one plays now."""
+    s = store(ctx)
+    s.add_moment("calm", tags=["平静"])
+    q = s.set_queue([pick(0, title=t) for t in titles], source="r0")
+    for p in q:
+        s.set_playback(pick_id=p["id"])
+    return q
+
+
+def test_a_refill_drops_songs_played_or_queued_lately_in_any_tier(ctx) -> None:
+    """The owner's report: a refill repeated a song heard minutes ago."""
+    s = store(ctx)
+    s.add_moment("calm", tags=["平静"])
+    # 晴天 played from an earlier list, now replaced: the queue no longer lists it.
+    old = s.set_queue([pick(0, title="晴天", artist="周杰伦")], source="r-old")
+    s.set_playback(pick_id=old[0]["id"])
+    q = s.set_queue([pick(1), pick(2)], source="r0")
+    s.set_playback(pick_id=q[0]["id"])
+    ctx.chat_slots.replies = [_refill_reply(
+        # Played lately, written another way, as an anchor (known songs only block explore).
+        _song("晴天 (Live)", "Jay Chou"),
+        # Still in the queue, as an explore pick it never played as.
+        _song("SONG 2", "Artist 2", tier="explore"),
+        _song("New A"), _song("New B"),
+    )]
+    fire(ctx, ended())
+    sent = ctx.chat_slots.sent
+    assert 'Played lately, do not pick again: "晴天" - 周杰伦' in sent[0]
+    titles = [p["title"] for p in store(ctx).snapshot()["queue"]]
+    assert titles == ["Song 1", "Song 2", "New A", "New B"]
+    # Two new songs came: enough, so nobody is asked again.
+    assert len(sent) == 1
+
+
+def test_a_refill_of_mostly_repeats_asks_once_for_songs_in_their_place(ctx) -> None:
+    _played_through(ctx, ["Song A", "Song B"])
+    s = store(ctx)
+    q = s.snapshot()["queue"]
+    s.set_playback(pick_id=q[0]["id"])
+    ctx.chat_slots.replies = [
+        _refill_reply(_song("song a"), _song("Song B feat. X"), _song("Only New")),
+        _more_reply(_song("Song A"), _song("Second New"), _song("Third New")),
+    ]
+    fire(ctx, ended())
+    sent = ctx.chat_slots.sent
+    assert len(sent) == 2
+    assert sent[1].startswith("[Mood Music]\nMore songs: 3 in place of songs played lately")
+    assert "do not open the browser" in sent[1]
+    titles = [p["title"] for p in store(ctx).snapshot()["queue"]]
+    # The repeat in the second answer is dropped too, and nobody is asked a third time.
+    assert titles == ["Song A", "Song B", "Only New", "Second New", "Third New"]
+
+
+def test_a_second_answer_of_repeats_is_not_asked_for_again(ctx) -> None:
+    q = _played_through(ctx, ["Song A", "Song B"])
+    store(ctx).set_playback(pick_id=q[0]["id"])
+    ctx.chat_slots.replies = [_refill_reply(_song("Song A")), _more_reply(_song("Song B"))]
+    fire(ctx, ended())
+    assert len(ctx.chat_slots.sent) == 2
+    assert [p["title"] for p in store(ctx).snapshot()["queue"]] == ["Song A", "Song B"]
+
+
+def test_a_refill_dropped_for_another_reason_asks_nobody_again(ctx) -> None:
+    q = _played_through(ctx, ["Song A", "Song B"])
+    store(ctx).set_playback(pick_id=q[0]["id"])
+    ctx.chat_slots.replies = [_refill_reply(_song("Loud"))]
+    store(ctx).add_memory("skipped", title="Loud", artist="", origin="user")
+    fire(ctx, ended())
+    assert len(ctx.chat_slots.sent) == 1
+
+
+def test_an_ending_does_not_wait_for_a_more_songs_answer_as_a_new_list(ctx) -> None:
+    q = queue(ctx)
+    slots = ctx.chat_slots
+    slots.slot.messages.extend([
+        {"role": "user", "content": "[Mood Music]\nMore songs: 3 in place of songs played lately\n"},
+        {"role": "assistant", "content": _more_reply(_song("Not Stored"))},
+    ])
+    slots.reply = played()
+
+    async def go() -> list[str]:
+        await playback.on_media_ended(ctx, ended())
+        # Claimed at once: a list on its way would hold the ending (and send nothing yet).
+        sent_now = list(slots.sent)
+        await asyncio.gather(*slots.tracked)
+        return sent_now
+
+    sent_now = asyncio.run(go())
+    assert len(sent_now) == 1 and 'Play in Crew Browser: "Song 2"' in sent_now[0]
+    assert store(ctx).snapshot()["playback"]["pick_id"] == q[1]["id"]
