@@ -155,9 +155,14 @@ def test_the_buddy_gets_no_new_tool() -> None:
 
 
 def test_the_permissions_are_those_of_0_2_14_plus_the_music_sites() -> None:
-    """0.2.18 adds only default browserSites entries; every other permission is 0.2.14's."""
+    """0.2.18 adds only default browserSites entries, and 0.2.21 only browserRecipes
+    (held to their own checks in ``test_recipes_manifest.py``); every other
+    permission is 0.2.14's."""
     manifest = json.loads((ROOT / "app.json").read_text(encoding="utf-8"))
-    assert manifest["permissions"] == {
+    permissions = dict(manifest["permissions"])
+    recipes = [r["name"] for r in permissions.pop("browserRecipes")]
+    assert recipes == ["youtube_play", "youtube_skip_ad", "bilibili_play"]
+    assert permissions == {
         "api": ["/api/apps/mood-music", "/api/apps/mood-music/*", "/api/chat", "/api/chat/*", "/api/browser/media"],
         "sessionApproval": True,
         "hiddenSessions": True,

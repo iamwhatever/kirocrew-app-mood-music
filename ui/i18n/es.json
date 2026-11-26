@@ -195,7 +195,10 @@
     "unready_not_approved": "Primero aprueba los sitios de música para Mood Music. Se aprueban una vez, en la página de la app.",
     "unready_browse_off": "Una política de este equipo tiene apagado el navegador de Kiro Crew.",
     "find_play": "Buscar y reproducir",
-    "playback_unsaved": "No se pudo decir a Mood Music qué canción suena, así que la siguiente quizá no empiece sola. Pulsa reproducir en la siguiente."
+    "playback_unsaved": "No se pudo decir a Mood Music qué canción suena, así que la siguiente quizá no empiece sola. Pulsa reproducir en la siguiente.",
+    "recipes_preview_off": "Para que esta página pulse reproducir y «Omitir anuncio» por sí sola, activa App browser access en Kiro Crew, en Ajustes > Desarrollador > Vistas previas de funciones. Hasta entonces, tu compañero pulsa reproducir.",
+    "recipes_not_approved": "Para que esta página pulse reproducir y «Omitir anuncio» por sí sola, aprueba sus clics del navegador en la página de la app y activa allí «youtube_skip_ad runs by itself». Hasta entonces, tu compañero pulsa reproducir.",
+    "recipes_approve": "Abrir la página de la app"
   },
   "view": {
     "title": "Navegador de Kiro Crew",

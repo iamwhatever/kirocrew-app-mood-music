@@ -51,7 +51,7 @@ import BrowserControls from './BrowserControls'
 import BrowserView from './BrowserView'
 import BuddySteps from './BuddySteps'
 import { APPROVE_PATH, endedBetween, hostBrowserView, readiness, stillEnded, useCrewBrowser } from './crewBrowser'
-import type { BrowserMedia } from '@kirocrew/app-sdk'
+import type { BrowserMedia, BrowserMediaState } from '@kirocrew/app-sdk'
 import MemoryTab from './MemoryTab'
 import MomentsTab from './MomentsTab'
 import MoodBackdrop from './MoodBackdrop'
@@ -64,6 +64,8 @@ import { usePrefersReducedMotion } from './reducedMotion'
 import { CARD_STYLE } from './cardStyle'
 import SitesTab from './SitesTab'
 import { promptSites, useSites } from './sites'
+import { PLAY_RECIPE, gateOf, hintFor, hostRunRecipe, playByRecipe, probeRecipes, SETTLE_MS, type RecipeGate, type RecipeTry } from './recipes'
+import type { PickSource } from './replyParse'
 import SongCard from './SongCard'
 import { activityKey, buddyStatus, conversation, liveSteps, pendingApproval, steerRequeued, turnError, type BuddyStatus } from './turnState'
 import { loadView, saveView, type PageView, type SavedPending, type Tab } from './pageMemory'
@@ -396,6 +398,44 @@ export default function MoodMusicPage() {
   // `unknown` (no answer about this chat yet) still lets a play go out: the buddy
   // then says what went wrong, so nothing waits in silence.
   const browserMode = browserReady === 'ready' || browserReady === 'unknown'
+  // Browser recipes (level 15, `recipes.ts`): what the last answer said about them.
+  // The ref is read by a play started in the same tick as the answer.
+  const [recipeGate, setRecipeGate] = useState<RecipeGate>('unknown')
+  const recipeGateRef = useRef(recipeGate)
+  const noteRecipe = (tried: RecipeTry) => {
+    if (tried.code === 'no_recipe') return
+    const gate = gateOf(tried)
+    if (gate === 'unknown') return
+    recipeGateRef.current = gate
+    setRecipeGate(gate)
+  }
+  /** The tab's media now, read fresh (not the last poll). */
+  const readMedia = async (): Promise<BrowserMediaState | null> => {
+    const key = slotRef.current
+    if (!key) return null
+    const answer = await appApi.get<{ ok?: boolean; media?: BrowserMediaState }>(`/api/browser/media?session_key=${encodeURIComponent(key)}`)
+    return answer?.ok && answer.media ? answer.media : null
+  }
+  /**
+   * Press play on the song in the tab: the site's play recipe first, checked by a
+   * fresh read; the media route's own play when there is no recipe or it did not
+   * work (what 0.2.20 did). True when the recipe started it.
+   */
+  const playInTab = async (source: PickSource | undefined): Promise<boolean> => {
+    const media = crewRef.current
+    if (hostRunRecipe(media) && source && PLAY_RECIPE[source]) {
+      const tried = await playByRecipe(media, source, readMedia)
+      noteRecipe(tried)
+      if (tried.ok) {
+        void media.refresh()
+        return true
+      }
+    }
+    await media.play()
+    return false
+  }
+  const tabSource = (): PickSource | undefined =>
+    (queueRef.current.find(p => p.id === browserPickRef.current) ?? (held?.id === browserPickRef.current ? held : null))?.source
 
   const saveSettings = (patch: Partial<NonNullable<MoodState['settings']>>) => {
     setState(s => (s ? { ...s, settings: { ...s.settings, ...patch } } : s))
@@ -438,6 +478,17 @@ export default function MoodMusicPage() {
    */
   const askPlay = async (pick: QueuedPick, why: 'start' | 'ended') => {
     if (pendingRef.current) return
+    // Nothing in the tab yet: one cheap recipe call says whether recipes are on.
+    if (recipeGateRef.current === 'unknown' && slotRef.current && crewRef.current.error === 'no_tab' && hostRunRecipe(crewRef.current)) {
+      const gate = await probeRecipes(crewRef.current)
+      if (gate !== 'unknown') {
+        recipeGateRef.current = gate
+        setRecipeGate(gate)
+      }
+      if (pendingRef.current) return
+    }
+    // Recipes worked here: the buddy only opens the song, and the page presses play.
+    const pagePlays = recipeGateRef.current === 'ok' && !!PLAY_RECIPE[pick.source] && !!hostRunRecipe(crewRef.current)
     const playable = queue.filter(p => p.feedback !== 'skipped')
     const after = playable.slice(playable.findIndex(p => p.id === pick.id) + 1)
     let refill = after.length <= REFILL_AT
@@ -460,12 +511,16 @@ export default function MoodMusicPage() {
       explore,
       stayOnly,
       sites: promptSites(sites),
+      pagePlays,
     })
     const queueGen = state?.queue_gen
     await ask(message, pick.artist ? `"${pick.title}" - ${pick.artist}` : `"${pick.title}"`, refill ? ids : [], {
       pickId: pick.id, site: pick.source, refill, ...(typeof queueGen === 'number' ? { queueGen } : {}),
+      ...(pagePlays ? { pagePlays } : {}),
     })
   }
+  const askPlayRef = useRef(askPlay)
+  askPlayRef.current = askPlay
 
   const run = useCallback(async (work: () => Promise<void>) => {
     setBusy(true)
@@ -704,6 +759,7 @@ export default function MoodMusicPage() {
       // A fresh start of a song lets its next ending wake the buddy again.
       if (endedForRef.current === play.pickId) { endedForRef.current = null; setEndedFor(null) }
       if (result?.steps.length) void moodApi.setPlaySteps(play.site, result.steps).then(refresh).catch(() => undefined)
+      if (play.pagePlays && result?.played) void startInTab(play)
     } else {
       void moodApi.forgetPlaySteps(play.site).then(refresh).catch(() => undefined)
       setNotice(t('browser.not_played', { reason: result?.reason || t('browser.no_reason') }))
@@ -718,6 +774,29 @@ export default function MoodMusicPage() {
       await ask(message, t('page.more_songs', { count }), [], undefined, false,
         play.queueGen !== undefined ? { queueGen: play.queueGen } : {}).catch(e => setError(errMessage(e) || 'unknown'))
     }
+  }
+
+  /**
+   * The buddy opened the song and left play to the page (`pagePlays`). A song that
+   * already plays is left alone; else the site's play recipe, then the media
+   * route's play. When neither starts it, the buddy is asked again with the play
+   * request of 0.2.20, and presses play itself.
+   */
+  async function startInTab(play: NonNullable<Pending['play']>) {
+    const read = () => readMedia().catch(() => null)
+    await new Promise(resolve => setTimeout(resolve, SETTLE_MS))
+    const now = await read()
+    if (now && (!now.paused || now.ended)) return
+    if (await playInTab(play.site)) return
+    await new Promise(resolve => setTimeout(resolve, SETTLE_MS))
+    const after = await read()
+    if (after && (!after.paused || after.ended)) return
+    if (stoppedRef.current || browserPickRef.current !== play.pickId) return
+    // No recipe line in the request now, even when the answer said nothing (`browser_error`).
+    recipeGateRef.current = 'failed'
+    setRecipeGate('failed')
+    const pick = queueRef.current.find(p => p.id === play.pickId)
+    if (pick) await askPlayRef.current(pick, 'start').catch(e => setError(errMessage(e) || 'unknown'))
   }
 
   /**
@@ -1025,7 +1104,7 @@ export default function MoodMusicPage() {
   const resumeBrowser = () => {
     stoppedRef.current = false
     tellPlayback({ paused: false })
-    void crew.play()
+    void playInTab(tabSource())
   }
   const replayBrowser = () => {
     stoppedRef.current = false
@@ -1033,7 +1112,7 @@ export default function MoodMusicPage() {
     endedForRef.current = null
     setEndedFor(null)
     tellPlayback(browserPick ? { pick_id: browserPick } : { paused: false })
-    void crew.seek(0).then(() => crew.play())
+    void crew.seek(0).then(() => playInTab(tabSource()))
   }
   const setContinuous = (on: boolean) => {
     if (on) {
@@ -1474,6 +1553,8 @@ export default function MoodMusicPage() {
                           onPlay={resumeBrowser}
                           onReplay={replayBrowser}
                           onContinuous={setContinuous}
+                          recipeHint={hintFor(recipeGate)}
+                          onApproveRecipes={() => navigate(APPROVE_PATH)}
                         />
                       )}
                       busy={working}

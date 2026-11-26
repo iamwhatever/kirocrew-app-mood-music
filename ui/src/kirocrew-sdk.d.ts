@@ -84,6 +84,8 @@ declare module '@kirocrew/app-sdk' {
     seek(seconds: number): Promise<void>
     setVolume(volume: number): Promise<void>
     refresh(): Promise<void>
+    /** Level 15: run one of the app's approved `permissions.browserRecipes` on the tab. */
+    runRecipe?(name: string): Promise<{ readonly ok: boolean; readonly code?: string; readonly step?: number }>
   }
 
   /** Level 10, with `permissions.browserSites` (read through a namespace import, `crewBrowser.ts`). */

@@ -195,7 +195,10 @@
     "unready_not_approved": "先に Mood Music の音楽サイトを承認してください。アプリのページで一度だけ承認します。",
     "unready_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。",
     "find_play": "探して再生",
-    "playback_unsaved": "再生中の曲を Mood Music に記録できませんでした。次の曲が自動で始まらないことがあります。次の曲を再生してください。"
+    "playback_unsaved": "再生中の曲を Mood Music に記録できませんでした。次の曲が自動で始まらないことがあります。次の曲を再生してください。",
+    "recipes_preview_off": "このページで再生と「広告をスキップ」を自動で押すには、Kiro Crew の 設定 > 開発者 > 機能プレビュー で App browser access をオンにしてください。それまでは相棒が再生を押します。",
+    "recipes_not_approved": "このページで再生と「広告をスキップ」を自動で押すには、アプリのページでブラウザのクリックを承認し、そこで「youtube_skip_ad runs by itself」をオンにしてください。それまでは相棒が再生を押します。",
+    "recipes_approve": "アプリのページを開く"
   },
   "view": {
     "title": "Kiro Crew のブラウザ",

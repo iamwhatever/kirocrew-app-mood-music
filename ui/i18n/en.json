@@ -195,7 +195,10 @@
     "unready_not_approved": "First approve the music sites for Mood Music. You approve them once, on the app's page.",
     "unready_browse_off": "Kiro Crew's browser is turned off by a policy on this computer.",
     "find_play": "Find and play",
-    "playback_unsaved": "Could not tell Mood Music which song is playing, so the next song may not start by itself. Press play on the next song."
+    "playback_unsaved": "Could not tell Mood Music which song is playing, so the next song may not start by itself. Press play on the next song.",
+    "recipes_preview_off": "To let this page press play and Skip ad itself, turn on App browser access in Kiro Crew's Settings > Developer > Feature previews. Until then your buddy presses play.",
+    "recipes_not_approved": "To let this page press play and Skip ad itself, approve its browser clicks on the app's page, and turn on \"youtube_skip_ad runs by itself\" there. Until then your buddy presses play.",
+    "recipes_approve": "Open the app's page"
   },
   "view": {
     "title": "Kiro Crew's browser",

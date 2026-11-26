@@ -195,7 +195,10 @@
     "unready_not_approved": "Gib zuerst die Musikseiten für Mood Music frei. Das machst du einmal, auf der Seite der App.",
     "unready_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet.",
     "find_play": "Suchen und abspielen",
-    "playback_unsaved": "Mood Music konnte nicht gespeichert werden, welcher Song läuft. Der nächste Song startet daher vielleicht nicht von selbst. Starte ihn selbst."
+    "playback_unsaved": "Mood Music konnte nicht gespeichert werden, welcher Song läuft. Der nächste Song startet daher vielleicht nicht von selbst. Starte ihn selbst.",
+    "recipes_preview_off": "Damit diese Seite Abspielen und „Werbung überspringen“ selbst drückt, schalte in Kiro Crew unter Einstellungen > Entwickler > Feature-Vorschauen App browser access ein. Bis dahin drückt dein Buddy auf Abspielen.",
+    "recipes_not_approved": "Damit diese Seite Abspielen und „Werbung überspringen“ selbst drückt, genehmige ihre Browser-Klicks auf der Seite der App und schalte dort „youtube_skip_ad runs by itself“ ein. Bis dahin drückt dein Buddy auf Abspielen.",
+    "recipes_approve": "Seite der App öffnen"
   },
   "view": {
     "title": "Browser von Kiro Crew",

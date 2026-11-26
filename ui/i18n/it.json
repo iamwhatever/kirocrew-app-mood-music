@@ -195,7 +195,10 @@
     "unready_not_approved": "Prima approva i siti musicali per Mood Music. Si approvano una volta, nella pagina dell’app.",
     "unready_browse_off": "Una regola di questo computer ha spento il browser di Kiro Crew.",
     "find_play": "Trova e riproduci",
-    "playback_unsaved": "Non è stato possibile dire a Mood Music quale canzone suona, quindi la prossima potrebbe non partire da sola. Avviala tu."
+    "playback_unsaved": "Non è stato possibile dire a Mood Music quale canzone suona, quindi la prossima potrebbe non partire da sola. Avviala tu.",
+    "recipes_preview_off": "Perché questa pagina prema da sola riproduci e «Salta annuncio», attiva App browser access in Kiro Crew, Impostazioni > Sviluppatore > Anteprime delle funzioni. Fino ad allora preme riproduci il tuo compagno.",
+    "recipes_not_approved": "Perché questa pagina prema da sola riproduci e «Salta annuncio», approva i suoi clic del browser nella pagina dell’app e attiva lì «youtube_skip_ad runs by itself». Fino ad allora preme riproduci il tuo compagno.",
+    "recipes_approve": "Apri la pagina dell’app"
   },
   "view": {
     "title": "Browser di Kiro Crew",

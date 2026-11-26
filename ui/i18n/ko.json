@@ -149,13 +149,13 @@
     "explore_more": "더 탐색",
     "stay_only": "오늘은 이 기분 그대로 있고 싶어",
     "status_playing": "친구가 Kiro Crew 브라우저에서 노래를 여는 중이에요…",
-    "record_title": "버디가 하고 있는 일",
+    "record_title": "친구가 하고 있는 일",
     "latest": "최신",
     "no_next": "대기열에 다음 곡이 없어요.",
     "new_message": "새 메시지",
     "steered": "끼어들기",
     "steer_missed": "버디의 이번 차례에 들어가지 않아서 보내지 않았어요. 글은 입력창에 그대로 있어요. 끝나면 다시 보내 주세요.",
-    "steer_placeholder": "버디가 일하는 중에도 끼어들 수 있어요…"
+    "steer_placeholder": "친구가 일하는 중에도 끼어들 수 있어요…"
   },
   "card": {
     "arc_stay": "곁에 머물기",
@@ -175,7 +175,7 @@
   },
   "browser": {
     "status_opening": "친구가 Kiro Crew 브라우저에서 여는 중이에요…",
-    "status_idle": "아직 재생 중인 곡이 없어요. \"찾아서 재생\"을 누르면 버디가 Kiro Crew 브라우저에서 이 곡을 엽니다.",
+    "status_idle": "아직 재생 중인 곡이 없어요. \"찾아서 재생\"을 누르면 친구가 Kiro Crew 브라우저에서 이 곡을 엽니다.",
     "status_in_control": "브라우저 탭을 직접 쓰는 중이에요. 돌려줄 때까지 버튼이 기다려요.",
     "status_no_media": "브라우저 탭에 아직 플레이어가 없어요.",
     "status_ended": "끝났어요.",
@@ -195,7 +195,10 @@
     "unready_not_approved": "먼저 무드 뮤직의 음악 사이트를 승인하세요. 앱 페이지에서 한 번만 승인하면 돼요.",
     "unready_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요.",
     "find_play": "찾아서 재생",
-    "playback_unsaved": "지금 재생 중인 곡을 Mood Music에 알리지 못했어요. 다음 곡이 저절로 시작되지 않을 수 있어요. 다음 곡을 재생해 주세요."
+    "playback_unsaved": "지금 재생 중인 곡을 Mood Music에 알리지 못했어요. 다음 곡이 저절로 시작되지 않을 수 있어요. 다음 곡을 재생해 주세요.",
+    "recipes_preview_off": "이 페이지가 재생과 '광고 건너뛰기'를 직접 누르게 하려면 Kiro Crew의 설정 > 개발자 > 기능 미리보기에서 App browser access를 켜세요. 그 전까지는 친구가 재생을 누릅니다.",
+    "recipes_not_approved": "이 페이지가 재생과 '광고 건너뛰기'를 직접 누르게 하려면 앱 페이지에서 브라우저 클릭을 승인하고, 거기서 'youtube_skip_ad runs by itself'를 켜세요. 그 전까지는 친구가 재생을 누릅니다.",
+    "recipes_approve": "앱 페이지 열기"
   },
   "view": {
     "title": "Kiro Crew 브라우저",
@@ -206,7 +209,7 @@
     "old_host": "이 Kiro Crew는 아직 여기에 브라우저를 보여 줄 수 없어요. Kiro Crew를 업데이트하면 선곡하는 모습을 볼 수 있어요."
   },
   "steps": {
-    "label": "버디가 한 일",
+    "label": "친구가 한 일",
     "times": "{{step}} × {{count}}",
     "search": "웹 검색",
     "read": "페이지 읽기",
@@ -221,7 +224,7 @@
     "key": "키 누르기",
     "browser": "브라우저 사용",
     "other": "작업 수행",
-    "folded": "버디가 한 일 ({{count}})"
+    "folded": "친구가 한 일 ({{count}})"
   },
   "profile": {
     "title": "내 취향 요약",
@@ -253,7 +256,7 @@
     "saved": "“{{name}}”(으)로 저장했어요",
     "queue_count": "지금 대기열에 {{count}}곡",
     "then_buddy": "목록이 끝나면 버디에게 더 부탁하기",
-    "then_buddy_hint": "끄기: 마지막 곡에서 멈춰요. 켜기: 같은 기분의 곡을 버디가 더 골라요.",
+    "then_buddy_hint": "끄기: 마지막 곡에서 멈춰요. 켜기: 같은 기분의 곡을 친구가 더 골라요.",
     "default_name": "플레이리스트",
     "error_full": "플레이리스트는 최대 {{count}}개예요. 하나를 지운 뒤 저장하세요.",
     "too_many": "플레이리스트 하나에는 최대 {{count}}곡이에요. 선택을 줄여 주세요.",
@@ -289,7 +292,7 @@
     "tab": "사이트",
     "old_host_title": "여기서 사이트를 관리하려면 Kiro Crew를 업데이트하세요",
     "old_host_body": "이 Kiro Crew는 아직 버디의 사이트를 보여 주거나 바꿀 수 없어요. Kiro Crew를 업데이트(KiroCrew#40727 이상)한 뒤 이 탭을 다시 여세요. 그 전까지 버디는 bilibili와 YouTube를 써요.",
-    "list_title": "버디가 열 수 있는 사이트",
+    "list_title": "친구가 열 수 있는 사이트",
     "active_count": "지금 켜짐 {{count}}개",
     "read_error": "사이트 목록을 읽지 못했어요({{code}}).",
     "retry": "다시 시도",
@@ -312,10 +315,10 @@
     "add_back": "다시 추가",
     "add_back_named": "{{site}} 다시 추가",
     "add_title": "사이트 추가",
-    "add_label": "버디가 열 수 있는 페이지 주소",
+    "add_label": "친구가 열 수 있는 페이지 주소",
     "add": "추가",
     "add_rules": "https://로 시작하고 경로를 적어 주세요. 예: https://music.example.com/song/*. 도메인 전체, IP 주소, 로컬 주소는 거부돼요.",
-    "added": "추가됨: {{site}}. 버디가 이제 열 수 있어요.",
+    "added": "추가됨: {{site}}. 친구가 이제 열 수 있어요.",
     "removed_now": "삭제됨: {{site}}.",
     "disabled_now": "꺼짐: {{site}}.",
     "declined": "추가하지 않음: {{site}}.",
@@ -328,6 +331,6 @@
     "how_title": "작동 방식",
     "how_buddy": "버디는 켜진 사이트만 열어요. 이 목록을 읽을 수는 있지만 바꿀 수는 없어요.",
     "how_add": "사이트를 추가하면 Kiro Crew가 자기 창에서 먼저 물어봐요. 끄기와 삭제는 바로 적용돼요.",
-    "how_new": "새 사이트에서는 버디가 처음에 스스로 방법을 찾아요. 저장된 단계는 사이트마다 따로 남아요."
+    "how_new": "새 사이트에서는 친구가 처음에 스스로 방법을 찾아요. 저장된 단계는 사이트마다 따로 남아요."
   }
 }
