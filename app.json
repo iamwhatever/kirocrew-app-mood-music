@@ -1,6 +1,6 @@
 {
   "name": "mood-music",
-  "version": "0.2.20",
+  "version": "0.2.21",
   "displayName": "Mood Music",
   "description": "Tell it how you feel, or name a song that moved you. A DJ agent finds songs with the same feeling and plays them on YouTube or bilibili in Kiro Crew's browser. Like or skip, and the next picks follow.",
   "author": "iamwhatever",
@@ -63,6 +63,44 @@
       "https://soundcloud.com/search/sounds",
       "https://w.soundcloud.com/player/"
     ],
+    "browserRecipes": [
+      {
+        "name": "youtube_play",
+        "site": "https://www.youtube.com/watch",
+        "steps": [
+          {
+            "waitFor": "button.ytp-play-button",
+            "timeout": 5
+          },
+          {
+            "click": "button.ytp-play-button"
+          }
+        ]
+      },
+      {
+        "name": "youtube_skip_ad",
+        "site": "https://www.youtube.com/watch",
+        "watch": true,
+        "steps": [
+          {
+            "click": "button.ytp-skip-ad-button, button.ytp-ad-skip-button-modern, button.ytp-ad-skip-button"
+          }
+        ]
+      },
+      {
+        "name": "bilibili_play",
+        "site": "https://www.bilibili.com/video/BV*",
+        "steps": [
+          {
+            "waitFor": ".bpx-player-ctrl-play",
+            "timeout": 5
+          },
+          {
+            "click": ".bpx-player-ctrl-play"
+          }
+        ]
+      }
+    ],
     "browser": [
       "view"
     ]
@@ -97,7 +135,8 @@
     "To watch the buddy's browser on this page, Kiro Crew also needs hidden app chats and the app browser view (KiroCrew#39246, #39018, #39020): turn on App browser access in Feature Previews, then approve \"view\" on the app's page.",
     "To keep playing with the page closed, Kiro Crew needs background song ends for apps (KiroCrew#40261). Without it, continuous play works while the page is open.",
     "To see and change the buddy's sites in the app's Sites tab, Kiro Crew needs owner site edits (KiroCrew#40727). On an older Kiro Crew the tab says to update, and the buddy keeps to the default sites you approved on the app's page.",
-    "Spotify, Amazon Music and Apple Music play full songs only when you are signed in there in Kiro Crew's browser, mostly on a paid plan, and only in a browser that plays protected content (your own Chrome; Kiro's own Chromium may not). The buddy never signs in or pays: it stops and tells you. SoundCloud and the YouTube and bilibili pages play signed out."
+    "Spotify, Amazon Music and Apple Music play full songs only when you are signed in there in Kiro Crew's browser, mostly on a paid plan, and only in a browser that plays protected content (your own Chrome; Kiro's own Chromium may not). The buddy never signs in or pays: it stops and tells you. SoundCloud and the YouTube and bilibili pages play signed out.",
+    "Optional: the page can press play on YouTube and bilibili, and Skip ad on YouTube, itself, with no buddy turn (browser recipes, Kiro Crew App Kit level 15, KiroCrew#41783). Turn on App browser access in Feature Previews, approve the recipes on the app's page, and turn on \"youtube_skip_ad runs by itself while media plays\" there. Without them the buddy presses play as before, and no ad is skipped for you."
   ],
   "screenshots": [
     "assets/screenshot-main.png"

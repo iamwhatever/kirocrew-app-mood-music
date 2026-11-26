@@ -33,7 +33,8 @@ export interface SavedPending {
   steered?: boolean
   /** A play request to the buddy (Crew Browser): the song, its site, and whether it asked for more. */
   /** `queueGen`: the list a refill was asked on (`queue_gen`), so it is dropped once a newer list replaced it. */
-  play?: { pickId: string; site: PickSource; refill: boolean; queueGen?: number }
+  /** `pagePlays`: the request told the buddy the page presses play with a recipe (`recipes.ts`). */
+  play?: { pickId: string; site: PickSource; refill: boolean; queueGen?: number; pagePlays?: boolean }
   /** Picks asked for once in place of a refill's repeats: added after the list of `queueGen`, never asked for again. */
   more?: { queueGen?: number }
 }
@@ -86,6 +87,7 @@ function readPlay(v: unknown): SavedPending['play'] {
   return {
     pickId: p.pickId.slice(0, 64), site: p.site, refill: p.refill === true,
     ...(Number.isSafeInteger(gen) && (gen as number) >= 0 ? { queueGen: gen } : {}),
+    ...(p.pagePlays === true ? { pagePlays: true } : {}),
   }
 }
 

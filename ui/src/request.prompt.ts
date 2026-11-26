@@ -248,6 +248,14 @@ export interface PlaySong {
   url?: string
 }
 
+/**
+ * Sent only by the page, and only when a play recipe just worked on this host
+ * (`recipes.ts`): the page presses play itself, so the buddy only opens the song.
+ * The backend's port (`backend/play_request.py`) never sends it: with the page
+ * closed nothing can run a recipe, and the buddy presses play as before.
+ */
+export const PAGE_PLAYS_LINE = 'The page presses play on this site itself: open the song\'s page and stop there. Do not click play, and skip a saved step that only presses play.'
+
 /** The checked link of *song* on its own site, for the buddy to fall back on. */
 function songLink(song: PlaySong): string {
   if (song.source === 'youtube' && song.video_id) return `https://www.youtube.com/watch?v=${song.video_id}`
@@ -273,8 +281,10 @@ export function buildPlayRequest(opts: {
   stayOnly?: boolean
   /** The sites in force (`sites.ts`); left out when the host cannot say. */
   sites?: readonly string[]
+  /** The page presses play with a recipe ({@link PAGE_PLAYS_LINE}); page only. */
+  pagePlays?: boolean
 }): string {
-  const { song, steps, why, refill, state, explore = 'balanced', stayOnly = false, sites } = opts
+  const { song, steps, why, refill, state, explore = 'balanced', stayOnly = false, sites, pagePlays = false } = opts
   const title = clean(song.title, 200)
   const artist = clean(song.artist, 200)
   const link = songLink(song)
@@ -289,6 +299,7 @@ export function buildPlayRequest(opts: {
   ]
   if (link) lines.push(`Checked link on this site (open it only if the search does not find the song): ${link}`)
   lines.push(ONE_TAB)
+  if (pagePlays) lines.push(PAGE_PLAYS_LINE)
   if (sites) lines.push(...sitesLines(sites))
   const saved = steps.map(s => clean(s, 120)).filter(Boolean).slice(0, 8)
   if (saved.length) {

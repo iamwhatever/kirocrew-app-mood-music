@@ -217,7 +217,10 @@ var CATALOGS = {
 			"unready_not_approved": "আগে মুড মিউজিকের জন্য গানের সাইটগুলো অনুমোদন করুন। অ্যাপের পেজে একবার অনুমোদন করলেই হবে।",
 			"unready_browse_off": "এই কম্পিউটারের একটি নীতি Kiro Crew-এর ব্রাউজার বন্ধ রেখেছে।",
 			"find_play": "খুঁজে চালাও",
-			"playback_unsaved": "কোন গান বাজছে তা Mood Music-কে জানানো যায়নি, তাই পরের গান নিজে থেকে শুরু নাও হতে পারে। পরের গানে প্লে চাপুন।"
+			"playback_unsaved": "কোন গান বাজছে তা Mood Music-কে জানানো যায়নি, তাই পরের গান নিজে থেকে শুরু নাও হতে পারে। পরের গানে প্লে চাপুন।",
+			"recipes_preview_off": "এই পেজকে নিজেই চালানো আর “বিজ্ঞাপন এড়ান” চাপতে দিতে Kiro Crew-এর সেটিংস > ডেভেলপার > ফিচার প্রিভিউ-তে App browser access চালু করুন। ততক্ষণ আপনার সঙ্গী চালানো চাপে।",
+			"recipes_not_approved": "এই পেজকে নিজেই চালানো আর “বিজ্ঞাপন এড়ান” চাপতে দিতে অ্যাপের পেজে এর ব্রাউজার ক্লিক অনুমোদন করুন, আর সেখানে “youtube_skip_ad runs by itself” চালু করুন। ততক্ষণ আপনার সঙ্গী চালানো চাপে।",
+			"recipes_approve": "অ্যাপের পেজ খুলুন"
 		},
 		view: {
 			"title": "Kiro Crew-এর ব্রাউজার",
@@ -550,7 +553,10 @@ var CATALOGS = {
 			"unready_not_approved": "Gib zuerst die Musikseiten für Mood Music frei. Das machst du einmal, auf der Seite der App.",
 			"unready_browse_off": "Der Browser von Kiro Crew ist auf diesem Computer per Richtlinie ausgeschaltet.",
 			"find_play": "Suchen und abspielen",
-			"playback_unsaved": "Mood Music konnte nicht gespeichert werden, welcher Song läuft. Der nächste Song startet daher vielleicht nicht von selbst. Starte ihn selbst."
+			"playback_unsaved": "Mood Music konnte nicht gespeichert werden, welcher Song läuft. Der nächste Song startet daher vielleicht nicht von selbst. Starte ihn selbst.",
+			"recipes_preview_off": "Damit diese Seite Abspielen und „Werbung überspringen“ selbst drückt, schalte in Kiro Crew unter Einstellungen > Entwickler > Feature-Vorschauen App browser access ein. Bis dahin drückt dein Buddy auf Abspielen.",
+			"recipes_not_approved": "Damit diese Seite Abspielen und „Werbung überspringen“ selbst drückt, genehmige ihre Browser-Klicks auf der Seite der App und schalte dort „youtube_skip_ad runs by itself“ ein. Bis dahin drückt dein Buddy auf Abspielen.",
+			"recipes_approve": "Seite der App öffnen"
 		},
 		view: {
 			"title": "Browser von Kiro Crew",
@@ -883,7 +889,10 @@ var CATALOGS = {
 			"unready_not_approved": "First approve the music sites for Mood Music. You approve them once, on the app's page.",
 			"unready_browse_off": "Kiro Crew's browser is turned off by a policy on this computer.",
 			"find_play": "Find and play",
-			"playback_unsaved": "Could not tell Mood Music which song is playing, so the next song may not start by itself. Press play on the next song."
+			"playback_unsaved": "Could not tell Mood Music which song is playing, so the next song may not start by itself. Press play on the next song.",
+			"recipes_preview_off": "To let this page press play and Skip ad itself, turn on App browser access in Kiro Crew's Settings > Developer > Feature previews. Until then your buddy presses play.",
+			"recipes_not_approved": "To let this page press play and Skip ad itself, approve its browser clicks on the app's page, and turn on \"youtube_skip_ad runs by itself\" there. Until then your buddy presses play.",
+			"recipes_approve": "Open the app's page"
 		},
 		view: {
 			"title": "Kiro Crew's browser",
@@ -1216,7 +1225,10 @@ var CATALOGS = {
 			"unready_not_approved": "Primero aprueba los sitios de música para Mood Music. Se aprueban una vez, en la página de la app.",
 			"unready_browse_off": "Una política de este equipo tiene apagado el navegador de Kiro Crew.",
 			"find_play": "Buscar y reproducir",
-			"playback_unsaved": "No se pudo decir a Mood Music qué canción suena, así que la siguiente quizá no empiece sola. Pulsa reproducir en la siguiente."
+			"playback_unsaved": "No se pudo decir a Mood Music qué canción suena, así que la siguiente quizá no empiece sola. Pulsa reproducir en la siguiente.",
+			"recipes_preview_off": "Para que esta página pulse reproducir y «Omitir anuncio» por sí sola, activa App browser access en Kiro Crew, en Ajustes > Desarrollador > Vistas previas de funciones. Hasta entonces, tu compañero pulsa reproducir.",
+			"recipes_not_approved": "Para que esta página pulse reproducir y «Omitir anuncio» por sí sola, aprueba sus clics del navegador en la página de la app y activa allí «youtube_skip_ad runs by itself». Hasta entonces, tu compañero pulsa reproducir.",
+			"recipes_approve": "Abrir la página de la app"
 		},
 		view: {
 			"title": "Navegador de Kiro Crew",
@@ -1549,7 +1561,10 @@ var CATALOGS = {
 			"unready_not_approved": "Approuve d’abord les sites de musique pour Mood Music. Une seule fois, sur la page de l’app.",
 			"unready_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew.",
 			"find_play": "Trouver et lire",
-			"playback_unsaved": "Impossible d'indiquer à Mood Music quelle chanson joue : la suivante risque de ne pas démarrer seule. Lance-la toi-même."
+			"playback_unsaved": "Impossible d'indiquer à Mood Music quelle chanson joue : la suivante risque de ne pas démarrer seule. Lance-la toi-même.",
+			"recipes_preview_off": "Pour que cette page appuie elle-même sur lecture et « Ignorer l’annonce », active App browser access dans Kiro Crew, Paramètres > Développeur > Aperçus de fonctionnalités. D’ici là, ton compagnon appuie sur lecture.",
+			"recipes_not_approved": "Pour que cette page appuie elle-même sur lecture et « Ignorer l’annonce », approuve ses clics de navigateur sur la page de l’app et active « youtube_skip_ad runs by itself » à cet endroit. D’ici là, ton compagnon appuie sur lecture.",
+			"recipes_approve": "Ouvrir la page de l’app"
 		},
 		view: {
 			"title": "Navigateur de Kiro Crew",
@@ -1882,7 +1897,10 @@ var CATALOGS = {
 			"unready_not_approved": "पहले मूड म्यूज़िक के लिए संगीत साइटों को मंज़ूरी दें। ऐप के पेज पर एक बार मंज़ूरी देनी होती है।",
 			"unready_browse_off": "इस कंप्यूटर की एक नीति ने Kiro Crew का ब्राउज़र बंद कर रखा है।",
 			"find_play": "ढूँढकर चलाएँ",
-			"playback_unsaved": "Mood Music को नहीं बताया जा सका कि कौन-सा गाना चल रहा है, इसलिए अगला गाना शायद अपने-आप शुरू न हो। अगले गाने पर चलाएँ दबाएँ।"
+			"playback_unsaved": "Mood Music को नहीं बताया जा सका कि कौन-सा गाना चल रहा है, इसलिए अगला गाना शायद अपने-आप शुरू न हो। अगले गाने पर चलाएँ दबाएँ।",
+			"recipes_preview_off": "इस पेज को खुद चलाएँ और “विज्ञापन छोड़ें” दबाने देने के लिए Kiro Crew की सेटिंग्स > डेवलपर > फ़ीचर प्रीव्यू में App browser access चालू करें। तब तक आपका साथी चलाएँ दबाता है।",
+			"recipes_not_approved": "इस पेज को खुद चलाएँ और “विज्ञापन छोड़ें” दबाने देने के लिए ऐप के पेज पर इसके ब्राउज़र क्लिक मंज़ूर करें, और वहीं “youtube_skip_ad runs by itself” चालू करें। तब तक आपका साथी चलाएँ दबाता है।",
+			"recipes_approve": "ऐप का पेज खोलें"
 		},
 		view: {
 			"title": "Kiro Crew का ब्राउज़र",
@@ -2215,7 +2233,10 @@ var CATALOGS = {
 			"unready_not_approved": "Prima approva i siti musicali per Mood Music. Si approvano una volta, nella pagina dell’app.",
 			"unready_browse_off": "Una regola di questo computer ha spento il browser di Kiro Crew.",
 			"find_play": "Trova e riproduci",
-			"playback_unsaved": "Non è stato possibile dire a Mood Music quale canzone suona, quindi la prossima potrebbe non partire da sola. Avviala tu."
+			"playback_unsaved": "Non è stato possibile dire a Mood Music quale canzone suona, quindi la prossima potrebbe non partire da sola. Avviala tu.",
+			"recipes_preview_off": "Perché questa pagina prema da sola riproduci e «Salta annuncio», attiva App browser access in Kiro Crew, Impostazioni > Sviluppatore > Anteprime delle funzioni. Fino ad allora preme riproduci il tuo compagno.",
+			"recipes_not_approved": "Perché questa pagina prema da sola riproduci e «Salta annuncio», approva i suoi clic del browser nella pagina dell’app e attiva lì «youtube_skip_ad runs by itself». Fino ad allora preme riproduci il tuo compagno.",
+			"recipes_approve": "Apri la pagina dell’app"
 		},
 		view: {
 			"title": "Browser di Kiro Crew",
@@ -2548,7 +2569,10 @@ var CATALOGS = {
 			"unready_not_approved": "先に Mood Music の音楽サイトを承認してください。アプリのページで一度だけ承認します。",
 			"unready_browse_off": "このコンピューターのポリシーで Kiro Crew のブラウザがオフになっています。",
 			"find_play": "探して再生",
-			"playback_unsaved": "再生中の曲を Mood Music に記録できませんでした。次の曲が自動で始まらないことがあります。次の曲を再生してください。"
+			"playback_unsaved": "再生中の曲を Mood Music に記録できませんでした。次の曲が自動で始まらないことがあります。次の曲を再生してください。",
+			"recipes_preview_off": "このページで再生と「広告をスキップ」を自動で押すには、Kiro Crew の 設定 > 開発者 > 機能プレビュー で App browser access をオンにしてください。それまでは相棒が再生を押します。",
+			"recipes_not_approved": "このページで再生と「広告をスキップ」を自動で押すには、アプリのページでブラウザのクリックを承認し、そこで「youtube_skip_ad runs by itself」をオンにしてください。それまでは相棒が再生を押します。",
+			"recipes_approve": "アプリのページを開く"
 		},
 		view: {
 			"title": "Kiro Crew のブラウザ",
@@ -2835,13 +2859,13 @@ var CATALOGS = {
 			"explore_more": "더 탐색",
 			"stay_only": "오늘은 이 기분 그대로 있고 싶어",
 			"status_playing": "친구가 Kiro Crew 브라우저에서 노래를 여는 중이에요…",
-			"record_title": "버디가 하고 있는 일",
+			"record_title": "친구가 하고 있는 일",
 			"latest": "최신",
 			"no_next": "대기열에 다음 곡이 없어요.",
 			"new_message": "새 메시지",
 			"steered": "끼어들기",
 			"steer_missed": "버디의 이번 차례에 들어가지 않아서 보내지 않았어요. 글은 입력창에 그대로 있어요. 끝나면 다시 보내 주세요.",
-			"steer_placeholder": "버디가 일하는 중에도 끼어들 수 있어요…"
+			"steer_placeholder": "친구가 일하는 중에도 끼어들 수 있어요…"
 		},
 		card: {
 			"arc_stay": "곁에 머물기",
@@ -2861,7 +2885,7 @@ var CATALOGS = {
 		},
 		browser: {
 			"status_opening": "친구가 Kiro Crew 브라우저에서 여는 중이에요…",
-			"status_idle": "아직 재생 중인 곡이 없어요. \"찾아서 재생\"을 누르면 버디가 Kiro Crew 브라우저에서 이 곡을 엽니다.",
+			"status_idle": "아직 재생 중인 곡이 없어요. \"찾아서 재생\"을 누르면 친구가 Kiro Crew 브라우저에서 이 곡을 엽니다.",
 			"status_in_control": "브라우저 탭을 직접 쓰는 중이에요. 돌려줄 때까지 버튼이 기다려요.",
 			"status_no_media": "브라우저 탭에 아직 플레이어가 없어요.",
 			"status_ended": "끝났어요.",
@@ -2881,7 +2905,10 @@ var CATALOGS = {
 			"unready_not_approved": "먼저 무드 뮤직의 음악 사이트를 승인하세요. 앱 페이지에서 한 번만 승인하면 돼요.",
 			"unready_browse_off": "이 컴퓨터의 정책으로 Kiro Crew 브라우저가 꺼져 있어요.",
 			"find_play": "찾아서 재생",
-			"playback_unsaved": "지금 재생 중인 곡을 Mood Music에 알리지 못했어요. 다음 곡이 저절로 시작되지 않을 수 있어요. 다음 곡을 재생해 주세요."
+			"playback_unsaved": "지금 재생 중인 곡을 Mood Music에 알리지 못했어요. 다음 곡이 저절로 시작되지 않을 수 있어요. 다음 곡을 재생해 주세요.",
+			"recipes_preview_off": "이 페이지가 재생과 '광고 건너뛰기'를 직접 누르게 하려면 Kiro Crew의 설정 > 개발자 > 기능 미리보기에서 App browser access를 켜세요. 그 전까지는 친구가 재생을 누릅니다.",
+			"recipes_not_approved": "이 페이지가 재생과 '광고 건너뛰기'를 직접 누르게 하려면 앱 페이지에서 브라우저 클릭을 승인하고, 거기서 'youtube_skip_ad runs by itself'를 켜세요. 그 전까지는 친구가 재생을 누릅니다.",
+			"recipes_approve": "앱 페이지 열기"
 		},
 		view: {
 			"title": "Kiro Crew 브라우저",
@@ -2892,7 +2919,7 @@ var CATALOGS = {
 			"old_host": "이 Kiro Crew는 아직 여기에 브라우저를 보여 줄 수 없어요. Kiro Crew를 업데이트하면 선곡하는 모습을 볼 수 있어요."
 		},
 		steps: {
-			"label": "버디가 한 일",
+			"label": "친구가 한 일",
 			"times": "{{step}} × {{count}}",
 			"search": "웹 검색",
 			"read": "페이지 읽기",
@@ -2907,7 +2934,7 @@ var CATALOGS = {
 			"key": "키 누르기",
 			"browser": "브라우저 사용",
 			"other": "작업 수행",
-			"folded": "버디가 한 일 ({{count}})"
+			"folded": "친구가 한 일 ({{count}})"
 		},
 		profile: {
 			"title": "내 취향 요약",
@@ -2939,7 +2966,7 @@ var CATALOGS = {
 			"saved": "“{{name}}”(으)로 저장했어요",
 			"queue_count": "지금 대기열에 {{count}}곡",
 			"then_buddy": "목록이 끝나면 버디에게 더 부탁하기",
-			"then_buddy_hint": "끄기: 마지막 곡에서 멈춰요. 켜기: 같은 기분의 곡을 버디가 더 골라요.",
+			"then_buddy_hint": "끄기: 마지막 곡에서 멈춰요. 켜기: 같은 기분의 곡을 친구가 더 골라요.",
 			"default_name": "플레이리스트",
 			"error_full": "플레이리스트는 최대 {{count}}개예요. 하나를 지운 뒤 저장하세요.",
 			"too_many": "플레이리스트 하나에는 최대 {{count}}곡이에요. 선택을 줄여 주세요.",
@@ -2975,7 +3002,7 @@ var CATALOGS = {
 			"tab": "사이트",
 			"old_host_title": "여기서 사이트를 관리하려면 Kiro Crew를 업데이트하세요",
 			"old_host_body": "이 Kiro Crew는 아직 버디의 사이트를 보여 주거나 바꿀 수 없어요. Kiro Crew를 업데이트(KiroCrew#40727 이상)한 뒤 이 탭을 다시 여세요. 그 전까지 버디는 bilibili와 YouTube를 써요.",
-			"list_title": "버디가 열 수 있는 사이트",
+			"list_title": "친구가 열 수 있는 사이트",
 			"active_count": "지금 켜짐 {{count}}개",
 			"read_error": "사이트 목록을 읽지 못했어요({{code}}).",
 			"retry": "다시 시도",
@@ -2998,10 +3025,10 @@ var CATALOGS = {
 			"add_back": "다시 추가",
 			"add_back_named": "{{site}} 다시 추가",
 			"add_title": "사이트 추가",
-			"add_label": "버디가 열 수 있는 페이지 주소",
+			"add_label": "친구가 열 수 있는 페이지 주소",
 			"add": "추가",
 			"add_rules": "https://로 시작하고 경로를 적어 주세요. 예: https://music.example.com/song/*. 도메인 전체, IP 주소, 로컬 주소는 거부돼요.",
-			"added": "추가됨: {{site}}. 버디가 이제 열 수 있어요.",
+			"added": "추가됨: {{site}}. 친구가 이제 열 수 있어요.",
 			"removed_now": "삭제됨: {{site}}.",
 			"disabled_now": "꺼짐: {{site}}.",
 			"declined": "추가하지 않음: {{site}}.",
@@ -3014,7 +3041,7 @@ var CATALOGS = {
 			"how_title": "작동 방식",
 			"how_buddy": "버디는 켜진 사이트만 열어요. 이 목록을 읽을 수는 있지만 바꿀 수는 없어요.",
 			"how_add": "사이트를 추가하면 Kiro Crew가 자기 창에서 먼저 물어봐요. 끄기와 삭제는 바로 적용돼요.",
-			"how_new": "새 사이트에서는 버디가 처음에 스스로 방법을 찾아요. 저장된 단계는 사이트마다 따로 남아요."
+			"how_new": "새 사이트에서는 친구가 처음에 스스로 방법을 찾아요. 저장된 단계는 사이트마다 따로 남아요."
 		}
 	},
 	pt: {
@@ -3214,7 +3241,10 @@ var CATALOGS = {
 			"unready_not_approved": "Primeiro aprove os sites de música para o Mood Music. Você aprova uma vez, na página do app.",
 			"unready_browse_off": "Uma política deste computador desligou o navegador do Kiro Crew.",
 			"find_play": "Encontrar e tocar",
-			"playback_unsaved": "Não foi possível dizer ao Mood Music qual música está tocando, então a próxima pode não começar sozinha. Toque a próxima."
+			"playback_unsaved": "Não foi possível dizer ao Mood Music qual música está tocando, então a próxima pode não começar sozinha. Toque a próxima.",
+			"recipes_preview_off": "Para esta página tocar e «Pular anúncio» sozinha, ative App browser access no Kiro Crew, em Configurações > Desenvolvedor > Prévias de recursos. Até lá, seu parceiro aperta o play.",
+			"recipes_not_approved": "Para esta página tocar e «Pular anúncio» sozinha, aprove os cliques no navegador na página do app e ative ali «youtube_skip_ad runs by itself». Até lá, seu parceiro aperta o play.",
+			"recipes_approve": "Abrir a página do app"
 		},
 		view: {
 			"title": "Navegador do Kiro Crew",
@@ -3547,7 +3577,10 @@ var CATALOGS = {
 			"unready_not_approved": "Сначала одобрите музыкальные сайты для «Музыки настроения». Это делается один раз, на странице приложения.",
 			"unready_browse_off": "Браузер Kiro Crew отключён политикой на этом компьютере.",
 			"find_play": "Найти и включить",
-			"playback_unsaved": "Не удалось сообщить Mood Music, какая песня играет, поэтому следующая может не начаться сама. Включите её сами."
+			"playback_unsaved": "Не удалось сообщить Mood Music, какая песня играет, поэтому следующая может не начаться сама. Включите её сами.",
+			"recipes_preview_off": "Чтобы эта страница сама нажимала «Воспроизвести» и «Пропустить рекламу», включите App browser access в Kiro Crew: Настройки > Разработчик > Предпросмотр функций. До тех пор воспроизведение нажимает ваш напарник.",
+			"recipes_not_approved": "Чтобы эта страница сама нажимала «Воспроизвести» и «Пропустить рекламу», одобрите её клики в браузере на странице приложения и включите там «youtube_skip_ad runs by itself». До тех пор воспроизведение нажимает ваш напарник.",
+			"recipes_approve": "Открыть страницу приложения"
 		},
 		view: {
 			"title": "Браузер Kiro Crew",
@@ -3880,7 +3913,10 @@ var CATALOGS = {
 			"unready_not_approved": "请先为情绪音乐批准这几个音乐网站。只需在应用页面批准一次。",
 			"unready_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。",
 			"find_play": "查找并播放",
-			"playback_unsaved": "没能告诉情绪音乐现在放的是哪首，下一首可能不会自己开始。请点下一首播放。"
+			"playback_unsaved": "没能告诉情绪音乐现在放的是哪首，下一首可能不会自己开始。请点下一首播放。",
+			"recipes_preview_off": "想让本页自己按播放和“跳过广告”，请在 Kiro Crew 的 设置 > 开发者 > 功能预览 中打开“App browser access”。在此之前由搭子按播放。",
+			"recipes_not_approved": "想让本页自己按播放和“跳过广告”，请在应用页面批准它的浏览器点击，并在那里打开“youtube_skip_ad runs by itself”。在此之前由搭子按播放。",
+			"recipes_approve": "打开应用页面"
 		},
 		view: {
 			"title": "Kiro Crew 的浏览器",
@@ -4788,11 +4824,14 @@ function clock(seconds) {
 * button to the buddy (`onAskPlay`, labelled "Find and play"), because finding
 * and opening a song is the buddy's job.
 *
+* When browser recipes are off on this host (`recipes.ts`), one plain line says
+* where to turn them on; the buttons work as before either way.
+*
 * Continuous play lives here too, with a plain note that it needs this page
 * open: the end of a song is read by this page's poll, so with the page closed
 * nothing notices it and the next song does not start.
 */
-function BrowserControls({ media, waiting, continuous, onAskPlay, onPause, onPlay, onReplay, onContinuous }) {
+function BrowserControls({ media, waiting, continuous, onAskPlay, onPause, onPlay, onReplay, onContinuous, recipeHint = null, onApproveRecipes }) {
 	const state = media.media;
 	const duration = state?.duration ?? null;
 	const [seekDraft, setSeekDraft] = useState(null);
@@ -4932,6 +4971,18 @@ function BrowserControls({ media, waiting, continuous, onAskPlay, onPause, onPla
 				className: "text-xs text-[var(--muted)]",
 				"data-testid": "mood-continuous-note",
 				children: t("browser.continuous_note")
+			}),
+			recipeHint && /* @__PURE__ */ jsxs("p", {
+				className: "text-xs text-[var(--muted)]",
+				"data-testid": "mood-recipe-hint",
+				"data-hint": recipeHint,
+				children: [t(`browser.recipes_${recipeHint}`), recipeHint === "not_approved" && onApproveRecipes && /* @__PURE__ */ jsxs(Fragment, { children: [" ", /* @__PURE__ */ jsx("button", {
+					type: "button",
+					onClick: onApproveRecipes,
+					className: "font-semibold text-[var(--accent)] underline",
+					"data-testid": "mood-recipe-approve",
+					children: t("browser.recipes_approve")
+				})] })]
 			})
 		]
 	});
@@ -6892,6 +6943,13 @@ function buildMoreRequest(opts) {
 		...REPLY_LINES.slice(1, 7)
 	].join("\n");
 }
+/**
+* Sent only by the page, and only when a play recipe just worked on this host
+* (`recipes.ts`): the page presses play itself, so the buddy only opens the song.
+* The backend's port (`backend/play_request.py`) never sends it: with the page
+* closed nothing can run a recipe, and the buddy presses play as before.
+*/
+var PAGE_PLAYS_LINE = "The page presses play on this site itself: open the song's page and stop there. Do not click play, and skip a saved step that only presses play.";
 /** The checked link of *song* on its own site, for the buddy to fall back on. */
 function songLink(song) {
 	if (song.source === "youtube" && song.video_id) return `https://www.youtube.com/watch?v=${song.video_id}`;
@@ -6905,7 +6963,7 @@ function songLink(song) {
 * more songs of the same mood under the same explore rules.
 */
 function buildPlayRequest(opts) {
-	const { song, steps, why, refill, state, explore = "balanced", stayOnly = false, sites } = opts;
+	const { song, steps, why, refill, state, explore = "balanced", stayOnly = false, sites, pagePlays = false } = opts;
 	const title = clean(song.title, 200);
 	const artist = clean(song.artist, 200);
 	const link = songLink(song);
@@ -6918,6 +6976,7 @@ function buildPlayRequest(opts) {
 	];
 	if (link) lines.push(`Checked link on this site (open it only if the search does not find the song): ${link}`);
 	lines.push(ONE_TAB);
+	if (pagePlays) lines.push(PAGE_PLAYS_LINE);
 	if (sites) lines.push(...sitesLines(sites));
 	const saved = steps.map((s) => clean(s, 120)).filter(Boolean).slice(0, 8);
 	if (saved.length) {
@@ -7288,6 +7347,89 @@ function useSites() {
 /** The sites in force for the buddy's request, or undefined when the list is not known. */
 function promptSites(sites) {
 	return sites?.sites ? sites.active : void 0;
+}
+/** The play recipe of each site that has one, by the pick's `source`. */
+var PLAY_RECIPE = {
+	youtube: "youtube_play",
+	bilibili: "bilibili_play"
+};
+/** The host's `runRecipe` when it has one; feature-checked, never the level alone. */
+function hostRunRecipe(media) {
+	const level = typeof sdk.APP_SDK_LEVEL === "number" ? sdk.APP_SDK_LEVEL : 0;
+	const run = media.runRecipe;
+	return level >= 15 && typeof run === "function" ? run : void 0;
+}
+/**
+* The gate a recipe answer shows. The two 403s say where to turn recipes on; a
+* missing route or permission is an old host (one before level 15 answers
+* `bad_action`); a refusal from before the recipe checks (`unknown_session`, a
+* browser turned off by policy, a failed request) says nothing; any other answer
+* came after the gateway allowed the recipe, so recipes are on, and a run that
+* did not work is `failed`.
+*/
+function gateOf(answer) {
+	if (answer.ok) return "ok";
+	switch (answer.code) {
+		case "preview_off": return "preview_off";
+		case "recipe_not_approved": return "not_approved";
+		case "not_declared":
+		case "old_host":
+		case "bad_action": return "old_host";
+		case "unknown_session":
+		case "policy_denied":
+		case "browser_error":
+		case "invalid_json": return "unknown";
+		default: return "failed";
+	}
+}
+/**
+* Ask the gateway whether recipes are on, while the tab has no song to touch: the
+* preview and approval checks answer before any step runs, and with no tab or no
+* player in it nothing is clicked (`no_tab`). The page calls it only when the media
+* route said `no_tab`, so it cannot pause a song or a page that is still loading.
+*/
+async function probeRecipes(media) {
+	const run = hostRunRecipe(media);
+	if (!run) return "old_host";
+	const gate = gateOf(await run(PLAY_RECIPE.youtube).catch(() => ({
+		ok: false,
+		code: "browser_error"
+	})));
+	return gate === "failed" ? "ok" : gate;
+}
+var sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+/**
+* Press play on the tab with the site's play recipe, and check the song really
+* plays. Only for a song that is paused and not over: the play button toggles.
+* `{ ok: false, code }` when there is no recipe for *source*, the host has none,
+* the gateway refused it, or the click had no effect (`no_effect`).
+*/
+async function playByRecipe(media, source, read, wait = sleep) {
+	const run = hostRunRecipe(media);
+	if (!run) return {
+		ok: false,
+		code: "old_host"
+	};
+	const name = source ? PLAY_RECIPE[source] : void 0;
+	if (!name) return {
+		ok: false,
+		code: "no_recipe"
+	};
+	const answer = await run(name).catch(() => ({
+		ok: false,
+		code: "browser_error"
+	}));
+	if (!answer.ok) return answer;
+	await wait(600);
+	const now = await read().catch(() => null);
+	return now && !now.paused && !now.ended ? { ok: true } : {
+		ok: false,
+		code: "no_effect"
+	};
+}
+/** Whether a gate means the page should say where to turn recipes on. */
+function hintFor(gate) {
+	return gate === "preview_off" || gate === "not_approved" ? gate : null;
 }
 // src/SongCard.tsx
 /**
@@ -7711,7 +7853,8 @@ function readPlay(v) {
 		pickId: p.pickId.slice(0, 64),
 		site: p.site,
 		refill: p.refill === true,
-		...Number.isSafeInteger(gen) && gen >= 0 ? { queueGen: gen } : {}
+		...Number.isSafeInteger(gen) && gen >= 0 ? { queueGen: gen } : {},
+		...p.pagePlays === true ? { pagePlays: true } : {}
 	};
 }
 function readMore(v) {
@@ -8108,6 +8251,41 @@ function MoodMusicPage() {
 	crewRef.current = crew;
 	const browserReady = readiness(crew);
 	const browserMode = browserReady === "ready" || browserReady === "unknown";
+	const [recipeGate, setRecipeGate] = useState("unknown");
+	const recipeGateRef = useRef(recipeGate);
+	const noteRecipe = (tried) => {
+		if (tried.code === "no_recipe") return;
+		const gate = gateOf(tried);
+		if (gate === "unknown") return;
+		recipeGateRef.current = gate;
+		setRecipeGate(gate);
+	};
+	/** The tab's media now, read fresh (not the last poll). */
+	const readMedia = async () => {
+		const key = slotRef.current;
+		if (!key) return null;
+		const answer = await appApi.get(`/api/browser/media?session_key=${encodeURIComponent(key)}`);
+		return answer?.ok && answer.media ? answer.media : null;
+	};
+	/**
+	* Press play on the song in the tab: the site's play recipe first, checked by a
+	* fresh read; the media route's own play when there is no recipe or it did not
+	* work (what 0.2.20 did). True when the recipe started it.
+	*/
+	const playInTab = async (source) => {
+		const media = crewRef.current;
+		if (hostRunRecipe(media) && source && PLAY_RECIPE[source]) {
+			const tried = await playByRecipe(media, source, readMedia);
+			noteRecipe(tried);
+			if (tried.ok) {
+				media.refresh();
+				return true;
+			}
+		}
+		await media.play();
+		return false;
+	};
+	const tabSource = () => (queueRef.current.find((p) => p.id === browserPickRef.current) ?? (held?.id === browserPickRef.current ? held : null))?.source;
 	const saveSettings = (patch) => {
 		setState((s) => s ? {
 			...s,
@@ -8152,6 +8330,15 @@ function MoodMusicPage() {
 	*/
 	const askPlay = async (pick, why) => {
 		if (pendingRef.current) return;
+		if (recipeGateRef.current === "unknown" && slotRef.current && crewRef.current.error === "no_tab" && hostRunRecipe(crewRef.current)) {
+			const gate = await probeRecipes(crewRef.current);
+			if (gate !== "unknown") {
+				recipeGateRef.current = gate;
+				setRecipeGate(gate);
+			}
+			if (pendingRef.current) return;
+		}
+		const pagePlays = recipeGateRef.current === "ok" && !!PLAY_RECIPE[pick.source] && !!hostRunRecipe(crewRef.current);
 		const playable = queue.filter((p) => p.feedback !== "skipped");
 		let refill = playable.slice(playable.findIndex((p) => p.id === pick.id) + 1).length <= 1;
 		if (refill) {
@@ -8170,16 +8357,20 @@ function MoodMusicPage() {
 			state,
 			explore,
 			stayOnly,
-			sites: promptSites(sites)
+			sites: promptSites(sites),
+			pagePlays
 		});
 		const queueGen = state?.queue_gen;
 		await ask(message, pick.artist ? `"${pick.title}" - ${pick.artist}` : `"${pick.title}"`, refill ? ids : [], {
 			pickId: pick.id,
 			site: pick.source,
 			refill,
-			...typeof queueGen === "number" ? { queueGen } : {}
+			...typeof queueGen === "number" ? { queueGen } : {},
+			...pagePlays ? { pagePlays } : {}
 		});
 	};
+	const askPlayRef = useRef(askPlay);
+	askPlayRef.current = askPlay;
 	const run = useCallback(async (work) => {
 		setBusy(true);
 		setError(null);
@@ -8440,6 +8631,7 @@ function MoodMusicPage() {
 				setEndedFor(null);
 			}
 			if (result?.steps.length) moodApi.setPlaySteps(play.site, result.steps).then(refresh).catch(() => void 0);
+			if (play.pagePlays && result?.played) startInTab(play);
 		} else {
 			moodApi.forgetPlaySteps(play.site).then(refresh).catch(() => void 0);
 			setNotice(t("browser.not_played", { reason: result?.reason || t("browser.no_reason") }));
@@ -8458,6 +8650,27 @@ function MoodMusicPage() {
 			});
 			await ask(message, t("page.more_songs", { count }), [], void 0, false, play.queueGen !== void 0 ? { queueGen: play.queueGen } : {}).catch((e) => setError(errMessage(e) || "unknown"));
 		}
+	}
+	/**
+	* The buddy opened the song and left play to the page (`pagePlays`). A song that
+	* already plays is left alone; else the site's play recipe, then the media
+	* route's play. When neither starts it, the buddy is asked again with the play
+	* request of 0.2.20, and presses play itself.
+	*/
+	async function startInTab(play) {
+		const read = () => readMedia().catch(() => null);
+		await new Promise((resolve) => setTimeout(resolve, 600));
+		const now = await read();
+		if (now && (!now.paused || now.ended)) return;
+		if (await playInTab(play.site)) return;
+		await new Promise((resolve) => setTimeout(resolve, 600));
+		const after = await read();
+		if (after && (!after.paused || after.ended)) return;
+		if (stoppedRef.current || browserPickRef.current !== play.pickId) return;
+		recipeGateRef.current = "failed";
+		setRecipeGate("failed");
+		const pick = queueRef.current.find((p) => p.id === play.pickId);
+		if (pick) await askPlayRef.current(pick, "start").catch((e) => setError(errMessage(e) || "unknown"));
 	}
 	/**
 	* Check a refill's picks and add those kept after the queue. Returns how many
@@ -8800,14 +9013,14 @@ function MoodMusicPage() {
 	const resumeBrowser = () => {
 		stoppedRef.current = false;
 		tellPlayback({ paused: false });
-		crew.play();
+		playInTab(tabSource());
 	};
 	const replayBrowser = () => {
 		stoppedRef.current = false;
 		endedForRef.current = null;
 		setEndedFor(null);
 		tellPlayback(browserPick ? { pick_id: browserPick } : { paused: false });
-		crew.seek(0).then(() => crew.play());
+		crew.seek(0).then(() => playInTab(tabSource()));
 	};
 	const setContinuous = (on) => {
 		if (on) {
@@ -9410,7 +9623,9 @@ function MoodMusicPage() {
 												onPause: pauseBrowser,
 												onPlay: resumeBrowser,
 												onReplay: replayBrowser,
-												onContinuous: setContinuous
+												onContinuous: setContinuous,
+												recipeHint: hintFor(recipeGate),
+												onApproveRecipes: () => navigate("/apps/detail/mood-music")
 											}),
 											busy: working,
 											fromOldList: !!heldNow && current === heldNow,

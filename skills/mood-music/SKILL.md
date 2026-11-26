@@ -206,6 +206,23 @@ usual and do not open the browser then.
 - A `More songs` request means the app dropped your last picks as repeats: do not
   open the browser, give the new picks it asks for, none of them on its lists.
 
+### The page's own clicks (browser recipes)
+
+On YouTube and bilibili the page can press the player's play button itself, and
+Kiro Crew can press YouTube's "Skip ad" by itself while a song plays. These are
+browser recipes: fixed clicks the owner approved on the app's page, behind Kiro
+Crew's App browser access preview. They may be off, so follow the request:
+
+- A play request with the line `The page presses play on this site itself` means
+  they work here. Open the song's watch page and stop: do not click play, and skip
+  a saved step that only presses play. Answer `"played": true` once the song's own
+  page is open, even if it is still paused. Report only the steps you took.
+- With no such line, press play yourself when the video is paused, as in the table
+  below. A second play request for the same song without the line means the
+  page's click did not start it: press play yourself.
+- Once the song's page is open, you need not wait for an ad to end: when the
+  owner allowed it, Kiro Crew presses "Skip ad" by itself while the song plays.
+
 ### The sites, their default pages and how each plays
 
 | `source` | Default pages | Search | Play |

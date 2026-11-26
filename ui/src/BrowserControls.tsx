@@ -9,6 +9,9 @@
  * button to the buddy (`onAskPlay`, labelled "Find and play"), because finding
  * and opening a song is the buddy's job.
  *
+ * When browser recipes are off on this host (`recipes.ts`), one plain line says
+ * where to turn them on; the buttons work as before either way.
+ *
  * Continuous play lives here too, with a plain note that it needs this page
  * open: the end of a song is read by this page's poll, so with the page closed
  * nothing notices it and the next song does not start.
@@ -20,7 +23,7 @@ import type { BrowserMedia } from '@kirocrew/app-sdk'
 import { t } from './i18n'
 import { clock } from './crewBrowser'
 
-export default function BrowserControls({ media, waiting, continuous, onAskPlay, onPause, onPlay, onReplay, onContinuous }: {
+export default function BrowserControls({ media, waiting, continuous, onAskPlay, onPause, onPlay, onReplay, onContinuous, recipeHint = null, onApproveRecipes }: {
   media: BrowserMedia
   /** A turn is out to the buddy. */
   waiting: boolean
@@ -32,6 +35,10 @@ export default function BrowserControls({ media, waiting, continuous, onAskPlay,
   /** The tab's song ended: play it again from the start. */
   onReplay: () => void
   onContinuous: (on: boolean) => void
+  /** Why the page cannot press play and Skip ad itself, when the person can change it. */
+  recipeHint?: 'preview_off' | 'not_approved' | null
+  /** Open the app's page, where the owner approves the recipes. */
+  onApproveRecipes?: () => void
 }) {
   const state = media.media
   const duration = state?.duration ?? null
@@ -137,6 +144,19 @@ export default function BrowserControls({ media, waiting, continuous, onAskPlay,
         </button>
       </div>
       <p className="text-xs text-[var(--muted)]" data-testid="mood-continuous-note">{t('browser.continuous_note')}</p>
+      {recipeHint && (
+        <p className="text-xs text-[var(--muted)]" data-testid="mood-recipe-hint" data-hint={recipeHint}>
+          {t(`browser.recipes_${recipeHint}`)}
+          {recipeHint === 'not_approved' && onApproveRecipes && (
+            <>
+              {' '}
+              <button type="button" onClick={onApproveRecipes} className="font-semibold text-[var(--accent)] underline" data-testid="mood-recipe-approve">
+                {t('browser.recipes_approve')}
+              </button>
+            </>
+          )}
+        </p>
+      )}
     </div>
   )
 }

@@ -138,7 +138,7 @@ as 0.14.0.
 ### What Kiro Crew it needs
 
 Each feature below names the Kiro Crew change it needs. All of these are merged on
-kirodotdev/KiroCrew and are in Kiro Crew 0.14.0 (v0.13.1 lacks the Sites tab change and most of the others).
+kirodotdev/KiroCrew, and all but the optional browser recipes are in Kiro Crew 0.14.0 (v0.13.1 lacks the Sites tab change and most of the others).
 
 | Feature | Needs | Merged |
 |---|---|---|
@@ -151,19 +151,35 @@ kirodotdev/KiroCrew and are in Kiro Crew 0.14.0 (v0.13.1 lacks the Sites tab cha
 | The view shows the page again right after playback resumes | [KiroCrew#40679](https://github.com/kirodotdev/KiroCrew/pull/40679) | yes |
 | A media ending takes its source from the right site | [KiroCrew#40726](https://github.com/kirodotdev/KiroCrew/pull/40726) | yes |
 | The owner adds, removes and turns off sites (the **Sites** tab) | [KiroCrew#40727](https://github.com/kirodotdev/KiroCrew/pull/40727) | yes |
+| Optional: the page presses play and **Skip ad** (browser recipes, 0.2.21) | [KiroCrew#41783](https://github.com/kirodotdev/KiroCrew/pull/41783) | yes, after 0.14.0 |
 
 Two parts need the newest of these: the **Sites** tab needs KiroCrew#40727, and
 continuous play with the Mood Music page closed needs KiroCrew#40261. On a Kiro Crew
 without them the Sites tab says to update, and continuous play works only while the
 page is open.
 
-### Not yet shipped
+### Optional: the page presses play and "Skip ad"
 
-Browser **operation recipes** (fixed clicks Kiro Crew runs on the tab on its own,
-including skipping an ad before a song) are still in progress in
-[KiroCrew#41783](https://github.com/kirodotdev/KiroCrew/pull/41783), which is not
-merged. Mood Music does not use them yet: the buddy opens and plays each song itself,
-and there is no automatic ad-skip.
+Since 0.2.21, on YouTube and bilibili the page can press the player's play button
+itself, and on YouTube Kiro Crew can press **Skip ad** by itself while a song plays.
+The buddy then only opens the song, which is quicker. These fixed clicks are called
+browser recipes ([KiroCrew#41783](https://github.com/kirodotdev/KiroCrew/pull/41783),
+merged, not yet in a Kiro Crew release). They are off until you turn them on:
+
+1. In Kiro Crew, open **Settings → Developer → Feature previews** and turn on
+   **App browser access**.
+2. Open the app's page (**Apps → Library → Mood Music**) and approve the new
+   permissions. The **Automatic clicks in your browser** card lists each click:
+   `youtube_play`, `bilibili_play` and `youtube_skip_ad`.
+3. On that card, turn on **youtube_skip_ad runs by itself while media plays**. Without
+   this second switch no ad is skipped for you; the play clicks still work.
+
+Until then, or on an older Kiro Crew, everything works as in 0.2.20: the buddy
+presses play, and an ad plays out. The player shows one line saying which step is
+missing. When a click does not start the song (the site changed its page, or ignored
+the click), the page tries Kiro Crew's own play, then asks the buddy to press play.
+The clicks touch only the play and skip-ad buttons: never a sign-in, upgrade or
+payment button.
 
 ## First run
 

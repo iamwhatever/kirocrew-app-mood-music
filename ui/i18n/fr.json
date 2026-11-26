@@ -195,7 +195,10 @@
     "unready_not_approved": "Approuve d’abord les sites de musique pour Mood Music. Une seule fois, sur la page de l’app.",
     "unready_browse_off": "Une règle de cet ordinateur a désactivé le navigateur de Kiro Crew.",
     "find_play": "Trouver et lire",
-    "playback_unsaved": "Impossible d'indiquer à Mood Music quelle chanson joue : la suivante risque de ne pas démarrer seule. Lance-la toi-même."
+    "playback_unsaved": "Impossible d'indiquer à Mood Music quelle chanson joue : la suivante risque de ne pas démarrer seule. Lance-la toi-même.",
+    "recipes_preview_off": "Pour que cette page appuie elle-même sur lecture et « Ignorer l’annonce », active App browser access dans Kiro Crew, Paramètres > Développeur > Aperçus de fonctionnalités. D’ici là, ton compagnon appuie sur lecture.",
+    "recipes_not_approved": "Pour que cette page appuie elle-même sur lecture et « Ignorer l’annonce », approuve ses clics de navigateur sur la page de l’app et active « youtube_skip_ad runs by itself » à cet endroit. D’ici là, ton compagnon appuie sur lecture.",
+    "recipes_approve": "Ouvrir la page de l’app"
   },
   "view": {
     "title": "Navigateur de Kiro Crew",

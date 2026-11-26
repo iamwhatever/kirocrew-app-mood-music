@@ -195,7 +195,10 @@
     "unready_not_approved": "请先为情绪音乐批准这几个音乐网站。只需在应用页面批准一次。",
     "unready_browse_off": "这台电脑上的策略关闭了 Kiro Crew 的浏览器。",
     "find_play": "查找并播放",
-    "playback_unsaved": "没能告诉情绪音乐现在放的是哪首，下一首可能不会自己开始。请点下一首播放。"
+    "playback_unsaved": "没能告诉情绪音乐现在放的是哪首，下一首可能不会自己开始。请点下一首播放。",
+    "recipes_preview_off": "想让本页自己按播放和“跳过广告”，请在 Kiro Crew 的 设置 > 开发者 > 功能预览 中打开“App browser access”。在此之前由搭子按播放。",
+    "recipes_not_approved": "想让本页自己按播放和“跳过广告”，请在应用页面批准它的浏览器点击，并在那里打开“youtube_skip_ad runs by itself”。在此之前由搭子按播放。",
+    "recipes_approve": "打开应用页面"
   },
   "view": {
     "title": "Kiro Crew 的浏览器",
